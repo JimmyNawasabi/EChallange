@@ -2,84 +2,139 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>The Bound & The Brave: Escape Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bound & Brave: Extreme Escape Engine</title>
     <style>
-        body { background: #1a1a1a; color: #e0e0e0; font-family: 'Georgia', serif; padding: 20px; text-align: center; }
-        .container { max-width: 800px; margin: auto; border: 2px solid #800000; padding: 20px; border-radius: 10px; }
-        h1 { color: #ff0000; text-transform: uppercase; letter-spacing: 5px; }
-        .challenge-box { background: #2b2b2b; padding: 20px; margin: 20px 0; border-left: 5px solid #ff0000; min-height: 150px; }
-        button { background: #800000; color: white; border: none; padding: 10px 20px; cursor: pointer; font-size: 1.1em; }
-        button:hover { background: #ff0000; }
-        .timer { font-size: 2em; color: #ff0000; font-weight: bold; }
+        :root {
+            --gold: #d4af37;
+            --blood: #8b0000;
+            --dark: #0a0a0a;
+            --grey: #222;
+        }
+
+        body {
+            background: var(--dark);
+            color: #eee;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: #111;
+            border: 2px solid var(--grey);
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: var(--blood);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            border-bottom: 2px solid var(--blood);
+            padding-bottom: 10px;
+        }
+
+        .setup-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .player-card {
+            background: #1a1a1a;
+            padding: 15px;
+            border: 1px solid #333;
+        }
+
+        .inventory-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            font-size: 0.8em;
+            background: #050505;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .card-zone {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            width: 110px;
+            height: 150px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.3s;
+            color: #000;
+            padding: 10px;
+        }
+
+        .yellow { background: #ffd700; border: 3px solid #b8860b; }
+        .red { background: #ff4500; border: 3px solid #8b0000; }
+        .card.disabled { opacity: 0.1; cursor: not-allowed; pointer-events: none; }
+
+        .challenge-box {
+            background: #000;
+            border-left: 5px solid var(--blood);
+            padding: 25px;
+            margin: 20px 0;
+            min-height: 120px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .timer-display {
+            font-size: 3.5em;
+            color: var(--blood);
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .btn {
+            background: var(--blood);
+            color: white;
+            border: 1px solid var(--gold);
+            padding: 15px 25px;
+            text-transform: uppercase;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .btn:hover { background: #b00; }
+        .btn-secondary { background: #333; border: 1px solid #555; }
+
         .hidden { display: none; }
+        .status-bar { color: var(--gold); font-size: 1.2em; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>The Escape Engine</h1>
-    
-    <div id="setup">
-        <h3>Inventory Check</h3>
-        <p>Select your available tools:</p>
-        <input type="checkbox" id="rope"> Rope/Cuffs 
-        <input type="checkbox" id="gag"> Gags 
-        <input type="checkbox" id="blindfold"> Blindfolds 
-        <input type="checkbox" id="impact"> Impact Toys
-        <br><br>
-        <button onclick="startGame()">Commence the Session</button>
-    </div>
+    <h1>Bound & Brave: Extreme Escape</h1>
 
-    <div id="game-screen" class="hidden">
-        <div class="timer" id="timerDisplay">60:00</div>
-        <div class="challenge-box" id="challengeArea">
-            Click "Next Challenge" to begin your restraint phase.
-        </div>
-        <button onclick="generateChallenge()">New Challenge</button>
-        <button onclick="failTask()">Task Failed (Punishment)</button>
-        <button onclick="completeTask()">Task Success (Reward)</button>
-    </div>
-</div>
-
-<script>
-    let timeLeft = 3600;
-    const challenges = [
-        { text: "Restraint: Hogtie using 15ft of rope. Gag: Ball gag secured with a secondary lock.", type: "rope" },
-        { text: "Task: Retrieve a key from the bottom of a bowl of ice using only your mouth.", type: "gag" },
-        { text: "Sensory: Heavy blindfold applied. Must navigate the room by sound only.", type: "blindfold" },
-        { text: "Punishment: 10 strikes with a heavy paddle to the thighs.", type: "impact" },
-        // ... You would populate this list to 75 items
-    ];
-
-    function startGame() {
-        document.getElementById('setup').classList.add('hidden');
-        document.getElementById('game-screen').classList.remove('hidden');
-        startTimer();
-    }
-
-    function startTimer() {
-        setInterval(() => {
-            if(timeLeft > 0) {
-                timeLeft--;
-                let mins = Math.floor(timeLeft / 60);
-                let secs = timeLeft % 60;
-                document.getElementById('timerDisplay').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-            }
-        }, 1000);
-    }
-
-    function generateChallenge() {
-        const randomElement = challenges[Math.floor(Math.random() * challenges.length)];
-        document.getElementById('challengeArea').innerText = randomElement.text;
-    }
-
-    function failTask() {
-        alert("PUNISHMENT: Add 1 extra restraint of the captor's choice.");
-    }
-
-    function completeTask() {
-        alert("REWARD: 5 minutes removed from the total time or 1 item of gear removed.");
-    }
-</script>
-</body>
-</html>
+    <div id="setup-screen">
+        <div class="setup-grid">
+            <div class="player-card">
+                <h3>Player 1</h3>
+                <input type="text" id="p1Name" placeholder="Name" style="width:90%">
+                <select id="
