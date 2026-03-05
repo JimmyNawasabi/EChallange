@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Infinite Predicaments</title>
+    <title>Bound & Brave: Infinite Logic</title>
     <style>
         :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; }
         body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -15,12 +15,12 @@
         label { color: var(--gold); font-size: 0.8em; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
         input[type="text"], select, input[type="range"] { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: #fff; box-sizing: border-box; margin-bottom: 10px; }
         
-        /* STATUS & CARDS */
         .status-board { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; }
         .role-slot { display: flex; align-items: center; border: 1px solid #333; padding: 10px; background: #000; }
         .role-label { width: 100px; font-weight: bold; text-transform: uppercase; font-size: 0.7em; color: #888; border-right: 1px solid #333; margin-right: 15px; }
         .role-name { font-size: 1.2em; color: var(--gold); font-weight: bold; }
         .slot-sub { border: 1px solid var(--crimson); background: #1a0000; }
+
         .card-zone { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
         .card-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; }
         .card { width: 100%; height: 45px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; font-size: 0.7em; border-radius: 4px; cursor: pointer; color: #000; margin-bottom: 5px; }
@@ -46,22 +46,28 @@
         <div class="setup-box">
             <label>Player One (Submissive Start)</label>
             <input type="text" id="p1Name" placeholder="Name">
-            <select id="p1Gen"><option value="Male">Male Body</option><option value="Female">Female Body</option></select>
+            <select id="p1Gen">
+                <option value="Male">Male Body</option>
+                <option value="Female">Female Body</option>
+            </select>
         </div>
         <div class="setup-box">
             <label>Player Two (Master Start)</label>
             <input type="text" id="p2Name" placeholder="Name">
-            <select id="p2Gen"><option value="Male">Male Body</option><option value="Female">Female Body</option></select>
+            <select id="p2Gen">
+                <option value="Male">Male Body</option>
+                <option value="Female">Female Body</option>
+            </select>
         </div>
         <div class="setup-box">
-            <label>Chaos Level (Intensity: 1-10)</label>
+            <label>Complexity Level (1-10)</label>
             <input type="range" id="intensity" min="1" max="10" value="5">
         </div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Inventory ></button></div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Choose Tools ></button></div>
     </div>
 
     <div id="step2" class="step">
-        <label>Select Your Tools:</label>
+        <label>Toggle Materials:</label>
         <div class="inventory-grid" id="invList"></div>
         <div class="fixed-footer"><button class="btn" onclick="nav(3)">Enter Session ></button></div>
     </div>
@@ -78,37 +84,35 @@
         </div>
 
         <div id="prepPhase">
-            <div class="challenge-card" id="taskBox">System Primed.</div>
-            <button class="btn" id="genBtn" onclick="generate()">Synthesize Unique Predicament</button>
-            <button class="btn" id="startBtn" style="display:none;" onclick="showTimer()">Bonds Applied: Start Clock</button>
+            <div class="challenge-card" id="taskBox">Ready for synthesis.</div>
+            <button class="btn" id="genBtn" onclick="generate()">Synthesize Challenge</button>
+            <button class="btn" id="startBtn" style="display:none;" onclick="showTimer()">Confirmed: Start Timer</button>
         </div>
 
         <div id="timerPhase" style="display:none;">
             <div class="timer-val" id="timeDisp">00:00</div>
-            <button class="btn" onclick="resolve(true)">SUCCESS (Role Swap)</button>
-            <button class="btn" style="background:#333; margin-top:10px;" onclick="resolve(false)">FAILURE (Remain Bound)</button>
+            <button class="btn" onclick="resolve(true)">SUCCESS (Swap Roles)</button>
+            <button class="btn" style="background:#333; margin-top:10px;" onclick="resolve(false)">FAILURE (Stay Bound)</button>
         </div>
     </div>
 </div>
 
 <script>
-    const gearFull = ["Rope", "Tape", "Pallet Wrap", "Bandages", "Dildo", "Butt Plug", "Ball Gag", "Tape Gag", "Cloth Blindfold", "Leather Blindfold", "Straight Jacket", "Spreader Bar", "Cuffs", "Chain", "Clamps"];
+    const gearFull = ["Rope", "Tape", "Pallet Wrap", "Bandages", "Dildo", "Butt Plug", "Ball Gag", "Tape Gag", "Blindfold", "Cuffs", "Chain", "Spreader Bar"];
     let players = [], activeGear = [], subIdx = 0, domIdx = 1, clock, secs;
     let cards = { y: 1, r: 1 };
 
-    // THE MATRIX: Procedural Elements
-    const m_action = ["retrieve", "manipulate", "extinguish", "activate", "displace", "unfasten", "traverse to", "ring", "consume", "pull", "unlock", "vibrate", "tilt", "collect"];
-    const m_object = ["a metal key", "a singular coin", "a vibrating device", "a small bell", "a piece of fruit", "a specific knot", "a light switch", "a bowl of water", "a weighted bag", "a magnetic card", "a marble"];
-    const m_limiter = ["using only teeth", "with toes only", "by friction only", "without knees touching the floor", "while keeping eyes sealed", "blindly", "using only chin and chest", "with zero vocalization", "with ankles locked", "while lying flat"];
-    const m_location = ["under a chair", "on a high shelf", "taped to the floor", "dangling from a doorway", "behind the Master's back", "across a 10ft distance", "inside a locked box", "placed on the Master's lap"];
-
-    const m_bondStyle = ["spiral wrap", "tight cinch", "criss-cross harness", "mummy-style encasement", "suspension-tether", "figure-eight bind", "asymmetric lock", "web-style weave"];
-    const m_posture = ["kneeling", "prostrate", "seated", "arched", "fetal position", "standing on tip-toes", "bent double", "side-lying"];
+    const matrix = {
+        actions: ["dislodge", "extinguish", "drag", "press", "unravel", "retrieve", "flip", "ring", "consume", "tilt", "navigate past"],
+        objects: ["a singular coin", "a lit candle", "a weighted bag", "a remote control", "a small bell", "a piece of fruit", "a key on a string", "a bowl of ice", "a magnetic card"],
+        limiters: ["using only teeth", "with toes only", "by friction alone", "blindly", "without knees touching the ground", "using only chin/chest", "with zero vocalization", "while propped up", "while keeping hips still"],
+        locations: ["on a high shelf", "taped to the far wall", "placed 8ft away", "under a chair", "hidden behind the Master", "dangling from a ceiling hook", "inside a locked container"]
+    };
 
     function nav(s) {
         if(s===2) {
             players = [
-                { name: document.getElementById('p1Name').value || "P1", gen: document.getElementById('p1Gen').value }, 
+                { name: document.getElementById('p1Name').value || "P1", gen: document.getElementById('p1Gen').value },
                 { name: document.getElementById('p2Name').value || "P2", gen: document.getElementById('p2Gen').value }
             ];
             const list = document.getElementById('invList');
@@ -131,29 +135,29 @@
         let content = "";
         let difficulty = 0;
 
-        const zones = ["UPPER", "LOWER", "SENSORY", "CORE"];
-        zones.forEach((z, i) => {
-            if (Math.random() * 10 < chaos + 2) {
+        // BINDING LOGIC
+        ["UPPER", "LOWER", "SENSORY", "CORE"].forEach((zone, i) => {
+            if (Math.random() * 10 < (chaos + 2)) {
                 let avail = gearFull.filter(g => activeGear.includes(g));
-                let g = avail[Math.floor(Math.random()*avail.length)];
-                let style = m_bondStyle[Math.floor(Math.random()*m_bondStyle.length)];
-                let pose = m_posture[Math.floor(Math.random()*m_posture.length)];
+                let tool = avail[Math.floor(Math.random() * avail.length)];
                 
-                // Specific Gender logic for Core
                 let extra = "";
-                if(z === "CORE") {
-                    if(sub.gen === "Female") extra = " Ensure the material passes through the labia to secure the bond.";
-                    else extra = " Ensure the material provides upward tension on the scrotum.";
+                if(zone === "CORE") {
+                    extra = sub.gen === "Female" ? " Use vertical tension through the labia." : " Use upward tension on the scrotum.";
                 }
 
-                content += `<span class="mod-header">${z} BODY</span> ${dom.name} must implement a <b>${style}</b> on ${sub.name}'s ${z.toLowerCase()} using <b>${g}</b>. ${sub.name} must be in a <b>${pose}</b> position.${extra}<br>`;
-                difficulty += (chaos * 0.5) + 2;
+                content += `<span class="mod-header">${zone} BODY</span> ${dom.name} must bind ${sub.name}'s ${zone.toLowerCase()} using <b>${tool}</b>. Apply in a complex, restrictive pattern.${extra}<br>`;
+                difficulty += (chaos * 0.5) + 3;
             }
         });
 
-        const objective = `${sub.name} must **${m_action[Math.floor(Math.random()*m_action.length)]}** **${m_object[Math.floor(Math.random()*m_object.length)]}** **${m_limiter[Math.floor(Math.random()*m_limiter.length)]}**. The target is **${m_location[Math.floor(Math.random()*m_location.length)]}**.`;
+        // OBJECTIVE SYNTHESIS
+        const act = matrix.actions[Math.floor(Math.random()*matrix.actions.length)];
+        const obj = matrix.objects[Math.floor(Math.random()*matrix.objects.length)];
+        const lim = matrix.limiters[Math.floor(Math.random()*matrix.limiters.length)];
+        const loc = matrix.locations[Math.floor(Math.random()*matrix.locations.length)];
         
-        content += `<span class="mod-header">UNIQUE OBJECTIVE</span> ${objective}`;
+        content += `<span class="mod-header">PROCEDURAL OBJECTIVE</span> ${sub.name} must <b>${act}</b> <b>${obj}</b> <b>${lim}</b>. The target is <b>${loc}</b>.`;
         difficulty += (chaos * 1.5);
 
         secs = Math.floor((difficulty * 45) + 60);
@@ -163,8 +167,8 @@
     }
 
     function cardTrigger(type) {
-        const owner = type === 'y' ? cards.y : cards.r;
-        alert(`${players[owner].name} has invoked the ${type==='y'?'Yellow':'Red'} Card!`);
+        const ownerName = players[type === 'y' ? cards.y : cards.r].name;
+        alert(`${ownerName} has used the ${type==='y'?'Yellow':'Red'} Card!`);
         if (type === 'y') swapRoles(); else generate();
     }
 
