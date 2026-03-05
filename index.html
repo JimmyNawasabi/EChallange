@@ -3,203 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Multiplayer Extreme</title>
+    <title>Bound & Brave: Extreme Escape</title>
     <style>
-        :root { --gold: #d4af37; --blood: #8b0000; --dark: #0a0a0a; --grey: #222; }
-        body { background: var(--dark); color: #eee; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .container { max-width: 900px; width: 100%; background: #111; border: 2px solid var(--grey); padding: 25px; border-radius: 10px; box-shadow: 0 0 30px #000; }
-        h1 { color: var(--blood); text-align: center; text-transform: uppercase; letter-spacing: 3px; border-bottom: 2px solid var(--blood); padding-bottom: 10px; }
-        .setup-section { background: #1a1a1a; padding: 20px; border: 1px solid #333; margin-bottom: 20px; }
-        .player-entry { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #222; }
-        .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; font-size: 0.85em; margin: 15px 0; }
-        .card-zone { display: flex; justify-content: center; gap: 15px; margin: 15px 0; }
-        .card { width: 100px; height: 130px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; text-align: center; cursor: pointer; color: #000; font-size: 0.8em; }
+        :root { --red: #8b0000; --gold: #d4af37; --bg: #0d0d0d; --panel: #1a1a1a; }
+        body { background: var(--bg); color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { max-width: 600px; width: 100%; background: var(--panel); border: 2px solid #333; padding: 30px; border-radius: 8px; box-shadow: 0 0 20px #000; }
+        h1 { color: var(--red); text-align: center; text-transform: uppercase; letter-spacing: 2px; margin-top: 0; }
+        .step { display: none; }
+        .active { display: block; }
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; color: var(--gold); font-weight: bold; }
+        input[type="text"], select { width: 100%; padding: 12px; background: #000; border: 1px solid #444; color: #fff; box-sizing: border-box; }
+        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 300px; overflow-y: auto; background: #000; padding: 15px; border: 1px solid #333; }
+        .card-zone { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+        .card { width: 100px; height: 140px; border-radius: 10px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; cursor: pointer; color: #000; font-size: 0.9em; transition: 0.2s; }
         .yellow { background: #ffd700; border: 3px solid #b8860b; }
         .red { background: #ff4500; border: 3px solid #8b0000; }
-        .card.disabled { opacity: 0.1; pointer-events: none; }
-        .challenge-box { background: #000; border-left: 5px solid var(--blood); padding: 20px; margin: 20px 0; font-size: 1.1em; border-radius: 0 5px 5px 0; }
-        .timer-display { font-size: 4em; color: var(--blood); font-weight: bold; margin: 10px 0; text-align: center; }
-        .btn { background: var(--blood); color: white; border: 1px solid var(--gold); padding: 15px; text-transform: uppercase; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 5px; }
-        .btn:hover { background: #b00; }
-        .hidden { display: none; }
-        input, select { background: #000; color: #fff; border: 1px solid #444; padding: 8px; }
+        .disabled { opacity: 0.1; pointer-events: none; filter: grayscale(1); }
+        .btn { background: var(--red); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
+        .btn:hover { background: #a00; }
+        .challenge-box { background: #000; border-left: 5px solid var(--red); padding: 20px; margin: 20px 0; font-size: 1.1em; line-height: 1.5; }
+        .timer { font-size: 4em; color: var(--red); text-align: center; font-family: monospace; margin: 10px 0; }
+        .role-banner { text-align: center; background: #222; padding: 10px; color: var(--gold); font-weight: bold; border-radius: 4px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Bound & Brave: Extreme</h1>
+    <h1>Bound & Brave</h1>
 
-    <div id="step-1">
-        <h3>How many players are participating?</h3>
-        <select id="playerCount" style="width: 100%; font-size: 1.2em;" onchange="showPlayerNaming()">
-            <option value="">Select...</option>
-            <option value="2">2 Players</option>
-            <option value="3">3 Players</option>
-            <option value="4">4 Players</option>
-            <option value="5">5 Players</option>
-        </select>
+    <div id="step1" class="step active">
+        <div class="input-group">
+            <label>How many players?</label>
+            <select id="playerCount" onchange="generatePlayerInputs()">
+                <option value="2">2 Players</option>
+                <option value="3">3 Players</option>
+                <option value="4">4 Players</option>
+            </select>
+        </div>
+        <div id="playerNamesArea">
+            </div>
+        <button class="btn" onclick="goToStep(2)">Confirm Names & Continue</button>
     </div>
 
-    <div id="step-2" class="hidden">
-        <h3>Player Details</h3>
-        <div id="playerInputs"></div>
-        <button class="btn" onclick="showInventory()">Next: Select Gear</button>
+    <div id="step2" class="step">
+        <label>Select Your Available Gear:</label>
+        <div class="inventory-grid" id="invList"></div>
+        <button class="btn" onclick="goToStep(3)">Lock Gear & Start Game</button>
     </div>
 
-    <div id="step-3" class="hidden">
-        <h3>Inventory Check</h3>
-        <p>Uncheck items you do not have available:</p>
-        <div class="inventory-grid" id="inventory-list"></div>
-        <button class="btn" onclick="initGame()">Start Game</button>
-    </div>
-
-    <div id="game-screen" class="hidden">
-        <div id="roleDisplay" style="color: var(--gold); font-size: 1.3em; margin-bottom: 10px; text-align: center;"></div>
+    <div id="step3" class="step">
+        <div class="role-banner" id="roleText"></div>
         
         <div class="card-zone">
-            <div id="yellowCard" class="card yellow" onclick="useCard('yellow')">YELLOW CARD<br>Role Swap</div>
-            <div id="redCard" class="card red" onclick="useCard('red')">RED CARD<br>Pass Task</div>
+            <div id="yCard" class="card yellow" onclick="cardAction('yellow')">YELLOW CARD<br>Swap Roles</div>
+            <div id="rCard" class="card red" onclick="cardAction('red')">RED CARD<br>Skip Task</div>
         </div>
 
-        <div id="prep-phase">
-            <div class="challenge-box" id="challengeText">Click "Generate" for the first trial.</div>
-            <button class="btn" id="genBtn" onclick="generateChallenge()">Generate Challenge</button>
-            <button class="btn hidden" id="startBtn" onclick="startEscape()">Bound & Ready: Start Timer</button>
+        <div id="prepArea">
+            <div class="challenge-box" id="taskText">Press Generate to receive your first restraint instructions.</div>
+            <button class="btn" id="genBtn" onclick="makeChallenge()">Generate Challenge</button>
+            <button class="btn" id="readyBtn" style="display:none;" onclick="startTheClock()">Restraints Applied: Start Escape</button>
         </div>
 
-        <div id="escape-phase" class="hidden">
-            <div class="timer-display" id="timer">00:00</div>
-            <button class="btn" onclick="endRound(true)">Escape Successful</button>
-            <button class="btn" style="background: #333;" onclick="endRound(false)">Failure</button>
+        <div id="escapeArea" style="display:none;">
+            <div class="timer" id="timerDisplay">00:00</div>
+            <button class="btn" onclick="finish(true)">I Escaped!</button>
+            <button class="btn" style="background:#444;" onclick="finish(false)">Failure</button>
         </div>
 
-        <button class="btn" style="background:#222; margin-top:30px;" onclick="nextRotation()">Next Round / Rotate Roles</button>
+        <button class="btn" style="background:#222; margin-top:30px;" onclick="rotate()">Rotate Roles / Next Round</button>
     </div>
 </div>
 
 <script>
     let players = [];
-    let activeInv = [];
     let subIdx = 0;
     let domIdx = 1;
-    let cardHolders = { yellow: 0, red: 0 }; 
-    let timerInt;
-    let timeLeft;
+    let gear = ["Rope", "Tape", "Pallet Wrap", "Bandages", "Floggers", "Cane", "Dildo", "Butt Plug", "Ball Gag", "Over-the-mouth Gag", "Tape Gag", "Wrap Around Gag", "Mouth Stuffed", "Open Mouth Gag", "Cloth Blindfold", "Tape Blindfold", "Leather Blindfold", "Straight Jacket", "Spreader Bar"];
+    let selectedGear = [];
+    let gameTimer;
+    let secondsLeft;
+    let cardOwner = { yellow: 0, red: 0 }; 
 
-    const gear = ["Rope", "Tape", "Pallet Wrap", "Bandages", "Floggers", "Cane", "Dildo", "Butt Plug", "Ball Gag", "Over-the-mouth Gag", "Tape Gag", "Wrap Around Gag", "Mouth Stuffed", "Open Mouth Gag", "Cloth Blindfold", "Tape Blindfold", "Leather Blindfold", "Straight Jacket", "Spreader Bar"];
-
-    function showPlayerNaming() {
+    function generatePlayerInputs() {
         const count = document.getElementById('playerCount').value;
-        if(!count) return;
-        const container = document.getElementById('playerInputs');
-        container.innerHTML = "";
-        for(let i=1; i<=count; i++) {
-            container.innerHTML += `
-                <div class="player-entry">
-                    <input type="text" id="name${i}" placeholder="Player ${i} Name">
-                    <select id="gender${i}">
-                        <option value="Male">Male Body</option>
-                        <option value="Female">Female Body</option>
-                        <option value="Any">Neutral</option>
-                    </select>
+        const area = document.getElementById('playerNamesArea');
+        area.innerHTML = "";
+        for(let i=0; i<count; i++) {
+            area.innerHTML += `
+                <div class="input-group">
+                    <label>Player ${i+1} Name & Body Type</label>
+                    <input type="text" id="name${i}" placeholder="Enter Name">
+                    <select id="gen${i}"><option value="Male">Male</option><option value="Female">Female</option><option value="Any">Neutral</option></select>
                 </div>`;
         }
-        document.getElementById('step-1').classList.add('hidden');
-        document.getElementById('step-2').classList.remove('hidden');
     }
+    generatePlayerInputs(); // Init
 
-    function showInventory() {
-        const count = document.getElementById('playerCount').value;
-        players = [];
-        for(let i=1; i<=count; i++) {
-            players.push({
-                name: document.getElementById(`name${i}`).value || `Player ${i}`,
-                gender: document.getElementById(`gender${i}`).value
-            });
+    function goToStep(s) {
+        if(s === 2) {
+            const count = document.getElementById('playerCount').value;
+            players = [];
+            for(let i=0; i<count; i++) {
+                let n = document.getElementById(`name${i}`).value || `Player ${i+1}`;
+                players.push({ name: n, gender: document.getElementById(`gen${i}`).value });
+            }
+            const list = document.getElementById('invList');
+            list.innerHTML = "";
+            gear.forEach(g => { list.innerHTML += `<label><input type="checkbox" value="${g}" checked> ${g}</label>`; });
         }
-        const invList = document.getElementById('inventory-list');
-        gear.forEach(item => {
-            invList.innerHTML += `<label><input type="checkbox" value="${item}" checked> ${item}</label>`;
-        });
-        document.getElementById('step-2').classList.add('hidden');
-        document.getElementById('step-3').classList.remove('hidden');
+        if(s === 3) {
+            document.querySelectorAll('#invList input:checked').forEach(i => selectedGear.push(i.value));
+            updateHeader();
+        }
+        document.querySelectorAll('.step').forEach(div => div.classList.remove('active'));
+        document.getElementById('step'+s).classList.add('active');
     }
 
-    function initGame() {
-        document.querySelectorAll('#inventory-list input:checked').forEach(i => activeInv.push(i.value));
-        document.getElementById('step-3').classList.add('hidden');
-        document.getElementById('game-screen').classList.remove('hidden');
-        updateRoles();
+    function updateHeader() {
+        document.getElementById('roleText').innerHTML = `DOM: ${players[domIdx].name} | SUB: ${players[subIdx].name}`;
+        document.getElementById('yCard').className = `card yellow ${cardOwner.yellow !== subIdx ? 'disabled' : ''}`;
+        document.getElementById('rCard').className = `card red ${cardOwner.red !== subIdx ? 'disabled' : ''}`;
     }
 
-    function updateRoles() {
-        const dom = players[domIdx];
-        const sub = players[subIdx];
-        document.getElementById('roleDisplay').innerHTML = `DOM: <b>${dom.name}</b><br>SUB: <b>${sub.name}</b>`;
-        document.getElementById('yellowCard').className = `card yellow ${cardHolders.yellow !== subIdx ? 'disabled' : ''}`;
-        document.getElementById('redCard').className = `card red ${cardHolders.red !== subIdx ? 'disabled' : ''}`;
-    }
-
-    function generateChallenge() {
-        // Sample pool - in actual use you'd add all 75 logic here
-        const subGen = players[subIdx].gender;
-        const tasks = [
-            { req: ["Tape", "Ball Gag"], time: 300, text: `(Gender: ${subGen}) MOUTH SEALED: Insert Ball Gag, then 3 layers of tape. Arms tied behind with Tape.` },
-            { req: ["Pallet Wrap", "Straight Jacket"], time: 600, text: `(Any) THE ASYLUM TUBE: Put on Straight Jacket, then wrap entire torso in 10 layers of Pallet Wrap.` },
-            { req: ["Rope", "Spreader Bar"], time: 450, text: `(Any) THE SPREAD: Ankle spreader bar applied. Rope tether from bar to a collar. Hands tied to the bar.` },
-            { req: ["Dildo", "Tape"], time: 360, text: `(Female) THE INTERNAL TASK: Dildo taped to a chair. Sub must remain seated while arms are taped to sides.` },
-            { req: ["Butt Plug", "Cane"], time: 300, text: `(Male) THE MARKED MAN: Insert plug. 6 cane strikes. Then hands tied to ankles in front.` }
+    function makeChallenge() {
+        const sGen = players[subIdx].gender;
+        const db = [
+            { g: "Male", r: ["Tape", "Ball Gag"], t: 300, txt: "THE SILENT BOX: Ball gag in, then 4 layers of tape. Hands taped behind back. Kneel and remain still." },
+            { g: "Female", r: ["Rope", "Dildo"], t: 400, txt: "THE SITTING TASK: Dildo secured to a stool. Sub bound in a chest harness with arms pinned. Must remain seated." },
+            { g: "Any", r: ["Pallet Wrap", "Tape"], t: 600, txt: "THE COCOON: Pallet wrap from neck to ankles. Hands taped to sides. Must wriggle 10 feet to the finish." },
+            { g: "Any", r: ["Straight Jacket", "Spreader Bar"], t: 500, txt: "TOTAL RESTRICTION: Jacket on, spreader bar on ankles. Must stand and balance for 5 minutes." },
+            { g: "Any", r: ["Rope", "Butt Plug"], t: 300, txt: "INTERNAL TETHER: Plug in. Rope tether from plug to a wrist cuff. Don't let the rope go taut." }
         ];
-
-        const valid = tasks.filter(t => t.req.every(r => activeInv.includes(r)));
-        const task = valid[Math.floor(Math.random()*valid.length)] || {text: "Standard Rope Bondage: Dom's Choice.", time: 300};
+        const valid = db.filter(x => (x.g === "Any" || x.g === sGen) && x.r.every(item => selectedGear.includes(item)));
+        const pick = valid[Math.floor(Math.random()*valid.length)] || {txt: "Dom's Choice: Use any 2 items to bind the sub for 5 minutes.", t: 300};
         
-        document.getElementById('challengeText').innerHTML = `<strong>RESTRAINT & TASK:</strong><br>${task.text}<br><br><strong>LIMIT:</strong> ${task.time}s`;
-        timeLeft = task.time;
-        document.getElementById('genBtn').classList.add('hidden');
-        document.getElementById('startBtn').classList.remove('hidden');
+        document.getElementById('taskText').innerHTML = `<strong>RESTRAINT:</strong><br>${pick.txt}<br><br><strong>TIME:</strong> ${Math.floor(pick.t/60)}m`;
+        secondsLeft = pick.t;
+        document.getElementById('genBtn').style.display = 'none';
+        document.getElementById('readyBtn').style.display = 'block';
     }
 
-    function useCard(type) {
+    function cardAction(type) {
         if(type === 'yellow') {
-            alert("YELLOW CARD! Roles swap immediately.");
+            alert("ROLES SWAPPED!");
             [subIdx, domIdx] = [domIdx, subIdx];
-            cardHolders.yellow = domIdx; // Pass to new Sub
+            cardOwner.yellow = domIdx;
         } else {
-            alert("RED CARD! Challenge skipped. Pass card to Dom.");
-            cardHolders.red = domIdx;
-            generateChallenge();
+            alert("TASK SKIPPED!");
+            cardOwner.red = domIdx;
+            makeChallenge();
         }
-        updateRoles();
+        updateHeader();
     }
 
-    function startEscape() {
-        document.getElementById('prep-phase').classList.add('hidden');
-        document.getElementById('escape-phase').classList.remove('hidden');
-        timerInt = setInterval(() => {
-            timeLeft--;
-            let m = Math.floor(timeLeft/60);
-            let s = timeLeft%60;
-            document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
-            if(timeLeft <= 0) endRound(false);
+    function startTheClock() {
+        document.getElementById('prepArea').style.display = 'none';
+        document.getElementById('escapeArea').style.display = 'block';
+        gameTimer = setInterval(() => {
+            secondsLeft--;
+            let m = Math.floor(secondsLeft/60);
+            let s = secondsLeft%60;
+            document.getElementById('timerDisplay').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(secondsLeft <= 0) finish(false);
         }, 1000);
     }
 
-    function endRound(success) {
-        clearInterval(timerInt);
-        alert(success ? "SUCCESS! Reward granted." : "FAILURE! Punishment enforced.");
-        document.getElementById('escape-phase').classList.add('hidden');
-        document.getElementById('prep-phase').classList.remove('hidden');
-        document.getElementById('genBtn').classList.remove('hidden');
-        document.getElementById('startBtn').classList.add('hidden');
+    function finish(win) {
+        clearInterval(gameTimer);
+        alert(win ? "SUB ESCAPED! Reward time." : "TIME EXPIRED! Punishment time.");
+        document.getElementById('escapeArea').style.display = 'none';
+        document.getElementById('prepArea').style.display = 'block';
+        document.getElementById('genBtn').style.display = 'block';
+        document.getElementById('readyBtn').style.display = 'none';
     }
 
-    function nextRotation() {
+    function rotate() {
         subIdx = (subIdx + 1) % players.length;
         domIdx = (subIdx + 1) % players.length;
-        updateRoles();
-        alert("Roles Rotated. New Sub: " + players[subIdx].name);
+        if(subIdx === domIdx) domIdx = (domIdx + 1) % players.length;
+        updateHeader();
+        alert("New Round! Sub is now " + players[subIdx].name);
     }
 </script>
 </body>
