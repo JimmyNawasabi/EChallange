@@ -3,35 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Precise Escape</title>
+    <title>Bound & Brave: Persistence</title>
     <style>
-        :root { --crimson: #660000; --gold: #c5a059; --bg: #050505; --text: #d1d1d1; }
-        body { background: var(--bg); color: var(--text); font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .container { max-width: 600px; width: 100%; background: #0f0f0f; border: 1px solid #333; padding: 20px; box-shadow: 0 0 40px #000; display: flex; flex-direction: column; min-height: 95vh; }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 5px; border-bottom: 2px solid var(--crimson); margin: 0 0 15px 0; }
+        :root { --crimson: #7b0000; --gold: #b38b4d; --bg: #050505; --panel: #111; }
+        body { background: var(--bg); color: #ccc; font-family: 'Courier New', monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .container { max-width: 600px; width: 100%; background: var(--panel); border: 1px solid #333; padding: 20px; box-shadow: 0 0 50px #000; display: flex; flex-direction: column; min-height: 95vh; }
+        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; margin: 0 0 15px 0; border-bottom: 2px solid var(--crimson); }
         
-        .step { display: none; flex-grow: 1; overflow-y: auto; padding-bottom: 90px; }
+        .step { display: none; flex-grow: 1; overflow-y: auto; padding-bottom: 100px; }
         .active { display: flex; flex-direction: column; }
 
-        .input-group { background: #151515; padding: 12px; margin-bottom: 10px; border-left: 3px solid var(--gold); }
-        label { color: var(--gold); font-size: 0.85em; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        input[type="text"], select { width: 100%; padding: 10px; background: #000; border: 1px solid #444; color: #fff; margin-bottom: 5px; }
+        .player-row { background: #000; padding: 12px; margin-bottom: 10px; border: 1px solid #222; }
+        label { color: var(--gold); font-size: 0.8em; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        input[type="text"], select { width: 100%; padding: 10px; background: #0a0a0a; border: 1px solid #444; color: #fff; margin-bottom: 5px; box-sizing: border-box; }
 
         .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .inventory-item { background: #111; padding: 10px; border: 1px solid #222; font-size: 0.8em; display: flex; align-items: center; gap: 10px; }
+        .gear-item { background: #000; padding: 8px; border: 1px solid #222; font-size: 0.75em; display: flex; align-items: center; gap: 8px; }
+
+        .fixed-footer { position: sticky; bottom: 0; background: var(--panel); padding: 15px 0; border-top: 1px solid #333; margin-top: auto; z-index: 100; }
+        .btn { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+
+        .challenge-card { background: #000; border: 1px solid var(--crimson); padding: 20px; margin: 15px 0; line-height: 1.6; color: #fff; }
+        .module-title { color: var(--gold); font-weight: bold; display: block; border-bottom: 1px solid #222; margin-top: 10px; }
+        .timer { font-size: 5em; color: #ff0000; text-align: center; font-family: Impact; margin: 10px 0; }
+        .banner { text-align: center; color: var(--gold); padding: 8px; background: #000; border: 1px solid #333; margin-bottom: 10px; font-size: 0.9em; }
         
-        .fixed-footer { position: sticky; bottom: 0; background: #0f0f0f; padding: 15px 0; border-top: 1px solid #333; margin-top: auto; }
-        .btn { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
-
-        .card-zone { display: flex; justify-content: space-between; margin: 15px 0; gap: 10px; }
-        .card { flex: 1; height: 60px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; color: #000; font-size: 0.75em; border-radius: 3px; }
-        .yellow { background: #e6b800; } .red { background: #b30000; color: #fff; }
+        .card-zone { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
+        .card { flex: 1; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; border-radius: 3px; font-size: 0.8em; cursor: pointer; }
+        .yellow { background: #e6b800; } .red { background: #a00; color: #fff; }
         .disabled { opacity: 0.1; pointer-events: none; }
-
-        .challenge-box { background: #000; border: 1px solid #444; padding: 20px; margin: 15px 0; line-height: 1.6; position: relative; }
-        .challenge-box b { color: var(--gold); text-transform: uppercase; }
-        .timer { font-size: 5em; color: #ff0000; text-align: center; font-weight: bold; font-family: 'Impact', sans-serif; text-shadow: 0 0 10px #660000; }
-        .role-banner { text-align: center; color: var(--gold); font-size: 0.9em; border: 1px solid #222; padding: 5px; background: #111; }
     </style>
 </head>
 <body>
@@ -40,154 +40,174 @@
     <h1>Bound & Brave</h1>
 
     <div id="step1" class="step active">
-        <label>Operational Units (Players):</label>
-        <select id="pCount" onchange="buildPlayerUI()">
+        <label>Player Count:</label>
+        <select id="pCount" onchange="initSetup()">
             <option value="2">2 Players</option>
             <option value="3">3 Players</option>
-            <option value="4">4 Players</option>
         </select>
-        <div id="playerList"></div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Initialize Gear ></button></div>
+        <div id="pNames"></div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Inventory Setup ></button></div>
     </div>
 
     <div id="step2" class="step">
-        <label>Available Restraint Assets:</label>
-        <div class="inventory-grid" id="invList"></div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Commence Game ></button></div>
+        <label>Check Available Restraints:</label>
+        <div class="inventory-grid" id="gearList"></div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Begin Sequence ></button></div>
     </div>
 
     <div id="step3" class="step">
-        <div class="role-banner" id="roles"></div>
+        <div class="banner" id="currentRoles"></div>
+        
         <div class="card-zone">
-            <div id="yCard" class="card yellow" onclick="useCard('yellow')">YELLOW: SWAP</div>
-            <div id="rCard" class="card red" onclick="useCard('red')">RED: SKIP</div>
+            <div id="yC" class="card yellow" onclick="useC('y')">YELLOW: SWAP</div>
+            <div id="rC" class="card red" onclick="useC('r')">RED: PASS</div>
         </div>
 
         <div id="prepArea">
-            <div class="challenge-box" id="taskDisplay">Select "Generate Challenge" to begin restraint sequence.</div>
-            <button class="btn" id="genBtn" onclick="generateChallenge()">Generate Challenge</button>
-            <button class="btn" id="readyBtn" style="display:none;" onclick="startEscape()">Bound & Verified: Start</button>
+            <div class="challenge-card" id="taskBox">Awaiting data...</div>
+            <button class="btn" id="genBtn" onclick="generate()">Generate Extreme Sequence</button>
+            <button class="btn" id="startBtn" style="display:none;" onclick="startClock()">Restraints Secure: Start Timer</button>
         </div>
 
-        <div id="escapeArea" style="display:none;">
-            <div class="timer" id="timerDisplay">00:00</div>
-            <button class="btn" onclick="endRound(true)">Escape Verified</button>
-            <button class="btn" style="background:#333; margin-top:10px;" onclick="endRound(false)">Breach Failed</button>
+        <div id="playArea" style="display:none;">
+            <div class="timer" id="timeDisp">00:00</div>
+            <button class="btn" onclick="finish(true)">ESCAPED (Switch Roles)</button>
+            <button class="btn" style="background:#333; margin-top:10px;" onclick="finish(false)">FAILED (Stay Submissive)</button>
         </div>
-
-        <div class="fixed-footer"><button class="btn" style="background:#222;" onclick="rotateRoles()">Rotate Roles</button></div>
     </div>
 </div>
 
 <script>
     const gearFull = ["Rope", "Tape", "Pallet Wrap", "Bandages", "Floggers", "Cane", "Dildo", "Butt Plug", "Ball Gag", "Over-the-mouth Gag", "Tape Gag", "Wrap Around Gag", "Mouth Stuffed", "Open Mouth Gag", "Cloth Blindfold", "Tape Blindfold", "Leather Blindfold", "Straight Jacket", "Spreader Bar"];
-    let players = [], activeGear = [], subIdx = 0, domIdx = 1, cards = { yellow: 0, red: 0 }, timer, clock;
+    let players = [], activeGear = [], subI = 0, domI = 1, cards = { y: 0, r: 0 }, clock, secs;
 
-    function buildPlayerUI() {
+    function initSetup() {
         const c = document.getElementById('pCount').value;
-        const div = document.getElementById('playerList');
+        const div = document.getElementById('pNames');
         div.innerHTML = "";
         for(let i=0; i<c; i++) {
-            div.innerHTML += `<div class="input-group">
-                <label>Unit ${i+1}</label>
-                <input type="text" id="n${i}" placeholder="Designation">
-                <select id="g${i}"><option value="Male">Male Body</option><option value="Female">Female Body</option><option value="Any">Neutral</option></select>
-            </div>`;
+            div.innerHTML += `<div class="player-row"><label>Player ${i+1}</label><input type="text" id="n${i}" placeholder="Name"><select id="g${i}"><option value="Male">Male Body</option><option value="Female">Female Body</option></select></div>`;
         }
     }
-    buildPlayerUI();
+    initSetup();
 
     function nav(s) {
         if(s===2) {
-            const c = document.getElementById('pCount').value;
-            players = [];
-            for(let i=0; i<c; i++) players.push({ name: document.getElementById('n'+i).value || "Unit "+(i+1), gen: document.getElementById('g'+i).value });
-            const list = document.getElementById('invList');
+            players = Array.from({length: document.getElementById('pCount').value}, (_, i) => ({
+                name: document.getElementById('n'+i).value || "P"+(i+1), gen: document.getElementById('g'+i).value
+            }));
+            const list = document.getElementById('gearList');
             list.innerHTML = "";
-            gearFull.forEach(item => list.innerHTML += `<div class="inventory-item"><input type="checkbox" value="${item}" checked> ${item}</div>`);
+            gearFull.forEach(g => list.innerHTML += `<div class="gear-item"><input type="checkbox" value="${g}" checked> ${g}</div>`);
         }
         if(s===3) {
-            activeGear = Array.from(document.querySelectorAll('#invList input:checked')).map(i => i.value);
-            refreshUI();
+            activeGear = Array.from(document.querySelectorAll('#gearList input:checked')).map(i => i.value);
+            updateUI();
         }
         document.querySelectorAll('.step').forEach(d => d.classList.remove('active'));
         document.getElementById('step'+s).classList.add('active');
     }
 
-    const challenges = [
-        // EXTREME DATABASE - 75+ SCENARIOS
-        { g: "Male", r: ["Rope", "Tape", "Ball Gag"], t: 420, txt: "<b>Restraint:</b> Apply <b>Ball Gag</b> and seal lips with 3 layers of <b>Tape</b>. Use <b>Rope</b> to bind wrists to the scrotum in a 'short-leash' configuration. <br><b>Escape:</b> Subject must reach a key on a table using only the mouth while hands remain tied to the genitals." },
-        { g: "Female", r: ["Dildo", "Tape", "Pallet Wrap"], t: 600, txt: "<b>Restraint:</b> Tape a <b>Dildo</b> to a hard chair. Sit the subject and use <b>Pallet Wrap</b> to wind 10 layers around the torso and chair back. Wrap thighs together with <b>Tape</b>. <br><b>Escape:</b> Wriggle until the <b>Pallet Wrap</b> slips enough to stand up." },
-        { g: "Any", r: ["Straight Jacket", "Tape Blindfold", "Mouth Stuffed"], t: 540, txt: "<b>Restraint:</b> Stuff mouth with cloth and apply <b>Tape Gag</b>. Apply <b>Tape Blindfold</b>. Secure in <b>Straight Jacket</b>, arms cinched to maximum tension. <br><b>Escape:</b> Navigate a 10ft path and retrieve an object using only the teeth." },
-        { g: "Any", r: ["Pallet Wrap", "Bandages", "Spreader Bar"], t: 720, txt: "<b>Restraint:</b> Wrap wrists and ankles in <b>Bandages</b> for padding. Apply <b>Spreader Bar</b> to ankles. Wind <b>Pallet Wrap</b> from the bar up to the waist, encasing the legs in a solid block. <br><b>Escape:</b> Hop 20 feet without falling or tearing the wrap." },
-        { g: "Male", r: ["Cane", "Butt Plug", "Rope"], t: 300, txt: "<b>Restraint:</b> Insert <b>Butt Plug</b>. Bind wrists behind back with <b>Rope</b>. Subject receives 10 <b>Cane</b> strikes to the buttocks. <br><b>Escape:</b> Stand on one leg for 3 minutes without the plug falling or the other foot touching." },
-        { g: "Female", r: ["Clamps", "Floggers", "Rope"], t: 360, txt: "<b>Restraint:</b> Apply nipple <b>Clamps</b> tethered to <b>Rope</b> wrist cuffs behind the back. <br><b>Escape:</b> Endure 2 minutes of heavy <b>Flogger</b> work to the back. If a sound is made, the timer resets." },
-        { g: "Any", r: ["Leather Blindfold", "Wrap Around Gag", "Rope"], t: 480, txt: "<b>Restraint:</b> Apply <b>Leather Blindfold</b> and <b>Wrap Around Gag</b>. Tie ankles together with <b>Rope</b>, then run the rope up to the gag, pulling the head down. <br><b>Escape:</b> Untie the ankle knot using only the fingers while the head is pulled low." },
-        { g: "Any", r: ["Tape Gag", "Tape Blindfold", "Tape"], t: 300, txt: "<b>Restraint:</b> The 'Total Seal'. <b>Tape Blindfold</b> over cotton pads. <b>Tape Gag</b> covering the mouth and chin. <b>Tape</b> the hands into fists. <br><b>Escape:</b> Identify 5 different objects placed in the subject's lap by touch only." },
-        { g: "Male", r: ["Rope", "Spreader Bar"], t: 450, txt: "<b>Restraint:</b> <b>Spreader Bar</b> on ankles. <b>Rope</b> harness around the waist and genitals, pulling back toward the bar. Hands tied to the bar. <br><b>Escape:</b> Shuffle to a designated mark and back." },
-        { g: "Female", r: ["Bandages", "Tape", "Cloth Blindfold"], t: 500, txt: "<b>Restraint:</b> The 'Mummy'. Use <b>Bandages</b> to wrap the entire head and chest. Seal with <b>Tape</b>. Add <b>Cloth Blindfold</b> over the wrap. Arms taped to sides. <br><b>Escape:</b> Find a way to cut the tape using a safety-shears provided on the floor." }
-        // Note: For the sake of this code block, I have provided 10 highly detailed samples. 
-        // In the full 75 logic, the code procedurally generates similar variations.
+    // RANDOMIZER MODULES
+    const armMods = [
+        { r: "Rope", t: "Hands tied behind back using a <b>Rope</b> 'box tie'—elbows pulled together until they touch." },
+        { r: "Tape", t: "Hands taped into fists, then both wrists taped securely to the upper thighs using <b>Tape</b>." },
+        { r: "Straight Jacket", t: "Subject secured in <b>Straight Jacket</b>, sleeves pulled through the crotch strap and cinched tight." },
+        { r: "Pallet Wrap", t: "Arms pinned to the sides and encased in 15 layers of <b>Pallet Wrap</b> from shoulder to wrist." }
+    ];
+    const legMods = [
+        { r: "Spreader Bar", t: "Ankles locked into <b>Spreader Bar</b>. A <b>Rope</b> connects the bar to a collar, pulling knees up." },
+        { r: "Pallet Wrap", t: "Legs bound together from ankle to mid-thigh in a solid block of <b>Pallet Wrap</b>." },
+        { r: "Bandages", t: "Ankles wrapped in <b>Bandages</b>, then tied together with no gap. Knees tied together with <b>Rope</b>." }
+    ];
+    const headMods = [
+        { r: "Ball Gag", t: "<b>Ball Gag</b> applied and buckled at the last hole. <b>Leather Blindfold</b> secured over eyes." },
+        { r: "Tape Gag", t: "Mouth stuffed with cloth, then sealed with 4 horizontal strips of <b>Tape</b> across the face." },
+        { r: "Wrap Around Gag", t: "<b>Wrap Around Gag</b> applied, then <b>Pallet Wrap</b> wound 5 times around the entire head (nose exposed)." },
+        { r: "Tape Blindfold", t: "Cotton pads over eyes, sealed with <b>Tape Blindfold</b>. Earplugs inserted." }
+    ];
+    const genitalMods = [
+        { g: "Male", r: "Butt Plug", t: "<b>Butt Plug</b> inserted and tethered via <b>Rope</b> to the wrist bonds." },
+        { g: "Male", r: "Rope", t: "Genitals tied in a 'tension loop' with <b>Rope</b>, connected to an ankle cuff." },
+        { g: "Female", r: "Dildo", t: "<b>Dildo</b> taped to a chair seat. Subject must remain sat on it throughout the task." },
+        { g: "Female", r: "Butt Plug", t: "<b>Butt Plug</b> inserted. <b>Tape</b> strips applied in an 'X' over the labia to secure it." }
     ];
 
-    function generateChallenge() {
-        const sub = players[subIdx];
-        const valid = challenges.filter(c => (c.g === "Any" || c.g === sub.gen) && c.r.every(item => activeGear.includes(item)));
+    function generate() {
+        const sub = players[subI];
+        let parts = [];
         
-        if(valid.length === 0) {
-            document.getElementById('taskDisplay').innerHTML = "ERROR: Insufficient gear for current submissive. Add more items.";
-            return;
-        }
+        // Pick one mod for each category if gear is available
+        [armMods, legMods, headMods].forEach(pool => {
+            const valid = pool.filter(m => activeGear.includes(m.r));
+            if(valid.length) parts.push(valid[Math.floor(Math.random()*valid.length)].t);
+        });
+        
+        const gValid = genitalMods.filter(m => m.g === sub.gen && activeGear.includes(m.r));
+        if(gValid.length && Math.random() > 0.3) parts.push(gValid[Math.floor(Math.random()*gValid.length)].t);
 
-        const task = valid[Math.floor(Math.random() * valid.length)];
-        document.getElementById('taskDisplay').innerHTML = task.txt;
-        timer = task.t;
+        const tasks = [
+            "Escape the leg bonds and reach the far wall.",
+            "Untie the wrist knot using only the teeth.",
+            "Stand on a chair and balance for 5 minutes without falling.",
+            "Wriggle out of the Pallet Wrap completely.",
+            "Identify 3 objects placed on the floor by touch only."
+        ];
+
+        document.getElementById('taskBox').innerHTML = `
+            <span class="module-title">UPPER BODY</span> ${parts[0] || "None"}
+            <span class="module-title">LOWER BODY</span> ${parts[1] || "None"}
+            <span class="module-title">SENSORY</span> ${parts[2] || "None"}
+            <span class="module-title">GENITAL/CORE</span> ${parts[3] || "None"}
+            <span class="module-title">THE ESCAPE GOAL</span> ${tasks[Math.floor(Math.random()*tasks.length)]}
+        `;
+
+        secs = 480; // 8 Minute default
         document.getElementById('genBtn').style.display = 'none';
-        document.getElementById('readyBtn').style.display = 'block';
+        document.getElementById('startBtn').style.display = 'block';
     }
 
-    function startEscape() {
+    function useC(type) {
+        if(type === 'y') { [subI, domI] = [domI, subI]; cards.y = domI; }
+        else { cards.r = domI; generate(); }
+        updateUI();
+    }
+
+    function startClock() {
         document.getElementById('prepArea').style.display = 'none';
-        document.getElementById('escapeArea').style.display = 'block';
+        document.getElementById('playArea').style.display = 'block';
         clock = setInterval(() => {
-            timer--;
-            let m = Math.floor(timer/60), s = timer%60;
-            document.getElementById('timerDisplay').innerText = `${m}:${s<10?'0':''}${s}`;
-            if(timer <= 0) endRound(false);
+            secs--;
+            let m = Math.floor(secs/60), s = secs%60;
+            document.getElementById('timeDisp').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(secs <= 0) finish(false);
         }, 1000);
     }
 
-    function endRound(win) {
+    function finish(win) {
         clearInterval(clock);
-        alert(win ? "SUCCESS: Reward phase authorized." : "FAILURE: Punishment phase authorized.");
-        document.getElementById('escapeArea').style.display = 'none';
+        if(win) {
+            alert("SUCCESS! You earned the Master role.");
+            [subI, domI] = [domI, subI]; // Swap on success
+        } else {
+            alert("FAILURE. You remain the submissive.");
+            // No swap on failure
+        }
+        resetUI();
+    }
+
+    function resetUI() {
+        document.getElementById('playArea').style.display = 'none';
         document.getElementById('prepArea').style.display = 'block';
         document.getElementById('genBtn').style.display = 'block';
-        document.getElementById('readyBtn').style.display = 'none';
+        document.getElementById('startBtn').style.display = 'none';
+        updateUI();
     }
 
-    function rotateRoles() {
-        subIdx = (subIdx + 1) % players.length;
-        domIdx = (subIdx + 1) % players.length;
-        if(subIdx === domIdx) domIdx = (domIdx + 1) % players.length;
-        refreshUI();
-    }
-
-    function useCard(type) {
-        if(type === 'yellow') {
-            [subIdx, domIdx] = [domIdx, subIdx];
-            cards.yellow = domIdx;
-        } else {
-            cards.red = domIdx;
-            generateChallenge();
-        }
-        refreshUI();
-    }
-
-    function refreshUI() {
-        document.getElementById('roles').innerText = `DOM: ${players[domIdx].name} | SUB: ${players[subIdx].name}`;
-        document.getElementById('yCard').className = `card yellow ${cards.yellow !== subIdx ? 'disabled' : ''}`;
-        document.getElementById('rCard').className = `card red ${cards.red !== subIdx ? 'disabled' : ''}`;
+    function updateUI() {
+        document.getElementById('currentRoles').innerText = `MASTER: ${players[domI].name} | SUB: ${players[subI].name}`;
+        document.getElementById('yC').className = `card yellow ${cards.y !== subI ? 'disabled' : ''}`;
+        document.getElementById('rC').className = `card r ${cards.r !== subI ? 'disabled' : ''}`;
     }
 </script>
 </body>
