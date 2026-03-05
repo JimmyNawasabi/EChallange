@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Pro</title>
+    <title>Bound & Brave: Procedural</title>
     <style>
         :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; }
         body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -13,23 +13,23 @@
         .active { display: flex; flex-direction: column; }
         .setup-box { background: #000; padding: 15px; border-left: 4px solid var(--gold); margin-bottom: 15px; }
         label { color: var(--gold); font-size: 0.8em; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
-        input[type="text"], select { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: #fff; box-sizing: border-box; margin-bottom: 10px; }
+        input[type="text"], select, input[type="range"] { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: #fff; box-sizing: border-box; margin-bottom: 10px; }
         .status-board { display: flex; flex-direction: column; gap: 5px; margin-bottom: 20px; }
         .role-slot { display: flex; align-items: center; border: 1px solid #333; padding: 10px; background: #000; }
         .role-label { width: 120px; font-weight: bold; text-transform: uppercase; font-size: 0.75em; color: #888; border-right: 1px solid #333; margin-right: 15px; }
         .role-name { font-size: 1.4em; color: var(--gold); font-weight: bold; }
         .slot-sub { border: 1px solid var(--crimson); background: #1a0000; }
         .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-        .inv-item { background: #000; padding: 10px; border: 1px solid #222; font-size: 0.75em; display: flex; align-items: center; gap: 10px; cursor:pointer; }
+        .inv-item { background: #000; padding: 8px; border: 1px solid #222; font-size: 0.7em; display: flex; align-items: center; gap: 8px; cursor:pointer; }
         .fixed-footer { position: sticky; bottom: 0; background: #111; padding: 15px 0; border-top: 1px solid #333; margin-top: auto; z-index: 100; }
         .btn { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
         .card-zone { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
-        .card { flex: 1; height: 50px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; font-size: 0.75em; border-radius: 4px; cursor: pointer; color: #000; }
+        .card { flex: 1; height: 40px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; font-size: 0.7em; border-radius: 4px; cursor: pointer; color: #000; }
         .yellow { background: #ffd700; } .red { background: #ff4500; }
-        .challenge-card { background: #000; border: 1px solid #444; padding: 20px; line-height: 1.6; }
-        .mod-header { color: var(--gold); font-weight: bold; text-transform: uppercase; font-size: 0.8em; display: block; margin-top: 12px; border-bottom: 1px solid #222; }
-        .timer-val { font-size: 5em; color: #ff0000; font-family: 'Impact', sans-serif; text-align: center; margin: 10px 0; }
-        .difficulty-tag { display: inline-block; padding: 2px 8px; font-size: 0.7em; background: #333; color: #fff; margin-bottom: 10px; border-radius: 3px; }
+        .challenge-card { background: #000; border: 1px solid #444; padding: 20px; line-height: 1.6; font-size: 0.9em; }
+        .mod-header { color: var(--gold); font-weight: bold; text-transform: uppercase; font-size: 0.75em; display: block; margin-top: 10px; border-bottom: 1px solid #222; }
+        .timer-val { font-size: 4em; color: #ff0000; font-family: 'Impact', sans-serif; text-align: center; margin: 10px 0; }
+        .diff-meter { color: var(--gold); font-weight: bold; font-size: 0.8em; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -46,15 +46,18 @@
         <div class="setup-box">
             <label>Master Player</label>
             <input type="text" id="p2Name" placeholder="Name">
-            <select id="p2Gen"><option value="Male">Male Body</option><option value="Female">Female Body</option></select>
         </div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Inventory Setup ></button></div>
+        <div class="setup-box">
+            <label>Restraint Intensity (1 = Light, 5 = Brutal)</label>
+            <input type="range" id="intensity" min="1" max="5" value="3">
+        </div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Set Inventory ></button></div>
     </div>
 
     <div id="step2" class="step">
-        <label>Available Gear:</label>
+        <label>Available Materials:</label>
         <div class="inventory-grid" id="invList"></div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Start Game ></button></div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Lock Program ></button></div>
     </div>
 
     <div id="step3" class="step">
@@ -63,31 +66,31 @@
             <div class="role-slot slot-sub"><div class="role-label">Submissive</div><div class="role-name" id="subName">-</div></div>
         </div>
         <div class="card-zone">
-            <div class="card yellow" onclick="cardTrigger('y')">YELLOW CARD<br>Swap Roles</div>
-            <div class="card red" onclick="cardTrigger('r')">RED CARD<br>New Task</div>
+            <div class="card yellow" onclick="cardTrigger('y')">FORCE SWAP</div>
+            <div class="card red" onclick="cardTrigger('r')">REROLL TASK</div>
         </div>
         <div id="prepPhase">
-            <div class="challenge-card" id="taskBox">System Ready.</div>
-            <button class="btn" id="genBtn" onclick="generate()">Generate Random Predicament</button>
-            <button class="btn" id="startBtn" style="display:none;" onclick="showTimer()">Confirm Bonds: Start Clock</button>
+            <div class="challenge-card" id="taskBox">Ready for Command...</div>
+            <button class="btn" id="genBtn" onclick="generate()">Synthesize Challenge</button>
+            <button class="btn" id="startBtn" style="display:none;" onclick="showTimer()">Bonds Confirmed: Go</button>
         </div>
         <div id="timerPhase" style="display:none;">
             <div class="timer-val" id="timeDisp">00:00</div>
-            <button class="btn" onclick="resolve(true)">SUCCESS (Escape/Swap)</button>
+            <button class="btn" onclick="resolve(true)">SUCCESS (Earn Swap)</button>
             <button class="btn" style="background:#333; margin-top:10px;" onclick="resolve(false)">FAILURE (Stay Sub)</button>
         </div>
     </div>
 </div>
 
 <script>
-    const gearFull = ["Rope", "Tape", "Pallet Wrap", "Bandages", "Dildo", "Butt Plug", "Ball Gag", "Tape Gag", "Leather Blindfold", "Straight Jacket", "Spreader Bar", "Cuffs"];
+    const gearFull = ["Rope", "Tape", "Pallet Wrap", "Bandages", "Dildo", "Butt Plug", "Ball Gag", "Tape Gag", "Leather Blindfold", "Straight Jacket", "Spreader Bar", "Cuffs", "Chair"];
     let players = [], activeGear = [], subIdx = 0, domIdx = 1, clock, secs;
 
     function nav(s) {
         if(s===2) {
             players = [
                 { name: document.getElementById('p1Name').value || "P1", gen: document.getElementById('p1Gen').value },
-                { name: document.getElementById('p2Name').value || "P2", gen: document.getElementById('p2Gen').value }
+                { name: document.getElementById('p2Name').value || "P2" }
             ];
             const list = document.getElementById('invList');
             list.innerHTML = "";
@@ -101,82 +104,83 @@
         document.getElementById('step'+s).classList.add('active');
     }
 
-    // PREDICAMENT DATA
-    const arms = [
-        { r: "Rope", d: 2, t: "<b>Rope</b>: [M] must tie [S]'s wrists together behind their back, then loop the rope around their neck and back down to the wrists to pull their hands into a high-stress position." },
-        { r: "Tape", d: 2, t: "<b>Tape</b>: [M] must wrap [S]'s biceps to their torso, then tape [S]'s wrists together in front, creating a restrictive 'hugging' bind." },
-        { r: "Straight Jacket", d: 3, t: "<b>Straight Jacket</b>: [M] must secure [S] in the jacket. Use <b>Tape</b> to seal the sleeve ends together for zero finger movement." },
-        { r: "Pallet Wrap", d: 2, t: "<b>Pallet Wrap</b>: [M] must pin [S]'s elbows to their sides and encase the entire chest and arms in 10 tight layers." },
-        { r: "Cuffs", d: 1, t: "<b>Cuffs</b>: [M] must cuff [S]'s wrists behind the back and then loop a <b>Rope</b> from the cuffs, under the crotch, to a collar." }
-    ];
-    const legs = [
-        { r: "Spreader Bar", d: 3, t: "<b>Spreader Bar</b>: [M] must lock [S]'s ankles to the bar and pull the center of the bar up to [S]'s waist with a <b>Rope</b>." },
-        { r: "Tape", d: 2, t: "<b>Tape</b>: [M] must tape [S]'s knees together and ankles together, then wrap tape in a spiral from ankles to thighs." },
-        { r: "Pallet Wrap", d: 2, t: "<b>Pallet Wrap</b>: [M] must wrap [S]'s legs together into a single 'mermaid' limb using 15 layers of wrap." },
-        { r: "Rope", d: 2, t: "<b>Rope</b>: [M] must tie [S] in a 'Kneeling Box'—knees bent, ankles tied to the upper thighs, then tied to the wrists." }
-    ];
-    const head = [
-        { r: "Ball Gag", d: 1, t: "<b>Ball Gag</b>: [M] must buckle the gag on [S] at the tightest possible notch." },
-        { r: "Tape Gag", d: 2, t: "<b>Tape Gag</b>: [M] must stuff [S]'s mouth with cloth and seal it with 5 layers of vertical and horizontal <b>Tape</b>." },
-        { r: "Leather Blindfold", d: 1, t: "<b>Leather Blindfold</b>: [M] must secure the blindfold and use <b>Tape</b> to seal the edges against [S]'s skin." }
-    ];
-    const coreMale = [
-        { r: "Butt Plug", d: 1, t: "<b>Butt Plug</b>: [M] inserts the plug into [S] and tethers it to [S]'s wrist bonds with <b>Rope</b>." },
-        { r: "Rope", d: 2, t: "<b>Rope</b>: [M] must perform a 'Hogtie' variant, pulling [S]'s genitals into a tension harness connected to the ankles." }
-    ];
-    const coreFemale = [
-        { r: "Dildo", d: 2, t: "<b>Dildo</b>: [M] must <b>Tape</b> the dildo to the floor. [S] must be tied in a squat position over it." },
-        { r: "Butt Plug", d: 1, t: "<b>Butt Plug</b>: [M] inserts the plug and uses <b>Tape</b> to create an 'X' seal over the area to prevent removal." }
+    // GRAMMAR ENGINE DATA
+    const verbs = ["secure", "bind", "constrain", "wrap", "lock", "tether", "pin"];
+    const poses = ["lying face down", "kneeling", "seated on the floor", "standing against a wall", "lying face up", "bent over a chair"];
+    
+    const armMethods = [
+        "wrists to ankles in a 'hogtie' pattern",
+        "elbows together behind the back",
+        "wrists high on the shoulder blades",
+        "arms crossed over the chest and sealed to the ribs",
+        "hands pulled into the armpits"
     ];
 
-    const escapes = [
-        { o: "[S] must wriggle 8 feet across the floor to retrieve a key with their mouth.", d: 3 },
-        { o: "[S] must successfully free one arm from the bonds within the time limit.", d: 4 },
-        { o: "[S] must stand up from a lying position without using hands or knees.", d: 3 },
-        { o: "[S] must untie one <b>Rope</b> knot using only their teeth.", d: 5 },
-        { o: "[S] must endure 2 minutes of [M]'s choice of 'sensation' without making a loud sound.", d: 2 },
-        { o: "[S] must use their feet to open a door or drawer to find an escape tool.", d: 4 }
+    const legMethods = [
+        "ankles together and knees spread wide",
+        "knees pulled tight against the chest",
+        "ankles tied to the furniture nearby",
+        "toes taped together and ankles bound to thighs"
     ];
 
     function generate() {
-        const sub = players[subIdx];
-        const dom = players[domIdx];
-        let totalDifficulty = 0;
+        const sub = players[subIdx].name;
+        const dom = players[domIdx].name;
+        const gen = players[subIdx].gen;
+        const intens = parseInt(document.getElementById('intensity').value);
+        
+        let totalD = 0;
         let content = "";
+        let roll = () => Math.floor(Math.random() * 10);
 
-        // Randomly decide which zones to bind (not always all 4)
+        // PROCEDURE GENERATOR
         const zones = [
-            { pool: arms, chance: 0.9 }, // 90% chance arms are bound
-            { pool: legs, chance: 0.7 }, // 70% chance legs are bound
-            { pool: head, chance: 0.5 }, // 50% chance sensory/gag
-            { pool: sub.gen === "Male" ? coreMale : coreFemale, chance: 0.3 } // 30% chance genital/core
+            { id: "UPPER", gear: ["Rope", "Tape", "Straight Jacket", "Cuffs", "Pallet Wrap"], weight: 9 },
+            { id: "LOWER", gear: ["Rope", "Tape", "Spreader Bar", "Pallet Wrap"], weight: 7 },
+            { id: "SENSORY", gear: ["Ball Gag", "Tape Gag", "Leather Blindfold"], weight: 5 },
+            { id: "CORE", gear: ["Dildo", "Butt Plug", "Rope"], weight: 3 }
         ];
 
         zones.forEach((z, i) => {
-            if (Math.random() < z.chance) {
-                const valid = z.pool.filter(item => activeGear.includes(item.r));
-                if (valid.length) {
-                    const pick = valid[Math.floor(Math.random() * valid.length)];
-                    const label = ["UPPER BODY", "LOWER BODY", "SENSORY", "INTERNAL"][i];
-                    content += `<span class="mod-header">${label}</span> ${pick.t.replace("[M]", dom.name).replace("[S]", sub.name)}`;
-                    totalDifficulty += pick.d;
+            // Intensity Logic: High intensity = higher chance for more zones
+            if (roll() < (z.weight + intens - 3)) {
+                let avail = z.gear.filter(g => activeGear.includes(g));
+                if (avail.length > 0) {
+                    let g = avail[Math.floor(Math.random() * avail.length)];
+                    let v = verbs[Math.floor(Math.random() * verbs.length)];
+                    let p = poses[Math.floor(Math.random() * poses.length)];
+                    let m = (i === 0) ? armMethods[Math.floor(Math.random() * armMethods.length)] : 
+                            (i === 1) ? legMethods[Math.floor(Math.random() * legMethods.length)] : "thoroughly";
+                    
+                    // Special Gender Logic for Core
+                    if (z.id === "CORE" && gen === "Female" && g === "Rope") m = "tightly through the labia and up to the waist";
+                    if (z.id === "CORE" && gen === "Male" && g === "Rope") m = "around the scrotum and cinched to the wrists";
+
+                    content += `<span class="mod-header">${z.id} BODY</span> ${dom} must ${v} ${sub} using <b>${g}</b> while ${sub} is ${p}. The material must be applied ${m}.<br>`;
+                    totalD += (intens + 1);
                 }
             }
         });
 
-        // Pick Escape
-        const esc = escapes[Math.floor(Math.random() * escapes.length)];
-        content += `<span class="mod-header">ESCAPE GOAL</span> ${esc.o.replace("[M]", dom.name).replace("[S]", sub.name)}`;
-        totalDifficulty += esc.d;
+        // OBJECTIVE GENERATOR
+        const obs = [
+            { t: `${sub} must find and pull a string located 4 feet away using only their teeth.`, d: 3 },
+            { t: `${sub} must roll onto their side and stand up without using any bound limbs for balance.`, d: 5 },
+            { t: `${sub} must wriggle out of the <b>${activeGear[roll() % activeGear.length]}</b> layer without the help of ${dom}.`, d: 6 },
+            { t: `${sub} must navigate through an obstacle course of cushions to reach ${dom}.`, d: 4 },
+            { t: `${sub} must withstand ${intens} minutes of continuous tickling or sensation from ${dom} without a safe-word.`, d: 2 }
+        ];
+        let pickO = obs[Math.floor(Math.random() * obs.length)];
+        content += `<span class="mod-header">ESCAPE GOAL</span> ${pickO.t}`;
+        totalD += pickO.d;
 
-        // Dynamic Timer: 60 seconds per difficulty point + 120 base
-        secs = (totalDifficulty * 60) + 120;
-        
+        // DYNAMIC TIMER: Longer for higher intensity and more restraints
+        secs = (totalD * 45) + 60;
+
         document.getElementById('taskBox').innerHTML = `
-            <div class="difficulty-tag">Complexity Level: ${totalDifficulty}</div>
-            ${content || "The system rolled a free round. [S] is lucky. Try again or set a manual task."}
+            <div class="diff-meter">Complexity Score: ${totalD}</div>
+            ${content}
         `;
-        
         document.getElementById('genBtn').style.display = 'none';
         document.getElementById('startBtn').style.display = 'block';
     }
@@ -195,16 +199,16 @@
     function resolve(success) {
         clearInterval(clock);
         if(success) {
-            alert(`SUCCESS! ${players[subIdx].name} has earned the Master role.`);
-            const t = subIdx; subIdx = domIdx; domIdx = t;
+            alert("SUCCESS! Roles are now Swapped.");
+            let t = subIdx; subIdx = domIdx; domIdx = t;
         } else {
-            alert(`FAILURE! ${players[subIdx].name} remains the Submissive.`);
+            alert("FAILURE! Position retained.");
         }
         reset();
     }
 
     function cardTrigger(type) {
-        if(type === 'y') { const t = subIdx; subIdx = domIdx; domIdx = t; updateBoard(); }
+        if(type === 'y') { let t = subIdx; subIdx = domIdx; domIdx = t; updateBoard(); }
         else generate();
     }
 
