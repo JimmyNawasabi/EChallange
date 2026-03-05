@@ -44,13 +44,14 @@
 
     <div id="step1" class="step active">
         <div class="setup-box">
-            <label>Submissive Player</label>
+            <label>Player One (Submissive Start)</label>
             <input type="text" id="p1Name" placeholder="Name">
             <select id="p1Gen"><option value="Male">Male Body</option><option value="Female">Female Body</option></select>
         </div>
         <div class="setup-box">
-            <label>Master Player</label>
+            <label>Player Two (Master Start)</label>
             <input type="text" id="p2Name" placeholder="Name">
+            <select id="p2Gen"><option value="Male">Male Body</option><option value="Female">Female Body</option></select>
         </div>
         <div class="setup-box">
             <label>Chaos Level (Intensity: 1-10)</label>
@@ -95,18 +96,21 @@
     let players = [], activeGear = [], subIdx = 0, domIdx = 1, clock, secs;
     let cards = { y: 1, r: 1 };
 
-    // MATRIX POOLS
-    const m_action = ["retrieve", "manipulate", "extinguish", "activate", "displace", "unfasten", "traverse to", "ring", "consume", "pull"];
-    const m_object = ["a metal key", "a singular coin", "a vibrating device", "a small bell", "a piece of fruit", "a specific knot", "a light switch", "a bowl of water", "a weighted bag"];
-    const m_limiter = ["using only teeth", "with toes only", "by friction only", "without knees touching the floor", "while keeping eyes sealed", "blindly", "using only chin and chest", "with zero vocalization"];
-    const m_location = ["under a chair", "on a high shelf", "taped to the floor", "dangling from a doorway", "behind the Master's back", "across a 10ft distance", "inside a locked box"];
+    // THE MATRIX: Procedural Elements
+    const m_action = ["retrieve", "manipulate", "extinguish", "activate", "displace", "unfasten", "traverse to", "ring", "consume", "pull", "unlock", "vibrate", "tilt", "collect"];
+    const m_object = ["a metal key", "a singular coin", "a vibrating device", "a small bell", "a piece of fruit", "a specific knot", "a light switch", "a bowl of water", "a weighted bag", "a magnetic card", "a marble"];
+    const m_limiter = ["using only teeth", "with toes only", "by friction only", "without knees touching the floor", "while keeping eyes sealed", "blindly", "using only chin and chest", "with zero vocalization", "with ankles locked", "while lying flat"];
+    const m_location = ["under a chair", "on a high shelf", "taped to the floor", "dangling from a doorway", "behind the Master's back", "across a 10ft distance", "inside a locked box", "placed on the Master's lap"];
 
-    const m_bondStyle = ["spiral wrap", "tight cinch", "criss-cross harness", "mummy-style encasement", "suspension-tether", "figure-eight bind"];
-    const m_posture = ["kneeling", "prostrate", "seated", "arched", "fetal position", "standing on tip-toes"];
+    const m_bondStyle = ["spiral wrap", "tight cinch", "criss-cross harness", "mummy-style encasement", "suspension-tether", "figure-eight bind", "asymmetric lock", "web-style weave"];
+    const m_posture = ["kneeling", "prostrate", "seated", "arched", "fetal position", "standing on tip-toes", "bent double", "side-lying"];
 
     function nav(s) {
         if(s===2) {
-            players = [{ name: document.getElementById('p1Name').value || "P1", gen: document.getElementById('p1Gen').value }, { name: document.getElementById('p2Name').value || "P2" }];
+            players = [
+                { name: document.getElementById('p1Name').value || "P1", gen: document.getElementById('p1Gen').value }, 
+                { name: document.getElementById('p2Name').value || "P2", gen: document.getElementById('p2Gen').value }
+            ];
             const list = document.getElementById('invList');
             list.innerHTML = "";
             gearFull.forEach(g => list.innerHTML += `<div class="inv-item"><input type="checkbox" value="${g}" checked> ${g}</div>`);
@@ -121,8 +125,8 @@
     }
 
     function generate() {
-        const sub = players[subIdx].name;
-        const dom = players[domIdx].name;
+        const sub = players[subIdx];
+        const dom = players[domIdx];
         const chaos = parseInt(document.getElementById('intensity').value);
         let content = "";
         let difficulty = 0;
@@ -135,18 +139,19 @@
                 let style = m_bondStyle[Math.floor(Math.random()*m_bondStyle.length)];
                 let pose = m_posture[Math.floor(Math.random()*m_posture.length)];
                 
-                content += `<span class="mod-header">${z} BODY</span> ${dom} must implement a <b>${style}</b> on ${sub}'s ${z.toLowerCase()} using <b>${g}</b>. ${sub} must remain in a <b>${pose}</b> position during application.<br>`;
+                // Specific Gender logic for Core
+                let extra = "";
+                if(z === "CORE") {
+                    if(sub.gen === "Female") extra = " Ensure the material passes through the labia to secure the bond.";
+                    else extra = " Ensure the material provides upward tension on the scrotum.";
+                }
+
+                content += `<span class="mod-header">${z} BODY</span> ${dom.name} must implement a <b>${style}</b> on ${sub.name}'s ${z.toLowerCase()} using <b>${g}</b>. ${sub.name} must be in a <b>${pose}</b> position.${extra}<br>`;
                 difficulty += (chaos * 0.5) + 2;
             }
         });
 
-        // Combinatorial Objective
-        const act = m_action[Math.floor(Math.random()*m_action.length)];
-        const obj = m_object[Math.floor(Math.random()*m_object.length)];
-        const lim = m_limiter[Math.floor(Math.random()*m_limiter.length)];
-        const loc = m_location[Math.floor(Math.random()*m_location.length)];
-        
-        const objective = `${sub} must **${act}** **${obj}** **${lim}**. The target is **${loc}**.`;
+        const objective = `${sub.name} must **${m_action[Math.floor(Math.random()*m_action.length)]}** **${m_object[Math.floor(Math.random()*m_object.length)]}** **${m_limiter[Math.floor(Math.random()*m_limiter.length)]}**. The target is **${m_location[Math.floor(Math.random()*m_location.length)]}**.`;
         
         content += `<span class="mod-header">UNIQUE OBJECTIVE</span> ${objective}`;
         difficulty += (chaos * 1.5);
@@ -166,10 +171,10 @@
     function resolve(success) {
         clearInterval(clock);
         if(success) {
-            alert(`SUCCESS! ${players[subIdx].name} has overcome the predicament and takes Mastery.`);
+            alert(`SUCCESS! ${players[subIdx].name} takes Mastery.`);
             swapRoles();
         } else {
-            alert(`FAILURE! ${players[subIdx].name} remains in subjection.`);
+            alert(`FAILURE! ${players[subIdx].name} remains bound.`);
             reset();
         }
     }
@@ -177,7 +182,7 @@
     function swapRoles() {
         subIdx = subIdx === 0 ? 1 : 0;
         domIdx = domIdx === 0 ? 1 : 0;
-        cards.y = domIdx; cards.r = domIdx; // Cards move to the new Master
+        cards.y = domIdx; cards.r = domIdx; 
         reset();
     }
 
