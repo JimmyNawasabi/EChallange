@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Infinite Logic</title>
+    <title>Bound & Brave: Physical Logic</title>
     <style>
         :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; }
         body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -46,30 +46,24 @@
         <div class="setup-box">
             <label>Player One (Submissive Start)</label>
             <input type="text" id="p1Name" placeholder="Name">
-            <select id="p1Gen">
-                <option value="Male">Male Body</option>
-                <option value="Female">Female Body</option>
-            </select>
+            <select id="p1Gen"><option value="Male">Male Body</option><option value="Female">Female Body</option></select>
         </div>
         <div class="setup-box">
             <label>Player Two (Master Start)</label>
             <input type="text" id="p2Name" placeholder="Name">
-            <select id="p2Gen">
-                <option value="Male">Male Body</option>
-                <option value="Female">Female Body</option>
-            </select>
+            <select id="p2Gen"><option value="Male">Male Body</option><option value="Female">Female Body</option></select>
         </div>
         <div class="setup-box">
-            <label>Complexity Level (1-10)</label>
+            <label>Session Intensity (1-10)</label>
             <input type="range" id="intensity" min="1" max="10" value="5">
         </div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Choose Tools ></button></div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Inventory Configuration ></button></div>
     </div>
 
     <div id="step2" class="step">
-        <label>Toggle Materials:</label>
+        <label>Available Gear:</label>
         <div class="inventory-grid" id="invList"></div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Enter Session ></button></div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Enter Dungeon ></button></div>
     </div>
 
     <div id="step3" class="step">
@@ -77,18 +71,15 @@
             <div class="role-slot"><div class="role-label">Master</div><div class="role-name" id="masterName">-</div></div>
             <div class="role-slot slot-sub"><div class="role-label">Submissive</div><div class="role-name" id="subName">-</div></div>
         </div>
-        
         <div class="card-zone">
             <div class="card-wrap"><div class="card yellow" onclick="cardTrigger('y')">YELLOW CARD</div><div class="owner-tag" id="yOwner">-</div></div>
             <div class="card-wrap"><div class="card red" onclick="cardTrigger('r')">RED CARD</div><div class="owner-tag" id="rOwner">-</div></div>
         </div>
-
         <div id="prepPhase">
-            <div class="challenge-card" id="taskBox">Ready for synthesis.</div>
-            <button class="btn" id="genBtn" onclick="generate()">Synthesize Challenge</button>
-            <button class="btn" id="startBtn" style="display:none;" onclick="showTimer()">Confirmed: Start Timer</button>
+            <div class="challenge-card" id="taskBox">Awaiting configuration...</div>
+            <button class="btn" id="genBtn" onclick="generate()">Generate Task</button>
+            <button class="btn" id="startBtn" style="display:none;" onclick="showTimer()">Confirm & Start Clock</button>
         </div>
-
         <div id="timerPhase" style="display:none;">
             <div class="timer-val" id="timeDisp">00:00</div>
             <button class="btn" onclick="resolve(true)">SUCCESS (Swap Roles)</button>
@@ -98,16 +89,27 @@
 </div>
 
 <script>
-    const gearFull = ["Rope", "Tape", "Pallet Wrap", "Bandages", "Dildo", "Butt Plug", "Ball Gag", "Tape Gag", "Blindfold", "Cuffs", "Chain", "Spreader Bar"];
+    const gearFull = ["Rope", "Tape", "Pallet Wrap", "Dildo", "Butt Plug", "Ball Gag", "Tape Gag", "Blindfold", "Cuffs", "Spreader Bar"];
     let players = [], activeGear = [], subIdx = 0, domIdx = 1, clock, secs;
     let cards = { y: 1, r: 1 };
 
-    const matrix = {
-        actions: ["dislodge", "extinguish", "drag", "press", "unravel", "retrieve", "flip", "ring", "consume", "tilt", "navigate past"],
-        objects: ["a singular coin", "a lit candle", "a weighted bag", "a remote control", "a small bell", "a piece of fruit", "a key on a string", "a bowl of ice", "a magnetic card"],
-        limiters: ["using only teeth", "with toes only", "by friction alone", "blindly", "without knees touching the ground", "using only chin/chest", "with zero vocalization", "while propped up", "while keeping hips still"],
-        locations: ["on a high shelf", "taped to the far wall", "placed 8ft away", "under a chair", "hidden behind the Master", "dangling from a ceiling hook", "inside a locked container"]
+    // ITEM-RELATIVE LOGIC MAP
+    const gearLogic = {
+        "Rope": { verb: "tie", pattern: "into a complex harness", difficult: 4 },
+        "Tape": { verb: "wrap and seal", pattern: "in 10 tight layers", difficult: 3 },
+        "Pallet Wrap": { verb: "mummify", pattern: "until all mobility is lost", difficult: 3 },
+        "Cuffs": { verb: "lock", pattern: "behind the back as tight as possible", difficult: 2 },
+        "Spreader Bar": { verb: "lock the ankles into", pattern: "extending the legs to the max width", difficult: 5 }
     };
+
+    const physicalObjectives = [
+        { act: "retrieve", obj: "a small key", tool: "their teeth", loc: "from a bowl on the floor" },
+        { act: "extinguish", obj: "a candle", tool: "one sharp puff of breath", loc: "placed 4 feet away" },
+        { act: "drag", obj: "a weighted bag", tool: "their ankles", loc: "across a marked 5ft line" },
+        { act: "press", obj: "a buzzer/bell", tool: "their chin", loc: "mounted at knee-height" },
+        { act: "unravel", obj: "a single rope knot", tool: "their mouth", loc: "tied to a chair leg" },
+        { act: "tip over", obj: "a cup of water", tool: "their head", loc: "sitting on a low stool" }
+    ];
 
     function nav(s) {
         if(s===2) {
@@ -133,52 +135,53 @@
         const dom = players[domIdx];
         const chaos = parseInt(document.getElementById('intensity').value);
         let content = "";
-        let difficulty = 0;
+        let totalD = 0;
 
-        // BINDING LOGIC
-        ["UPPER", "LOWER", "SENSORY", "CORE"].forEach((zone, i) => {
-            if (Math.random() * 10 < (chaos + 2)) {
-                let avail = gearFull.filter(g => activeGear.includes(g));
-                let tool = avail[Math.floor(Math.random() * avail.length)];
+        // BINDING PHASE
+        const zones = ["UPPER", "LOWER", "SENSORY", "CORE"];
+        zones.forEach(z => {
+            if (Math.random() * 10 < (chaos + 1)) {
+                let pool = activeGear.filter(g => gearLogic[g] || g.includes("Gag") || g.includes("Blindfold") || g.includes("Plug") || g.includes("Dildo"));
+                let tool = pool[Math.floor(Math.random()*pool.length)];
                 
-                let extra = "";
-                if(zone === "CORE") {
-                    extra = sub.gen === "Female" ? " Use vertical tension through the labia." : " Use upward tension on the scrotum.";
+                if (gearLogic[tool]) {
+                    content += `<span class="mod-header">${z}</span> ${dom.name} must ${gearLogic[tool].verb} ${sub.name}'s ${z.toLowerCase()} ${gearLogic[tool].pattern} using <b>${tool}</b>.<br>`;
+                    totalD += gearLogic[tool].difficult;
+                } else if (z === "SENSORY" && (tool.includes("Gag") || tool === "Blindfold")) {
+                    content += `<span class="mod-header">SENSORY</span> ${dom.name} must secure the <b>${tool}</b> on ${sub.name}, ensuring no light/speech is possible.<br>`;
+                    totalD += 2;
+                } else if (z === "CORE" && (tool.includes("Plug") || tool === "Dildo")) {
+                    let anatomy = sub.gen === "Female" ? "labia" : "scrotum";
+                    content += `<span class="mod-header">CORE</span> ${dom.name} must insert the ${tool} and use <b>Tape</b> to seal it in place against the ${anatomy}.<br>`;
+                    totalD += 4;
                 }
-
-                content += `<span class="mod-header">${zone} BODY</span> ${dom.name} must bind ${sub.name}'s ${zone.toLowerCase()} using <b>${tool}</b>. Apply in a complex, restrictive pattern.${extra}<br>`;
-                difficulty += (chaos * 0.5) + 3;
             }
         });
 
-        // OBJECTIVE SYNTHESIS
-        const act = matrix.actions[Math.floor(Math.random()*matrix.actions.length)];
-        const obj = matrix.objects[Math.floor(Math.random()*matrix.objects.length)];
-        const lim = matrix.limiters[Math.floor(Math.random()*matrix.limiters.length)];
-        const loc = matrix.locations[Math.floor(Math.random()*matrix.locations.length)];
-        
-        content += `<span class="mod-header">PROCEDURAL OBJECTIVE</span> ${sub.name} must <b>${act}</b> <b>${obj}</b> <b>${lim}</b>. The target is <b>${loc}</b>.`;
-        difficulty += (chaos * 1.5);
+        // OBJECTIVE PHASE (Logic check: ensure it's physically relevant)
+        const task = physicalObjectives[Math.floor(Math.random() * physicalObjectives.length)];
+        content += `<span class="mod-header">OBJECTIVE</span> ${sub.name} must **${task.act}** **${task.obj}** **using ${task.tool}**. Target is **${task.loc}**.`;
+        totalD += 5;
 
-        secs = Math.floor((difficulty * 45) + 60);
+        secs = Math.floor((totalD * 40 * (chaos/5)) + 120);
         document.getElementById('taskBox').innerHTML = content;
         document.getElementById('genBtn').style.display = 'none';
         document.getElementById('startBtn').style.display = 'block';
     }
 
     function cardTrigger(type) {
-        const ownerName = players[type === 'y' ? cards.y : cards.r].name;
-        alert(`${ownerName} has used the ${type==='y'?'Yellow':'Red'} Card!`);
+        const owner = type === 'y' ? cards.y : cards.r;
+        alert(`${players[owner].name} uses the ${type==='y'?'Yellow':'Red'} Card!`);
         if (type === 'y') swapRoles(); else generate();
     }
 
     function resolve(success) {
         clearInterval(clock);
         if(success) {
-            alert(`SUCCESS! ${players[subIdx].name} takes Mastery.`);
+            alert(`SUCCESS! ${players[subIdx].name} takes the Master role.`);
             swapRoles();
         } else {
-            alert(`FAILURE! ${players[subIdx].name} remains bound.`);
+            alert(`FAILURE! ${players[subIdx].name} stays the Submissive.`);
             reset();
         }
     }
@@ -186,7 +189,7 @@
     function swapRoles() {
         subIdx = subIdx === 0 ? 1 : 0;
         domIdx = domIdx === 0 ? 1 : 0;
-        cards.y = domIdx; cards.r = domIdx; 
+        cards.y = domIdx; cards.r = domIdx;
         reset();
     }
 
