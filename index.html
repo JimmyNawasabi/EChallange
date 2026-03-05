@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The Bound & The Brave: Escape Engine</title>
+    <style>
+        body { background: #1a1a1a; color: #e0e0e0; font-family: 'Georgia', serif; padding: 20px; text-align: center; }
+        .container { max-width: 800px; margin: auto; border: 2px solid #800000; padding: 20px; border-radius: 10px; }
+        h1 { color: #ff0000; text-transform: uppercase; letter-spacing: 5px; }
+        .challenge-box { background: #2b2b2b; padding: 20px; margin: 20px 0; border-left: 5px solid #ff0000; min-height: 150px; }
+        button { background: #800000; color: white; border: none; padding: 10px 20px; cursor: pointer; font-size: 1.1em; }
+        button:hover { background: #ff0000; }
+        .timer { font-size: 2em; color: #ff0000; font-weight: bold; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>The Escape Engine</h1>
+    
+    <div id="setup">
+        <h3>Inventory Check</h3>
+        <p>Select your available tools:</p>
+        <input type="checkbox" id="rope"> Rope/Cuffs 
+        <input type="checkbox" id="gag"> Gags 
+        <input type="checkbox" id="blindfold"> Blindfolds 
+        <input type="checkbox" id="impact"> Impact Toys
+        <br><br>
+        <button onclick="startGame()">Commence the Session</button>
+    </div>
+
+    <div id="game-screen" class="hidden">
+        <div class="timer" id="timerDisplay">60:00</div>
+        <div class="challenge-box" id="challengeArea">
+            Click "Next Challenge" to begin your restraint phase.
+        </div>
+        <button onclick="generateChallenge()">New Challenge</button>
+        <button onclick="failTask()">Task Failed (Punishment)</button>
+        <button onclick="completeTask()">Task Success (Reward)</button>
+    </div>
+</div>
+
+<script>
+    let timeLeft = 3600;
+    const challenges = [
+        { text: "Restraint: Hogtie using 15ft of rope. Gag: Ball gag secured with a secondary lock.", type: "rope" },
+        { text: "Task: Retrieve a key from the bottom of a bowl of ice using only your mouth.", type: "gag" },
+        { text: "Sensory: Heavy blindfold applied. Must navigate the room by sound only.", type: "blindfold" },
+        { text: "Punishment: 10 strikes with a heavy paddle to the thighs.", type: "impact" },
+        // ... You would populate this list to 75 items
+    ];
+
+    function startGame() {
+        document.getElementById('setup').classList.add('hidden');
+        document.getElementById('game-screen').classList.remove('hidden');
+        startTimer();
+    }
+
+    function startTimer() {
+        setInterval(() => {
+            if(timeLeft > 0) {
+                timeLeft--;
+                let mins = Math.floor(timeLeft / 60);
+                let secs = timeLeft % 60;
+                document.getElementById('timerDisplay').innerText = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            }
+        }, 1000);
+    }
+
+    function generateChallenge() {
+        const randomElement = challenges[Math.floor(Math.random() * challenges.length)];
+        document.getElementById('challengeArea').innerText = randomElement.text;
+    }
+
+    function failTask() {
+        alert("PUNISHMENT: Add 1 extra restraint of the captor's choice.");
+    }
+
+    function completeTask() {
+        alert("REWARD: 5 minutes removed from the total time or 1 item of gear removed.");
+    }
+</script>
+</body>
+</html>
