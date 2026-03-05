@@ -3,35 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Persistence</title>
+    <title>Bound & Brave: Meritocracy</title>
     <style>
-        :root { --crimson: #7b0000; --gold: #b38b4d; --bg: #050505; --panel: #111; }
-        body { background: var(--bg); color: #ccc; font-family: 'Courier New', monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .container { max-width: 600px; width: 100%; background: var(--panel); border: 1px solid #333; padding: 20px; box-shadow: 0 0 50px #000; display: flex; flex-direction: column; min-height: 95vh; }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; margin: 0 0 15px 0; border-bottom: 2px solid var(--crimson); }
+        :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; }
+        body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .container { max-width: 600px; width: 100%; background: #111; border: 2px solid #333; padding: 20px; box-shadow: 0 0 30px #000; display: flex; flex-direction: column; min-height: 95vh; }
         
-        .step { display: none; flex-grow: 1; overflow-y: auto; padding-bottom: 100px; }
+        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; border-bottom: 2px solid var(--crimson); padding-bottom: 10px; margin: 0 0 15px 0; }
+        
+        .step { display: none; flex-grow: 1; overflow-y: auto; padding-bottom: 80px; }
         .active { display: flex; flex-direction: column; }
 
-        .player-row { background: #000; padding: 12px; margin-bottom: 10px; border: 1px solid #222; }
-        label { color: var(--gold); font-size: 0.8em; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        input[type="text"], select { width: 100%; padding: 10px; background: #0a0a0a; border: 1px solid #444; color: #fff; margin-bottom: 5px; box-sizing: border-box; }
+        .setup-box { background: #000; padding: 15px; border-left: 4px solid var(--gold); margin-bottom: 15px; }
+        label { color: var(--gold); font-size: 0.8em; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
+        input[type="text"], select { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: #fff; box-sizing: border-box; margin-bottom: 10px; }
 
-        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .gear-item { background: #000; padding: 8px; border: 1px solid #222; font-size: 0.75em; display: flex; align-items: center; gap: 8px; }
+        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+        .inv-item { background: #000; padding: 10px; border: 1px solid #222; font-size: 0.75em; display: flex; align-items: center; gap: 10px; }
 
-        .fixed-footer { position: sticky; bottom: 0; background: var(--panel); padding: 15px 0; border-top: 1px solid #333; margin-top: auto; z-index: 100; }
-        .btn { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        .fixed-footer { position: sticky; bottom: 0; background: #111; padding: 15px 0; border-top: 1px solid #333; margin-top: auto; z-index: 100; }
+        .btn { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
 
-        .challenge-card { background: #000; border: 1px solid var(--crimson); padding: 20px; margin: 15px 0; line-height: 1.6; color: #fff; }
-        .module-title { color: var(--gold); font-weight: bold; display: block; border-bottom: 1px solid #222; margin-top: 10px; }
-        .timer { font-size: 5em; color: #ff0000; text-align: center; font-family: Impact; margin: 10px 0; }
-        .banner { text-align: center; color: var(--gold); padding: 8px; background: #000; border: 1px solid #333; margin-bottom: 10px; font-size: 0.9em; }
-        
+        .role-header { text-align: center; background: #222; border: 1px solid var(--gold); padding: 15px; margin-bottom: 15px; }
+        .role-header span { display: block; font-size: 0.8em; color: #888; text-transform: uppercase; }
+        .role-header b { font-size: 1.4em; color: var(--gold); }
+
         .card-zone { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
-        .card { flex: 1; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; border-radius: 3px; font-size: 0.8em; cursor: pointer; }
-        .yellow { background: #e6b800; } .red { background: #a00; color: #fff; }
-        .disabled { opacity: 0.1; pointer-events: none; }
+        .card { flex: 1; height: 60px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; font-size: 0.75em; border-radius: 4px; cursor: pointer; color: #000; }
+        .yellow { background: #ffd700; }
+        .red { background: #ff4500; }
+        .disabled { opacity: 0.1; pointer-events: none; filter: grayscale(1); }
+
+        .challenge-card { background: #000; border: 1px solid #444; padding: 20px; line-height: 1.6; }
+        .mod-header { color: var(--gold); font-weight: bold; text-transform: uppercase; font-size: 0.8em; display: block; margin-top: 12px; border-bottom: 1px solid #222; }
+        
+        .timer-val { font-size: 5em; color: #ff0000; font-family: 'Impact', sans-serif; text-align: center; margin: 20px 0; text-shadow: 0 0 15px #600; }
     </style>
 </head>
 <body>
@@ -40,174 +46,165 @@
     <h1>Bound & Brave</h1>
 
     <div id="step1" class="step active">
-        <label>Player Count:</label>
-        <select id="pCount" onchange="initSetup()">
-            <option value="2">2 Players</option>
-            <option value="3">3 Players</option>
-        </select>
-        <div id="pNames"></div>
+        <div class="setup-box">
+            <label>Player 1 (Initial Submissive)</label>
+            <input type="text" id="p1Name" placeholder="Name">
+            <select id="p1Gen"><option value="Male">Male Body</option><option value="Female">Female Body</option></select>
+        </div>
+        <div class="setup-box">
+            <label>Player 2 (Initial Master)</label>
+            <input type="text" id="p2Name" placeholder="Name">
+            <select id="p2Gen"><option value="Male">Male Body</option><option value="Female">Female Body</option></select>
+        </div>
         <div class="fixed-footer"><button class="btn" onclick="nav(2)">Inventory Setup ></button></div>
     </div>
 
     <div id="step2" class="step">
-        <label>Check Available Restraints:</label>
-        <div class="inventory-grid" id="gearList"></div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Begin Sequence ></button></div>
+        <label>Select Available Assets:</label>
+        <div class="inventory-grid" id="invList"></div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Start Simulation ></button></div>
     </div>
 
     <div id="step3" class="step">
-        <div class="banner" id="currentRoles"></div>
+        <div class="role-header">
+            <div id="masterDisplay"><span>Master</span><b>-</b></div>
+            <div style="margin: 10px 0; border-top: 1px solid #333;"></div>
+            <div id="subDisplay"><span>Submissive</span><b>-</b></div>
+        </div>
         
         <div class="card-zone">
-            <div id="yC" class="card yellow" onclick="useC('y')">YELLOW: SWAP</div>
-            <div id="rC" class="card red" onclick="useC('r')">RED: PASS</div>
+            <div id="yCard" class="card yellow" onclick="cardTrigger('y')">YELLOW CARD<br>Instant Swap</div>
+            <div id="rCard" class="card red" onclick="cardTrigger('r')">RED CARD<br>Skip Challenge</div>
         </div>
 
-        <div id="prepArea">
-            <div class="challenge-card" id="taskBox">Awaiting data...</div>
-            <button class="btn" id="genBtn" onclick="generate()">Generate Extreme Sequence</button>
-            <button class="btn" id="startBtn" style="display:none;" onclick="startClock()">Restraints Secure: Start Timer</button>
+        <div id="prepPhase">
+            <div class="challenge-card" id="taskBox">Ready for instruction.</div>
+            <button class="btn" id="genBtn" onclick="generate()">Generate Extreme Task</button>
+            <button class="btn" id="startBtn" style="display:none;" onclick="showTimer()">Ready: Start Clock</button>
         </div>
 
-        <div id="playArea" style="display:none;">
-            <div class="timer" id="timeDisp">00:00</div>
-            <button class="btn" onclick="finish(true)">ESCAPED (Switch Roles)</button>
-            <button class="btn" style="background:#333; margin-top:10px;" onclick="finish(false)">FAILED (Stay Submissive)</button>
+        <div id="timerPhase" style="display:none;">
+            <div class="timer-val" id="timeDisp">00:00</div>
+            <button class="btn" onclick="resolve(true)">SUCCESS (Swap Roles)</button>
+            <button class="btn" style="background:#333; margin-top:10px;" onclick="resolve(false)">FAILURE (Stay Submissive)</button>
         </div>
     </div>
 </div>
 
 <script>
     const gearFull = ["Rope", "Tape", "Pallet Wrap", "Bandages", "Floggers", "Cane", "Dildo", "Butt Plug", "Ball Gag", "Over-the-mouth Gag", "Tape Gag", "Wrap Around Gag", "Mouth Stuffed", "Open Mouth Gag", "Cloth Blindfold", "Tape Blindfold", "Leather Blindfold", "Straight Jacket", "Spreader Bar"];
-    let players = [], activeGear = [], subI = 0, domI = 1, cards = { y: 0, r: 0 }, clock, secs;
-
-    function initSetup() {
-        const c = document.getElementById('pCount').value;
-        const div = document.getElementById('pNames');
-        div.innerHTML = "";
-        for(let i=0; i<c; i++) {
-            div.innerHTML += `<div class="player-row"><label>Player ${i+1}</label><input type="text" id="n${i}" placeholder="Name"><select id="g${i}"><option value="Male">Male Body</option><option value="Female">Female Body</option></select></div>`;
-        }
-    }
-    initSetup();
+    let players = [], activeGear = [], subIdx = 0, domIdx = 1, clock, secs, cardOwner = { y: 0, r: 0 };
 
     function nav(s) {
         if(s===2) {
-            players = Array.from({length: document.getElementById('pCount').value}, (_, i) => ({
-                name: document.getElementById('n'+i).value || "P"+(i+1), gen: document.getElementById('g'+i).value
-            }));
-            const list = document.getElementById('gearList');
+            players = [
+                { name: document.getElementById('p1Name').value || "Unit 1", gen: document.getElementById('p1Gen').value },
+                { name: document.getElementById('p2Name').value || "Unit 2", gen: document.getElementById('p2Gen').value }
+            ];
+            const list = document.getElementById('invList');
             list.innerHTML = "";
-            gearFull.forEach(g => list.innerHTML += `<div class="gear-item"><input type="checkbox" value="${g}" checked> ${g}</div>`);
+            gearFull.forEach(g => list.innerHTML += `<div class="inv-item"><input type="checkbox" value="${g}" checked> ${g}</div>`);
         }
         if(s===3) {
-            activeGear = Array.from(document.querySelectorAll('#gearList input:checked')).map(i => i.value);
+            activeGear = Array.from(document.querySelectorAll('#invList input:checked')).map(i => i.value);
             updateUI();
         }
         document.querySelectorAll('.step').forEach(d => d.classList.remove('active'));
         document.getElementById('step'+s).classList.add('active');
     }
 
-    // RANDOMIZER MODULES
-    const armMods = [
-        { r: "Rope", t: "Hands tied behind back using a <b>Rope</b> 'box tie'—elbows pulled together until they touch." },
-        { r: "Tape", t: "Hands taped into fists, then both wrists taped securely to the upper thighs using <b>Tape</b>." },
-        { r: "Straight Jacket", t: "Subject secured in <b>Straight Jacket</b>, sleeves pulled through the crotch strap and cinched tight." },
-        { r: "Pallet Wrap", t: "Arms pinned to the sides and encased in 15 layers of <b>Pallet Wrap</b> from shoulder to wrist." }
+    const armLib = [
+        { r: "Rope", t: "<b>Rope</b>: Perform a 'Frogtie' on the arms—wrists tied to elbows, elbows pulled together behind the back." },
+        { r: "Tape", t: "<b>Tape</b>: Wrap wrists together, then run tape around the neck and back to the wrists to keep hands high." },
+        { r: "Straight Jacket", t: "<b>Straight Jacket</b>: Fully secure. Use extra <b>Rope</b> to bind the jacket elbows to the waist strap." },
+        { r: "Pallet Wrap", t: "<b>Pallet Wrap</b>: Arms pinned to ribs. Encase the entire chest and arms in 10 tight layers." }
     ];
-    const legMods = [
-        { r: "Spreader Bar", t: "Ankles locked into <b>Spreader Bar</b>. A <b>Rope</b> connects the bar to a collar, pulling knees up." },
-        { r: "Pallet Wrap", t: "Legs bound together from ankle to mid-thigh in a solid block of <b>Pallet Wrap</b>." },
-        { r: "Bandages", t: "Ankles wrapped in <b>Bandages</b>, then tied together with no gap. Knees tied together with <b>Rope</b>." }
+    const legLib = [
+        { r: "Spreader Bar", t: "<b>Spreader Bar</b>: Ankles locked. <b>Rope</b> tied from the bar to the sub's own hair or a collar." },
+        { r: "Tape", t: "<b>Tape</b>: Tape the ankles together. Tape the toes together. Tape the knees to each other." },
+        { r: "Pallet Wrap", t: "<b>Pallet Wrap</b>: Encase both legs from the ankles to the crotch in 15 layers." }
     ];
-    const headMods = [
-        { r: "Ball Gag", t: "<b>Ball Gag</b> applied and buckled at the last hole. <b>Leather Blindfold</b> secured over eyes." },
-        { r: "Tape Gag", t: "Mouth stuffed with cloth, then sealed with 4 horizontal strips of <b>Tape</b> across the face." },
-        { r: "Wrap Around Gag", t: "<b>Wrap Around Gag</b> applied, then <b>Pallet Wrap</b> wound 5 times around the entire head (nose exposed)." },
-        { r: "Tape Blindfold", t: "Cotton pads over eyes, sealed with <b>Tape Blindfold</b>. Earplugs inserted." }
+    const headLib = [
+        { r: "Ball Gag", t: "<b>Ball Gag</b>: Secure tightly. Apply <b>Cloth Blindfold</b> and seal the edges with <b>Tape</b>." },
+        { r: "Tape Gag", t: "<b>Tape Gag</b>: Mouth stuffed. 5 vertical strips of tape from nose to chin, then 2 horizontal strips." },
+        { r: "Leather Blindfold", t: "<b>Leather Blindfold</b>: Buckle at tightest point. Insert earplugs for total isolation." }
     ];
-    const genitalMods = [
-        { g: "Male", r: "Butt Plug", t: "<b>Butt Plug</b> inserted and tethered via <b>Rope</b> to the wrist bonds." },
-        { g: "Male", r: "Rope", t: "Genitals tied in a 'tension loop' with <b>Rope</b>, connected to an ankle cuff." },
-        { g: "Female", r: "Dildo", t: "<b>Dildo</b> taped to a chair seat. Subject must remain sat on it throughout the task." },
-        { g: "Female", r: "Butt Plug", t: "<b>Butt Plug</b> inserted. <b>Tape</b> strips applied in an 'X' over the labia to secure it." }
+    const genLib = [
+        { g: "Male", r: "Butt Plug", t: "<b>Butt Plug</b>: Inserted. Tethered with <b>Rope</b> to an ankle cuff." },
+        { g: "Female", r: "Dildo", t: "<b>Dildo</b>: <b>Tape</b> the dildo to the floor. Submissive must hover over it in a squat." }
     ];
 
     function generate() {
-        const sub = players[subI];
-        let parts = [];
-        
-        // Pick one mod for each category if gear is available
-        [armMods, legMods, headMods].forEach(pool => {
-            const valid = pool.filter(m => activeGear.includes(m.r));
-            if(valid.length) parts.push(valid[Math.floor(Math.random()*valid.length)].t);
-        });
-        
-        const gValid = genitalMods.filter(m => m.g === sub.gen && activeGear.includes(m.r));
-        if(gValid.length && Math.random() > 0.3) parts.push(gValid[Math.floor(Math.random()*gValid.length)].t);
-
-        const tasks = [
-            "Escape the leg bonds and reach the far wall.",
-            "Untie the wrist knot using only the teeth.",
-            "Stand on a chair and balance for 5 minutes without falling.",
-            "Wriggle out of the Pallet Wrap completely.",
-            "Identify 3 objects placed on the floor by touch only."
-        ];
+        const sub = players[subIdx];
+        const getMod = (lib) => {
+            const v = lib.filter(m => activeGear.includes(m.r) || (m.g && m.g === sub.gen && activeGear.includes(m.r)));
+            return v.length ? v[Math.floor(Math.random()*v.length)].t : "Free/Unbound";
+        };
 
         document.getElementById('taskBox').innerHTML = `
-            <span class="module-title">UPPER BODY</span> ${parts[0] || "None"}
-            <span class="module-title">LOWER BODY</span> ${parts[1] || "None"}
-            <span class="module-title">SENSORY</span> ${parts[2] || "None"}
-            <span class="module-title">GENITAL/CORE</span> ${parts[3] || "None"}
-            <span class="module-title">THE ESCAPE GOAL</span> ${tasks[Math.floor(Math.random()*tasks.length)]}
+            <span class="mod-header">Arms:</span> ${getMod(armLib)}
+            <span class="mod-header">Legs:</span> ${getMod(legLib)}
+            <span class="mod-header">Head:</span> ${getMod(headLib)}
+            <span class="mod-header">Core:</span> ${getMod(genLib)}
+            <span class="mod-header">Objective:</span> ${["Move 10 feet and back.", "Wriggle free of one limb bond.", "Stay silent for 5 mins of tickling.", "Retrieve a key from the floor."][Math.floor(Math.random()*4)]}
         `;
-
-        secs = 480; // 8 Minute default
+        secs = 480; 
         document.getElementById('genBtn').style.display = 'none';
         document.getElementById('startBtn').style.display = 'block';
     }
 
-    function useC(type) {
-        if(type === 'y') { [subI, domI] = [domI, subI]; cards.y = domI; }
-        else { cards.r = domI; generate(); }
-        updateUI();
-    }
-
-    function startClock() {
-        document.getElementById('prepArea').style.display = 'none';
-        document.getElementById('playArea').style.display = 'block';
+    function showTimer() {
+        document.getElementById('prepPhase').style.display = 'none';
+        document.getElementById('timerPhase').style.display = 'block';
         clock = setInterval(() => {
             secs--;
             let m = Math.floor(secs/60), s = secs%60;
             document.getElementById('timeDisp').innerText = `${m}:${s<10?'0':''}${s}`;
-            if(secs <= 0) finish(false);
+            if(secs <= 0) resolve(false);
         }, 1000);
     }
 
-    function finish(win) {
+    function resolve(success) {
         clearInterval(clock);
-        if(win) {
-            alert("SUCCESS! You earned the Master role.");
-            [subI, domI] = [domI, subI]; // Swap on success
+        if(success) {
+            alert("SUCCESS! Roles are now swapped.");
+            const oldSub = subIdx;
+            subIdx = domIdx;
+            domIdx = oldSub;
         } else {
-            alert("FAILURE. You remain the submissive.");
-            // No swap on failure
+            alert("FAILURE! You remain the Submissive.");
         }
         resetUI();
     }
 
+    function cardTrigger(type) {
+        if(type === 'y') {
+            alert("FORCED SWAP!");
+            const oldSub = subIdx;
+            subIdx = domIdx;
+            domIdx = oldSub;
+            cardOwner.y = domIdx;
+        } else {
+            alert("SKIPPED.");
+            cardOwner.r = domIdx;
+            generate();
+        }
+        updateUI();
+    }
+
     function resetUI() {
-        document.getElementById('playArea').style.display = 'none';
-        document.getElementById('prepArea').style.display = 'block';
+        document.getElementById('timerPhase').style.display = 'none';
+        document.getElementById('prepPhase').style.display = 'block';
         document.getElementById('genBtn').style.display = 'block';
         document.getElementById('startBtn').style.display = 'none';
         updateUI();
     }
 
     function updateUI() {
-        document.getElementById('currentRoles').innerText = `MASTER: ${players[domI].name} | SUB: ${players[subI].name}`;
-        document.getElementById('yC').className = `card yellow ${cards.y !== subI ? 'disabled' : ''}`;
-        document.getElementById('rC').className = `card r ${cards.r !== subI ? 'disabled' : ''}`;
+        document.getElementById('masterDisplay').querySelector('b').innerText = players[domIdx].name;
+        document.getElementById('subDisplay').querySelector('b').innerText = players[subIdx].name;
+        document.getElementById('yCard').className = `card yellow ${cardOwner.y !== subIdx ? 'disabled' : ''}`;
+        document.getElementById('rCard').className = `card red ${cardOwner.r !== subIdx ? 'disabled' : ''}`;
     }
 </script>
 </body>
