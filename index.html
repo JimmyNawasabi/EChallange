@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Strategic Meritocracy</title>
+    <title>Bound & Brave: Infinite Predicaments</title>
     <style>
         :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; }
         body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -15,20 +15,17 @@
         label { color: var(--gold); font-size: 0.8em; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
         input[type="text"], select, input[type="range"] { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: #fff; box-sizing: border-box; margin-bottom: 10px; }
         
-        /* STATUS BOARD */
+        /* STATUS & CARDS */
         .status-board { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; }
         .role-slot { display: flex; align-items: center; border: 1px solid #333; padding: 10px; background: #000; }
         .role-label { width: 100px; font-weight: bold; text-transform: uppercase; font-size: 0.7em; color: #888; border-right: 1px solid #333; margin-right: 15px; }
         .role-name { font-size: 1.2em; color: var(--gold); font-weight: bold; }
         .slot-sub { border: 1px solid var(--crimson); background: #1a0000; }
-
-        /* CARD SYSTEM */
         .card-zone { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
         .card-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; }
         .card { width: 100%; height: 45px; display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; font-size: 0.7em; border-radius: 4px; cursor: pointer; color: #000; margin-bottom: 5px; }
-        .yellow { background: #ffd700; box-shadow: 0 0 10px rgba(255,215,0,0.3); }
-        .red { background: #ff4500; box-shadow: 0 0 10px rgba(255,69,0,0.3); }
-        .owner-tag { font-size: 0.6em; text-transform: uppercase; color: #aaa; letter-spacing: 1px; }
+        .yellow { background: #ffd700; } .red { background: #ff4500; }
+        .owner-tag { font-size: 0.6em; text-transform: uppercase; color: #666; }
 
         .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
         .inv-item { background: #000; padding: 8px; border: 1px solid #222; font-size: 0.7em; display: flex; align-items: center; gap: 8px; }
@@ -56,16 +53,16 @@
             <input type="text" id="p2Name" placeholder="Name">
         </div>
         <div class="setup-box">
-            <label>Restraint Intensity (1-5)</label>
-            <input type="range" id="intensity" min="1" max="5" value="3">
+            <label>Chaos Level (Intensity: 1-10)</label>
+            <input type="range" id="intensity" min="1" max="10" value="5">
         </div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Gear Configuration ></button></div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Inventory ></button></div>
     </div>
 
     <div id="step2" class="step">
-        <label>Toggle Available Assets:</label>
+        <label>Select Your Tools:</label>
         <div class="inventory-grid" id="invList"></div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Initiate Session ></button></div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Enter Session ></button></div>
     </div>
 
     <div id="step3" class="step">
@@ -75,45 +72,44 @@
         </div>
         
         <div class="card-zone">
-            <div class="card-wrap">
-                <div class="card yellow" onclick="cardTrigger('y')">YELLOW CARD</div>
-                <div class="owner-tag" id="yOwner">Held by: -</div>
-            </div>
-            <div class="card-wrap">
-                <div class="card red" onclick="cardTrigger('r')">RED CARD</div>
-                <div class="owner-tag" id="rOwner">Held by: -</div>
-            </div>
+            <div class="card-wrap"><div class="card yellow" onclick="cardTrigger('y')">YELLOW CARD</div><div class="owner-tag" id="yOwner">-</div></div>
+            <div class="card-wrap"><div class="card red" onclick="cardTrigger('r')">RED CARD</div><div class="owner-tag" id="rOwner">-</div></div>
         </div>
 
         <div id="prepPhase">
-            <div class="challenge-card" id="taskBox">Awaiting Procedural Generation...</div>
-            <button class="btn" id="genBtn" onclick="generate()">Synthesize Challenge</button>
-            <button class="btn" id="startBtn" style="display:none;" onclick="showTimer()">Confirm Setup: Start</button>
+            <div class="challenge-card" id="taskBox">System Primed.</div>
+            <button class="btn" id="genBtn" onclick="generate()">Synthesize Unique Predicament</button>
+            <button class="btn" id="startBtn" style="display:none;" onclick="showTimer()">Bonds Applied: Start Clock</button>
         </div>
 
         <div id="timerPhase" style="display:none;">
             <div class="timer-val" id="timeDisp">00:00</div>
-            <button class="btn" onclick="resolve(true)">SUCCESS (Earn Swap)</button>
-            <button class="btn" style="background:#333; margin-top:10px;" onclick="resolve(false)">FAILURE (Stay Submissive)</button>
+            <button class="btn" onclick="resolve(true)">SUCCESS (Role Swap)</button>
+            <button class="btn" style="background:#333; margin-top:10px;" onclick="resolve(false)">FAILURE (Remain Bound)</button>
         </div>
     </div>
 </div>
 
 <script>
-    const gearFull = ["Rope", "Tape", "Pallet Wrap", "Bandages", "Dildo", "Butt Plug", "Ball Gag", "Tape Gag", "Leather Blindfold", "Straight Jacket", "Spreader Bar", "Cuffs", "Chair"];
+    const gearFull = ["Rope", "Tape", "Pallet Wrap", "Bandages", "Dildo", "Butt Plug", "Ball Gag", "Tape Gag", "Cloth Blindfold", "Leather Blindfold", "Straight Jacket", "Spreader Bar", "Cuffs", "Chain", "Clamps"];
     let players = [], activeGear = [], subIdx = 0, domIdx = 1, clock, secs;
-    let cards = { y: 1, r: 1 }; // 0 = Player 1, 1 = Player 2
+    let cards = { y: 1, r: 1 };
+
+    // MATRIX POOLS
+    const m_action = ["retrieve", "manipulate", "extinguish", "activate", "displace", "unfasten", "traverse to", "ring", "consume", "pull"];
+    const m_object = ["a metal key", "a singular coin", "a vibrating device", "a small bell", "a piece of fruit", "a specific knot", "a light switch", "a bowl of water", "a weighted bag"];
+    const m_limiter = ["using only teeth", "with toes only", "by friction only", "without knees touching the floor", "while keeping eyes sealed", "blindly", "using only chin and chest", "with zero vocalization"];
+    const m_location = ["under a chair", "on a high shelf", "taped to the floor", "dangling from a doorway", "behind the Master's back", "across a 10ft distance", "inside a locked box"];
+
+    const m_bondStyle = ["spiral wrap", "tight cinch", "criss-cross harness", "mummy-style encasement", "suspension-tether", "figure-eight bind"];
+    const m_posture = ["kneeling", "prostrate", "seated", "arched", "fetal position", "standing on tip-toes"];
 
     function nav(s) {
         if(s===2) {
-            players = [
-                { name: document.getElementById('p1Name').value || "P1", gen: document.getElementById('p1Gen').value },
-                { name: document.getElementById('p2Name').value || "P2" }
-            ];
+            players = [{ name: document.getElementById('p1Name').value || "P1", gen: document.getElementById('p1Gen').value }, { name: document.getElementById('p2Name').value || "P2" }];
             const list = document.getElementById('invList');
             list.innerHTML = "";
             gearFull.forEach(g => list.innerHTML += `<div class="inv-item"><input type="checkbox" value="${g}" checked> ${g}</div>`);
-            // Master starts with cards
             cards.y = domIdx; cards.r = domIdx;
         }
         if(s===3) {
@@ -124,41 +120,38 @@
         document.getElementById('step'+s).classList.add('active');
     }
 
-    // PROCEDURAL GENERATION POOLS
-    const verbs = ["lock", "wrap", "tether", "cinch", "compress", "secure"];
-    const poses = ["lying on their stomach", "kneeling upright", "seated on a low chair", "lying on their back", "hunched over", "propped against a wall"];
-    const methods = ["using a series of tight loops", "with excessive layers", "connected to a stationary object", "cinched to the maximum limit", "intertwined with existing bonds"];
-
-    // PROCEDURAL OBJECTIVE POOLS
-    const actionPool = ["retrieve a small object", "untie a specific knot", "extinguish a candle", "press a button", "open a latched container", "navigate through a narrow path", "pull a heavy weight"];
-    const bodyPartPool = ["using only their teeth", "using their toes", "using their chin", "by only wiggling their hips", "without allowing their knees to touch the floor"];
-    const victoryPool = ["at the far end of the room", "placed 6 feet away", "hanging from the ceiling", "hidden under a cushion", "located behind the Master's feet"];
-
     function generate() {
         const sub = players[subIdx].name;
         const dom = players[domIdx].name;
-        const intens = parseInt(document.getElementById('intensity').value);
+        const chaos = parseInt(document.getElementById('intensity').value);
         let content = "";
-        let totalD = 0;
+        let difficulty = 0;
 
-        // Generate Restraints
         const zones = ["UPPER", "LOWER", "SENSORY", "CORE"];
         zones.forEach((z, i) => {
-            if (Math.random() * 5 < intens + (i === 0 ? 2 : 0)) {
+            if (Math.random() * 10 < chaos + 2) {
                 let avail = gearFull.filter(g => activeGear.includes(g));
                 let g = avail[Math.floor(Math.random()*avail.length)];
-                content += `<span class="mod-header">${z} BODY</span> ${dom} must ${verbs[Math.floor(Math.random()*verbs.length)]} ${sub}'s ${z.toLowerCase()} limbs with <b>${g}</b> while ${sub} is ${poses[Math.floor(Math.random()*poses.length)]}. Finish the bond ${methods[Math.floor(Math.random()*methods.length)]}.<br>`;
-                totalD += (intens + 1);
+                let style = m_bondStyle[Math.floor(Math.random()*m_bondStyle.length)];
+                let pose = m_posture[Math.floor(Math.random()*m_posture.length)];
+                
+                content += `<span class="mod-header">${z} BODY</span> ${dom} must implement a <b>${style}</b> on ${sub}'s ${z.toLowerCase()} using <b>${g}</b>. ${sub} must remain in a <b>${pose}</b> position during application.<br>`;
+                difficulty += (chaos * 0.5) + 2;
             }
         });
 
-        // Procedural Objective
-        const objective = `${sub} must ${actionPool[Math.floor(Math.random()*actionPool.length)]} ${bodyPartPool[Math.floor(Math.random()*bodyPartPool.length)]}. The target is ${victoryPool[Math.floor(Math.random()*victoryPool.length)]}.`;
+        // Combinatorial Objective
+        const act = m_action[Math.floor(Math.random()*m_action.length)];
+        const obj = m_object[Math.floor(Math.random()*m_object.length)];
+        const lim = m_limiter[Math.floor(Math.random()*m_limiter.length)];
+        const loc = m_location[Math.floor(Math.random()*m_location.length)];
         
-        content += `<span class="mod-header">PROCEDURAL OBJECTIVE</span> ${objective}`;
-        totalD += (intens * 2);
+        const objective = `${sub} must **${act}** **${obj}** **${lim}**. The target is **${loc}**.`;
+        
+        content += `<span class="mod-header">UNIQUE OBJECTIVE</span> ${objective}`;
+        difficulty += (chaos * 1.5);
 
-        secs = (totalD * 40) + 90;
+        secs = Math.floor((difficulty * 45) + 60);
         document.getElementById('taskBox').innerHTML = content;
         document.getElementById('genBtn').style.display = 'none';
         document.getElementById('startBtn').style.display = 'block';
@@ -166,41 +159,33 @@
 
     function cardTrigger(type) {
         const owner = type === 'y' ? cards.y : cards.r;
-        const ownerName = players[owner].name;
-        
-        if (type === 'y') {
-            alert(`${ownerName} used the YELLOW CARD: Immediate Role Swap!`);
-            swapRoles();
-        } else {
-            alert(`${ownerName} used the RED CARD: Challenge Discarded. Generating new predicament...`);
-            generate();
-        }
+        alert(`${players[owner].name} has invoked the ${type==='y'?'Yellow':'Red'} Card!`);
+        if (type === 'y') swapRoles(); else generate();
     }
 
     function resolve(success) {
         clearInterval(clock);
         if(success) {
-            alert(`SUCCESS! ${players[subIdx].name} takes Mastery.`);
+            alert(`SUCCESS! ${players[subIdx].name} has overcome the predicament and takes Mastery.`);
             swapRoles();
         } else {
-            alert(`FAILURE! ${players[subIdx].name} remains bound.`);
+            alert(`FAILURE! ${players[subIdx].name} remains in subjection.`);
             reset();
         }
     }
 
     function swapRoles() {
-        const t = subIdx; subIdx = domIdx; domIdx = t;
-        // Cards reset to Master on swap
-        cards.y = domIdx; cards.r = domIdx;
+        subIdx = subIdx === 0 ? 1 : 0;
+        domIdx = domIdx === 0 ? 1 : 0;
+        cards.y = domIdx; cards.r = domIdx; // Cards move to the new Master
         reset();
     }
 
-    function reset() {
-        document.getElementById('timerPhase').style.display = 'none';
-        document.getElementById('prepPhase').style.display = 'block';
-        document.getElementById('genBtn').style.display = 'block';
-        document.getElementById('startBtn').style.display = 'none';
-        updateBoard();
+    function updateBoard() {
+        document.getElementById('masterName').innerText = players[domIdx].name;
+        document.getElementById('subName').innerText = players[subIdx].name;
+        document.getElementById('yOwner').innerText = `Held by: ${players[cards.y].name}`;
+        document.getElementById('rOwner').innerText = `Held by: ${players[cards.r].name}`;
     }
 
     function showTimer() {
@@ -214,11 +199,12 @@
         }, 1000);
     }
 
-    function updateBoard() {
-        document.getElementById('masterName').innerText = players[domIdx].name;
-        document.getElementById('subName').innerText = players[subIdx].name;
-        document.getElementById('yOwner').innerText = `Held by: ${players[cards.y].name}`;
-        document.getElementById('rOwner').innerText = `Held by: ${players[cards.r].name}`;
+    function reset() {
+        document.getElementById('timerPhase').style.display = 'none';
+        document.getElementById('prepPhase').style.display = 'block';
+        document.getElementById('genBtn').style.display = 'block';
+        document.getElementById('startBtn').style.display = 'none';
+        updateBoard();
     }
 </script>
 </body>
