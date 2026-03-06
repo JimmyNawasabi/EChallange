@@ -3,214 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Control Edition</title>
+    <title>Bound & Brave: Fixed Logic</title>
     <style>
         :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; --safe: #2e7d32; }
         body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 600px; width: 100%; background: #111; border: 2px solid #333; padding: 20px; box-shadow: 0 0 30px #000; display: flex; flex-direction: column; min-height: 95vh; }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; border-bottom: 2px solid var(--crimson); padding-bottom: 10px; margin-bottom: 15px; }
-        .step { display: none; flex-grow: 1; overflow-y: auto; padding-bottom: 100px; }
+        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; border-bottom: 2px solid var(--crimson); padding-bottom: 10px; margin-bottom: 20px; }
+        .step { display: none; flex-grow: 1; }
         .active { display: flex; flex-direction: column; }
         
-        /* PLAYER IDENTITY BOXES */
-        .player-card { border: 2px solid var(--gold); padding: 15px; margin-bottom: 20px; background: #000; }
-        .input-label { color: var(--gold); font-weight: bold; font-size: 0.8em; margin-bottom: 5px; display: block; }
-        .p-input { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: white; margin-bottom: 15px; box-sizing: border-box; }
+        /* PLAYER SETUP CARDS */
+        .player-identity-card { border: 2px solid var(--gold); background: #000; padding: 20px; margin-bottom: 25px; border-radius: 4px; }
+        .card-title { color: var(--gold); font-weight: bold; font-size: 0.9em; margin-bottom: 15px; display: block; border-bottom: 1px solid #333; padding-bottom: 5px; }
         
-        /* INVENTORY */
-        .cat-section { background: #080808; padding: 15px; border: 1px solid #222; margin-bottom: 15px; }
-        .add-row { display: flex; gap: 5px; margin-bottom: 10px; }
-        .add-row input { flex: 1; background: #000; border: 1px solid #444; color: white; padding: 10px; }
-        .inv-item { background: #1a1a1a; padding: 8px; border: 1px solid #333; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; font-size: 0.8em; }
+        label { color: #888; font-size: 0.7em; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        input[type="text"], select { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: white; margin-bottom: 15px; font-family: inherit; font-size: 1em; border-radius: 0; }
+        
+        /* INVENTORY STYLING */
+        .cat-box { background: #080808; padding: 15px; border: 1px solid #222; margin-bottom: 15px; }
+        .add-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .add-row input { margin-bottom: 0; flex-grow: 1; }
+        .inv-item { background: #1a1a1a; padding: 10px; border: 1px solid #333; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; font-size: 0.85em; }
         .del-btn { color: var(--crimson); cursor: pointer; border: 1px solid var(--crimson); padding: 2px 8px; font-size: 0.7em; }
 
-        /* PLAY UI */
-        .mode-box { background: #000; border: 1px solid var(--gold); padding: 15px; margin-bottom: 15px; }
-        .challenge-display { background: #000; border-left: 5px solid var(--crimson); padding: 20px; min-height: 100px; line-height: 1.6; }
-        .timer-val { font-size: 5em; color: #ff0000; text-align: center; margin: 15px 0; font-family: 'Impact', sans-serif; }
+        /* SESSION UI */
+        .mode-select-area { background: #000; border: 1px solid var(--gold); padding: 15px; margin-bottom: 15px; }
+        .challenge-output { background: #000; border-left: 5px solid var(--crimson); padding: 20px; line-height: 1.6; margin-top: 10px; }
+        .timer-val { font-size: 5em; color: #ff0000; text-align: center; margin: 20px 0; font-family: 'Impact', sans-serif; text-shadow: 0 0 10px rgba(255,0,0,0.3); }
         
-        .panic-btn { background: var(--safe); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 15px; }
-        .fixed-footer { position: sticky; bottom: 0; background: #111; padding: 10px 0; border-top: 1px solid #333; margin-top: auto; }
-        .btn { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        .panic-btn { background: var(--safe); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 20px; letter-spacing: 2px; }
+        .btn { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 20px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+        .fixed-footer { position: sticky; bottom: 0; background: #111; padding: 15px 0; border-top: 1px solid #333; margin-top: auto; }
         
-        #panicOverlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:999; justify-content:center; align-items:center; flex-direction:column; }
+        #safeOverlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:999; justify-content:center; align-items:center; flex-direction:column; text-align: center; }
     </style>
 </head>
 <body>
 
-<div id="panicOverlay">
-    <h2 style="color:var(--gold)">SESSION PAUSED</h2>
-    <button class="btn" onclick="closePanic()" style="background:var(--safe); width: 200px;">RESUME</button>
+<div id="safeOverlay">
+    <h1 style="color:var(--gold)">SESSION HALTED</h1>
+    <p style="padding: 20px;">Safe word protocols engaged. Re-establish consent before continuing.</p>
+    <button class="btn" onclick="resumeFromSafe()" style="background:var(--safe); width: 250px;">Resume System</button>
 </div>
 
 <div class="container">
     <h1>Bound & Brave</h1>
 
     <div id="step1" class="step active">
-        <div class="player-card">
-            <span class="input-label">SUBMISSIVE PLAYER</span>
-            <input type="text" id="p1Name" class="p-input" placeholder="Name">
-            <span class="input-label">GENDER / BODY TYPE</span>
-            <select id="p1Gen" class="p-input">
+        <div class="player-identity-card">
+            <span class="card-title">PLAYER ONE (STARTING SUBMISSIVE)</span>
+            <label>Legal or Scene Name</label>
+            <input type="text" id="p1Name" placeholder="Enter Name...">
+            <label>Body Type / Gender Identity</label>
+            <select id="p1Gen">
                 <option value="Male Body">Male Body</option>
                 <option value="Female Body">Female Body</option>
-                <option value="Other">Neutral / Other</option>
+                <option value="Other/Neutral">Other / Neutral</option>
             </select>
         </div>
 
-        <div class="player-card">
-            <span class="input-label">MASTER PLAYER</span>
-            <input type="text" id="p2Name" class="p-input" placeholder="Name">
-            <span class="input-label">GENDER / BODY TYPE</span>
-            <select id="p2Gen" class="p-input">
+        <div class="player-identity-card">
+            <span class="card-title">PLAYER TWO (STARTING MASTER)</span>
+            <label>Legal or Scene Name</label>
+            <input type="text" id="p2Name" placeholder="Enter Name...">
+            <label>Body Type / Gender Identity</label>
+            <select id="p2Gen">
                 <option value="Male Body">Male Body</option>
                 <option value="Female Body">Female Body</option>
-                <option value="Other">Neutral / Other</option>
+                <option value="Other/Neutral">Other / Neutral</option>
             </select>
         </div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Go to Inventory ></button></div>
+        <div class="fixed-footer"><button class="btn" onclick="navigate(2)">Confirm Identities ></button></div>
     </div>
 
     <div id="step2" class="step">
-        <div class="cat-section">
-            <span class="input-label">Bondage Gear</span>
-            <div class="add-row"><input type="text" id="inBond"><button class="btn" style="padding:0 15px; width:auto;" onclick="addItem('bondage')">+</button></div>
+        <div class="cat-box">
+            <label>Bondage Gear (Restraints)</label>
+            <div class="add-row"><input type="text" id="inBond" placeholder="Rope, Tape, Cuffs..."><button class="btn" style="padding:0 15px; width:auto;" onclick="addItem('bondage')">+</button></div>
             <div id="listBond"></div>
         </div>
-        <div class="cat-section">
-            <span class="input-label">Sensory Gear</span>
-            <div class="add-row"><input type="text" id="inSens"><button class="btn" style="padding:0 15px; width:auto;" onclick="addItem('sensory')">+</button></div>
+        <div class="cat-box">
+            <label>Sensory Items (Blindfolds/Gags)</label>
+            <div class="add-row"><input type="text" id="inSens" placeholder="Spandex, Hood, Silk..."><button class="btn" style="padding:0 15px; width:auto;" onclick="addItem('sensory')">+</button></div>
             <div id="listSens"></div>
         </div>
-        <div class="cat-section">
-            <span class="input-label">Toys</span>
-            <div class="add-row"><input type="text" id="inToys"><button class="btn" style="padding:0 15px; width:auto;" onclick="addItem('toys')">+</button></div>
+        <div class="cat-box">
+            <label>Toys & Tools</label>
+            <div class="add-row"><input type="text" id="inToys" placeholder="Flogger, Wand, Ice..."><button class="btn" style="padding:0 15px; width:auto;" onclick="addItem('toys')">+</button></div>
             <div id="listToys"></div>
         </div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Start Session ></button></div>
+        <div class="fixed-footer"><button class="btn" onclick="navigate(3)">Enter Session ></button></div>
     </div>
 
     <div id="step3" class="step">
-        <div id="prepPhase">
-            <div class="mode-box">
-                <span class="input-label">SELECT ACTIVITY TYPE</span>
-                <select id="modeSelect" class="p-input">
-                    <option value="Random">Random Choice</option>
+        <div id="setupPhase">
+            <div class="mode-select-area">
+                <label>Manual Activity Selection</label>
+                <select id="manualMode" style="margin-bottom: 0;">
+                    <option value="Random">-- Fully Randomized --</option>
                     <option value="Escape">Escape Challenge</option>
-                    <option value="Shibari">Shibari (Artistic)</option>
+                    <option value="Shibari">Shibari (Artistic Tie)</option>
                     <option value="Truth or Dare">Truth or Dare</option>
-                    <option value="Mind Fuck">Mind Fuck</option>
+                    <option value="Mind Fuck">Mind Fuck (Focus Test)</option>
                 </select>
             </div>
-            <div id="taskBox" class="challenge-display">Configure your gear and select a mode.</div>
-            <button class="btn" id="genBtn" style="margin-top:10px;" onclick="generate()">Generate Challenge</button>
-            <button class="btn" id="startBtn" style="display:none; margin-top:10px;" onclick="startTimer()">Start Round</button>
+            <div id="challengeDisplay" class="challenge-output">Awaiting generation...</div>
+            <button class="btn" id="generateBtn" style="margin-top:15px;" onclick="createRound()">Synthesize Round</button>
+            <button class="btn" id="startBtn" style="display:none; margin-top:15px;" onclick="launchTimer()">Begin Round</button>
         </div>
 
         <div id="timerPhase" style="display:none;">
-            <div class="timer-val" id="timeDisp">00:00</div>
+            <div class="timer-val" id="countdown">00:00</div>
             <div style="display:flex; gap:10px;">
-                <button class="btn" onclick="finish(true)">SUCCESS</button>
-                <button class="btn" style="background:#222" onclick="finish(false)">FAIL</button>
+                <button class="btn" onclick="endRound(true)">CLEARED</button>
+                <button class="btn" style="background:#222" onclick="endRound(false)">FAILED</button>
             </div>
         </div>
-        <button class="panic-btn" onclick="panic()">!!! SAFE WORD !!!</button>
+        <button class="panic-btn" onclick="triggerSafe()">!!! SAFE WORD !!!</button>
     </div>
 </div>
 
 <script>
     let inventory = { bondage: [], sensory: [], toys: [] };
-    let players = [], subIdx = 0, clock, timeLeft;
+    let players = [], subIdx = 0, timerObj, remaining;
 
-    function nav(s) {
+    function navigate(s) {
         if(s === 2) {
             players = [
-                { name: document.getElementById('p1Name').value || "Sub", gen: document.getElementById('p1Gen').value },
-                { name: document.getElementById('p2Name').value || "Dom", gen: document.getElementById('p2Gen').value }
+                { name: document.getElementById('p1Name').value || "P1", gen: document.getElementById('p1Gen').value },
+                { name: document.getElementById('p2Name').value || "P2", gen: document.getElementById('p2Gen').value }
             ];
         }
         if(s === 3 && inventory.bondage.length === 0) {
-            alert("Please add at least 1 Bondage item!"); return;
+            alert("Your Bondage inventory is empty. Add items first!"); return;
         }
         document.querySelectorAll('.step').forEach(d => d.classList.remove('active'));
         document.getElementById('step'+s).classList.add('active');
     }
 
     function addItem(cat) {
-        const input = document.getElementById('in' + cat.charAt(0).toUpperCase() + cat.slice(1));
-        if(input.value) {
-            inventory[cat].push(input.value);
-            renderList(cat);
-            input.value = "";
+        const id = 'in' + cat.charAt(0).toUpperCase() + cat.slice(1);
+        const val = document.getElementById(id).value;
+        if(val) {
+            inventory[cat].push(val);
+            updateList(cat);
+            document.getElementById(id).value = "";
         }
     }
 
-    function renderList(cat) {
+    function updateList(cat) {
         const div = document.getElementById('list' + cat.charAt(0).toUpperCase() + cat.slice(1));
         div.innerHTML = inventory[cat].map((item, i) => `
             <div class="inv-item">
-                ${item} <span class="del-btn" onclick="inventory['${cat}'].splice(${i},1); renderList('${cat}')">X</span>
+                ${item} <span class="del-btn" onclick="inventory['${cat}'].splice(${i},1); updateList('${cat}')">DELETE</span>
             </div>
         `).join('');
     }
 
-    function generate() {
-        const modeChoice = document.getElementById('modeSelect').value;
-        const modes = ["Escape", "Shibari", "Truth or Dare", "Mind Fuck"];
-        const mode = modeChoice === "Random" ? modes[Math.floor(Math.random()*modes.length)] : modeChoice;
+    function createRound() {
+        const modeInput = document.getElementById('manualMode').value;
+        const choices = ["Escape", "Shibari", "Truth or Dare", "Mind Fuck"];
+        const mode = modeInput === "Random" ? choices[Math.floor(Math.random()*choices.length)] : modeInput;
         const intensity = Math.floor(Math.random() * 10) + 1;
         
         const sub = players[subIdx];
         const dom = players[subIdx === 0 ? 1 : 0];
 
         const b = inventory.bondage[Math.floor(Math.random()*inventory.bondage.length)];
-        const s = inventory.sensory.length ? inventory.sensory[Math.floor(Math.random()*inventory.sensory.length)] : "none";
-        const t = inventory.toys.length ? inventory.toys[Math.floor(Math.random()*inventory.toys.length)] : "none";
+        const s = inventory.sensory.length ? inventory.sensory[Math.floor(Math.random()*inventory.sensory.length)] : "no sensory";
+        const t = inventory.toys.length ? inventory.toys[Math.floor(Math.random()*inventory.toys.length)] : "no toys";
 
-        let html = `<b style="color:var(--gold)">MODE: ${mode} (Intensity ${intensity})</b><br><br>`;
-        html += `<b>SETUP:</b> ${dom.name} must secure ${sub.name} (${sub.gen}) using <b>${b}</b>. <br><br>`;
+        let text = `<b style="color:var(--gold)">OBJECTIVE: ${mode.toUpperCase()}</b><br>`;
+        text += `<small>ROUND INTENSITY: ${intensity}/10</small><br><br>`;
+        text += `<b>PREP:</b> ${dom.name} must apply <b>${b}</b> to ${sub.name} (${sub.gen}).<br><br>`;
 
         if(mode === "Escape") {
-            html += `<b>CHALLENGE:</b> ${sub.name} has the timer duration to escape the <b>${b}</b> completely.`;
-            timeLeft = (intensity * 40) + 60;
+            text += `<b>CHALLENGE:</b> Bound with ${intensity}/10 tightness, ${sub.name} must struggle and escape before the clock ends.`;
+            remaining = (intensity * 45) + 60;
         } else if(mode === "Shibari") {
-            html += `<b>CHALLENGE:</b> Master must create an intricate pattern using <b>${b}</b>. Focus on aesthetic tension.`;
-            timeLeft = 300;
+            text += `<b>CHALLENGE:</b> ${dom.name} must spend the full timer creating a visually intricate and restrictive tie using <b>${b}</b>.`;
+            remaining = 300;
         } else if(mode === "Truth or Dare") {
-            html += `<b>CHALLENGE:</b> Truth or Dare. Failure to answer or perform results in heavy use of <b>${t}</b>.`;
-            timeLeft = 180;
+            text += `<b>CHALLENGE:</b> ${dom.name} issues a Truth or Dare. Failure to perform results in intense stimulation with <b>${t}</b>.`;
+            remaining = 180;
         } else {
-            html += `<b>CHALLENGE:</b> Blindfold with <b>${s}</b>. Sub must endure <b>${t}</b> while reciting poetry or solving math.`;
-            timeLeft = 120;
+            text += `<b>CHALLENGE:</b> Using <b>${s}</b> for sensory deprivation, ${dom.name} will use <b>${t}</b> while ${sub.name} must complete a complex mental task.`;
+            remaining = 120;
         }
 
-        document.getElementById('taskBox').innerHTML = html;
-        document.getElementById('genBtn').style.display = "none";
+        document.getElementById('challengeDisplay').innerHTML = text;
+        document.getElementById('generateBtn').style.display = "none";
         document.getElementById('startBtn').style.display = "block";
     }
 
-    function startTimer() {
-        document.getElementById('prepPhase').style.display = "none";
+    function launchTimer() {
+        document.getElementById('setupPhase').style.display = "none";
         document.getElementById('timerPhase').style.display = "block";
-        clock = setInterval(() => {
-            timeLeft--;
-            let m = Math.floor(timeLeft/60), s = timeLeft%60;
-            document.getElementById('timeDisp').innerText = `${m}:${s<10?'0':''}${s}`;
-            if(timeLeft <= 0) finish(false);
+        timerObj = setInterval(() => {
+            remaining--;
+            let m = Math.floor(remaining/60), s = remaining%60;
+            document.getElementById('countdown').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(remaining <= 0) endRound(false);
         }, 1000);
     }
 
-    function finish(success) {
-        clearInterval(clock);
-        if(success) { subIdx = (subIdx === 0 ? 1 : 0); alert("Roles Swapped!"); }
+    function endRound(success) {
+        clearInterval(timerObj);
+        if(success) { subIdx = (subIdx === 0 ? 1 : 0); alert("Roles Swapped! Congratulations."); }
         document.getElementById('timerPhase').style.display = "none";
-        document.getElementById('prepPhase').style.display = "block";
-        document.getElementById('genBtn').style.display = "block";
+        document.getElementById('setupPhase').style.display = "block";
+        document.getElementById('generateBtn').style.display = "block";
         document.getElementById('startBtn').style.display = "none";
     }
 
-    function panic() { clearInterval(clock); document.getElementById('panicOverlay').style.display = "flex"; }
-    function closePanic() { document.getElementById('panicOverlay').style.display = "none"; finish(false); }
+    function triggerSafe() { clearInterval(timerObj); document.getElementById('safeOverlay').style.display = "flex"; }
+    function resumeFromSafe() { document.getElementById('safeOverlay').style.display = "none"; endRound(false); }
 </script>
 </body>
 </html>
