@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Safety Edition</title>
+    <title>Bound & Brave: Final</title>
     <style>
         :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; --safe: #2e7d32; }
         body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -12,40 +12,43 @@
         .step { display: none; flex-grow: 1; overflow-y: auto; padding-bottom: 100px; }
         .active { display: flex; flex-direction: column; }
         
-        .setup-box { background: #000; padding: 15px; border-left: 4px solid var(--gold); margin-bottom: 15px; }
-        label { color: var(--gold); font-size: 0.7em; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
-        input[type="text"], select { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: #fff; box-sizing: border-box; margin-bottom: 10px; font-family: inherit; }
+        /* PLAYER SELECTORS */
+        .setup-box { background: #000; padding: 15px; border-left: 4px solid var(--gold); margin-bottom: 15px; border-right: 1px solid #222; border-bottom: 1px solid #222; }
+        .field-group { margin-bottom: 15px; }
+        label { color: var(--gold); font-size: 0.75em; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 8px; }
+        input[type="text"], select { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: #fff; box-sizing: border-box; font-family: inherit; font-size: 1em; }
         
-        .cat-section { background: #080808; padding: 15px; border: 1px solid #222; margin-bottom: 20px; border-radius: 4px; }
-        .cat-header { font-size: 0.8em; color: var(--gold); margin-bottom: 10px; border-bottom: 1px solid var(--crimson); padding-bottom: 5px; font-weight: bold; text-transform: uppercase; }
-        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .inv-item { background: #1a1a1a; padding: 10px; border: 1px solid #333; font-size: 0.75em; display: flex; align-items: center; gap: 10px; }
+        /* INVENTORY */
+        .cat-section { background: #080808; padding: 15px; border: 1px solid #222; margin-bottom: 20px; }
+        .inventory-grid { display: grid; grid-template-columns: 1fr; gap: 5px; margin-top: 10px; }
+        .inv-item { background: #151515; padding: 8px 12px; border: 1px solid #333; font-size: 0.8em; display: flex; justify-content: space-between; align-items: center; }
+        .del-btn { color: var(--crimson); cursor: pointer; font-weight: bold; padding: 5px; border: 1px solid var(--crimson); font-size: 0.7em; }
         
-        .add-row { display: flex; gap: 8px; margin-bottom: 10px; }
-        .add-row input { margin-bottom: 0; flex: 1; border: 1px solid #555; background: #000; color: #fff; padding: 8px; }
-        .add-btn { background: var(--crimson); color: #fff; border: 1px solid var(--gold); padding: 0 20px; cursor: pointer; font-weight: bold; }
+        .add-row { display: flex; gap: 8px; }
+        .add-row input { flex: 1; }
+        .add-btn { background: var(--crimson); color: #fff; border: 1px solid var(--gold); padding: 0 20px; cursor: pointer; }
 
-        .challenge-card { background: #000; border: 1px solid #444; padding: 25px; line-height: 1.8; font-size: 0.95em; border-left: 5px solid var(--gold); position: relative; }
-        .mode-badge { display: inline-block; padding: 4px 15px; background: var(--crimson); color: #fff; font-size: 0.9em; font-weight: bold; border-radius: 2px; margin-bottom: 10px; text-transform: uppercase; }
-        .intensity-pill { position: absolute; top: 25px; right: 25px; color: var(--gold); font-weight: bold; border: 1px solid var(--gold); padding: 2px 10px; font-size: 0.7em; }
-        .mod-header { color: var(--gold); font-weight: bold; text-transform: uppercase; font-size: 0.75em; display: block; margin-top: 20px; border-bottom: 1px solid #222; }
-        
-        .fixed-footer { position: sticky; bottom: 0; background: #111; padding: 15px 0; border-top: 1px solid #333; margin-top: auto; z-index: 100; }
-        .btn { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+        /* PLAY UI */
+        .challenge-card { background: #000; border: 1px solid #444; padding: 25px; line-height: 1.8; border-left: 5px solid var(--gold); position: relative; }
+        .mode-badge { display: inline-block; padding: 4px 15px; background: var(--crimson); color: #fff; font-size: 0.9em; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
+        .intensity-pill { position: absolute; top: 25px; right: 25px; color: var(--gold); border: 1px solid var(--gold); padding: 2px 10px; font-size: 0.7em; font-weight: bold; }
         .timer-val { font-size: 5em; color: #ff0000; font-family: 'Impact', sans-serif; text-align: center; margin: 20px 0; }
         
-        /* SAFE WORD UI */
-        .panic-btn { background: var(--safe); color: white; border: none; padding: 10px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.8em; margin-top: 10px; letter-spacing: 1px; }
-        #panicOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; text-align: center; flex-direction: column; padding: 20px; box-sizing: border-box; }
-        .panic-msg { color: var(--gold); font-size: 1.5em; margin-bottom: 20px; text-transform: uppercase; border: 2px solid var(--crimson); padding: 20px; }
+        .panic-btn { background: var(--safe); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 20px; }
+        #panicOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; text-align: center; }
+        
+        .fixed-footer { position: sticky; bottom: 0; background: #111; padding: 15px 0; border-top: 1px solid #333; margin-top: auto; }
+        .btn { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
 <div id="panicOverlay">
-    <div class="panic-msg">SAFE WORD ACTIVATED<br>Session Paused</div>
-    <p>Check in with your partner. Ensure physical and emotional safety before continuing.</p>
-    <button class="btn" onclick="closePanic()" style="background: var(--safe); max-width: 300px;">Resume System</button>
+    <div style="border: 2px solid var(--crimson); padding: 40px; margin: 20px;">
+        <h2 style="color:var(--gold);">SAFE WORD ACTIVATED</h2>
+        <p>Communication is the priority. Check in now.</p>
+        <button class="btn" onclick="closePanic()" style="background:var(--safe);">I'm Okay - Resume</button>
+    </div>
 </div>
 
 <div class="container">
@@ -53,47 +56,68 @@
 
     <div id="step1" class="step active">
         <div class="setup-box">
-            <label>Player 1 (Anatomy)</label>
-            <input type="text" id="p1Name" placeholder="Name">
-            <select id="p1Gen"><option value="Male">Male Body</option><option value="Female">Female Body</option></select>
+            <div class="field-group">
+                <label>Player 1 (Starts Sub)</label>
+                <input type="text" id="p1Name" placeholder="Name/Alias">
+            </div>
+            <div class="field-group">
+                <label>Body Type / Anatomy</label>
+                <select id="p1Gen">
+                    <option value="Male">Male Body</option>
+                    <option value="Female">Female Body</option>
+                    <option value="Non-binary">Neutral/Other</option>
+                </select>
+            </div>
         </div>
+
         <div class="setup-box">
-            <label>Player 2 (Anatomy)</label>
-            <input type="text" id="p2Name" placeholder="Name">
-            <select id="p2Gen"><option value="Male">Male Body</option><option value="Female">Female Body</option></select>
+            <div class="field-group">
+                <label>Player 2 (Starts Master)</label>
+                <input type="text" id="p2Name" placeholder="Name/Alias">
+            </div>
+            <div class="field-group">
+                <label>Body Type / Anatomy</label>
+                <select id="p2Gen">
+                    <option value="Male">Male Body</option>
+                    <option value="Female">Female Body</option>
+                    <option value="Non-binary">Neutral/Other</option>
+                </select>
+            </div>
         </div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Inventory Setup ></button></div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Define Gear ></button></div>
     </div>
 
     <div id="step2" class="step">
         <div class="cat-section">
-            <div class="cat-header">Bondage Gear</div>
-            <div class="add-row"><input type="text" id="inBond" placeholder="e.g. Rope..."><button class="add-btn" onclick="addItem('bondage')">+</button></div>
+            <label>Bondage Gear</label>
+            <div class="add-row"><input type="text" id="inBond" placeholder="Rope, Cuffs..."><button class="add-btn" onclick="addItem('bondage')">+</button></div>
             <div id="gridBond" class="inventory-grid"></div>
         </div>
         <div class="cat-section">
-            <div class="cat-header">Sensory Gear</div>
-            <div class="add-row"><input type="text" id="inSens" placeholder="e.g. Blindfold..."><button class="add-btn" onclick="addItem('sensory')">+</button></div>
+            <label>Sensory Gear</label>
+            <div class="add-row"><input type="text" id="inSens" placeholder="Blindfold, Gag..."><button class="add-btn" onclick="addItem('sensory')">+</button></div>
             <div id="gridSens" class="inventory-grid"></div>
         </div>
         <div class="cat-section">
-            <div class="cat-header">Toys</div>
-            <div class="add-row"><input type="text" id="inToys" placeholder="e.g. Flogger..."><button class="add-btn" onclick="addItem('toys')">+</button></div>
+            <label>Toys / Mind Fuck Gear</label>
+            <div class="add-row"><input type="text" id="inToys" placeholder="Flogger, Wand..."><button class="add-btn" onclick="addItem('toys')">+</button></div>
             <div id="gridToys" class="inventory-grid"></div>
         </div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Lock & Start ></button></div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Lock System ></button></div>
     </div>
 
     <div id="step3" class="step">
         <div id="prepPhase">
-            <div class="challenge-card" id="taskBox">Ready.</div>
-            <button class="btn" id="genBtn" onclick="generate()" style="margin-top:20px;">Generate Encounter</button>
-            <button class="btn" id="startBtn" style="display:none; margin-top:20px;" onclick="showTimer()">Start Timer</button>
+            <div class="challenge-card" id="taskBox">Ready for randomized input.</div>
+            <button class="btn" id="genBtn" onclick="generate()" style="margin-top:20px;">Synthesize Round</button>
+            <button class="btn" id="startBtn" style="display:none; margin-top:20px;" onclick="showTimer()">Confirm & Start</button>
         </div>
         <div id="timerPhase" style="display:none;">
             <div class="timer-val" id="timeDisp">00:00</div>
-            <button class="btn" onclick="resolve(true)">CLEAR</button>
-            <button class="btn" style="background:#222; margin-top:10px;" onclick="resolve(false)">FAIL</button>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button class="btn" onclick="resolve(true)">SUCCESS</button>
+                <button class="btn" style="background:#222;" onclick="resolve(false)">FAIL</button>
+            </div>
         </div>
         <button class="panic-btn" onclick="activatePanic()">!!! SAFE WORD !!!</button>
     </div>
@@ -101,18 +125,18 @@
 
 <script>
     let items = { bondage: [], sensory: [], toys: [] };
-    let players = [], active = { bondage: [], sensory: [], toys: [] }, subIdx = 0, domIdx = 1, clock, secs;
+    let players = [], subIdx = 0, domIdx = 1, clock, secs;
 
     function nav(s) {
         if(s===2) {
-            players = [{ name: document.getElementById('p1Name').value || "P1", gen: document.getElementById('p1Gen').value },
-                       { name: document.getElementById('p2Name').value || "P2", gen: document.getElementById('p2Gen').value }];
+            players = [
+                { name: document.getElementById('p1Name').value || "Sub", gen: document.getElementById('p1Gen').value },
+                { name: document.getElementById('p2Name').value || "Dom", gen: document.getElementById('p2Gen').value }
+            ];
         }
-        if(s===3) {
-            active.bondage = getChecked('gridBond');
-            active.sensory = getChecked('gridSens');
-            active.toys = getChecked('gridToys');
-            if(active.bondage.length === 0) { alert("Add bondage first!"); nav(2); return; }
+        if(s===3 && items.bondage.length === 0) {
+            alert("Please add at least one Bondage item to begin.");
+            return;
         }
         document.querySelectorAll('.step').forEach(d => d.classList.remove('active'));
         document.getElementById('step'+s).classList.add('active');
@@ -122,15 +146,22 @@
         const input = document.getElementById(cat === 'bondage' ? 'inBond' : cat === 'sensory' ? 'inSens' : 'inToys');
         if (input.value.trim()) {
             items[cat].push(input.value.trim());
-            const grid = document.getElementById(cat === 'bondage' ? 'gridBond' : cat === 'sensory' ? 'gridSens' : 'gridToys');
-            grid.innerHTML = "";
-            items[cat].slice().reverse().forEach(i => grid.innerHTML += `<div class="inv-item"><input type="checkbox" value="${i}" checked> ${i}</div>`);
+            renderGrid(cat);
             input.value = "";
         }
     }
 
-    function getChecked(id) {
-        return Array.from(document.querySelectorAll(`#${id} input:checked`)).map(i => i.value);
+    function removeItem(cat, index) {
+        items[cat].splice(index, 1);
+        renderGrid(cat);
+    }
+
+    function renderGrid(cat) {
+        const grid = document.getElementById(cat === 'bondage' ? 'gridBond' : cat === 'sensory' ? 'gridSens' : 'gridToys');
+        grid.innerHTML = "";
+        items[cat].forEach((item, idx) => {
+            grid.innerHTML += `<div class="inv-item"><span>${item}</span><span class="del-btn" onclick="removeItem('${cat}', ${idx})">REMOVE</span></div>`;
+        });
     }
 
     function generate() {
@@ -140,25 +171,25 @@
         const modes = ["Truth or Dare", "Mind Fuck", "Shibari", "Escape"];
         const mode = modes[Math.floor(Math.random() * modes.length)];
         
-        let b = active.bondage[Math.floor(Math.random() * active.bondage.length)];
-        let s = active.sensory.length > 0 ? active.sensory[Math.floor(Math.random() * active.sensory.length)] : "None";
-        let t = active.toys.length > 0 ? active.toys[Math.floor(Math.random() * active.toys.length)] : "None";
+        const b = items.bondage[Math.floor(Math.random() * items.bondage.length)];
+        const s = items.sensory.length > 0 ? items.sensory[Math.floor(Math.random() * items.sensory.length)] : "No sensory available";
+        const t = items.toys.length > 0 ? items.toys[Math.floor(Math.random() * items.toys.length)] : "No toys available";
 
         let content = `<div class="mode-badge">${mode}</div><div class="intensity-pill">LVL ${intensity}</div>`;
-        content += `<span class="mod-header">RESTRAINT</span> ${dom.name} must secure ${sub.name} using <b>${b}</b>.`;
+        content += `<p><b>Restraint:</b> ${dom.name} secures ${sub.name} (${sub.gen}) with <b>${b}</b>.</p>`;
 
         if(mode === "Truth or Dare") {
-            content += `<span class="mod-header">TASK</span> Truth or Dare. Master penalizes with <b>${t}</b> on failure.`;
+            content += `<p><b>Challenge:</b> ${dom.name} gives a Truth or Dare. Failure to comply results in ${intensity} minutes of <b>${t}</b>.</p>`;
             secs = 180;
         } else if(mode === "Mind Fuck") {
-            content += `<span class="mod-header">TASK</span> Blindfold with <b>${s}</b>. Sub must answer questions while Master uses <b>${t}</b>.`;
+            content += `<p><b>Challenge:</b> ${sub.name} is blinded by <b>${s}</b>. While ${dom.name} uses <b>${t}</b>, the sub must name a different item in the room for every 10 seconds that pass.</p>`;
             secs = 120;
         } else if(mode === "Shibari") {
-            content += `<span class="mod-header">TASK</span> Master ties an elaborate pattern with <b>${b}</b> for the full timer.`;
+            content += `<p><b>Challenge:</b> An aesthetic tie. Master must use <b>${b}</b> to create a complex, tight pattern. Submissive must remain perfectly still.</p>`;
             secs = 300;
         } else {
-            content += `<span class="mod-header">TASK</span> Escape from <b>${b}</b> before the clock runs out.`;
-            secs = (intensity * 40) + 60;
+            content += `<p><b>Challenge:</b> The Great Escape. ${sub.name} must free themselves from the <b>${b}</b> before the clock hits zero.</p>`;
+            secs = (intensity * 45) + 60;
         }
 
         document.getElementById('taskBox').innerHTML = content;
@@ -166,28 +197,20 @@
         document.getElementById('startBtn').style.display = 'block';
     }
 
-    function activatePanic() {
-        clearInterval(clock);
-        document.getElementById('panicOverlay').style.display = 'flex';
-    }
-
-    function closePanic() {
+    function activatePanic() { clearInterval(clock); document.getElementById('panicOverlay').style.display = 'flex'; }
+    function closePanic() { 
         document.getElementById('panicOverlay').style.display = 'none';
-        // Reset the interface but keep the inventory
         document.getElementById('timerPhase').style.display = 'none';
         document.getElementById('prepPhase').style.display = 'block';
         document.getElementById('genBtn').style.display = 'block';
         document.getElementById('startBtn').style.display = 'none';
-        document.getElementById('taskBox').innerHTML = "Session Interrupted. Generate a new encounter when ready.";
     }
 
     function resolve(success) {
         clearInterval(clock);
-        if(success) { subIdx = (subIdx === 0) ? 1 : 0; domIdx = (domIdx === 0) ? 1 : 0; }
-        document.getElementById('timerPhase').style.display = 'none';
-        document.getElementById('prepPhase').style.display = 'block';
-        document.getElementById('genBtn').style.display = 'block';
-        document.getElementById('startBtn').style.display = 'none';
+        if(success) { subIdx = (subIdx === 0) ? 1 : 0; domIdx = (domIdx === 0) ? 1 : 0; alert("Success! Role swap activated."); }
+        else { alert("Failed. Position maintained."); }
+        closePanic();
     }
 
     function showTimer() {
