@@ -29,8 +29,9 @@
 
         input[type="text"], select, input[type="number"] { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; font-size: 1rem; outline: none; display: block; font-family: inherit; }
         
-        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .tgl-btn { background: #f0f0f0; padding: 8px; border-radius: 10px; text-align: center; font-size: 0.65rem; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: 0.2s; color: #999; text-transform: uppercase; }
+        /* Updated Grid for full-length names */
+        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .tgl-btn { background: #f0f0f0; padding: 12px 8px; border-radius: 12px; text-align: center; font-size: 0.75rem; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: 0.2s; color: #999; text-transform: uppercase; }
         .tgl-btn.on { background: var(--crimson); color: white; border-color: var(--accent); }
 
         .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; }
@@ -77,7 +78,7 @@
 
     <div id="step2" class="step">
         <div class="box">
-            <p style="font-size: 0.8rem; color: #888; margin-bottom: 20px; text-align: center;">Select enabled gear.</p>
+            <p style="font-size: 0.8rem; color: #888; margin-bottom: 20px; text-align: center;">Enable gear for this session.</p>
             <div id="inv-container"></div>
         </div>
         <button class="btn" onclick="goToStep(3)">Start Session</button>
@@ -105,7 +106,7 @@
             </div>
             <div class="box" style="text-align:center;">
                 <div id="badge-container"></div>
-                <div id="task-text" style="font-weight: 500; min-height: 60px;">Awaiting decree...</div>
+                <div id="task-text" style="font-weight: 500; min-height: 60px;">Ready for command...</div>
             </div>
             <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
             <div id="pre-start-controls" style="display:none;">
@@ -118,17 +119,16 @@
             <div class="timer-display" id="clock">00:00</div>
             <button class="btn" onclick="resolveTurn(true)">Success (Swap)</button>
             <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Failure (Keep)</button>
-            <button class="btn btn-veto" onclick="emergencyVeto()">Emergency Veto</button>
         </div>
     </div>
 </div>
 
 <script>
     let rawInv = {
-        vis: [{n:"Blindfold", on:true}, {n:"Sleep Mask", on:true}, {n:"Silk Scarf", on:true}, {n:"Hood", on:false}],
-        speech: [{n:"Ball Gag", on:true}, {n:"Medical Tape", on:true}, {n:"Cleave Gag", on:false}, {n:"Muzzle", on:false}],
-        rest: [{n:"Rope", on:true}, {n:"Handcuffs", on:true}, {n:"Ankle Cuffs", on:true}, {n:"Leather Straps", on:true}],
-        sens: [{n:"Feather", on:true}, {n:"Ice Cube", on:true}, {n:"Wand Vibrator", on:true}, {n:"Clamps", on:true}, {n:"Flogger", on:true}]
+        vis: [{n:"Blindfold", on:true}, {n:"Sleep Mask", on:true}, {n:"Silk Scarf", on:true}],
+        speech: [{n:"Ball Gag", on:true}, {n:"Medical Tape", on:true}, {n:"Muzzle", on:false}],
+        rest: [{n:"Rope", on:true}, {n:"Handcuffs", on:true}, {n:"Ankle Cuffs", on:true}],
+        sens: [{n:"Feather", on:true}, {n:"Ice Cube", on:true}, {n:"Wand Vibrator", on:true}, {n:"Flogger", on:true}]
     };
 
     let players = [], currentRound = 1, subIdx = 0, timer, timeLeft;
@@ -138,7 +138,7 @@
         truth: { label: "Truth", class: "b-truth", time: 90, tasks: ["CONFESSION: Admit a desire while bound in [REST].", "SENSORY: Describe [SENS] while [VIS] is applied."] },
         dare: { label: "Dare", class: "b-dare", time: 180, tasks: ["SERVICE: Serve Master while [REST] and [SPEECH] are active.", "STATUE: Endure [SENS] on your [BODY] without flinching."] },
         escape: { label: "Escape", class: "b-escape", time: 420, tasks: ["FREEDOM: Escape from [REST] while [VIS] is applied.", "TRIAL: Escape [REST] while Master uses [SENS]."] },
-        edging: { label: "Edging", class: "b-edging", time: 300, tasks: ["CONTROL: Master uses [SENS] to edge you. No release.", "DENIAL: Endure [SENS] while hands are in [REST]."] },
+        edging: { label: "Edging", class: "b-edging", time: 300, tasks: ["CONTROL: Master uses [SENS] to edge you.", "DENIAL: Endure [SENS] while in [REST]."] },
         physical: { label: "Physical", class: "b-physical", time: 200, tasks: ["STRESS: Hold a deep kneeling pose while [REST] is applied.", "STRENGTH: Hold a plank while ankles are in [REST]."] },
         selfbondage: { label: "Self-Bondage", class: "b-selfbondage", time: 150, tasks: ["BIND: Apply [REST] to yourself tightly.", "PRESENT: Present yourself with [VIS] and [SPEECH] applied."] }
     };
@@ -238,7 +238,7 @@
 
     function resolveTurn(success) {
         clearInterval(timer);
-        if (success) { players[subIdx].wins++; subIdx = (subIdx === 0 ? 1 : 0); alert("Success! Swap."); }
+        if (success) { players[subIdx].wins++; subIdx = (subIdx === 0 ? 1 : 0); alert("Success! Roles Swapped."); }
         else { players[subIdx === 0 ? 1 : 0].wins++; alert("Failure. Master remains."); }
         currentRound++;
         if (currentRound > parseInt(document.getElementById('maxRounds').value)) finalize();
@@ -250,17 +250,13 @@
         document.getElementById('pre-round').style.display = 'block';
         document.getElementById('gen-btn').style.display = 'block';
         document.getElementById('pre-start-controls').style.display = 'none';
-        document.getElementById('task-text').innerText = "Awaiting decree...";
+        document.getElementById('task-text').innerText = "Ready for command...";
         document.getElementById('badge-container').innerHTML = "";
-    }
-
-    function emergencyVeto() {
-        if(confirm("Emergency Veto? Counts as a Failure.")) resolveTurn(false);
     }
 
     function finalize() {
         let w = players[0].wins >= players[1].wins ? 0 : 1;
-        document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Ascension</h1><div class="box"><span class="label">Victor</span><div style="font-size:2rem;color:var(--crimson);font-weight:bold;">${players[w].n}</div></div><button class="btn" onclick="location.reload()">Reset</button></div>`;
+        document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Ascension</h1><div class="box"><span class="label">Victor</span><div style="font-size:2rem;color:var(--crimson);font-weight:bold;">${players[w].n}</div></div><button class="btn" onclick="location.reload()">Reset Session</button></div>`;
     }
 </script>
 </body>
