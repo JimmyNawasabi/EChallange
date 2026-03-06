@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Velvet & Vinyl</title>
+    <title>Sovereign Shift</title>
     <style>
         :root { 
             --accent: #d4af37; --soft-bg: #fdfaf5; --card-bg: #ffffff;
@@ -13,7 +13,8 @@
         
         body { background: var(--soft-bg); color: var(--text); font-family: 'Arial', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 18px; }
         .container { max-width: 650px; width: 100%; background: var(--card-bg); padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 35px; border: 1px solid rgba(212, 175, 55, 0.2); }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 20px; }
+        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 5px; cursor: pointer; }
+        .subtitle { text-align: center; font-size: 0.8rem; color: #888; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; }
 
         .step { display: none; }
         .active { display: block; }
@@ -23,11 +24,7 @@
 
         input[type="text"], select, input[type="number"] { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 15px; margin-bottom: 12px; box-sizing: border-box; font-size: 1.1rem; outline: none; }
 
-        /* TROPHY TRACKER */
         .trophy-row { display: flex; justify-content: space-between; background: #2c2c2c; color: var(--accent); padding: 10px 20px; border-radius: 50px; margin-bottom: 20px; font-size: 0.8rem; font-weight: bold; }
-
-        /* SPOTIFY EMBED */
-        #spotify-container { margin-top: 20px; border-radius: 15px; overflow: hidden; display: none; }
 
         .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         .tag { background: #f4f1ea; padding: 8px 15px; border-radius: 50px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; font-weight: bold; border: 1px solid #e0ddd5; }
@@ -48,7 +45,8 @@
 <body>
 
 <div class="container">
-    <h1>Bound & Brave</h1>
+    <h1 id="gameTitle" onclick="shuffleTitle()">Sovereign Shift</h1>
+    <div class="subtitle">A Competitive Session Controller</div>
     
     <div id="trophy-display" class="trophy-row" style="display:none;">
         <span id="p1Score">P1: 0 Wins</span>
@@ -58,204 +56,152 @@
 
     <div id="step1" class="step active">
         <div class="box">
-            <span class="label">Session Settings</span>
+            <span class="label">Session Config</span>
             <input type="number" id="maxRounds" value="6" placeholder="Rounds">
-            <input type="text" id="spotifyLink" placeholder="Paste Spotify Playlist Link (Optional)">
+            <input type="text" id="spotifyLink" placeholder="Paste Spotify Playlist Link">
             
-            <span class="label">Player 1 (Sub)</span>
-            <input type="text" id="p1" placeholder="Name">
-            <select id="g1">
-                <option value="Male Body">Male Body</option>
-                <option value="Female Body">Female Body</option>
-                <option value="Neutral">Neutral</option>
-            </select>
-            
-            <span class="label">Player 2 (Master)</span>
-            <input type="text" id="p2" placeholder="Name">
-            <select id="g2">
-                <option value="Male Body">Male Body</option>
-                <option value="Female Body">Female Body</option>
-                <option value="Neutral">Neutral</option>
-            </select>
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1;">
+                    <span class="label">Player 1 (Starts Sub)</span>
+                    <input type="text" id="p1" placeholder="Name">
+                </div>
+                <div style="flex:1;">
+                    <span class="label">Player 2 (Starts Master)</span>
+                    <input type="text" id="p2" placeholder="Name">
+                </div>
+            </div>
         </div>
-        <button class="btn" onclick="nav(2)">Gear Inventory ></button>
+        <button class="btn" onclick="nav(2)">Define Inventory ></button>
     </div>
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Bondage</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in1"><button class="btn btn-add" onclick="addG('bondage')">Add</button></div>
-            <div id="list1" class="tag-row"></div>
-            <span class="label">Sensory</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in2"><button class="btn btn-add" onclick="addG('sensory')">Add</button></div>
-            <div id="list2" class="tag-row"></div>
-            <span class="label">Tease Tools</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in3"><button class="btn btn-add" onclick="addG('toys')">Add</button></div>
-            <div id="list3" class="tag-row"></div>
+            <span class="label">Vision (Blindfolds, Masks, Hoods)</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in-vis"><button class="btn btn-add" onclick="addItem('vis')">Add</button></div>
+            <div id="list-vis" class="tag-row"></div>
+
+            <span class="label">Speech (Gags, Tape, Muzzles)</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in-speech"><button class="btn btn-add" onclick="addItem('speech')">Add</button></div>
+            <div id="list-speech" class="tag-row"></div>
+
+            <span class="label">Restraint (Rope, Cuffs, Chains)</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in-rest"><button class="btn btn-add" onclick="addItem('rest')">Add</button></div>
+            <div id="list-rest" class="tag-row"></div>
+
+            <span class="label">Sensation (Wands, Feathers, Ice)</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in-sens"><button class="btn btn-add" onclick="addItem('sens')">Add</button></div>
+            <div id="list-sens" class="tag-row"></div>
         </div>
-        <button class="btn" onclick="nav(3)">Start Game</button>
+        <button class="btn" onclick="nav(3)">Start Session</button>
     </div>
 
     <div id="step3" class="step">
         <div class="card-dock">
-            <div id="card-y" class="card-ui c-yellow" onclick="useCard('yellow')">YELLOW<br>(Swap Roles)</div>
-            <div id="card-r" class="card-ui c-red" onclick="useCard('red')">RED<br>(Pass Turn)</div>
+            <div id="card-y" class="card-ui c-yellow" onclick="useCard('yellow')">YELLOW<br>(Swap)</div>
+            <div id="card-r" class="card-ui c-red" onclick="useCard('red')">RED<br>(Pass)</div>
         </div>
 
         <div id="pre-round">
-            <div id="challenge-text" class="box" style="font-size: 1.15rem; line-height: 1.6; border-color: var(--accent);">Ready for synthesis...</div>
-            <button class="btn" id="gen-btn" onclick="generate()">Generate Challenge</button>
+            <div id="challenge-text" class="box" style="font-size: 1.1rem; line-height: 1.5; border-color: var(--accent);">Ready...</div>
+            <button class="btn" id="gen-btn" onclick="generate()">Generate Turn</button>
             <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Start Timer</button>
         </div>
 
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
             <button class="btn" onclick="resolveTurn(true)">Success: Swap Roles</button>
-            <button class="btn" style="background:#888; margin-top: 12px;" onclick="resolveTurn(false)">Fail: Stay Sub</button>
+            <button class="btn" style="background:#888; margin-top: 10px;" onclick="resolveTurn(false)">Fail: Stay Sub</button>
         </div>
-
-        <div id="spotify-container"></div>
     </div>
 </div>
 
 <script>
-    let gear = { bondage: [], sensory: [], toys: [] };
-    let players = [], currentRound = 1, totalRounds = 6;
-    let subIdx = 0; 
-    let timer, timeLeft;
-    let cardOwnerIdx = 0;
+    let inv = { vis: [], speech: [], rest: [], sens: [] };
+    let players = [], currentRound = 1, totalRounds = 6, subIdx = 0, timer, timeLeft, cardOwnerIdx = 0;
+
+    const titles = ["Sovereign Shift", "Silk & Sovereignty", "The Power Pivot", "The Gilded Gauntlet", "Velvet Mandate", "Points of Pressure"];
+    function shuffleTitle() { document.getElementById('gameTitle').innerText = titles[Math.floor(Math.random()*titles.length)]; }
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function beep(freq, dur, vol = 0.05) {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.frequency.value = freq; gain.gain.value = vol;
-        osc.start(); setTimeout(() => osc.stop(), dur);
-    }
+    function beep(f, d, v=0.03) { let o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value=f; g.gain.value=v; o.start(); setTimeout(()=>o.stop(), d); }
 
     function nav(n) {
-        if(n === 2) {
-            players = [
-                { n: document.getElementById('p1').value || "P1", g: document.getElementById('g1').value, wins: 0 },
-                { n: document.getElementById('p2').value || "P2", g: document.getElementById('g2').value, wins: 0 }
-            ];
-            totalRounds = parseInt(document.getElementById('maxRounds').value);
-            setupSpotify();
-        }
-        if(n === 3 && gear.bondage.length === 0) { alert("Add gear!"); return; }
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        if(n===2) players = [{n:document.getElementById('p1').value||"P1", wins:0},{n:document.getElementById('p2').value||"P2", wins:0}];
+        if(n===3 && inv.rest.length === 0) { alert("Add restraint gear!"); return; }
+        document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
         document.getElementById('step'+n).classList.add('active');
-        if(n === 3) document.getElementById('trophy-display').style.display = 'flex';
+        if(n===3) document.getElementById('trophy-display').style.display='flex';
         updateStatus();
     }
 
-    function setupSpotify() {
-        let link = document.getElementById('spotifyLink').value;
-        if (link.includes("spotify.com")) {
-            let id = link.split("/playlist/")[1]?.split("?")[0];
-            if (id) {
-                document.getElementById('spotify-container').innerHTML = `<iframe src="https://open.spotify.com/embed/playlist/${id}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
-                document.getElementById('spotify-container').style.display = 'block';
-            }
-        }
+    function addItem(c) {
+        let val = document.getElementById('in-'+c).value;
+        if(val) { inv[c].push(val); document.getElementById('in-'+c).value=''; renderInv(); }
     }
 
-    function addG(cat) {
-        let id = cat === 'bondage' ? 'in1' : cat === 'sensory' ? 'in2' : 'in3';
-        let val = document.getElementById(id).value;
-        if(val) { gear[cat].push(val); document.getElementById(id).value = ''; renderG(); }
-    }
-
-    function renderG() {
-        ['bondage', 'sensory', 'toys'].forEach((cat, i) => {
-            document.getElementById('list'+(i+1)).innerHTML = gear[cat].map((item, idx) => 
-                `<div class="tag">${item}<span onclick="gear['${cat}'].splice(${idx},1);renderG()">×</span></div>`
-            ).join('');
+    function renderInv() {
+        ['vis','speech','rest','sens'].forEach(c=>{
+            document.getElementById('list-'+c).innerHTML = inv[c].map((it,idx)=>`<div class="tag">${it}<span onclick="inv['${c}'].splice(${idx},1);renderInv()">×</span></div>`).join('');
         });
     }
 
     function updateStatus() {
-        if(players.length > 0) {
-            document.getElementById('p1Score').innerText = `${players[0].n}: ${players[0].wins} Wins`;
-            document.getElementById('p2Score').innerText = `${players[1].n}: ${players[1].wins} Wins`;
-            document.getElementById('card-y').classList.toggle('held', cardOwnerIdx === subIdx);
-            document.getElementById('card-r').classList.toggle('held', cardOwnerIdx === subIdx);
-        }
+        document.getElementById('p1Score').innerText = `${players[0].n}: ${players[0].wins} Wins`;
+        document.getElementById('p2Score').innerText = `${players[1].n}: ${players[1].wins} Wins`;
+        document.getElementById('card-y').classList.toggle('held', cardOwnerIdx === subIdx);
+        document.getElementById('card-r').classList.toggle('held', cardOwnerIdx === subIdx);
     }
 
-    function useCard(type) {
+    function useCard(t) {
         if(cardOwnerIdx !== subIdx) return;
-        if(type === 'yellow') {
-            beep(400, 200);
-            subIdx = (subIdx === 0 ? 1 : 0); 
-            cardOwnerIdx = (subIdx === 0 ? 1 : 0); 
-            generate();
-        } else {
-            beep(200, 500);
-            cardOwnerIdx = (subIdx === 0 ? 1 : 0);
-            resolveTurn(false, true); 
-        }
+        if(t==='yellow') { subIdx = subIdx===0?1:0; cardOwnerIdx=subIdx; generate(); }
+        else { cardOwnerIdx = subIdx===0?1:0; resolveTurn(false, true); }
         updateStatus();
     }
 
     function generate() {
-        const sub = players[subIdx];
-        const master = players[subIdx==0?1:0];
-        const b = gear.bondage[Math.floor(Math.random()*gear.bondage.length)];
-        const s = gear.sensory.length ? gear.sensory[Math.floor(Math.random()*gear.sensory.length)] : "bare eyes";
-        const t = gear.toys.length ? gear.toys[Math.floor(Math.random()*gear.toys.length)] : "fingers";
+        const sub = players[subIdx], dom = players[subIdx===0?1:0];
+        const v = inv.vis.length ? `blinded by <b>${inv.vis[Math.floor(Math.random()*inv.vis.length)]}</b>` : "eyes uncovered";
+        const sp = inv.speech.length ? `silenced with <b>${inv.speech[Math.floor(Math.random()*inv.speech.length)]}</b>` : "free to speak";
+        const r = `bound in <b>${inv.rest[Math.floor(Math.random()*inv.rest.length)]}</b>`;
+        const s = inv.sens.length ? `<b>${inv.sens[Math.floor(Math.random()*inv.sens.length)]}</b>` : "delicate touch";
 
-        const tasks = [
-            `<b>TEASE & EDGE:</b> ${master.n} binds ${sub.n} (${sub.g}) with ${b}. Using ${t}, bring them to the absolute brink. If ${sub.n} resists climax, they win the role.`,
-            `<b>ESCAPE CHALLENGE:</b> ${sub.n} is immobilized with ${b} and blinded by ${s}. Escape before time ends to take the throne.`,
-            `<b>SENSORY FOCUS:</b> ${master.n} applies ${b} and ${s}. ${sub.n} must remain still while teased with ${t}. Any sound extends the clock.`
+        const scenarios = [
+            `<b>TEASE & EDGE:</b> ${dom.n} must secure ${sub.n} using ${r}. While ${sub.n} is ${v}, use ${s} to bring them to the brink. If they climax, they fail. If they resist, they swap to Master.`,
+            `<b>THE HUMAN STATUE:</b> ${sub.n} is ${r} and ${sp}. They must remain perfectly still for 4 minutes while ${dom.n} uses ${s}. Any sound or movement resets the clock. Success earns the Master role.`,
+            `<b>SENSORY FOCUS:</b> ${sub.n} is ${v} and ${sp}. ${dom.n} will use ${s} on 3 different parts of the body. ${sub.n} must identify the location and the tool. One mistake means they stay the Sub.`,
+            `<b>THE ESCAPIST:</b> ${dom.n} binds ${sub.n} tightly with ${r}. ${sub.n} is ${v}. They have 4 minutes to struggle free. ${dom.n} may use ${s} to distract them from their escape.`
         ];
         
-        document.getElementById('challenge-text').innerHTML = tasks[Math.floor(Math.random()*tasks.length)];
-        timeLeft = 240; 
-        document.getElementById('gen-btn').style.display = 'none';
-        document.getElementById('start-btn').style.display = 'block';
+        document.getElementById('challenge-text').innerHTML = scenarios[Math.floor(Math.random()*scenarios.length)];
+        timeLeft = 240; document.getElementById('gen-btn').style.display='none'; document.getElementById('start-btn').style.display='block';
     }
 
     function startT() {
-        document.getElementById('pre-round').style.display = 'none';
-        document.getElementById('active-round').style.display = 'block';
-        timer = setInterval(() => {
-            timeLeft--;
-            let m = Math.floor(timeLeft/60), s = timeLeft%60;
-            document.getElementById('clock').innerText = `${m}:${s<10?'0':''}${s}`;
-            if(timeLeft > 0) beep(440, 15, 0.02);
-            if(timeLeft <= 0) { clearInterval(timer); beep(800, 800, 0.1); resolveTurn(false); }
+        document.getElementById('pre-round').style.display='none'; document.getElementById('active-round').style.display='block';
+        timer = setInterval(()=>{
+            timeLeft--; document.getElementById('clock').innerText=`${Math.floor(timeLeft/60)}:${(timeLeft%60).toString().padStart(2,'0')}`;
+            if(timeLeft>0) beep(440, 10);
+            if(timeLeft<=0){ clearInterval(timer); resolveTurn(false); }
         }, 1000);
     }
 
-    function resolveTurn(success, usedRed = false) {
+    function resolveTurn(win, skip=false) {
         clearInterval(timer);
-        const masterIdx = (subIdx === 0 ? 1 : 0);
-        
-        if(success) {
-            subIdx = masterIdx; 
-            cardOwnerIdx = subIdx;
-            players[subIdx].wins++; // The player who WAS sub is now master and gets a win
-            alert("Victory! Roles swapped.");
-        } else {
-            players[masterIdx].wins++; // Master kept control, Master gets a win
-            if(!usedRed) alert("Failure. Master retains control.");
-        }
+        if(win) { subIdx=subIdx===0?1:0; cardOwnerIdx=subIdx; players[subIdx].wins++; alert("Victory! Role Swap."); }
+        else { players[subIdx===0?1:0].wins++; if(!skip) alert("Failure. Master retains control."); }
         
         currentRound++;
         if(currentRound > totalRounds) {
-            let winner = players[0].wins > players[1].wins ? players[0] : players[1];
-            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>🏆 Session Champion: ${winner.n} 🏆</h1><p style="font-size:1.3rem;">With ${winner.wins} dominance points, ${winner.n} wins the session and decides the final reward.</p></div>`;
+            let w = players[0].wins > players[1].wins ? players[0].n : players[1].n;
+            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Champion: ${w}</h1><button class="btn" onclick="location.reload()">Reset Session</button></div>`;
         } else {
-            document.getElementById('active-round').style.display = 'none';
-            document.getElementById('pre-round').style.display = 'block';
-            document.getElementById('gen-btn').style.display = 'block';
-            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('active-round').style.display='none'; document.getElementById('pre-round').style.display='block';
+            document.getElementById('gen-btn').style.display='block'; document.getElementById('start-btn').style.display='none';
             updateStatus();
         }
     }
+    shuffleTitle();
 </script>
 </body>
 </html>
