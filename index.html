@@ -34,21 +34,18 @@
         .tgl-btn.on { background: var(--crimson); color: white; border-color: var(--accent); }
 
         .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-        .tag { background: #fdfbf7; padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; display: flex; align-items: center; border: 1px solid #e8e4db; }
-        .tag span { color: var(--crimson); cursor: pointer; font-size: 1.1rem; margin-left: 8px; }
+        .tag { background: #eee; padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; display: flex; align-items: center; border: 2px solid transparent; cursor: pointer; color: #777; transition: 0.2s; }
+        .tag.on { background: #fff; border-color: var(--accent); color: var(--text); font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .tag span { color: var(--crimson); margin-left: 8px; font-weight: 900; font-size: 1rem; }
 
         .badge { display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 0.7rem; font-weight: 1000; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; color: white; }
         .b-truth { background: #5d6d7e; } .b-dare { background: #af601a; } .b-escape { background: #c0392b; }
         .b-edging { background: #884ea0; } .b-physical { background: #1e8449; } .b-selfbondage { background: #2e4053; }
-        .b-manual { background: var(--black); }
-
+        
         .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 20px; font-size: 1rem; margin-bottom: 10px; }
-        .btn-secondary { background: var(--accent); font-size: 0.85rem; padding: 12px; }
-        .btn-veto { background: var(--veto); font-size: 0.8rem; padding: 10px; border-radius: 15px; }
         .btn-add { background: var(--accent); width: 60px; color: white; font-weight: bold; border-radius: 10px; border: none; cursor: pointer; }
         
         .timer-display { font-size: 5rem; text-align: center; color: var(--crimson); font-weight: bold; margin: 15px 0; }
-        #manual-entry-area { display: none; margin-top: 15px; border-top: 2px dashed #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
@@ -63,43 +60,41 @@
             <input type="number" id="maxRounds" value="6">
             
             <div class="inner-box">
-                <span class="label">Participant One (Starts as Slave)</span>
+                <span class="label">Participant One (Slave)</span>
                 <input type="text" id="p1" placeholder="Name">
-                <span class="label">P1 Anatomy</span>
-                <select id="g1">
-                    <option value="male body">Male Body</option>
-                    <option value="female body">Female Body</option>
-                </select>
+                <span class="label">Anatomy</span>
+                <select id="g1"><option value="male body">Male Body</option><option value="female body">Female Body</option></select>
             </div>
             
-            <div class="inner-box" style="border-top: 2px solid #f5f2ed; padding-top: 20px;">
-                <span class="label">Participant Two (Starts as Master)</span>
+            <div class="inner-box">
+                <span class="label">Participant Two (Master)</span>
                 <input type="text" id="p2" placeholder="Name">
-                <span class="label">P2 Anatomy</span>
-                <select id="g2">
-                    <option value="male body">Male Body</option>
-                    <option value="female body">Female Body</option>
-                </select>
+                <span class="label">Anatomy</span>
+                <select id="g2"><option value="male body">Male Body</option><option value="female body">Female Body</option></select>
             </div>
         </div>
-        <button class="btn" onclick="goToStep(2)">Configure Inventory ></button>
+        <button class="btn" onclick="goToStep(2)">Inventory Checklist ></button>
     </div>
 
     <div id="step2" class="step">
         <div class="box">
-            <p style="font-size: 0.8rem; color: #888; margin-top: 0;">Modify the default kit to match your gear.</p>
+            <p style="font-size: 0.8rem; color: #888; margin-top: 0; text-align: center;">Tap items to include them in the session.</p>
             
-            <span class="label">Vision (Blindfolds, Hoods)</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in-vis"><button class="btn-add" onclick="addItem('vis')">+</button></div><div id="list-vis" class="tag-row"></div>
+            <span class="label">Vision</span>
+            <div style="display:flex; gap:10px; margin-bottom: 10px;"><input type="text" id="in-vis" placeholder="Custom item..."><button class="btn-add" onclick="addItem('vis')">+</button></div>
+            <div id="list-vis" class="tag-row"></div>
             
-            <span class="label">Mouth (Gags, Tape)</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in-speech"><button class="btn-add" onclick="addItem('speech')">+</button></div><div id="list-speech" class="tag-row"></div>
+            <span class="label">Mouth</span>
+            <div style="display:flex; gap:10px; margin-bottom: 10px;"><input type="text" id="in-speech" placeholder="Custom item..."><button class="btn-add" onclick="addItem('speech')">+</button></div>
+            <div id="list-speech" class="tag-row"></div>
             
-            <span class="label">Restraints (Cuffs, Rope)</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in-rest"><button class="btn-add" onclick="addItem('rest')">+</button></div><div id="list-rest" class="tag-row"></div>
+            <span class="label">Restraints</span>
+            <div style="display:flex; gap:10px; margin-bottom: 10px;"><input type="text" id="in-rest" placeholder="Custom item..."><button class="btn-add" onclick="addItem('rest')">+</button></div>
+            <div id="list-rest" class="tag-row"></div>
             
-            <span class="label">Sensation (Toys, Ice)</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in-sens"><button class="btn-add" onclick="addItem('sens')">+</button></div><div id="list-sens" class="tag-row"></div>
+            <span class="label">Sensation</span>
+            <div style="display:flex; gap:10px; margin-bottom: 10px;"><input type="text" id="in-sens" placeholder="Custom item..."><button class="btn-add" onclick="addItem('sens')">+</button></div>
+            <div id="list-sens" class="tag-row"></div>
         </div>
         <button class="btn" onclick="goToStep(3)">Enter Session</button>
     </div>
@@ -107,19 +102,15 @@
     <div id="step3" class="step">
         <div class="status-bar">
             <div><span class="label" style="margin:0">Master</span><div id="master-name" class="role-indicator">---</div></div>
-            <div id="scoreboard" style="text-align:center;">
-                <span class="score-pill" id="score-p1">P1: 0</span>
-                <span class="score-pill" id="score-p2">P2: 0</span>
-            </div>
+            <div id="scoreboard"><span class="score-pill" id="score-p1"></span> <span class="score-pill" id="score-p2"></span></div>
             <div style="text-align:right;"><span class="label" style="margin:0">Slave</span><div id="slave-name" class="role-indicator">---</div></div>
         </div>
 
         <div id="pre-round">
-            <div id="round-header" class="label" style="text-align:center; font-size: 1rem; margin-bottom: 20px;">Round 1</div>
-            
+            <div id="round-header" class="label" style="text-align:center; font-size: 1rem;">Round 1</div>
             <div class="inner-box">
-                <span class="label">Master's Command: Select Categories</span>
-                <div class="toggle-grid" id="round-toggles">
+                <span class="label">Active Categories</span>
+                <div class="toggle-grid">
                     <div class="tgl-btn on" data-cat="truth" onclick="this.classList.toggle('on')">Truth</div>
                     <div class="tgl-btn on" data-cat="dare" onclick="this.classList.toggle('on')">Dare</div>
                     <div class="tgl-btn on" data-cat="escape" onclick="this.classList.toggle('on')">Escape</div>
@@ -128,63 +119,50 @@
                     <div class="tgl-btn on" data-cat="selfbondage" onclick="this.classList.toggle('on')">Self</div>
                 </div>
             </div>
-
-            <div id="challenge-display" class="box" style="text-align:center; min-height: 100px;">
-                <div id="badge-container"></div>
-                <div id="task-text">Awaiting the Master's Choice...</div>
-            </div>
-            
-            <button class="btn" id="gen-btn" onclick="generate()">Generate Random Decree</button>
-            <button class="btn btn-secondary" id="show-manual-btn" onclick="toggleManual()">Manual Override</button>
-
-            <div id="manual-entry-area">
-                <textarea id="custom-task" placeholder="Type direct order..."></textarea>
-                <input type="number" id="custom-time" value="5" placeholder="Mins">
-                <button class="btn" style="background:black;" onclick="applyManual()">Submit Decree</button>
-            </div>
-
-            <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Accept & Start Clock</button>
-            <button class="btn btn-veto" id="veto-btn" style="display:none;" onclick="vetoTask()">Veto</button>
+            <div class="box" style="text-align:center;"><div id="badge-container"></div><div id="task-text">Awaiting Decree...</div></div>
+            <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
+            <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Start Clock</button>
         </div>
 
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
-            <button class="btn" onclick="resolveTurn(true)">Success (Swap Roles)</button>
-            <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Failure (Keep Roles)</button>
+            <button class="btn" onclick="resolveTurn(true)">Success (Swap)</button>
+            <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Failure (Keep)</button>
         </div>
     </div>
 </div>
 
 <script>
-    // DEFAULT KIT
-    let inv = { 
-        vis: ["Blindfold", "Sleep Mask"], 
-        speech: ["Ball Gag", "Medical Tape"], 
-        rest: ["Rope", "Handcuffs", "Ankle Cuffs"], 
-        sens: ["Feather", "Ice Cube", "Wand Vibrator"] 
+    let rawInv = {
+        vis: [{n:"Blindfold", on:true}, {n:"Sleep Mask", on:true}],
+        speech: [{n:"Ball Gag", on:true}, {n:"Medical Tape", on:true}],
+        rest: [{n:"Rope", on:true}, {n:"Handcuffs", on:true}, {n:"Ankle Cuffs", on:true}],
+        sens: [{n:"Feather", on:true}, {n:"Ice Cube", on:true}, {n:"Vibrator", on:true}]
     };
 
-    let players = [], currentRound = 1, subIdx = 0, timer, timeLeft, currentCat = "", currentTaskIdx = -1;
+    let players = [], currentRound = 1, subIdx = 0, timer, timeLeft;
 
     const taskData = {
-        truth: { class: "b-truth", time: 90, tasks: ["CONFESSION: Admit a deep desire while [REST] is applied.", "REVELATION: Describe the sensation of [VIS] and [SPEECH] on your [BODY]."] },
-        dare: { class: "b-dare", time: 180, tasks: ["SUBMISSION: Serve the Master while [SPEECH] and [REST] are active.", "EXPOSURE: Remain perfectly still while Master uses [SENS] on your [BODY]."] },
-        escape: { class: "b-escape", time: 480, tasks: ["FREEDOM: Escape from [REST] while [VIS] is applied.", "SENSORY: Wriggle out of [REST] while Master uses [SENS] to break your focus."] },
-        edging: { class: "b-edging", time: 300, tasks: ["BRINK: Master uses [SENS] until you are at 99%. Hold for the duration.", "DENIAL: Endure [SENS] while [REST]. No release allowed."] },
-        physical: { class: "b-physical", time: 240, tasks: ["ENDURANCE: Hold a deep kneeling pose while [REST] and [VIS] are active.", "STRENGTH: Perform slow leg lifts while ankles are in [REST]."] },
-        selfbondage: { class: "b-selfbondage", time: 180, tasks: ["BINDING: Bind your own limbs as tightly as possible with [REST].", "WRAPPING: Secure [VIS] and [SPEECH] on yourself and present for inspection."] }
+        truth: { class: "b-truth", time: 90, tasks: ["CONFESSION: Admit a desire while [REST] is applied.", "FEELING: Describe the sensation of [VIS] on your [BODY]."] },
+        dare: { class: "b-dare", time: 180, tasks: ["SERVICE: Serve Master while [SPEECH] and [REST] are active.", "STATUE: Endure [SENS] on your [BODY] without moving."] },
+        escape: { class: "b-escape", time: 420, tasks: ["FREEDOM: Escape from [REST] while [VIS] is applied.", "TRIAL: Escape [REST] while Master uses [SENS] to distract you."] },
+        edging: { class: "b-edging", time: 300, tasks: ["LIMITS: Master uses [SENS] to hold you at the edge. No release.", "DENIAL: Endure [SENS] while [REST]."] },
+        physical: { class: "b-physical", time: 200, tasks: ["STRESS: Hold a deep kneeling pose while [REST] and [VIS] are active.", "CORE: Perform leg lifts while [REST] binds ankles."] },
+        selfbondage: { class: "b-selfbondage", time: 150, tasks: ["AUTO: Bind your own limbs with [REST] as tightly as possible.", "SENSORY: Secure [VIS] and [SPEECH] on yourself."] }
     };
 
     function goToStep(n) {
         if (n === 2) {
             players = [
-                {n: document.getElementById('p1').value || "P1", g: document.getElementById('g1').value, wins: 0},
-                {n: document.getElementById('p2').value || "P2", g: document.getElementById('g2').value, wins: 0}
+                {n: document.getElementById('p1').value || "Slave", g: document.getElementById('g1').value, wins: 0},
+                {n: document.getElementById('p2').value || "Master", g: document.getElementById('g2').value, wins: 0}
             ];
             renderInv();
         }
         if (n === 3) {
-            if (inv.vis.length === 0 || inv.rest.length === 0) return alert("Add at least one Vision and one Restraint item!");
+            let activeVis = rawInv.vis.filter(i => i.on);
+            let activeRest = rawInv.rest.filter(i => i.on);
+            if (!activeVis.length || !activeRest.length) return alert("Select at least 1 Vision and 1 Restraint item!");
             updateIdentity();
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -192,14 +170,19 @@
     }
 
     function addItem(c) {
-        let input = document.getElementById('in-' + c);
-        if (input.value) { inv[c].push(input.value); input.value = ''; renderInv(); }
+        let val = document.getElementById('in-' + c).value;
+        if (val) { rawInv[c].push({n: val, on: true}); document.getElementById('in-' + c).value = ''; renderInv(); }
+    }
+
+    function toggleItem(c, idx) {
+        rawInv[c][idx].on = !rawInv[c][idx].on;
+        renderInv();
     }
 
     function renderInv() {
         ['vis','speech','rest','sens'].forEach(c => {
-            document.getElementById('list-' + c).innerHTML = inv[c].map((it, idx) => `
-                <div class="tag">${it}<span onclick="inv['${c}'].splice(${idx},1);renderInv()">×</span></div>
+            document.getElementById('list-' + c).innerHTML = rawInv[c].map((it, idx) => `
+                <div class="tag ${it.on?'on':''}" onclick="toggleItem('${c}', ${idx})">${it.n}${it.on?'':'<span>+</span>'}</div>
             `).join('');
         });
     }
@@ -214,46 +197,29 @@
     }
 
     function generate() {
-        let activeCats = Array.from(document.querySelectorAll('#round-toggles .tgl-btn.on')).map(b => b.getAttribute('data-cat'));
-        if (activeCats.length === 0) return alert("Select at least one category!");
+        let activeCats = Array.from(document.querySelectorAll('.tgl-btn.on')).map(b => b.getAttribute('data-cat'));
+        if (!activeCats.length) return alert("Select a category!");
         
-        currentCat = activeCats[Math.floor(Math.random() * activeCats.length)];
-        let cat = taskData[currentCat];
-        currentTaskIdx = Math.floor(Math.random() * cat.tasks.length);
-        let task = cat.tasks[currentTaskIdx];
+        let catKey = activeCats[Math.floor(Math.random() * activeCats.length)];
+        let cat = taskData[catKey];
+        let task = cat.tasks[Math.floor(Math.random() * cat.tasks.length)];
 
-        task = task.replace(/\[VIS\]/g, `<b>${inv.vis[Math.floor(Math.random()*inv.vis.length)]}</b>`)
-                   .replace(/\[SPEECH\]/g, `<b>${inv.speech[Math.floor(Math.random()*inv.speech.length)] || "gag"}</b>`)
-                   .replace(/\[REST\]/g, `<b>${inv.rest[Math.floor(Math.random()*inv.rest.length)]}</b>`)
-                   .replace(/\[SENS\]/g, `<b>${inv.sens[Math.floor(Math.random()*inv.sens.length)] || "sensations"}</b>`)
+        const getRand = (type) => {
+            let pool = rawInv[type].filter(i => i.on);
+            return pool.length ? `<b>${pool[Math.floor(Math.random()*pool.length)].n}</b>` : "<i>[Not Selected]</i>";
+        };
+
+        task = task.replace(/\[VIS\]/g, getRand('vis'))
+                   .replace(/\[SPEECH\]/g, getRand('speech'))
+                   .replace(/\[REST\]/g, getRand('rest'))
+                   .replace(/\[SENS\]/g, getRand('sens'))
                    .replace(/\[BODY\]/g, `<b>${players[subIdx].g}</b>`);
 
-        document.getElementById('badge-container').innerHTML = `<span class="badge b-${currentCat}">${currentCat}</span>`;
+        document.getElementById('badge-container').innerHTML = `<span class="badge b-${catKey}">${catKey}</span>`;
         document.getElementById('task-text').innerHTML = task;
         timeLeft = cat.time;
-        prepTrial();
-    }
-
-    function toggleManual() {
-        let area = document.getElementById('manual-entry-area');
-        area.style.display = (area.style.display === 'block') ? 'none' : 'block';
-    }
-
-    function applyManual() {
-        let text = document.getElementById('custom-task').value;
-        if (!text) return;
-        document.getElementById('badge-container').innerHTML = `<span class="badge b-manual">MASTER'S DECREE</span>`;
-        document.getElementById('task-text').innerHTML = text;
-        timeLeft = parseInt(document.getElementById('custom-time').value) * 60;
-        prepTrial();
-    }
-
-    function prepTrial() {
         document.getElementById('gen-btn').style.display = 'none';
-        document.getElementById('show-manual-btn').style.display = 'none';
-        document.getElementById('manual-entry-area').style.display = 'none';
         document.getElementById('start-btn').style.display = 'block';
-        document.getElementById('veto-btn').style.display = 'block';
     }
 
     function startT() {
@@ -261,8 +227,7 @@
         document.getElementById('active-round').style.display = 'block';
         timer = setInterval(() => {
             timeLeft--;
-            let m = Math.floor(timeLeft / 60);
-            let s = timeLeft % 60;
+            let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
             document.getElementById('clock').innerText = `${m}:${s < 10 ? '0' + s : s}`;
             if (timeLeft <= 0) { clearInterval(timer); resolveTurn(false); }
         }, 1000);
@@ -270,58 +235,26 @@
 
     function resolveTurn(success) {
         clearInterval(timer);
-        if (success) {
-            players[subIdx].wins++;
-            subIdx = (subIdx === 0 ? 1 : 0);
-            alert("Success! Roles Reversed.");
-        } else {
-            let masterIdx = (subIdx === 0 ? 1 : 0);
-            players[masterIdx].wins++;
-            alert("Failure. Master keeps control.");
-        }
-
+        if (success) { players[subIdx].wins++; subIdx = (subIdx === 0 ? 1 : 0); alert("Swap!"); }
+        else { players[subIdx === 0 ? 1 : 0].wins++; alert("Master stays!"); }
+        
         currentRound++;
-        if (currentRound > parseInt(document.getElementById('maxRounds').value)) {
-            finalizeGame();
-        } else {
-            updateIdentity();
-            resetRoundUI();
-        }
+        if (currentRound > parseInt(document.getElementById('maxRounds').value)) finalize();
+        else { updateIdentity(); resetUI(); }
     }
 
-    function resetRoundUI() {
+    function resetUI() {
         document.getElementById('active-round').style.display = 'none';
         document.getElementById('pre-round').style.display = 'block';
         document.getElementById('gen-btn').style.display = 'block';
-        document.getElementById('show-manual-btn').style.display = 'block';
         document.getElementById('start-btn').style.display = 'none';
-        document.getElementById('veto-btn').style.display = 'none';
-        document.getElementById('task-text').innerText = "Awaiting the Master's Choice...";
+        document.getElementById('task-text').innerText = "Awaiting Decree...";
         document.getElementById('badge-container').innerHTML = "";
     }
 
-    function vetoTask() {
-        resetRoundUI();
-    }
-
-    function finalizeGame() {
-        let winner = players[0].wins > players[1].wins ? players[0] : players[1];
-        let loser = players[0].wins > players[1].wins ? players[1] : players[0];
-        document.body.innerHTML = `
-            <div class="container" style="text-align:center;">
-                <h1>Ascension Complete</h1>
-                <div class="box">
-                    <span class="label">Total Victor</span>
-                    <div style="font-size:2rem; color:var(--crimson); font-weight:bold;">${winner.n}</div>
-                    <p>${winner.wins} Rounds Won</p>
-                </div>
-                <div class="box">
-                    <span class="label">Final Decree for ${loser.n}</span>
-                    <p style="font-style:italic;">The victor may now command a final 20-minute scene using ${inv.rest[0]}.</p>
-                </div>
-                <button class="btn" onclick="location.reload()">Reset Session</button>
-            </div>
-        `;
+    function finalize() {
+        let winIdx = players[0].wins > players[1].wins ? 0 : 1;
+        document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Ascension</h1><div class="box"><span class="label">Victor</span><div style="font-size:2rem;color:var(--crimson);font-weight:bold;">${players[winIdx].n}</div></div><button class="btn" onclick="location.reload()">Reset</button></div>`;
     }
 </script>
 </body>
