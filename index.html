@@ -23,7 +23,6 @@
         .inner-box { background: #ffffff; border: 1px solid #eee; padding: 15px; border-radius: 20px; margin-bottom: 15px; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1.5px; }
 
-        /* STATUS & SCOREBOARD */
         .status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #fefefe; border-radius: 15px; border: 1px solid #eee; font-size: 0.8rem; }
         .role-indicator { font-weight: 900; color: var(--crimson); text-transform: uppercase; letter-spacing: 1px; }
         .score-pill { background: #eee; padding: 4px 10px; border-radius: 50px; font-weight: bold; color: #666; }
@@ -81,11 +80,13 @@
                 </select>
             </div>
         </div>
-        <button class="btn" onclick="goToStep(2)">Define Inventory ></button>
+        <button class="btn" onclick="goToStep(2)">Configure Inventory ></button>
     </div>
 
     <div id="step2" class="step">
         <div class="box">
+            <p style="font-size: 0.8rem; color: #888; margin-top: 0;">Defaults loaded. Add yours or remove ones you don't own.</p>
+            
             <span class="label">Vision (Blindfolds, Hoods)</span>
             <div style="display:flex; gap:10px;"><input type="text" id="in-vis"><button class="btn-add" onclick="addItem('vis')">+</button></div><div id="list-vis" class="tag-row"></div>
             
@@ -115,7 +116,7 @@
             <div id="round-header" class="label" style="text-align:center; font-size: 1rem; margin-bottom: 20px;">Round 1</div>
             
             <div class="inner-box">
-                <span class="label">Master's Command: Select Categories</span>
+                <span class="label">Round Theme: Toggle Categories</span>
                 <div class="toggle-grid" id="round-toggles">
                     <div class="tgl-btn on" data-cat="truth" onclick="this.classList.toggle('on')">Truth</div>
                     <div class="tgl-btn on" data-cat="dare" onclick="this.classList.toggle('on')">Dare</div>
@@ -128,20 +129,20 @@
 
             <div id="challenge-display" class="box" style="text-align:center; min-height: 100px;">
                 <div id="badge-container"></div>
-                <div id="task-text">Generate a Decree...</div>
+                <div id="task-text">Awaiting Master's decree...</div>
             </div>
             
-            <button class="btn" id="gen-btn" onclick="generate()">Generate Random Decree</button>
-            <button class="btn btn-secondary" id="show-manual-btn" onclick="toggleManual()">Manual Decree Override</button>
+            <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
+            <button class="btn btn-secondary" id="show-manual-btn" onclick="toggleManual()">Manual Override</button>
 
             <div id="manual-entry-area">
-                <textarea id="custom-task" placeholder="Direct decree..."></textarea>
-                <input type="number" id="custom-time" value="5" placeholder="Minutes">
+                <textarea id="custom-task" placeholder="Type direct order..."></textarea>
+                <input type="number" id="custom-time" value="5" placeholder="Mins">
                 <button class="btn" style="background:black;" onclick="applyManual()">Submit Decree</button>
             </div>
 
-            <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Accept & Start Clock</button>
-            <button class="btn btn-veto" id="veto-btn" style="display:none;" onclick="vetoTask()">Veto Decree</button>
+            <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Start Clock</button>
+            <button class="btn btn-veto" id="veto-btn" style="display:none;" onclick="vetoTask()">Veto</button>
         </div>
 
         <div id="active-round" style="display:none;">
@@ -153,16 +154,23 @@
 </div>
 
 <script>
-    let inv = { vis: [], speech: [], rest: [], sens: [] };
+    // DEFAULT ITEMS LOADED BY DEFAULT
+    let inv = { 
+        vis: ["Blindfold", "Sleep Mask"], 
+        speech: ["Ball Gag", "Medical Tape"], 
+        rest: ["Rope", "Handcuffs", "Ankle Cuffs"], 
+        sens: ["Feather", "Ice Cube", "Wand Vibrator"] 
+    };
+
     let players = [], currentRound = 1, subIdx = 0, timer, timeLeft, currentCat = "", currentTaskIdx = -1;
 
     const taskData = {
-        truth: { class: "b-truth", time: 90, tasks: ["CONFESSION: Admit a deep desire while [REST] is applied.", "HONESTY: Describe the sensation of [VIS] on your [BODY]."] },
-        dare: { class: "b-dare", time: 180, tasks: ["SUBMISSION: Serve the Master while [SPEECH] and [REST] are active.", "EXPOSURE: Remain a statue while Master uses [SENS] on your [BODY]."] },
-        escape: { class: "b-escape", time: 480, tasks: ["FREEDOM: You have 8 minutes to escape from [REST] while [VIS] is applied.", "SENSORY: Wriggle out of [REST] while Master uses [SENS] to break you."] },
-        edging: { class: "b-edging", time: 300, tasks: ["BRINK: Master uses [SENS] to bring you to the edge. Hold for 5 minutes.", "CONTROL: Endure [SENS] while [REST]. No release allowed."] },
-        physical: { class: "b-physical", time: 240, tasks: ["ENDURANCE: Hold a deep stress position while [REST] and [VIS] are active.", "STRENGTH: Perform 20 slow movements while [REST] binds your ankles."] },
-        selfbondage: { class: "b-selfbondage", time: 200, tasks: ["BINDING: Apply [REST] to your own limbs as tightly as possible.", "WRAPPING: Secure [VIS] and [SPEECH] on yourself and present for inspection."] }
+        truth: { class: "b-truth", time: 120, tasks: ["CONFESSION: Admit a hidden desire while [REST] is applied.", "DESCRIPTION: Describe the physical weight of [REST] on your [BODY]."] },
+        dare: { class: "b-dare", time: 240, tasks: ["SERVICE: Perform a task of Master's choice while [SPEECH] and [REST] are active.", "STATUE: Do not flinch while Master uses [SENS] on your [BODY] for the duration."] },
+        escape: { class: "b-escape", time: 480, tasks: ["ESCAPE: You must free yourself from [REST] while [VIS] is applied.", "SENSORY ESCAPE: Free yourself from [REST] while Master uses [SENS] to distract you."] },
+        edging: { class: "b-edging", time: 300, tasks: ["EDGE: Master uses [SENS] to keep you at 99%. No release.", "DENIAL: Endure the highest setting of [SENS] while [REST]."] },
+        physical: { class: "b-physical", time: 240, tasks: ["STRESS: Hold a deep kneeling pose while [REST] and [VIS] are active.", "CORE: Hold a plank while [REST] binds your wrists."] },
+        selfbondage: { class: "b-selfbondage", time: 180, tasks: ["BIND: Bind your own hands and feet with [REST] as tightly as possible.", "SENSORY: Secure [VIS] and [SPEECH] on yourself and present to Master."] }
     };
 
     function goToStep(n) {
@@ -171,9 +179,10 @@
                 {n: document.getElementById('p1').value || "Slave", g: document.getElementById('g1').value, wins: 0},
                 {n: document.getElementById('p2').value || "Master", g: document.getElementById('g2').value, wins: 0}
             ];
+            renderInv(); // Show defaults when entering step 2
         }
         if (n === 3) {
-            if (inv.vis.length === 0 || inv.rest.length === 0) return alert("Inventory empty!");
+            if (inv.vis.length === 0 || inv.rest.length === 0) return alert("You need at least one Vision and one Restraint item!");
             updateIdentity();
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -204,7 +213,7 @@
 
     function generate() {
         let activeCats = Array.from(document.querySelectorAll('#round-toggles .tgl-btn.on')).map(b => b.getAttribute('data-cat'));
-        if (activeCats.length === 0) return alert("Select a category!");
+        if (activeCats.length === 0) return alert("Select at least one category!");
         
         currentCat = activeCats[Math.floor(Math.random() * activeCats.length)];
         let cat = taskData[currentCat];
@@ -261,12 +270,12 @@
         clearInterval(timer);
         if (success) {
             players[subIdx].wins++;
-            subIdx = (subIdx === 0 ? 1 : 0); // Swap roles
-            alert("Successful submission. Roles have reversed.");
+            subIdx = (subIdx === 0 ? 1 : 0);
+            alert("Success! Roles Reversed.");
         } else {
             let masterIdx = (subIdx === 0 ? 1 : 0);
             players[masterIdx].wins++;
-            alert("Submission failed. The Master retains sovereignty.");
+            alert("Failure. Master keeps control.");
         }
 
         currentRound++;
@@ -285,7 +294,7 @@
         document.getElementById('show-manual-btn').style.display = 'block';
         document.getElementById('start-btn').style.display = 'none';
         document.getElementById('veto-btn').style.display = 'none';
-        document.getElementById('task-text').innerText = "Generate a Decree...";
+        document.getElementById('task-text').innerText = "Awaiting Master's decree...";
         document.getElementById('badge-container').innerHTML = "";
     }
 
@@ -305,10 +314,10 @@
                     <p>${winner.wins} Rounds Won</p>
                 </div>
                 <div class="box">
-                    <span class="label">The Fate of ${loser.n}</span>
-                    <p style="font-style:italic; font-size: 1.1rem;">The victor may now impose a final 15-minute command of their choosing while the loser remains in ${inv.rest[0] || "restraints"}.</p>
+                    <span class="label">Final Fate for ${loser.n}</span>
+                    <p style="font-style:italic; font-size: 1.1rem;">Winner's Reward: ${winner.n} may order a final 20-minute scene using any gear from the list. Punishment: ${loser.n} must remain bound in ${inv.rest[0]} while serving the victor.</p>
                 </div>
-                <button class="btn" onclick="location.reload()">Begin New Session</button>
+                <button class="btn" onclick="location.reload()">Reset Engine</button>
             </div>
         `;
     }
