@@ -1,73 +1,84 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sovereign Shift</title>
+    <title>Mastery & Merit</title>
     <style>
         :root { 
-            --accent: #d4af37; --soft-bg: #fdfaf5; --card-bg: #ffffff;
-            --text: #2c2c2c; --crimson: #911d1d; --yellow: #ffd700; 
-            --red: #ff3b3b; --safe-green: #388e3c;
+            --accent: #c5a059; --soft-bg: #fdfaf5; --card-bg: #ffffff;
+            --text: #2c2c2c; --crimson: #7b1a1a; --yellow: #ffd700; 
+            --red: #ee3333; --safe-green: #2e7d32;
         }
         
-        body { background: var(--soft-bg); color: var(--text); font-family: 'Arial', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 18px; }
-        .container { max-width: 650px; width: 100%; background: var(--card-bg); padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 35px; border: 1px solid rgba(212, 175, 55, 0.2); }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 5px; cursor: pointer; }
-        .subtitle { text-align: center; font-size: 0.8rem; color: #888; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 2px; }
+        body { background: var(--soft-bg); color: var(--text); font-family: 'Arial', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 19px; }
+        .container { max-width: 650px; width: 100%; background: var(--card-bg); padding: 35px; box-shadow: 0 15px 50px rgba(0,0,0,0.08); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); }
+        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 5px; margin-bottom: 5px; cursor: pointer; font-size: 1.8rem; }
+        .subtitle { text-align: center; font-size: 0.85rem; color: #a18e8e; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; }
 
         .step { display: none; }
         .active { display: block; }
 
-        .box { background: #fffcf9; border: 2px solid #f2f1ed; padding: 20px; margin-bottom: 20px; border-radius: 25px; }
-        .label { font-size: 0.8rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; }
+        .box { background: #fffcf9; border: 2px solid #f5f2ed; padding: 25px; margin-bottom: 25px; border-radius: 30px; }
+        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: 1000; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1px; }
 
-        input[type="text"], select, input[type="number"] { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 15px; margin-bottom: 12px; box-sizing: border-box; font-size: 1.1rem; outline: none; }
+        input[type="text"], select, input[type="number"] { width: 100%; padding: 18px; border: 2px solid #eee; border-radius: 20px; margin-bottom: 15px; box-sizing: border-box; font-size: 1.1rem; outline: none; transition: 0.3s; }
+        input:focus, select:focus { border-color: var(--accent); }
 
-        .trophy-row { display: flex; justify-content: space-between; background: #2c2c2c; color: var(--accent); padding: 10px 20px; border-radius: 50px; margin-bottom: 20px; font-size: 0.8rem; font-weight: bold; }
+        .trophy-row { display: flex; justify-content: space-between; background: #1a1a1a; color: var(--accent); padding: 12px 25px; border-radius: 60px; margin-bottom: 25px; font-size: 0.8rem; font-weight: bold; }
 
-        .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
-        .tag { background: #f4f1ea; padding: 8px 15px; border-radius: 50px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; font-weight: bold; border: 1px solid #e0ddd5; }
-        .tag span { color: var(--crimson); cursor: pointer; font-size: 1.1rem; }
+        .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .tag { background: #f8f5f0; padding: 10px 18px; border-radius: 50px; font-size: 0.9rem; display: flex; align-items: center; gap: 10px; font-weight: bold; border: 1px solid #e8e4db; }
+        .tag span { color: var(--crimson); cursor: pointer; font-size: 1.3rem; line-height: 1; }
 
-        .card-dock { display: flex; gap: 15px; margin-bottom: 25px; }
-        .card-ui { flex: 1; padding: 20px 5px; border-radius: 20px; font-weight: bold; text-align: center; cursor: pointer; opacity: 0.1; pointer-events: none; transition: 0.4s; font-size: 0.85rem; }
-        .card-ui.held { opacity: 1; pointer-events: auto; transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
-        .c-yellow { background: var(--yellow); color: #222; }
-        .c-red { background: var(--red); color: white; }
+        .card-dock { display: flex; gap: 20px; margin-bottom: 30px; }
+        .card-ui { flex: 1; padding: 25px 5px; border-radius: 25px; font-weight: bold; text-align: center; cursor: pointer; opacity: 0.08; pointer-events: none; transition: 0.5s; font-size: 0.8rem; }
+        .card-ui.held { opacity: 1; pointer-events: auto; transform: translateY(-8px); box-shadow: 0 12px 20px rgba(0,0,0,0.12); }
+        .c-yellow { background: var(--yellow); color: #222; border-bottom: 4px solid #d4af37; }
+        .c-red { background: var(--red); color: white; border-bottom: 4px solid #a01a1a; }
 
-        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 20px; font-size: 1.1rem; }
-        .btn-add { background: var(--accent); width: 90px; padding: 10px; border-radius: 15px; font-size: 0.9rem; }
+        .btn { background: var(--crimson); color: white; border: none; padding: 22px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 25px; font-size: 1.1rem; letter-spacing: 1px; }
+        .btn-add { background: var(--accent); width: 100px; padding: 12px; border-radius: 18px; font-size: 0.85rem; margin-bottom: 15px; }
 
-        .timer-display { font-size: 5rem; text-align: center; color: var(--crimson); font-weight: bold; margin: 15px 0; letter-spacing: -2px; }
+        .timer-display { font-size: 6rem; text-align: center; color: var(--crimson); font-weight: bold; margin: 20px 0; letter-spacing: -3px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1 id="gameTitle" onclick="shuffleTitle()">Sovereign Shift</h1>
-    <div class="subtitle">A Competitive Session Controller</div>
+    <h1 id="gameTitle">Mastery & Merit</h1>
+    <div class="subtitle" id="gameSub">A Slave's Path to Ascension</div>
     
     <div id="trophy-display" class="trophy-row" style="display:none;">
-        <span id="p1Score">P1: 0 Wins</span>
-        <span>🏆 MASTER TRACKER 🏆</span>
-        <span id="p2Score">P2: 0 Wins</span>
+        <span id="p1Score">S: 0 Wins</span>
+        <span>⛓ THE TALLY ⛓</span>
+        <span id="p2Score">M: 0 Wins</span>
     </div>
 
     <div id="step1" class="step active">
         <div class="box">
-            <span class="label">Session Config</span>
-            <input type="number" id="maxRounds" value="6" placeholder="Rounds">
-            <input type="text" id="spotifyLink" placeholder="Paste Spotify Playlist Link">
+            <span class="label">Session Length (Rounds)</span>
+            <input type="number" id="maxRounds" value="6">
             
-            <div style="display:flex; gap:10px;">
-                <div style="flex:1;">
-                    <span class="label">Player 1 (Starts Sub)</span>
-                    <input type="text" id="p1" placeholder="Name">
+            <div style="display:flex; flex-direction: column; gap:10px;">
+                <div class="box" style="margin-bottom:10px; border:1px solid #eee;">
+                    <span class="label">Initial Slave</span>
+                    <input type="text" id="p1" placeholder="Slave Name">
+                    <select id="g1">
+                        <option value="Male body">Male Body</option>
+                        <option value="Female body">Female Body</option>
+                        <option value="Neutral body">Neutral Body</option>
+                    </select>
                 </div>
-                <div style="flex:1;">
-                    <span class="label">Player 2 (Starts Master)</span>
-                    <input type="text" id="p2" placeholder="Name">
+                <div class="box" style="border:1px solid #eee;">
+                    <span class="label">Initial Master</span>
+                    <input type="text" id="p2" placeholder="Master Name">
+                    <select id="g2">
+                        <option value="Male body">Male Body</option>
+                        <option value="Female body">Female Body</option>
+                        <option value="Neutral body">Neutral Body</option>
+                    </select>
                 </div>
             </div>
         </div>
@@ -76,41 +87,41 @@
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Vision (Blindfolds, Masks, Hoods)</span>
+            <span class="label">Sensory Deprivation (Blindfolds)</span>
             <div style="display:flex; gap:10px;"><input type="text" id="in-vis"><button class="btn btn-add" onclick="addItem('vis')">Add</button></div>
             <div id="list-vis" class="tag-row"></div>
 
-            <span class="label">Speech (Gags, Tape, Muzzles)</span>
+            <span class="label">Mouth & Silence (Gags)</span>
             <div style="display:flex; gap:10px;"><input type="text" id="in-speech"><button class="btn btn-add" onclick="addItem('speech')">Add</button></div>
             <div id="list-speech" class="tag-row"></div>
 
-            <span class="label">Restraint (Rope, Cuffs, Chains)</span>
+            <span class="label">Restraints (Ropes/Cuffs)</span>
             <div style="display:flex; gap:10px;"><input type="text" id="in-rest"><button class="btn btn-add" onclick="addItem('rest')">Add</button></div>
             <div id="list-rest" class="tag-row"></div>
 
-            <span class="label">Sensation (Wands, Feathers, Ice)</span>
+            <span class="label">Sensation (Toys/Ice)</span>
             <div style="display:flex; gap:10px;"><input type="text" id="in-sens"><button class="btn btn-add" onclick="addItem('sens')">Add</button></div>
             <div id="list-sens" class="tag-row"></div>
         </div>
-        <button class="btn" onclick="nav(3)">Start Session</button>
+        <button class="btn" onclick="nav(3)">Enter Session</button>
     </div>
 
     <div id="step3" class="step">
         <div class="card-dock">
-            <div id="card-y" class="card-ui c-yellow" onclick="useCard('yellow')">YELLOW<br>(Swap)</div>
-            <div id="card-r" class="card-ui c-red" onclick="useCard('red')">RED<br>(Pass)</div>
+            <div id="card-y" class="card-ui c-yellow" onclick="useCard('yellow')">YELLOW<br>(Role Reversal)</div>
+            <div id="card-r" class="card-ui c-red" onclick="useCard('red')">RED<br>(Pass Turn)</div>
         </div>
 
         <div id="pre-round">
-            <div id="challenge-text" class="box" style="font-size: 1.1rem; line-height: 1.5; border-color: var(--accent);">Ready...</div>
-            <button class="btn" id="gen-btn" onclick="generate()">Generate Turn</button>
+            <div id="challenge-text" class="box" style="font-size: 1.15rem; line-height: 1.6; border-color: var(--accent);">Awaiting Master's Command...</div>
+            <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
             <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Start Timer</button>
         </div>
 
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
-            <button class="btn" onclick="resolveTurn(true)">Success: Swap Roles</button>
-            <button class="btn" style="background:#888; margin-top: 10px;" onclick="resolveTurn(false)">Fail: Stay Sub</button>
+            <button class="btn" onclick="resolveTurn(true)">Submission Successful</button>
+            <button class="btn" style="background:#888; margin-top: 15px;" onclick="resolveTurn(false)">Submission Failed</button>
         </div>
     </div>
 </div>
@@ -119,15 +130,23 @@
     let inv = { vis: [], speech: [], rest: [], sens: [] };
     let players = [], currentRound = 1, totalRounds = 6, subIdx = 0, timer, timeLeft, cardOwnerIdx = 0;
 
-    const titles = ["Sovereign Shift", "Silk & Sovereignty", "The Power Pivot", "The Gilded Gauntlet", "Velvet Mandate", "Points of Pressure"];
-    function shuffleTitle() { document.getElementById('gameTitle').innerText = titles[Math.floor(Math.random()*titles.length)]; }
-
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function beep(f, d, v=0.03) { let o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.connect(g); g.connect(audioCtx.destination); o.frequency.value=f; g.gain.value=v; o.start(); setTimeout(()=>o.stop(), d); }
+    function beep(f, d, v=0.03) { 
+        let o=audioCtx.createOscillator(), g=audioCtx.createGain(); 
+        o.connect(g); g.connect(audioCtx.destination); 
+        o.frequency.value=f; g.gain.value=v; o.start(); 
+        setTimeout(()=>o.stop(), d); 
+    }
 
     function nav(n) {
-        if(n===2) players = [{n:document.getElementById('p1').value||"P1", wins:0},{n:document.getElementById('p2').value||"P2", wins:0}];
-        if(n===3 && inv.rest.length === 0) { alert("Add restraint gear!"); return; }
+        if(n===2) {
+            players = [
+                {n:document.getElementById('p1').value||"Slave", g:document.getElementById('g1').value, wins:0},
+                {n:document.getElementById('p2').value||"Master", g:document.getElementById('g2').value, wins:0}
+            ];
+            totalRounds = parseInt(document.getElementById('maxRounds').value);
+        }
+        if(n===3 && inv.rest.length === 0) { alert("Add restraints!"); return; }
         document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
         document.getElementById('step'+n).classList.add('active');
         if(n===3) document.getElementById('trophy-display').style.display='flex';
@@ -146,8 +165,8 @@
     }
 
     function updateStatus() {
-        document.getElementById('p1Score').innerText = `${players[0].n}: ${players[0].wins} Wins`;
-        document.getElementById('p2Score').innerText = `${players[1].n}: ${players[1].wins} Wins`;
+        document.getElementById('p1Score').innerText = `${players[0].n}: ${players[0].wins}`;
+        document.getElementById('p2Score').innerText = `${players[1].n}: ${players[1].wins}`;
         document.getElementById('card-y').classList.toggle('held', cardOwnerIdx === subIdx);
         document.getElementById('card-r').classList.toggle('held', cardOwnerIdx === subIdx);
     }
@@ -160,48 +179,55 @@
     }
 
     function generate() {
-        const sub = players[subIdx], dom = players[subIdx===0?1:0];
+        const slave = players[subIdx], master = players[subIdx===0?1:0];
         const v = inv.vis.length ? `blinded by <b>${inv.vis[Math.floor(Math.random()*inv.vis.length)]}</b>` : "eyes uncovered";
         const sp = inv.speech.length ? `silenced with <b>${inv.speech[Math.floor(Math.random()*inv.speech.length)]}</b>` : "free to speak";
         const r = `bound in <b>${inv.rest[Math.floor(Math.random()*inv.rest.length)]}</b>`;
-        const s = inv.sens.length ? `<b>${inv.sens[Math.floor(Math.random()*inv.sens.length)]}</b>` : "delicate touch";
+        const s = inv.sens.length ? `<b>${inv.sens[Math.floor(Math.random()*inv.sens.length)]}</b>` : "Master's hands";
 
-        const scenarios = [
-            `<b>TEASE & EDGE:</b> ${dom.n} must secure ${sub.n} using ${r}. While ${sub.n} is ${v}, use ${s} to bring them to the brink. If they climax, they fail. If they resist, they swap to Master.`,
-            `<b>THE HUMAN STATUE:</b> ${sub.n} is ${r} and ${sp}. They must remain perfectly still for 4 minutes while ${dom.n} uses ${s}. Any sound or movement resets the clock. Success earns the Master role.`,
-            `<b>SENSORY FOCUS:</b> ${sub.n} is ${v} and ${sp}. ${dom.n} will use ${s} on 3 different parts of the body. ${sub.n} must identify the location and the tool. One mistake means they stay the Sub.`,
-            `<b>THE ESCAPIST:</b> ${dom.n} binds ${sub.n} tightly with ${r}. ${sub.n} is ${v}. They have 4 minutes to struggle free. ${dom.n} may use ${s} to distract them from their escape.`
+        const tasks = [
+            `<b>TEASE & EDGE:</b> Master ${master.n} secures the ${slave.g} of ${slave.n} with ${r}. While the slave is ${v}, use ${s} to bring them to the brink. If they climax, they remain a slave. If they resist, they take the throne.`,
+            `<b>HUMAN STATUE:</b> ${slave.n} must keep their ${slave.g} perfectly still while ${r} and ${sp}. Master ${master.n} will use ${s} for 5 minutes. Any movement or sound resets the clock.`,
+            `<b>SENSORY FOCUS:</b> Master ${master.n} applies ${r} to the ${slave.g} of ${slave.n}. While ${v} and ${sp}, the slave must correctly identify 3 applications of ${s}. Success earns role reversal.`,
+            `<b>THE STRUGGLE:</b> ${master.n} binds the ${slave.g} of ${slave.n} tightly in ${r} and ${v}. The slave has 4 minutes to struggle free and earn the Master's seat.`
         ];
         
-        document.getElementById('challenge-text').innerHTML = scenarios[Math.floor(Math.random()*scenarios.length)];
-        timeLeft = 240; document.getElementById('gen-btn').style.display='none'; document.getElementById('start-btn').style.display='block';
+        document.getElementById('challenge-text').innerHTML = tasks[Math.floor(Math.random()*tasks.length)];
+        timeLeft = 300; document.getElementById('gen-btn').style.display='none'; document.getElementById('start-btn').style.display='block';
     }
 
     function startT() {
         document.getElementById('pre-round').style.display='none'; document.getElementById('active-round').style.display='block';
         timer = setInterval(()=>{
             timeLeft--; document.getElementById('clock').innerText=`${Math.floor(timeLeft/60)}:${(timeLeft%60).toString().padStart(2,'0')}`;
-            if(timeLeft>0) beep(440, 10);
+            if(timeLeft>0) beep(500, 10, 0.02);
             if(timeLeft<=0){ clearInterval(timer); resolveTurn(false); }
         }, 1000);
     }
 
     function resolveTurn(win, skip=false) {
         clearInterval(timer);
-        if(win) { subIdx=subIdx===0?1:0; cardOwnerIdx=subIdx; players[subIdx].wins++; alert("Victory! Role Swap."); }
-        else { players[subIdx===0?1:0].wins++; if(!skip) alert("Failure. Master retains control."); }
+        const prevMasterIdx = (subIdx === 0 ? 1 : 0);
+        if(win) { 
+            players[subIdx].wins++; 
+            subIdx = prevMasterIdx; 
+            cardOwnerIdx = subIdx; 
+            alert("Victory! You are now the Master."); 
+        } else { 
+            players[prevMasterIdx].wins++; 
+            if(!skip) alert("Failure. You remain the Slave."); 
+        }
         
         currentRound++;
         if(currentRound > totalRounds) {
-            let w = players[0].wins > players[1].wins ? players[0].n : players[1].n;
-            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Champion: ${w}</h1><button class="btn" onclick="location.reload()">Reset Session</button></div>`;
+            let winIdx = players[0].wins > players[1].wins ? 0 : 1;
+            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Champion: ${players[winIdx].n}</h1><p>The session is complete.</p><button class="btn" onclick="location.reload()">Restart</button></div>`;
         } else {
             document.getElementById('active-round').style.display='none'; document.getElementById('pre-round').style.display='block';
             document.getElementById('gen-btn').style.display='block'; document.getElementById('start-btn').style.display='none';
             updateStatus();
         }
     }
-    shuffleTitle();
 </script>
 </body>
 </html>
