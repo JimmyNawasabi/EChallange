@@ -3,33 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Custom Arsenal</title>
+    <title>Bound & Brave: Custom Edition</title>
     <style>
-        :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; }
+        :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; --gray: #222; }
         body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 600px; width: 100%; background: #111; border: 2px solid #333; padding: 20px; box-shadow: 0 0 30px #000; display: flex; flex-direction: column; min-height: 95vh; }
         h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; border-bottom: 2px solid var(--crimson); padding-bottom: 10px; margin-bottom: 15px; }
         .step { display: none; flex-grow: 1; overflow-y: auto; padding-bottom: 80px; }
         .active { display: flex; flex-direction: column; }
         
+        /* INPUTS */
         .setup-box { background: #000; padding: 15px; border-left: 4px solid var(--gold); margin-bottom: 15px; }
         label { color: var(--gold); font-size: 0.8em; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 5px; }
         input[type="text"], select, input[type="range"] { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: #fff; box-sizing: border-box; margin-bottom: 10px; }
         
-        /* CATEGORY STYLING */
-        .cat-header { font-size: 0.75em; color: var(--gold); margin: 15px 0 5px 0; border-bottom: 1px solid #333; letter-spacing: 1px; display: flex; justify-content: space-between; }
+        /* CUSTOM ITEM SECTION */
+        .cat-section { background: #080808; padding: 10px; border: 1px solid #222; margin-bottom: 20px; }
+        .cat-header { font-size: 0.8em; color: var(--gold); margin-bottom: 10px; border-bottom: 1px solid var(--crimson); padding-bottom: 5px; font-weight: bold; }
         .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
-        .inv-item { background: #000; padding: 8px; border: 1px solid #222; font-size: 0.7em; display: flex; align-items: center; gap: 8px; }
+        .inv-item { background: #1a1a1a; padding: 8px; border: 1px solid #333; font-size: 0.7em; display: flex; align-items: center; gap: 8px; }
         
-        .custom-add { display: flex; gap: 5px; margin-bottom: 20px; }
-        .custom-add input { margin-bottom: 0; flex-grow: 1; padding: 8px; }
-        .add-btn { background: #333; color: var(--gold); border: 1px solid var(--gold); padding: 0 15px; cursor: pointer; font-size: 0.8em; }
-
-        .status-board { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; }
-        .role-slot { display: flex; align-items: center; border: 1px solid #333; padding: 10px; background: #000; }
-        .role-label { width: 100px; font-weight: bold; text-transform: uppercase; font-size: 0.7em; color: #888; border-right: 1px solid #333; margin-right: 15px; }
-        .role-name { font-size: 1.2em; color: var(--gold); font-weight: bold; }
-        .slot-sub { border: 1px solid var(--crimson); background: #1a0000; }
+        .add-row { display: flex; gap: 5px; }
+        .add-row input { margin-bottom: 0; flex: 1; font-size: 0.8em; border: 1px dashed var(--gold); }
+        .add-btn { background: var(--gold); color: #000; border: none; padding: 0 15px; cursor: pointer; font-weight: bold; font-size: 1.2em; }
 
         .fixed-footer { position: sticky; bottom: 0; background: #111; padding: 15px 0; border-top: 1px solid #333; margin-top: auto; z-index: 100; }
         .btn { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
@@ -59,46 +55,57 @@
             <label>Intensity (1-10)</label>
             <input type="range" id="intensity" min="1" max="10" value="5">
         </div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Manage Gear ></button></div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Custom Inventory ></button></div>
     </div>
 
     <div id="step2" class="step">
-        <div class="cat-header">BONDAGE (Restrain)</div>
-        <div class="inventory-grid" id="gridBond"></div>
-        <div class="custom-add"><input type="text" id="addBond" placeholder="Add custom bondage..."><button class="add-btn" onclick="addItem('bondage')">+</button></div>
+        <div class="cat-section">
+            <div class="cat-header">BONDAGE (Tie / Wrap)</div>
+            <div class="add-row">
+                <input type="text" id="inBond" placeholder="New Bondage Item...">
+                <button class="add-btn" onclick="addItem('bondage')">+</button>
+            </div>
+            <div class="inventory-grid" id="gridBond"></div>
+        </div>
 
-        <div class="cat-header">SENSORY (Muffle/Blind)</div>
-        <div class="inventory-grid" id="gridSens"></div>
-        <div class="custom-add"><input type="text" id="addSens" placeholder="Add custom sensory..."><button class="add-btn" onclick="addItem('sensory')">+</button></div>
+        <div class="cat-section">
+            <div class="cat-header">SENSORY (Blind / Gag)</div>
+            <div class="add-row">
+                <input type="text" id="inSens" placeholder="New Sensory Item...">
+                <button class="add-btn" onclick="addItem('sensory')">+</button>
+            </div>
+            <div class="inventory-grid" id="gridSens"></div>
+        </div>
 
-        <div class="cat-header">TOYS (Stimulate)</div>
-        <div class="inventory-grid" id="gridToys"></div>
-        <div class="custom-add"><input type="text" id="addToys" placeholder="Add custom toy..."><button class="add-btn" onclick="addItem('toys')">+</button></div>
+        <div class="cat-section">
+            <div class="cat-header">TOYS (After Restraint)</div>
+            <div class="add-row">
+                <input type="text" id="inToys" placeholder="New Toy Item...">
+                <button class="add-btn" onclick="addItem('toys')">+</button>
+            </div>
+            <div class="inventory-grid" id="gridToys"></div>
+        </div>
 
-        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Lock & Enter ></button></div>
+        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Lock System ></button></div>
     </div>
 
     <div id="step3" class="step">
-        <div class="status-board">
-            <div class="role-slot"><div class="role-label">Master</div><div class="role-name" id="masterName">-</div></div>
-            <div class="role-slot slot-sub"><div class="role-label">Submissive</div><div class="role-name" id="subName">-</div></div>
-        </div>
         <div id="prepPhase">
-            <div class="challenge-card" id="taskBox">Awaiting Synthesis...</div>
+            <div class="challenge-card" id="taskBox">Ready for synthesis.</div>
             <button class="btn" id="genBtn" onclick="generate()">Synthesize Challenge</button>
-            <button class="btn" id="startBtn" style="display:none;" onclick="showTimer()">Confirm Application: Start</button>
+            <button class="btn" id="startBtn" style="display:none;" onclick="showTimer()">Confirmed: Start Timer</button>
         </div>
         <div id="timerPhase" style="display:none;">
             <div class="timer-val" id="timeDisp">00:00</div>
-            <button class="btn" onclick="resolve(true)">OBJECTIVE CLEARED</button>
-            <button class="btn" style="background:#333; margin-top:10px;" onclick="resolve(false)">OBJECTIVE FAILED</button>
+            <button class="btn" onclick="resolve(true)">SUCCESS</button>
+            <button class="btn" style="background:#333; margin-top:10px;" onclick="resolve(false)">FAILURE</button>
         </div>
     </div>
 </div>
 
 <script>
     let items = {
-        bondage: ["Rope", "Tape", "Bandages", "Pallet Wrap", "Straps"],
+        bondage: ["Rope", "Tape", "Bandages", "Pallet Wrap", "Straps", "Cloth"],
         sensory: ["Tape", "Ball Gag", "Cloth", "Leather Blindfold"],
         toys: ["Dildo", "Butt Plug", "E-stim Machine", "Flogger", "Cane"]
     };
@@ -111,35 +118,39 @@
                 { name: document.getElementById('p1Name').value || "P1", gen: document.getElementById('p1Gen').value },
                 { name: document.getElementById('p2Name').value || "P2", gen: document.getElementById('p2Gen').value }
             ];
-            renderGrids();
+            renderAll();
         }
         if(s===3) {
             active.bondage = getChecked('gridBond');
             active.sensory = getChecked('gridSens');
             active.toys = getChecked('gridToys');
-            updateBoard();
         }
         document.querySelectorAll('.step').forEach(d => d.classList.remove('active'));
         document.getElementById('step'+s).classList.add('active');
     }
 
-    function renderGrids() {
+    function renderAll() {
         populate('gridBond', items.bondage);
         populate('gridSens', items.sensory);
         populate('gridToys', items.toys);
     }
 
     function populate(id, list) {
-        const g = document.getElementById(id); g.innerHTML = "";
-        list.forEach(i => g.innerHTML += `<div class="inv-item"><input type="checkbox" value="${i}" checked> ${i}</div>`);
+        const g = document.getElementById(id); 
+        g.innerHTML = "";
+        list.slice().reverse().forEach(i => { // Reverse so new items are first
+            g.innerHTML += `<div class="inv-item"><input type="checkbox" value="${i}" checked> ${i}</div>`;
+        });
     }
 
     function addItem(cat) {
-        const input = document.getElementById('add' + cat.charAt(0).toUpperCase() + cat.slice(1));
-        if (input.value.trim() !== "") {
-            items[cat].push(input.value.trim());
+        const inputId = cat === 'bondage' ? 'inBond' : cat === 'sensory' ? 'inSens' : 'inToys';
+        const input = document.getElementById(inputId);
+        const val = input.value.trim();
+        if (val) {
+            items[cat].push(val);
             input.value = "";
-            renderGrids();
+            renderAll();
         }
     }
 
@@ -152,45 +163,31 @@
         const dom = players[domIdx];
         const chaos = parseInt(document.getElementById('intensity').value);
         let content = "";
-        let timeBase = 180;
-
-        // 1. BONDAGE
+        
+        // Logical Synthesis
         if (active.bondage.length > 0) {
-            let tool = active.bondage[Math.floor(Math.random() * active.bondage.length)];
-            content += `<span class="mod-header">I. BONDAGE</span> ${dom.name} must secure ${sub.name}'s movement using <b>${tool}</b>. Focus on the wrists and ankles.<br>`;
+            let b = active.bondage[Math.floor(Math.random()*active.bondage.length)];
+            content += `<span class="mod-header">I. BONDAGE</span> ${dom.name} must secure ${sub.name}'s limbs using <b>${b}</b>.<br>`;
         }
-
-        // 2. SENSORY
         if (active.sensory.length > 0) {
-            let tool = active.sensory[Math.floor(Math.random() * active.sensory.length)];
-            content += `<span class="mod-header">II. SENSORY</span> ${dom.name} must apply <b>${tool}</b> to deprive ${sub.name} of their speech or sight.<br>`;
+            let s = active.sensory[Math.floor(Math.random()*active.sensory.length)];
+            content += `<span class="mod-header">II. SENSORY</span> ${dom.name} must apply <b>${s}</b> to deprive ${sub.name} of sight or speech.<br>`;
         }
-
-        // 3. TOYS
         if (active.toys.length > 0) {
-            let toy = active.toys[Math.floor(Math.random() * active.toys.length)];
-            let instruction = "";
-            
-            // Logic for default items + generic logic for custom items
-            if (toy === "Dildo" || toy === "Butt Plug") {
-                let loc = (sub.gen === "Female" && toy === "Dildo") ? "vaginally" : "anally";
-                instruction = `insert the <b>${toy}</b> ${loc} and seal it in place.`;
-            } else if (toy === "E-stim Machine") {
-                instruction = `attach the <b>E-stim</b> and set it to a pulse level of ${Math.ceil(chaos/2)}.`;
-            } else if (toy === "Flogger" || toy === "Cane") {
-                instruction = `administer ${chaos * 2} strikes with the <b>${toy}</b> to the thighs.`;
-            } else {
-                // Generic instruction for custom toys
-                instruction = `use the <b>${toy}</b> on ${sub.name} for 60 seconds of focused stimulation.`;
+            let t = active.toys[Math.floor(Math.random()*active.toys.length)];
+            let instruction = `use the <b>${t}</b> on ${sub.name} for 60 seconds of focused stimulation.`;
+            if (t === "Dildo" || t === "Butt Plug") {
+                let loc = (sub.gen === "Female" && t === "Dildo") ? "vaginally" : "anally";
+                instruction = `insert the <b>${t}</b> ${loc} and seal it in place.`;
+            } else if (t === "Flogger" || t === "Cane") {
+                instruction = `administer ${chaos * 2} strikes with the <b>${t}</b> to the thighs.`;
             }
             content += `<span class="mod-header">III. TOY APPLICATION</span> ${dom.name} must ${instruction}<br>`;
         }
 
-        // 4. CHALLENGE
-        const tasks = ["fetch a key using only teeth", "scoot 5 feet using only core muscles", "untie a separate knot using only their mouth"];
-        content += `<span class="mod-header">FINAL CHALLENGE</span> ${sub.name} must **${tasks[Math.floor(Math.random()*tasks.length)]}**.`;
-
-        secs = Math.floor(timeBase * (chaos/5) + 60);
+        content += `<span class="mod-header">CHALLENGE</span> ${sub.name} must retrieve a small item from the floor using only their teeth.`;
+        
+        secs = Math.floor(180 * (chaos/5) + 60);
         document.getElementById('taskBox').innerHTML = content;
         document.getElementById('genBtn').style.display = 'none';
         document.getElementById('startBtn').style.display = 'block';
@@ -198,19 +195,9 @@
 
     function resolve(success) {
         clearInterval(clock);
-        if(success) { alert("SUCCESS! Mastery Swapped."); swapRoles(); }
-        else { alert("FAILURE! You remain bound."); reset(); }
-    }
-
-    function swapRoles() {
-        subIdx = subIdx === 0 ? 1 : 0;
-        domIdx = domIdx === 0 ? 1 : 0;
+        if(success) { alert("SUCCESS! Mastery Swapped."); subIdx = subIdx === 0 ? 1 : 0; domIdx = domIdx === 0 ? 1 : 0; }
+        else { alert("FAILURE! Remain bound."); }
         reset();
-    }
-
-    function updateBoard() {
-        document.getElementById('masterName').innerText = players[domIdx].name;
-        document.getElementById('subName').innerText = players[subIdx].name;
     }
 
     function showTimer() {
@@ -229,7 +216,6 @@
         document.getElementById('prepPhase').style.display = 'block';
         document.getElementById('genBtn').style.display = 'block';
         document.getElementById('startBtn').style.display = 'none';
-        updateBoard();
     }
 </script>
 </body>
