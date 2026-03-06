@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Fixed Inventory</title>
+    <title>Bound & Brave: Master Edition</title>
     <style>
         :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; --safe: #2e7d32; }
         body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -17,18 +17,18 @@
         .label-text { color: var(--gold); font-weight: bold; font-size: 0.8em; text-transform: uppercase; display: block; margin-bottom: 8px; }
         input[type="text"], select { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: white; margin-bottom: 15px; font-family: inherit; box-sizing: border-box; }
         
-        /* PAGE 2: INVENTORY */
-        .inv-section { background: #080808; padding: 15px; border: 1px solid #222; margin-bottom: 15px; }
+        /* PAGE 2: THREE-TIER INVENTORY */
+        .inv-section { background: #080808; padding: 15px; border: 1px solid #222; margin-bottom: 15px; border-left: 3px solid var(--crimson); }
         .item-list { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px; }
-        .tag { background: #1a1a1a; border: 1px solid var(--gold); padding: 5px 10px; font-size: 0.8em; display: flex; align-items: center; gap: 8px; }
+        .tag { background: #1a1a1a; border: 1px solid var(--gold); padding: 5px 10px; font-size: 0.75em; display: flex; align-items: center; gap: 8px; color: #fff; }
         .tag-del { color: var(--crimson); cursor: pointer; font-weight: bold; }
         
         /* PAGE 3: PLAY */
-        .display-area { background: #000; border-left: 5px solid var(--crimson); padding: 20px; margin: 15px 0; min-height: 100px; }
+        .display-area { background: #000; border-left: 5px solid var(--crimson); padding: 20px; margin: 15px 0; min-height: 100px; font-size: 0.9em; line-height: 1.6; }
         .timer-big { font-size: 5em; color: #ff0000; text-align: center; font-family: 'Impact', sans-serif; margin: 20px 0; }
         
         .btn { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-top: 10px; }
-        .add-btn { background: #333; color: var(--gold); border: 1px solid var(--gold); width: 60px; height: 44px; cursor: pointer; }
+        .add-btn { background: #222; color: var(--gold); border: 1px solid var(--gold); width: 60px; height: 44px; cursor: pointer; font-weight: bold; }
         .panic-btn { background: var(--safe); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 20px; }
         
         #overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:100; justify-content:center; align-items:center; flex-direction:column; }
@@ -38,6 +38,7 @@
 
 <div id="overlay">
     <h2 style="color:var(--gold)">SESSION PAUSED</h2>
+    <p style="text-align:center; padding: 20px;">Communication Check. Re-establish comfort before resuming.</p>
     <button class="btn" onclick="hidePanic()" style="background:var(--safe); width: 200px;">RESUME</button>
 </div>
 
@@ -47,68 +48,79 @@
     <div id="step1" class="step active">
         <div class="identity-box">
             <span class="label-text">Submissive Player</span>
-            <input type="text" id="p1Name" placeholder="Name">
-            <span class="label-text">Body Type</span>
+            <input type="text" id="p1Name" placeholder="Name/Alias">
+            <span class="label-text">Body Type / Anatomy</span>
             <select id="p1Gen">
                 <option value="Male Body">Male Body</option>
                 <option value="Female Body">Female Body</option>
-                <option value="Other/Neutral">Other / Neutral</option>
+                <option value="Non-Binary">Neutral / Other</option>
             </select>
         </div>
         <div class="identity-box">
             <span class="label-text">Master Player</span>
-            <input type="text" id="p2Name" placeholder="Name">
-            <span class="label-text">Body Type</span>
+            <input type="text" id="p2Name" placeholder="Name/Alias">
+            <span class="label-text">Body Type / Anatomy</span>
             <select id="p2Gen">
                 <option value="Male Body">Male Body</option>
                 <option value="Female Body">Female Body</option>
-                <option value="Other/Neutral">Other / Neutral</option>
+                <option value="Non-Binary">Neutral / Other</option>
             </select>
         </div>
-        <button class="btn" onclick="goStep(2)">Next: Inventory ></button>
+        <button class="btn" onclick="goStep(2)">Setup Inventory ></button>
     </div>
 
     <div id="step2" class="step">
         <div class="inv-section">
-            <span class="label-text">Bondage Gear (Required)</span>
+            <span class="label-text">1. Bondage (Ropes, Tape, Cuffs)</span>
             <div style="display:flex; gap:5px;">
-                <input type="text" id="inBond" placeholder="Rope, Cuffs..." style="margin-bottom:0;">
+                <input type="text" id="inBond" placeholder="Item Name..." style="margin-bottom:0;">
                 <button class="add-btn" onclick="add('bondage')">ADD</button>
             </div>
             <div id="listBond" class="item-list"></div>
         </div>
+
         <div class="inv-section">
-            <span class="label-text">Sensory / Toys (Optional)</span>
+            <span class="label-text">2. Sensory (Blindfolds, Gags, Hoods)</span>
             <div style="display:flex; gap:5px;">
-                <input type="text" id="inOther" placeholder="Blindfold, Flogger..." style="margin-bottom:0;">
-                <button class="add-btn" onclick="add('other')">ADD</button>
+                <input type="text" id="inSens" placeholder="Item Name..." style="margin-bottom:0;">
+                <button class="add-btn" onclick="add('sensory')">ADD</button>
             </div>
-            <div id="listOther" class="item-list"></div>
+            <div id="listSens" class="item-list"></div>
         </div>
-        <button class="btn" onclick="goStep(3)">Lock & Start Session ></button>
+
+        <div class="inv-section">
+            <span class="label-text">3. Toys (Floggers, Wands, Impact)</span>
+            <div style="display:flex; gap:5px;">
+                <input type="text" id="inToys" placeholder="Item Name..." style="margin-bottom:0;">
+                <button class="add-btn" onclick="add('toys')">ADD</button>
+            </div>
+            <div id="listToys" class="item-list"></div>
+        </div>
+
+        <button class="btn" onclick="goStep(3)">Lock & Play ></button>
         <button class="btn" style="background:#222; border:1px solid #444;" onclick="goStep(1)">Back</button>
     </div>
 
     <div id="step3" class="step">
         <div id="preRound">
-            <span class="label-text">Choose Activity Type</span>
+            <span class="label-text">Session Mode</span>
             <select id="modeChoose">
-                <option value="Random">-- Random --</option>
+                <option value="Random">-- Fully Random --</option>
                 <option value="Escape">Escape Challenge</option>
-                <option value="Shibari">Shibari (Artistic)</option>
+                <option value="Shibari">Shibari (Artistic Tie)</option>
                 <option value="Truth or Dare">Truth or Dare</option>
-                <option value="Mind Fuck">Mind Fuck</option>
+                <option value="Mind Fuck">Mind Fuck (Mental Focus)</option>
             </select>
-            <div id="output" class="display-area">Configure your items and generate.</div>
-            <button class="btn" id="genB" onclick="generate()">Generate Round</button>
-            <button class="btn" id="startB" style="display:none;" onclick="startClock()">Begin Timer</button>
+            <div id="output" class="display-area">Select your mode and synthesize the round.</div>
+            <button class="btn" id="genB" onclick="generate()">Synthesize Round</button>
+            <button class="btn" id="startB" style="display:none;" onclick="startClock()">Start Round</button>
         </div>
 
         <div id="clockArea" style="display:none;">
             <div class="timer-big" id="timer">00:00</div>
             <div style="display:flex; gap:10px;">
-                <button class="btn" onclick="end(true)">Success</button>
-                <button class="btn" style="background:#222" onclick="end(false)">Fail</button>
+                <button class="btn" onclick="end(true)">SUCCESS</button>
+                <button class="btn" style="background:#222" onclick="end(false)">FAIL</button>
             </div>
         </div>
         <button class="panic-btn" onclick="showPanic()">!!! SAFE WORD !!!</button>
@@ -116,7 +128,7 @@
 </div>
 
 <script>
-    let inv = { bondage: [], other: [] };
+    let inv = { bondage: [], sensory: [], toys: [] };
     let players = [], subIdx = 0, clock, time;
 
     function goStep(s) {
@@ -127,7 +139,7 @@
             ];
         }
         if(s === 3 && inv.bondage.length === 0) {
-            alert("ERROR: You must add at least one Bondage item to the list!");
+            alert("Error: At least one Bondage item is required to play.");
             return;
         }
         document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
@@ -135,7 +147,8 @@
     }
 
     function add(cat) {
-        let input = document.getElementById(cat === 'bondage' ? 'inBond' : 'inOther');
+        const inputId = 'in' + cat.charAt(0).toUpperCase() + cat.slice(1);
+        const input = document.getElementById(inputId);
         if(input.value.trim() !== "") {
             inv[cat].push(input.value.trim());
             render(cat);
@@ -144,7 +157,8 @@
     }
 
     function render(cat) {
-        let div = document.getElementById(cat === 'bondage' ? 'listBond' : 'listOther');
+        const listId = 'list' + cat.charAt(0).toUpperCase() + cat.slice(1);
+        const div = document.getElementById(listId);
         div.innerHTML = inv[cat].map((it, i) => `
             <div class="tag">${it} <span class="tag-del" onclick="inv['${cat}'].splice(${i},1); render('${cat}')">×</span></div>
         `).join('');
@@ -158,23 +172,25 @@
         
         let sub = players[subIdx];
         let dom = players[subIdx === 0 ? 1 : 0];
-        let gear = inv.bondage[Math.floor(Math.random()*inv.bondage.length)];
-        let extra = inv.other.length ? inv.other[Math.floor(Math.random()*inv.other.length)] : "manual stimulation";
+        
+        let b = inv.bondage[Math.floor(Math.random()*inv.bondage.length)];
+        let s = inv.sensory.length ? inv.sensory[Math.floor(Math.random()*inv.sensory.length)] : "no sensory cover";
+        let t = inv.toys.length ? inv.toys[Math.floor(Math.random()*inv.toys.length)] : "manual stimulation";
 
-        let html = `<b style="color:var(--gold)">${m.toUpperCase()} (LVL ${lvl})</b><br><br>`;
-        html += `${dom.n} secures ${sub.n} (${sub.g}) with <b>${gear}</b>.<br><br>`;
+        let html = `<b style="color:var(--gold)">${m.toUpperCase()} (LEVEL ${lvl})</b><br><br>`;
+        html += `<b>SETUP:</b> ${dom.n} secures ${sub.n} (${sub.g}) with <b>${b}</b>. `;
 
         if(m === "Escape") { 
-            html += `Challenge: Escape completely before time runs out.`; 
+            html += `Include <b>${s}</b>. <br><br><b>CHALLENGE:</b> ${sub.n} must fully escape all restraints before time runs out.`; 
             time = (lvl * 40) + 60; 
         } else if(m === "Shibari") { 
-            html += `Challenge: Create a complex aesthetic tie for the duration.`; 
+            html += `<br><br><b>CHALLENGE:</b> Create a complex, aesthetic tie using <b>${b}</b>. Focus on the visual tension for the full duration.`; 
             time = 300; 
         } else if(m === "Truth or Dare") { 
-            html += `Challenge: Truth or Dare. Failure results in use of <b>${extra}</b>.`; 
+            html += `Use <b>${s}</b> for focus. <br><br><b>CHALLENGE:</b> Master issues Truth or Dare. Failure to comply results in application of <b>${t}</b>.`; 
             time = 180; 
         } else { 
-            html += `Challenge: Mental focus test. Use <b>${extra}</b> to distract Sub.`; 
+            html += `Blind with <b>${s}</b>. <br><br><b>CHALLENGE:</b> Mental focus test. ${sub.n} must perform a difficult mental task while being distracted by <b>${t}</b>.`; 
             time = 120; 
         }
 
