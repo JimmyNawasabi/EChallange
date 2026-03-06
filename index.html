@@ -20,10 +20,10 @@
         .active { display: block; }
 
         .box { background: #fffcf9; border: 2px solid #f5f2ed; padding: 25px; margin-bottom: 25px; border-radius: 30px; }
-        .inner-box { background: #ffffff; border: 1px solid #eee; padding: 15px; border-radius: 20px; margin-bottom: 15px; }
+        .inner-box { background: #ffffff; border: 1px solid #eee; padding: 20px; border-radius: 20px; margin-bottom: 15px; }
         .label { font-size: 0.75rem; text-transform: uppercase; font-weight: 1000; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1px; }
 
-        input[type="text"], select, input[type="number"] { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 15px; margin-bottom: 10px; box-sizing: border-box; font-size: 1rem; outline: none; }
+        input[type="text"], select, input[type="number"] { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 15px; margin-bottom: 15px; box-sizing: border-box; font-size: 1rem; outline: none; display: block; }
         
         .trophy-row { display: flex; justify-content: space-between; background: #1a1a1a; color: var(--accent); padding: 12px 25px; border-radius: 60px; margin-bottom: 25px; font-size: 0.8rem; font-weight: bold; }
 
@@ -62,7 +62,8 @@
             
             <div class="inner-box">
                 <span class="label">Initial Slave</span>
-                <input type="text" id="p1" placeholder="Name">
+                <input type="text" id="p1" placeholder="Slave Name">
+                <span class="label">Body Type</span>
                 <select id="g1">
                     <option value="Male body">Male Body</option>
                     <option value="Female body">Female Body</option>
@@ -72,7 +73,8 @@
 
             <div class="inner-box">
                 <span class="label">Initial Master</span>
-                <input type="text" id="p2" placeholder="Name">
+                <input type="text" id="p2" placeholder="Master Name">
+                <span class="label">Body Type</span>
                 <select id="g2">
                     <option value="Male body">Male Body</option>
                     <option value="Female body">Female Body</option>
@@ -85,11 +87,11 @@
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Sensory (Blindfolds, Hoods)</span>
+            <span class="label">Vision (Blindfolds, Hoods)</span>
             <div style="display:flex; gap:10px;"><input type="text" id="in-vis"><button class="btn btn-add" onclick="addItem('vis')">Add</button></div>
             <div id="list-vis" class="tag-row"></div>
 
-            <span class="label">Silence (Gags, Tape)</span>
+            <span class="label">Mouth (Gags, Tape)</span>
             <div style="display:flex; gap:10px;"><input type="text" id="in-speech"><button class="btn btn-add" onclick="addItem('speech')">Add</button></div>
             <div id="list-speech" class="tag-row"></div>
 
@@ -97,7 +99,7 @@
             <div style="display:flex; gap:10px;"><input type="text" id="in-rest"><button class="btn btn-add" onclick="addItem('rest')">Add</button></div>
             <div id="list-rest" class="tag-row"></div>
 
-            <span class="label">Sensation (Toys, Ice)</span>
+            <span class="label">Sensation (Wands, Ice, Wax)</span>
             <div style="display:flex; gap:10px;"><input type="text" id="in-sens"><button class="btn btn-add" onclick="addItem('sens')">Add</button></div>
             <div id="list-sens" class="tag-row"></div>
         </div>
@@ -111,7 +113,7 @@
         </div>
 
         <div id="pre-round">
-            <div id="challenge-text" class="box" style="font-size: 1.1rem; line-height: 1.5; border-color: var(--accent);">Ready for command...</div>
+            <div id="challenge-text" class="box" style="font-size: 1.1rem; line-height: 1.5; border-color: var(--accent);">Awaiting command...</div>
             <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
             <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Start Timer</button>
         </div>
@@ -119,7 +121,7 @@
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
             <button class="btn" onclick="resolveTurn(true)">Success: Reversal</button>
-            <button class="btn" style="background:#888; margin-top: 15px;" onclick="resolveTurn(false)">Fail: Comply</button>
+            <button class="btn" style="background:#888; margin-top: 15px;" onclick="resolveTurn(false)">Fail: Stay Slave</button>
         </div>
     </div>
 </div>
@@ -176,10 +178,10 @@
         const s = inv.sens.length ? `<b>${inv.sens[Math.floor(Math.random()*inv.sens.length)]}</b>` : "Master's hands";
 
         const tasks = [
-            `<b>TEASE & EDGE:</b> Master ${master.n} secures the ${slave.g} of Slave ${slave.n} with ${r}. While ${v}, use ${s} to bring them to the absolute brink. Climax = Fail. Resistance = Success & Reversal.`,
+            `<b>TEASE & EDGE:</b> Master ${master.n} secures the ${slave.g} of Slave ${slave.n} with ${r}. While ${v}, use ${s} to bring the slave to the brink. Climax = Failure. Resistance = Mastery & Reversal.`,
             `<b>HUMAN STATUE:</b> Slave ${slave.n} must keep their ${slave.g} perfectly still while ${r} and ${sp}. Master ${master.n} will use ${s} for 5 minutes. Any sound resets the clock.`,
             `<b>SENSORY FOCUS:</b> Master ${master.n} applies ${r} to the ${slave.g} of ${slave.n}. While ${v} and ${sp}, the slave must correctly identify 3 applications of ${s}. Success earns role reversal.`,
-            `<b>THE STRUGGLE:</b> ${master.n} binds the ${slave.g} of ${slave.n} tightly in ${r} and ${v}. The slave has 4 minutes to struggle free and earn the Master's seat.`
+            `<b>THE ESCAPIST:</b> ${master.n} binds the ${slave.g} of Slave ${slave.n} tightly in ${r} and ${v}. The slave has 4 minutes to struggle free and take the Master's seat.`
         ];
         
         document.getElementById('challenge-text').innerHTML = tasks[Math.floor(Math.random()*tasks.length)];
@@ -196,21 +198,21 @@
 
     function resolveTurn(win, skip=false) {
         clearInterval(timer);
-        const masterIdx = (subIdx === 0 ? 1 : 0);
+        const prevMasterIdx = (subIdx === 0 ? 1 : 0);
         if(win) { 
             players[subIdx].wins++; 
-            subIdx = masterIdx; // Reverse
+            subIdx = prevMasterIdx; // Sub becomes Master
             cardOwnerIdx = subIdx; 
-            alert("Mastery earned. Role reversal!"); 
+            alert("Victory! You have ascended to Master."); 
         } else { 
-            players[masterIdx].wins++; 
-            if(!skip) alert("Failure. Master retains control."); 
+            players[prevMasterIdx].wins++; 
+            if(!skip) alert("Failure. You remain the Slave."); 
         }
         
         currentRound++;
         if(currentRound > totalRounds) {
             let winIdx = players[0].wins > players[1].wins ? 0 : 1;
-            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Champion: ${players[winIdx].n}</h1><p>The hierarchy is finalized.</p><button class="btn" onclick="location.reload()">New Session</button></div>`;
+            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Ultimate Master: ${players[winIdx].n}</h1><p>The session is over.</p><button class="btn" onclick="location.reload()">Start Over</button></div>`;
         } else {
             document.getElementById('active-round').style.display='none'; document.getElementById('pre-round').style.display='block';
             document.getElementById('gen-btn').style.display='block'; document.getElementById('start-btn').style.display='none';
