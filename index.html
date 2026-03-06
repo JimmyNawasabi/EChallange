@@ -3,242 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Velvet Edition</title>
+    <title>Bound & Brave: Velvet & Vinyl</title>
     <style>
         :root { 
-            --accent: #d4af37; 
-            --soft-bg: #f9f7f2; 
-            --card-bg: #ffffff;
-            --text: #332b2b; 
-            --crimson: #b32d2d; 
-            --yellow: #ffcc00; 
-            --red: #ff4444; 
-            --safe-green: #4caf50;
+            --accent: #d4af37; --soft-bg: #fdfaf5; --card-bg: #ffffff;
+            --text: #2c2c2c; --crimson: #911d1d; --yellow: #ffd700; 
+            --red: #ff3b3b; --safe-green: #388e3c;
         }
         
-        body { 
-            background: var(--soft-bg); 
-            color: var(--text); 
-            font-family: 'Arial', 'Helvetica', sans-serif; 
-            margin: 0; 
-            padding: 15px; 
-            display: flex; 
-            justify-content: center; 
-            font-size: 18px; /* Larger base font */
-        }
-
-        .container { 
-            max-width: 650px; 
-            width: 100%; 
-            background: var(--card-bg); 
-            padding: 30px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05); 
-            border-radius: 25px; /* More rounded */
-            border: 1px solid rgba(212, 175, 55, 0.3);
-        }
-
-        h1 { 
-            color: var(--crimson); 
-            text-align: center; 
-            text-transform: uppercase; 
-            letter-spacing: 2px; 
-            font-size: 2rem;
-            margin-bottom: 30px;
-        }
+        body { background: var(--soft-bg); color: var(--text); font-family: 'Arial', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 18px; }
+        .container { max-width: 650px; width: 100%; background: var(--card-bg); padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.06); border-radius: 35px; border: 1px solid rgba(212, 175, 55, 0.2); }
+        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 20px; }
 
         .step { display: none; }
         .active { display: block; }
 
-        /* INPUTS & BOXES */
-        .box { 
-            background: #fffefb; 
-            border: 2px solid #eee; 
-            padding: 20px; 
-            margin-bottom: 25px; 
-            border-radius: 20px;
-            transition: border 0.3s;
-        }
-        .box:focus-within { border-color: var(--accent); }
+        .box { background: #fffcf9; border: 2px solid #f2f1ed; padding: 20px; margin-bottom: 20px; border-radius: 25px; }
+        .label { font-size: 0.8rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; }
 
-        .label { 
-            font-size: 0.85rem; 
-            text-transform: uppercase; 
-            font-weight: bold; 
-            color: #888; 
-            display: block; 
-            margin-bottom: 8px; 
-            padding-left: 5px;
-        }
+        input[type="text"], select, input[type="number"] { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 15px; margin-bottom: 12px; box-sizing: border-box; font-size: 1.1rem; outline: none; }
 
-        input[type="text"], select, input[type="number"] { 
-            width: 100%; 
-            padding: 15px; 
-            border: 2px solid #eee; 
-            border-radius: 15px; 
-            margin-bottom: 15px; 
-            box-sizing: border-box; 
-            font-size: 1.1rem; 
-            font-family: inherit;
-            outline: none;
-        }
+        /* TROPHY TRACKER */
+        .trophy-row { display: flex; justify-content: space-between; background: #2c2c2c; color: var(--accent); padding: 10px 20px; border-radius: 50px; margin-bottom: 20px; font-size: 0.8rem; font-weight: bold; }
 
-        /* TAGS */
-        .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
-        .tag { 
-            background: #f0ede6; 
-            padding: 8px 15px; 
-            border-radius: 25px; 
-            font-size: 0.9rem; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            font-weight: bold;
-        }
-        .tag span { color: var(--crimson); cursor: pointer; font-size: 1.2rem; }
+        /* SPOTIFY EMBED */
+        #spotify-container { margin-top: 20px; border-radius: 15px; overflow: hidden; display: none; }
 
-        /* CARDS */
+        .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .tag { background: #f4f1ea; padding: 8px 15px; border-radius: 50px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; font-weight: bold; border: 1px solid #e0ddd5; }
+        .tag span { color: var(--crimson); cursor: pointer; font-size: 1.1rem; }
+
         .card-dock { display: flex; gap: 15px; margin-bottom: 25px; }
-        .card-ui { 
-            flex: 1;
-            padding: 20px 10px; 
-            border-radius: 20px; 
-            font-weight: bold; 
-            text-align: center;
-            cursor: pointer; 
-            opacity: 0.15; 
-            pointer-events: none; 
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            font-size: 0.9rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-        .card-ui.held { opacity: 1; pointer-events: auto; transform: translateY(-5px); }
-        .c-yellow { background: var(--yellow); color: #333; }
+        .card-ui { flex: 1; padding: 20px 5px; border-radius: 20px; font-weight: bold; text-align: center; cursor: pointer; opacity: 0.1; pointer-events: none; transition: 0.4s; font-size: 0.85rem; }
+        .card-ui.held { opacity: 1; pointer-events: auto; transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .c-yellow { background: var(--yellow); color: #222; }
         .c-red { background: var(--red); color: white; }
 
-        /* BUTTONS */
-        .btn { 
-            background: var(--crimson); 
-            color: white; 
-            border: none; 
-            padding: 20px; 
-            width: 100%; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            font-weight: bold;
-            letter-spacing: 1px; 
-            border-radius: 20px; 
-            margin-top: 10px; 
-            font-size: 1.1rem;
-            transition: opacity 0.2s;
-        }
-        .btn:active { opacity: 0.8; }
-        .btn-add { background: var(--accent); width: 100px; margin-bottom: 15px; border-radius: 15px; padding: 10px; }
+        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 20px; font-size: 1.1rem; }
+        .btn-add { background: var(--accent); width: 90px; padding: 10px; border-radius: 15px; font-size: 0.9rem; }
 
-        .timer-display { 
-            font-size: 5.5rem; 
-            text-align: center; 
-            color: var(--crimson); 
-            font-weight: bold;
-            margin: 20px 0; 
-            letter-spacing: -2px;
-        }
-        
-        #status-bar { 
-            text-align: center; 
-            font-weight: bold;
-            font-size: 0.9rem; 
-            margin-bottom: 20px; 
-            color: var(--accent);
-            text-transform: uppercase;
-        }
+        .timer-display { font-size: 5rem; text-align: center; color: var(--crimson); font-weight: bold; margin: 15px 0; letter-spacing: -2px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Bound & Brave</h1>
-    <div id="status-bar">Initialize Session</div>
+    
+    <div id="trophy-display" class="trophy-row" style="display:none;">
+        <span id="p1Score">P1: 0 Wins</span>
+        <span>🏆 MASTER TRACKER 🏆</span>
+        <span id="p2Score">P2: 0 Wins</span>
+    </div>
 
     <div id="step1" class="step active">
         <div class="box">
-            <span class="label">Total Rounds</span>
-            <input type="number" id="maxRounds" value="5" min="1">
+            <span class="label">Session Settings</span>
+            <input type="number" id="maxRounds" value="6" placeholder="Rounds">
+            <input type="text" id="spotifyLink" placeholder="Paste Spotify Playlist Link (Optional)">
             
-            <span class="label">Player 1 (Starts as Sub)</span>
-            <input type="text" id="p1" placeholder="Enter Name">
+            <span class="label">Player 1 (Sub)</span>
+            <input type="text" id="p1" placeholder="Name">
             <select id="g1">
                 <option value="Male Body">Male Body</option>
                 <option value="Female Body">Female Body</option>
-                <option value="Neutral Body">Neutral / Other</option>
+                <option value="Neutral">Neutral</option>
             </select>
             
-            <span class="label">Player 2 (Starts as Master)</span>
-            <input type="text" id="p2" placeholder="Enter Name">
+            <span class="label">Player 2 (Master)</span>
+            <input type="text" id="p2" placeholder="Name">
             <select id="g2">
                 <option value="Male Body">Male Body</option>
                 <option value="Female Body">Female Body</option>
-                <option value="Neutral Body">Neutral / Other</option>
+                <option value="Neutral">Neutral</option>
             </select>
         </div>
-        <button class="btn" onclick="nav(2)">Set Inventory ></button>
+        <button class="btn" onclick="nav(2)">Gear Inventory ></button>
     </div>
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">1. Bondage Gear</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in1" placeholder="Rope, Cuffs..."><button class="btn btn-add" onclick="addG('bondage')">Add</button></div>
+            <span class="label">Bondage</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in1"><button class="btn btn-add" onclick="addG('bondage')">Add</button></div>
             <div id="list1" class="tag-row"></div>
-            
-            <span class="label">2. Sensory Gear</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in2" placeholder="Tape, Blindfolds..."><button class="btn btn-add" onclick="addG('sensory')">Add</button></div>
+            <span class="label">Sensory</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in2"><button class="btn btn-add" onclick="addG('sensory')">Add</button></div>
             <div id="list2" class="tag-row"></div>
-
-            <span class="label">3. Teasing & Toys</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in3" placeholder="Wands, Feathers..."><button class="btn btn-add" onclick="addG('toys')">Add</button></div>
+            <span class="label">Tease Tools</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in3"><button class="btn btn-add" onclick="addG('toys')">Add</button></div>
             <div id="list3" class="tag-row"></div>
         </div>
-        <button class="btn" onclick="nav(3)">Start Session</button>
+        <button class="btn" onclick="nav(3)">Start Game</button>
     </div>
 
     <div id="step3" class="step">
         <div class="card-dock">
             <div id="card-y" class="card-ui c-yellow" onclick="useCard('yellow')">YELLOW<br>(Swap Roles)</div>
-            <div id="card-r" class="card-ui c-red" onclick="useCard('red')">RED<br>(End Round)</div>
+            <div id="card-r" class="card-ui c-red" onclick="useCard('red')">RED<br>(Pass Turn)</div>
         </div>
 
         <div id="pre-round">
-            <span class="label">Session Mode</span>
-            <select id="mode-sel">
-                <option value="Random">Random Mix</option>
-                <option value="Tease & Edge">Tease & Edge</option>
-                <option value="Escape Challenge">Escape Challenge</option>
-                <option value="Sensory Mind-Game">Sensory Mind-Game</option>
-            </select>
-            <div id="challenge-text" class="box" style="line-height: 1.6; font-size: 1.1rem;">
-                Awaiting your command...
-            </div>
-            <button class="btn" id="gen-btn" onclick="generate()">Generate Task</button>
-            <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Begin Timer</button>
+            <div id="challenge-text" class="box" style="font-size: 1.15rem; line-height: 1.6; border-color: var(--accent);">Ready for synthesis...</div>
+            <button class="btn" id="gen-btn" onclick="generate()">Generate Challenge</button>
+            <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Start Timer</button>
         </div>
 
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
-            <button class="btn" onclick="endR(true)">Success</button>
-            <button class="btn" style="background:#bbb; margin-top: 15px;" onclick="endR(false)">Fail</button>
+            <button class="btn" onclick="resolveTurn(true)">Success: Swap Roles</button>
+            <button class="btn" style="background:#888; margin-top: 12px;" onclick="resolveTurn(false)">Fail: Stay Sub</button>
         </div>
+
+        <div id="spotify-container"></div>
     </div>
 </div>
 
 <script>
     let gear = { bondage: [], sensory: [], toys: [] };
-    let players = [], currentRound = 1, totalRounds = 5;
+    let players = [], currentRound = 1, totalRounds = 6;
     let subIdx = 0; 
     let timer, timeLeft;
-    let cardOwner = 0; // Starts with Sub (P1)
+    let cardOwnerIdx = 0;
 
-    // SOUNDS
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function beep(freq, dur, vol = 0.1) {
+    function beep(freq, dur, vol = 0.05) {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain); gain.connect(audioCtx.destination);
@@ -249,25 +137,34 @@
     function nav(n) {
         if(n === 2) {
             players = [
-                { n: document.getElementById('p1').value || "Player 1", g: document.getElementById('g1').value },
-                { n: document.getElementById('p2').value || "Player 2", g: document.getElementById('g2').value }
+                { n: document.getElementById('p1').value || "P1", g: document.getElementById('g1').value, wins: 0 },
+                { n: document.getElementById('p2').value || "P2", g: document.getElementById('g2').value, wins: 0 }
             ];
             totalRounds = parseInt(document.getElementById('maxRounds').value);
+            setupSpotify();
         }
-        if(n === 3 && gear.bondage.length === 0) { alert("Please add at least one Bondage item."); return; }
+        if(n === 3 && gear.bondage.length === 0) { alert("Add gear!"); return; }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step'+n).classList.add('active');
+        if(n === 3) document.getElementById('trophy-display').style.display = 'flex';
         updateStatus();
+    }
+
+    function setupSpotify() {
+        let link = document.getElementById('spotifyLink').value;
+        if (link.includes("spotify.com")) {
+            let id = link.split("/playlist/")[1]?.split("?")[0];
+            if (id) {
+                document.getElementById('spotify-container').innerHTML = `<iframe src="https://open.spotify.com/embed/playlist/${id}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+                document.getElementById('spotify-container').style.display = 'block';
+            }
+        }
     }
 
     function addG(cat) {
         let id = cat === 'bondage' ? 'in1' : cat === 'sensory' ? 'in2' : 'in3';
         let val = document.getElementById(id).value;
-        if(val) {
-            gear[cat].push(val);
-            document.getElementById(id).value = '';
-            renderG();
-        }
+        if(val) { gear[cat].push(val); document.getElementById(id).value = ''; renderG(); }
     }
 
     function renderG() {
@@ -280,47 +177,43 @@
 
     function updateStatus() {
         if(players.length > 0) {
-            document.getElementById('status-bar').innerText = `Round ${currentRound} of ${totalRounds} | ${players[subIdx].n} is Sub`;
-            document.getElementById('card-y').classList.toggle('held', cardOwner === subIdx);
-            document.getElementById('card-r').classList.toggle('held', cardOwner === subIdx);
+            document.getElementById('p1Score').innerText = `${players[0].n}: ${players[0].wins} Wins`;
+            document.getElementById('p2Score').innerText = `${players[1].n}: ${players[1].wins} Wins`;
+            document.getElementById('card-y').classList.toggle('held', cardOwnerIdx === subIdx);
+            document.getElementById('card-r').classList.toggle('held', cardOwnerIdx === subIdx);
         }
     }
 
     function useCard(type) {
-        if(cardOwner !== subIdx) return;
+        if(cardOwnerIdx !== subIdx) return;
         if(type === 'yellow') {
-            beep(300, 200);
-            subIdx = (subIdx === 0 ? 1 : 0); // Swap roles
-            cardOwner = (subIdx === 0 ? 1 : 0); // Pass cards to new Master
+            beep(400, 200);
+            subIdx = (subIdx === 0 ? 1 : 0); 
+            cardOwnerIdx = (subIdx === 0 ? 1 : 0); 
             generate();
         } else {
             beep(200, 500);
-            cardOwner = (subIdx === 0 ? 1 : 0); // Pass cards
-            endR(false, true);
+            cardOwnerIdx = (subIdx === 0 ? 1 : 0);
+            resolveTurn(false, true); 
         }
         updateStatus();
     }
 
     function generate() {
-        const mode = document.getElementById('mode-sel').value;
         const sub = players[subIdx];
         const master = players[subIdx==0?1:0];
         const b = gear.bondage[Math.floor(Math.random()*gear.bondage.length)];
         const s = gear.sensory.length ? gear.sensory[Math.floor(Math.random()*gear.sensory.length)] : "bare eyes";
         const t = gear.toys.length ? gear.toys[Math.floor(Math.random()*gear.toys.length)] : "fingers";
 
-        let txt = "";
-        if(mode.includes("Tease") || mode === "Random") {
-            txt = `<b>TEASE & EDGE:</b> ${master.n} must bind ${sub.n} (${sub.g}) with ${b}. Using ${t}, bring them to the very edge of climax. Deny them. Repeat. No release allowed yet.`;
-            timeLeft = 300;
-        } else if (mode.includes("Escape")) {
-            txt = `<b>ESCAPE:</b> ${sub.n} is bound tightly with ${b} and blinded by ${s}. They must escape before the alarm sounds or face more ${t}.`;
-            timeLeft = 240;
-        } else {
-            txt = `<b>SENSORY FOCUS:</b> ${master.n} applies ${b} and ${s}. ${sub.n} must remain perfectly still while ${master.n} teases with ${t}. Any movement adds 1 minute to the timer.`;
-            timeLeft = 180;
-        }
-        document.getElementById('challenge-text').innerHTML = txt;
+        const tasks = [
+            `<b>TEASE & EDGE:</b> ${master.n} binds ${sub.n} (${sub.g}) with ${b}. Using ${t}, bring them to the absolute brink. If ${sub.n} resists climax, they win the role.`,
+            `<b>ESCAPE CHALLENGE:</b> ${sub.n} is immobilized with ${b} and blinded by ${s}. Escape before time ends to take the throne.`,
+            `<b>SENSORY FOCUS:</b> ${master.n} applies ${b} and ${s}. ${sub.n} must remain still while teased with ${t}. Any sound extends the clock.`
+        ];
+        
+        document.getElementById('challenge-text').innerHTML = tasks[Math.floor(Math.random()*tasks.length)];
+        timeLeft = 240; 
         document.getElementById('gen-btn').style.display = 'none';
         document.getElementById('start-btn').style.display = 'block';
     }
@@ -332,24 +225,29 @@
             timeLeft--;
             let m = Math.floor(timeLeft/60), s = timeLeft%60;
             document.getElementById('clock').innerText = `${m}:${s<10?'0':''}${s}`;
-            
-            // Heartbeat tick
-            if(timeLeft > 0) beep(500, 10, 0.05);
-            
-            if(timeLeft <= 0) { 
-                clearInterval(timer); 
-                beep(800, 1000, 0.2); 
-                alert("Time is Up!"); 
-                endR(false); 
-            }
+            if(timeLeft > 0) beep(440, 15, 0.02);
+            if(timeLeft <= 0) { clearInterval(timer); beep(800, 800, 0.1); resolveTurn(false); }
         }, 1000);
     }
 
-    function endR(success, skipped = false) {
+    function resolveTurn(success, usedRed = false) {
         clearInterval(timer);
+        const masterIdx = (subIdx === 0 ? 1 : 0);
+        
+        if(success) {
+            subIdx = masterIdx; 
+            cardOwnerIdx = subIdx;
+            players[subIdx].wins++; // The player who WAS sub is now master and gets a win
+            alert("Victory! Roles swapped.");
+        } else {
+            players[masterIdx].wins++; // Master kept control, Master gets a win
+            if(!usedRed) alert("Failure. Master retains control.");
+        }
+        
         currentRound++;
         if(currentRound > totalRounds) {
-            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Grand Finale</h1><p style="font-size:1.4rem;">The session is complete. The Winner may now claim their reward or grant release.</p></div>`;
+            let winner = players[0].wins > players[1].wins ? players[0] : players[1];
+            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>🏆 Session Champion: ${winner.n} 🏆</h1><p style="font-size:1.3rem;">With ${winner.wins} dominance points, ${winner.n} wins the session and decides the final reward.</p></div>`;
         } else {
             document.getElementById('active-round').style.display = 'none';
             document.getElementById('pre-round').style.display = 'block';
