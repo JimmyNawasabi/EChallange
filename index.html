@@ -1,12 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Fixed Inventory</title>
+    <title>Bound & Brave: Traffic Light</title>
     <style>
-        :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; --safe: #2e7d32; }
+        :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; --yellow: #ffd700; --red: #ff0000; --safe: #2e7d32; }
         body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 600px; width: 100%; background: #111; border: 2px solid #333; padding: 20px; box-shadow: 0 0 30px #000; display: flex; flex-direction: column; min-height: 95vh; }
         h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; border-bottom: 2px solid var(--crimson); padding-bottom: 10px; margin-bottom: 20px; }
@@ -14,224 +13,251 @@
         .step { display: none; }
         .active { display: block; }
 
-        /* GENDER & NAME BOXES */
-        .player-box { border: 2px solid var(--gold); padding: 15px; margin-bottom: 20px; background: #000; }
+        /* PLAYER SETUP */
+        .player-card { border: 2px solid var(--gold); padding: 15px; margin-bottom: 20px; background: #000; }
         .lbl { color: var(--gold); font-weight: bold; font-size: 0.8em; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        input[type="text"], select { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: white; margin-bottom: 15px; box-sizing: border-box; font-family: inherit; }
+        input[type="text"], select { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: white; margin-bottom: 15px; box-sizing: border-box; font-family: inherit; font-size: 16px; }
 
-        /* INVENTORY FIX */
-        .inv-group { background: #080808; padding: 15px; border: 1px solid #333; margin-bottom: 15px; border-left: 4px solid var(--crimson); }
-        .row { display: flex; gap: 10px; margin-bottom: 10px; }
-        .row input { margin-bottom: 0; flex-grow: 1; }
-        .add-btn { background: var(--gold); color: black; border: none; padding: 0 20px; font-weight: bold; cursor: pointer; }
+        /* INVENTORY BOXES */
+        .inv-section { background: #080808; padding: 15px; border: 1px solid #333; margin-bottom: 15px; border-left: 4px solid var(--crimson); }
+        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .input-row input { margin-bottom: 0; flex-grow: 1; }
+        .add-btn { background: var(--gold); color: black; border: none; padding: 0 20px; font-weight: bold; cursor: pointer; height: 45px; }
         
-        .tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .tag { background: #222; border: 1px solid var(--gold); padding: 4px 10px; border-radius: 15px; font-size: 0.8em; display: flex; align-items: center; gap: 8px; }
-        .rem { color: var(--crimson); cursor: pointer; font-weight: bold; font-size: 1.2em; }
+        .tag-box { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .tag { background: #222; border: 1px solid var(--gold); padding: 5px 12px; border-radius: 20px; font-size: 0.8em; display: flex; align-items: center; gap: 8px; }
+        .tag-del { color: var(--crimson); cursor: pointer; font-weight: bold; font-size: 1.2em; }
 
-        /* BUTTONS */
-        .btn { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-top: 10px; }
-        .panic { background: var(--safe); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 20px; }
-        
+        /* TRAFFIC LIGHT BUTTONS */
+        .safety-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .safety-btn { padding: 15px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: none; font-size: 0.9em; }
+        .yellow-btn { background: var(--yellow); color: black; }
+        .red-btn { background: var(--red); color: white; }
+
         /* PLAY UI */
-        .timer-txt { font-size: 5em; color: #ff0000; text-align: center; margin: 20px 0; font-family: Impact, sans-serif; }
-        #overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:1000; justify-content:center; align-items:center; flex-direction:column; }
+        .timer-display { font-size: 5em; color: var(--red); text-align: center; margin: 20px 0; font-family: Impact, sans-serif; text-shadow: 0 0 10px rgba(255,0,0,0.2); }
+        .btn-main { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-top: 10px; }
+        
+        #overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:1000; justify-content:center; align-items:center; flex-direction:column; text-align: center; padding: 20px; }
     </style>
 </head>
 <body>
 
 <div id="overlay">
-    <h2 style="color:var(--gold)">PAUSED</h2>
-    <button class="btn" onclick="unpanic()" style="background:var(--safe); width: 200px;">RESUME</button>
+    <h2 id="statusTitle" style="color:var(--gold)">SESSION PAUSED</h2>
+    <p id="statusDesc" style="margin-bottom: 20px;">Communication required.</p>
+    <button class="btn-main" onclick="resumeSession()" style="background:var(--safe); width: 220px;">RESUME</button>
 </div>
 
 <div class="container">
     <h1>Bound & Brave</h1>
 
-    <div id="p1" class="step active">
-        <div class="player-box">
-            <span class="lbl">Sub Player</span>
-            <input type="text" id="name1" placeholder="Name">
-            <span class="lbl">Gender/Body</span>
-            <select id="gen1">
+    <div id="step1" class="step active">
+        <div class="player-card">
+            <span class="lbl">Starting Sub Player</span>
+            <input type="text" id="p1Name" placeholder="Name">
+            <span class="lbl">Body Type / Anatomy</span>
+            <select id="p1Gen">
                 <option value="Male Body">Male Body</option>
                 <option value="Female Body">Female Body</option>
-                <option value="Other">Other</option>
+                <option value="Neutral/Other">Neutral / Other</option>
             </select>
         </div>
-        <div class="player-box">
-            <span class="lbl">Master Player</span>
-            <input type="text" id="name2" placeholder="Name">
-            <span class="lbl">Gender/Body</span>
-            <select id="gen2">
+        <div class="player-card">
+            <span class="lbl">Starting Master Player</span>
+            <input type="text" id="p2Name" placeholder="Name">
+            <span class="lbl">Body Type / Anatomy</span>
+            <select id="p2Gen">
                 <option value="Male Body">Male Body</option>
                 <option value="Female Body">Female Body</option>
-                <option value="Other">Other</option>
+                <option value="Neutral/Other">Neutral / Other</option>
             </select>
         </div>
-        <button class="btn" onclick="nav(2)">Next: Gear ></button>
+        <button class="btn-main" onclick="navStep(2)">Inventory Setup ></button>
     </div>
 
-    <div id="p2" class="step">
-        <div class="inv-group">
-            <span class="lbl">1. Bondage (Required)</span>
-            <div class="row">
+    <div id="step2" class="step">
+        <div class="inv-section">
+            <span class="lbl">1. Bondage Gear (Required)</span>
+            <div class="input-row">
                 <input type="text" id="in1" placeholder="Rope, Cuffs...">
-                <button class="add-btn" onclick="pushItem('bondage')">ADD</button>
+                <button class="add-btn" onclick="saveGear('bondage')">ADD</button>
             </div>
-            <div id="list1" class="tag-list"></div>
+            <div id="list1" class="tag-box"></div>
         </div>
 
-        <div class="inv-group">
-            <span class="lbl">2. Sensory (Blindfolds/Gags)</span>
-            <div class="row">
-                <input type="text" id="in2" placeholder="Silk, Tape...">
-                <button class="add-btn" onclick="pushItem('sensory')">ADD</button>
+        <div class="inv-section">
+            <span class="lbl">2. Sensory Gear (Blindfolds/Gags)</span>
+            <div class="input-row">
+                <input type="text" id="in2" placeholder="Tape, Silk...">
+                <button class="add-btn" onclick="saveGear('sensory')">ADD</button>
             </div>
-            <div id="list2" class="tag-list"></div>
+            <div id="list2" class="tag-box"></div>
         </div>
 
-        <div class="inv-group">
+        <div class="inv-section">
             <span class="lbl">3. Toys (Impact/Stim)</span>
-            <div class="row">
+            <div class="input-row">
                 <input type="text" id="in3" placeholder="Flogger, Wand...">
-                <button class="add-btn" onclick="pushItem('toys')">ADD</button>
+                <button class="add-btn" onclick="saveGear('toys')">ADD</button>
             </div>
-            <div id="list3" class="tag-list"></div>
+            <div id="list3" class="tag-box"></div>
         </div>
 
-        <button class="btn" onclick="nav(3)">Lock System ></button>
-        <button class="btn" style="background:#222;" onclick="nav(1)">Back</button>
+        <button class="btn-main" onclick="navStep(3)">Lock & Play ></button>
+        <button class="btn-main" style="background:#222; border:none;" onclick="navStep(1)">Back</button>
     </div>
 
-    <div id="p3" class="step">
-        <div id="pre">
-            <span class="lbl">Activity Type</span>
-            <select id="mode">
+    <div id="step3" class="step">
+        <div id="setupArea">
+            <span class="lbl">Select Activity</span>
+            <select id="activitySel">
                 <option value="Random">Random</option>
-                <option value="Escape">Escape</option>
-                <option value="Shibari">Shibari</option>
+                <option value="Escape">Escape Challenge</option>
+                <option value="Shibari">Shibari (Artistic)</option>
                 <option value="Truth or Dare">Truth or Dare</option>
                 <option value="Mind Fuck">Mind Fuck</option>
             </select>
-            <div id="box" style="background:#000; padding:20px; border-left:4px solid var(--crimson); margin:15px 0;">
-                Ready.
+            <div id="challengeBox" style="background:#000; padding:20px; border-left:4px solid var(--crimson); margin:15px 0; min-height: 80px;">
+                Synthesize for instructions.
             </div>
-            <button class="btn" id="gBtn" onclick="roll()">Generate</button>
-            <button class="btn" id="sBtn" style="display:none;" onclick="start()">Start Timer</button>
+            <button class="btn-main" id="gBtn" onclick="generateRound()">Generate</button>
+            <button class="btn-main" id="sBtn" style="display:none;" onclick="startTimer()">Start Round</button>
         </div>
 
-        <div id="post" style="display:none;">
-            <div class="timer-txt" id="timer">00:00</div>
-            <div style="display:flex; gap:10px;">
-                <button class="btn" onclick="done(true)">Success</button>
-                <button class="btn" style="background:#222" onclick="done(false)">Fail</button>
+        <div id="timerArea" style="display:none;">
+            <div class="timer-display" id="timeClock">00:00</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button class="btn-main" onclick="resolveRound(true)">Success</button>
+                <button class="btn-main" style="background:#222" onclick="resolveRound(false)">Fail</button>
             </div>
         </div>
-        <button class="panic" onclick="panic()">!!! SAFE WORD !!!</button>
+
+        <div class="safety-grid">
+            <button class="safety-btn yellow-btn" onclick="triggerSafety('yellow')">Yellow (Slow/Check)</button>
+            <button class="safety-btn red-btn" onclick="triggerSafety('red')">Red (Stop Round)</button>
+        </div>
     </div>
 </div>
 
 <script>
-    let gear = { bondage: [], sensory: [], toys: [] };
-    let users = [], subIdx = 0, clock, rem;
+    let masterGear = { bondage: [], sensory: [], toys: [] };
+    let users = [], subIdx = 0, clock, seconds;
 
-    function nav(n) {
+    function navStep(n) {
         if(n === 2) {
             users = [
-                { n: document.getElementById('name1').value || "P1", g: document.getElementById('gen1').value },
-                { n: document.getElementById('name2').value || "P2", g: document.getElementById('gen2').value }
+                { name: document.getElementById('p1Name').value || "Sub", gen: document.getElementById('p1Gen').value },
+                { name: document.getElementById('p2Name').value || "Dom", gen: document.getElementById('p2Gen').value }
             ];
         }
-        if(n === 3 && gear.bondage.length === 0) {
-            alert("Add at least one Bondage item first!"); return;
+        if(n === 3 && masterGear.bondage.length === 0) {
+            alert("Error: Add at least one Bondage item to continue."); return;
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById('p'+n).classList.add('active');
+        document.getElementById('step'+n).classList.add('active');
     }
 
-    function pushItem(cat) {
+    function saveGear(cat) {
         let inputId = (cat === 'bondage') ? 'in1' : (cat === 'sensory') ? 'in2' : 'in3';
         let listId = (cat === 'bondage') ? 'list1' : (cat === 'sensory') ? 'list2' : 'list3';
         let input = document.getElementById(inputId);
         let val = input.value.trim();
 
         if(val !== "") {
-            gear[cat].push(val);
+            masterGear[cat].push(val);
             input.value = "";
+            input.style.borderColor = "var(--gold)";
+            setTimeout(() => { input.style.borderColor = "#444"; }, 300);
             renderGear(cat, listId);
         }
     }
 
     function renderGear(cat, listId) {
         let div = document.getElementById(listId);
-        div.innerHTML = gear[cat].map((item, i) => `
-            <div class="tag">${item} <span class="rem" onclick="kill('${cat}', ${i}, '${listId}')">×</span></div>
+        div.innerHTML = masterGear[cat].map((item, i) => `
+            <div class="tag">${item} <span class="tag-del" onclick="masterGear['${cat}'].splice(${i}, 1); renderGear('${cat}', '${listId}')">×</span></div>
         `).join('');
     }
 
-    function kill(cat, i, listId) {
-        gear[cat].splice(i, 1);
-        renderGear(cat, listId);
-    }
-
-    function roll() {
-        let mSel = document.getElementById('mode').value;
+    function generateRound() {
+        let choice = document.getElementById('activitySel').value;
         let modes = ["Escape", "Shibari", "Truth or Dare", "Mind Fuck"];
-        let m = mSel === "Random" ? modes[Math.floor(Math.random()*4)] : mSel;
+        let m = choice === "Random" ? modes[Math.floor(Math.random()*4)] : choice;
         let lvl = Math.floor(Math.random()*10)+1;
         
-        let s = users[subIdx];
-        let d = users[subIdx === 0 ? 1 : 0];
+        let sub = users[subIdx];
+        let dom = users[subIdx === 0 ? 1 : 0];
         
-        let b = gear.bondage[Math.floor(Math.random()*gear.bondage.length)];
-        let sen = gear.sensory.length ? gear.sensory[Math.floor(Math.random()*gear.sensory.length)] : "no blindfold";
-        let t = gear.toys.length ? gear.toys[Math.floor(Math.random()*gear.toys.length)] : "manual stimulation";
+        let b = masterGear.bondage[Math.floor(Math.random()*masterGear.bondage.length)];
+        let s = masterGear.sensory.length ? masterGear.sensory[Math.floor(Math.random()*masterGear.sensory.length)] : "no blindfold";
+        let t = masterGear.toys.length ? masterGear.toys[Math.floor(Math.random()*masterGear.toys.length)] : "manual stimulation";
 
-        let msg = `<b style="color:var(--gold)">${m.toUpperCase()} (LVL ${lvl})</b><br><br>`;
-        msg += `${d.n} secures ${s.n} (${s.g}) with <b>${b}</b>. `;
+        let html = `<b style="color:var(--gold)">${m.toUpperCase()} (LVL ${lvl})</b><br>`;
+        html += `${dom.name} secures ${sub.name} (${sub.gen}) with <b>${b}</b>. `;
 
         if(m === "Escape") { 
-            msg += `Subject is blinded with <b>${sen}</b>. <br><br><b>GOAL:</b> Escape before time ends.`; 
-            rem = (lvl * 40) + 60; 
+            html += `Include <b>${s}</b>. <br><br><b>TASK:</b> Break free before the clock hits zero.`; 
+            seconds = (lvl * 40) + 60; 
         } else if(m === "Shibari") { 
-            msg += `<br><br><b>GOAL:</b> Master performs an artistic tie. Sub must remain still.`; 
-            rem = 300; 
+            html += `<br><br><b>TASK:</b> Focus on aesthetics. Master tie should be complex and restrictive for the full duration.`; 
+            seconds = 300; 
         } else if(m === "Truth or Dare") { 
-            msg += `Penalty tool: <b>${t}</b>. <br><br><b>GOAL:</b> Complete the Master's query or suffer the penalty.`; 
-            rem = 180; 
+            html += `<br><br><b>TASK:</b> Truth or Dare. Use <b>${t}</b> for penalty.`; 
+            seconds = 180; 
         } else { 
-            msg += `Sensory: <b>${sen}</b>. <br><br><b>GOAL:</b> Perform mental tasks while Master distracts with <b>${t}</b>.`; 
-            rem = 120; 
+            html += `<br><br><b>TASK:</b> Sensory deprivation with <b>${s}</b>. Sub must perform mental focus tasks while distracted by <b>${t}</b>.`; 
+            seconds = 120; 
         }
 
-        document.getElementById('box').innerHTML = msg;
+        document.getElementById('challengeBox').innerHTML = html;
         document.getElementById('gBtn').style.display = "none";
         document.getElementById('sBtn').style.display = "block";
     }
 
-    function start() {
-        document.getElementById('pre').style.display = "none";
-        document.getElementById('post').style.display = "block";
+    function startTimer() {
+        document.getElementById('setupArea').style.display = "none";
+        document.getElementById('timerArea').style.display = "block";
         clock = setInterval(() => {
-            rem--;
-            let mins = Math.floor(rem/60), secs = rem%60;
-            document.getElementById('timer').innerText = `${mins}:${secs<10?'0':''}${secs}`;
-            if(rem <= 0) done(false);
+            seconds--;
+            let mins = Math.floor(seconds/60), secs = seconds%60;
+            document.getElementById('timeClock').innerText = `${mins}:${secs<10?'0':''}${secs}`;
+            if(seconds <= 0) resolveRound(false);
         }, 1000);
     }
 
-    function done(win) {
+    function resolveRound(win) {
         clearInterval(clock);
         if(win) { subIdx = (subIdx === 0 ? 1 : 0); alert("Roles Swapped!"); }
-        document.getElementById('post').style.display = "none";
-        document.getElementById('pre').style.display = "block";
+        document.getElementById('timerArea').style.display = "none";
+        document.getElementById('setupArea').style.display = "block";
         document.getElementById('gBtn').style.display = "block";
         document.getElementById('sBtn').style.display = "none";
     }
 
-    function panic() { clearInterval(clock); document.getElementById('overlay').style.display = "flex"; }
-    function unpanic() { document.getElementById('overlay').style.display = "none"; done(false); }
+    function triggerSafety(type) {
+        clearInterval(clock);
+        const overlay = document.getElementById('overlay');
+        const title = document.getElementById('statusTitle');
+        const desc = document.getElementById('statusDesc');
+        
+        if(type === 'yellow') {
+            title.innerText = "YELLOW CARD";
+            title.style.color = "var(--yellow)";
+            desc.innerText = "Ease up. Slow down. Communicate with your partner before resuming.";
+        } else {
+            title.innerText = "RED CARD";
+            title.style.color = "var(--red)";
+            desc.innerText = "Stop immediately. The current round is terminated. Check in now.";
+            resolveRound(false);
+        }
+        overlay.style.display = "flex";
+    }
+
+    function resumeSession() {
+        document.getElementById('overlay').style.display = "none";
+        // If it was just yellow, we don't reset everything, but user must manually resume
+    }
 </script>
 </body>
 </html>
