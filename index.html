@@ -3,260 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Traffic Light</title>
+    <title>Bound & Brave: Velvet Edition</title>
     <style>
-        :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; --yellow: #ffd700; --red: #ff0000; --safe: #2e7d32; }
-        body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .container { max-width: 600px; width: 100%; background: #111; border: 2px solid #333; padding: 20px; box-shadow: 0 0 30px #000; display: flex; flex-direction: column; min-height: 95vh; }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; border-bottom: 2px solid var(--crimson); padding-bottom: 10px; margin-bottom: 20px; }
+        :root { 
+            --accent: #d4af37; 
+            --soft-bg: #f9f7f2; 
+            --card-bg: #ffffff;
+            --text: #332b2b; 
+            --crimson: #b32d2d; 
+            --yellow: #ffcc00; 
+            --red: #ff4444; 
+            --safe-green: #4caf50;
+        }
         
+        body { 
+            background: var(--soft-bg); 
+            color: var(--text); 
+            font-family: 'Arial', 'Helvetica', sans-serif; 
+            margin: 0; 
+            padding: 15px; 
+            display: flex; 
+            justify-content: center; 
+            font-size: 18px; /* Larger base font */
+        }
+
+        .container { 
+            max-width: 650px; 
+            width: 100%; 
+            background: var(--card-bg); 
+            padding: 30px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05); 
+            border-radius: 25px; /* More rounded */
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        h1 { 
+            color: var(--crimson); 
+            text-align: center; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
         .step { display: none; }
         .active { display: block; }
 
-        /* PLAYER SETUP */
-        .player-card { border: 2px solid var(--gold); padding: 15px; margin-bottom: 20px; background: #000; }
-        .lbl { color: var(--gold); font-weight: bold; font-size: 0.8em; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        input[type="text"], select { width: 100%; padding: 12px; background: #111; border: 1px solid #444; color: white; margin-bottom: 15px; box-sizing: border-box; font-family: inherit; font-size: 16px; }
+        /* INPUTS & BOXES */
+        .box { 
+            background: #fffefb; 
+            border: 2px solid #eee; 
+            padding: 20px; 
+            margin-bottom: 25px; 
+            border-radius: 20px;
+            transition: border 0.3s;
+        }
+        .box:focus-within { border-color: var(--accent); }
 
-        /* INVENTORY BOXES */
-        .inv-section { background: #080808; padding: 15px; border: 1px solid #333; margin-bottom: 15px; border-left: 4px solid var(--crimson); }
-        .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        .input-row input { margin-bottom: 0; flex-grow: 1; }
-        .add-btn { background: var(--gold); color: black; border: none; padding: 0 20px; font-weight: bold; cursor: pointer; height: 45px; }
+        .label { 
+            font-size: 0.85rem; 
+            text-transform: uppercase; 
+            font-weight: bold; 
+            color: #888; 
+            display: block; 
+            margin-bottom: 8px; 
+            padding-left: 5px;
+        }
+
+        input[type="text"], select, input[type="number"] { 
+            width: 100%; 
+            padding: 15px; 
+            border: 2px solid #eee; 
+            border-radius: 15px; 
+            margin-bottom: 15px; 
+            box-sizing: border-box; 
+            font-size: 1.1rem; 
+            font-family: inherit;
+            outline: none;
+        }
+
+        /* TAGS */
+        .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .tag { 
+            background: #f0ede6; 
+            padding: 8px 15px; 
+            border-radius: 25px; 
+            font-size: 0.9rem; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-weight: bold;
+        }
+        .tag span { color: var(--crimson); cursor: pointer; font-size: 1.2rem; }
+
+        /* CARDS */
+        .card-dock { display: flex; gap: 15px; margin-bottom: 25px; }
+        .card-ui { 
+            flex: 1;
+            padding: 20px 10px; 
+            border-radius: 20px; 
+            font-weight: bold; 
+            text-align: center;
+            cursor: pointer; 
+            opacity: 0.15; 
+            pointer-events: none; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .card-ui.held { opacity: 1; pointer-events: auto; transform: translateY(-5px); }
+        .c-yellow { background: var(--yellow); color: #333; }
+        .c-red { background: var(--red); color: white; }
+
+        /* BUTTONS */
+        .btn { 
+            background: var(--crimson); 
+            color: white; 
+            border: none; 
+            padding: 20px; 
+            width: 100%; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            font-weight: bold;
+            letter-spacing: 1px; 
+            border-radius: 20px; 
+            margin-top: 10px; 
+            font-size: 1.1rem;
+            transition: opacity 0.2s;
+        }
+        .btn:active { opacity: 0.8; }
+        .btn-add { background: var(--accent); width: 100px; margin-bottom: 15px; border-radius: 15px; padding: 10px; }
+
+        .timer-display { 
+            font-size: 5.5rem; 
+            text-align: center; 
+            color: var(--crimson); 
+            font-weight: bold;
+            margin: 20px 0; 
+            letter-spacing: -2px;
+        }
         
-        .tag-box { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .tag { background: #222; border: 1px solid var(--gold); padding: 5px 12px; border-radius: 20px; font-size: 0.8em; display: flex; align-items: center; gap: 8px; }
-        .tag-del { color: var(--crimson); cursor: pointer; font-weight: bold; font-size: 1.2em; }
-
-        /* TRAFFIC LIGHT BUTTONS */
-        .safety-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .safety-btn { padding: 15px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: none; font-size: 0.9em; }
-        .yellow-btn { background: var(--yellow); color: black; }
-        .red-btn { background: var(--red); color: white; }
-
-        /* PLAY UI */
-        .timer-display { font-size: 5em; color: var(--red); text-align: center; margin: 20px 0; font-family: Impact, sans-serif; text-shadow: 0 0 10px rgba(255,0,0,0.2); }
-        .btn-main { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-top: 10px; }
-        
-        #overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:1000; justify-content:center; align-items:center; flex-direction:column; text-align: center; padding: 20px; }
+        #status-bar { 
+            text-align: center; 
+            font-weight: bold;
+            font-size: 0.9rem; 
+            margin-bottom: 20px; 
+            color: var(--accent);
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
 
-<div id="overlay">
-    <h2 id="statusTitle" style="color:var(--gold)">SESSION PAUSED</h2>
-    <p id="statusDesc" style="margin-bottom: 20px;">Communication required.</p>
-    <button class="btn-main" onclick="resumeSession()" style="background:var(--safe); width: 220px;">RESUME</button>
-</div>
-
 <div class="container">
     <h1>Bound & Brave</h1>
+    <div id="status-bar">Initialize Session</div>
 
     <div id="step1" class="step active">
-        <div class="player-card">
-            <span class="lbl">Starting Sub Player</span>
-            <input type="text" id="p1Name" placeholder="Name">
-            <span class="lbl">Body Type / Anatomy</span>
-            <select id="p1Gen">
+        <div class="box">
+            <span class="label">Total Rounds</span>
+            <input type="number" id="maxRounds" value="5" min="1">
+            
+            <span class="label">Player 1 (Starts as Sub)</span>
+            <input type="text" id="p1" placeholder="Enter Name">
+            <select id="g1">
                 <option value="Male Body">Male Body</option>
                 <option value="Female Body">Female Body</option>
-                <option value="Neutral/Other">Neutral / Other</option>
+                <option value="Neutral Body">Neutral / Other</option>
             </select>
-        </div>
-        <div class="player-card">
-            <span class="lbl">Starting Master Player</span>
-            <input type="text" id="p2Name" placeholder="Name">
-            <span class="lbl">Body Type / Anatomy</span>
-            <select id="p2Gen">
+            
+            <span class="label">Player 2 (Starts as Master)</span>
+            <input type="text" id="p2" placeholder="Enter Name">
+            <select id="g2">
                 <option value="Male Body">Male Body</option>
                 <option value="Female Body">Female Body</option>
-                <option value="Neutral/Other">Neutral / Other</option>
+                <option value="Neutral Body">Neutral / Other</option>
             </select>
         </div>
-        <button class="btn-main" onclick="navStep(2)">Inventory Setup ></button>
+        <button class="btn" onclick="nav(2)">Set Inventory ></button>
     </div>
 
     <div id="step2" class="step">
-        <div class="inv-section">
-            <span class="lbl">1. Bondage Gear (Required)</span>
-            <div class="input-row">
-                <input type="text" id="in1" placeholder="Rope, Cuffs...">
-                <button class="add-btn" onclick="saveGear('bondage')">ADD</button>
-            </div>
-            <div id="list1" class="tag-box"></div>
-        </div>
+        <div class="box">
+            <span class="label">1. Bondage Gear</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in1" placeholder="Rope, Cuffs..."><button class="btn btn-add" onclick="addG('bondage')">Add</button></div>
+            <div id="list1" class="tag-row"></div>
+            
+            <span class="label">2. Sensory Gear</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in2" placeholder="Tape, Blindfolds..."><button class="btn btn-add" onclick="addG('sensory')">Add</button></div>
+            <div id="list2" class="tag-row"></div>
 
-        <div class="inv-section">
-            <span class="lbl">2. Sensory Gear (Blindfolds/Gags)</span>
-            <div class="input-row">
-                <input type="text" id="in2" placeholder="Tape, Silk...">
-                <button class="add-btn" onclick="saveGear('sensory')">ADD</button>
-            </div>
-            <div id="list2" class="tag-box"></div>
+            <span class="label">3. Teasing & Toys</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in3" placeholder="Wands, Feathers..."><button class="btn btn-add" onclick="addG('toys')">Add</button></div>
+            <div id="list3" class="tag-row"></div>
         </div>
-
-        <div class="inv-section">
-            <span class="lbl">3. Toys (Impact/Stim)</span>
-            <div class="input-row">
-                <input type="text" id="in3" placeholder="Flogger, Wand...">
-                <button class="add-btn" onclick="saveGear('toys')">ADD</button>
-            </div>
-            <div id="list3" class="tag-box"></div>
-        </div>
-
-        <button class="btn-main" onclick="navStep(3)">Lock & Play ></button>
-        <button class="btn-main" style="background:#222; border:none;" onclick="navStep(1)">Back</button>
+        <button class="btn" onclick="nav(3)">Start Session</button>
     </div>
 
     <div id="step3" class="step">
-        <div id="setupArea">
-            <span class="lbl">Select Activity</span>
-            <select id="activitySel">
-                <option value="Random">Random</option>
-                <option value="Escape">Escape Challenge</option>
-                <option value="Shibari">Shibari (Artistic)</option>
-                <option value="Truth or Dare">Truth or Dare</option>
-                <option value="Mind Fuck">Mind Fuck</option>
+        <div class="card-dock">
+            <div id="card-y" class="card-ui c-yellow" onclick="useCard('yellow')">YELLOW<br>(Swap Roles)</div>
+            <div id="card-r" class="card-ui c-red" onclick="useCard('red')">RED<br>(End Round)</div>
+        </div>
+
+        <div id="pre-round">
+            <span class="label">Session Mode</span>
+            <select id="mode-sel">
+                <option value="Random">Random Mix</option>
+                <option value="Tease & Edge">Tease & Edge</option>
+                <option value="Escape Challenge">Escape Challenge</option>
+                <option value="Sensory Mind-Game">Sensory Mind-Game</option>
             </select>
-            <div id="challengeBox" style="background:#000; padding:20px; border-left:4px solid var(--crimson); margin:15px 0; min-height: 80px;">
-                Synthesize for instructions.
+            <div id="challenge-text" class="box" style="line-height: 1.6; font-size: 1.1rem;">
+                Awaiting your command...
             </div>
-            <button class="btn-main" id="gBtn" onclick="generateRound()">Generate</button>
-            <button class="btn-main" id="sBtn" style="display:none;" onclick="startTimer()">Start Round</button>
+            <button class="btn" id="gen-btn" onclick="generate()">Generate Task</button>
+            <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Begin Timer</button>
         </div>
 
-        <div id="timerArea" style="display:none;">
-            <div class="timer-display" id="timeClock">00:00</div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <button class="btn-main" onclick="resolveRound(true)">Success</button>
-                <button class="btn-main" style="background:#222" onclick="resolveRound(false)">Fail</button>
-            </div>
-        </div>
-
-        <div class="safety-grid">
-            <button class="safety-btn yellow-btn" onclick="triggerSafety('yellow')">Yellow (Slow/Check)</button>
-            <button class="safety-btn red-btn" onclick="triggerSafety('red')">Red (Stop Round)</button>
+        <div id="active-round" style="display:none;">
+            <div class="timer-display" id="clock">00:00</div>
+            <button class="btn" onclick="endR(true)">Success</button>
+            <button class="btn" style="background:#bbb; margin-top: 15px;" onclick="endR(false)">Fail</button>
         </div>
     </div>
 </div>
 
 <script>
-    let masterGear = { bondage: [], sensory: [], toys: [] };
-    let users = [], subIdx = 0, clock, seconds;
+    let gear = { bondage: [], sensory: [], toys: [] };
+    let players = [], currentRound = 1, totalRounds = 5;
+    let subIdx = 0; 
+    let timer, timeLeft;
+    let cardOwner = 0; // Starts with Sub (P1)
 
-    function navStep(n) {
+    // SOUNDS
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(freq, dur, vol = 0.1) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.frequency.value = freq; gain.gain.value = vol;
+        osc.start(); setTimeout(() => osc.stop(), dur);
+    }
+
+    function nav(n) {
         if(n === 2) {
-            users = [
-                { name: document.getElementById('p1Name').value || "Sub", gen: document.getElementById('p1Gen').value },
-                { name: document.getElementById('p2Name').value || "Dom", gen: document.getElementById('p2Gen').value }
+            players = [
+                { n: document.getElementById('p1').value || "Player 1", g: document.getElementById('g1').value },
+                { n: document.getElementById('p2').value || "Player 2", g: document.getElementById('g2').value }
             ];
+            totalRounds = parseInt(document.getElementById('maxRounds').value);
         }
-        if(n === 3 && masterGear.bondage.length === 0) {
-            alert("Error: Add at least one Bondage item to continue."); return;
-        }
+        if(n === 3 && gear.bondage.length === 0) { alert("Please add at least one Bondage item."); return; }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step'+n).classList.add('active');
+        updateStatus();
     }
 
-    function saveGear(cat) {
-        let inputId = (cat === 'bondage') ? 'in1' : (cat === 'sensory') ? 'in2' : 'in3';
-        let listId = (cat === 'bondage') ? 'list1' : (cat === 'sensory') ? 'list2' : 'list3';
-        let input = document.getElementById(inputId);
-        let val = input.value.trim();
-
-        if(val !== "") {
-            masterGear[cat].push(val);
-            input.value = "";
-            input.style.borderColor = "var(--gold)";
-            setTimeout(() => { input.style.borderColor = "#444"; }, 300);
-            renderGear(cat, listId);
+    function addG(cat) {
+        let id = cat === 'bondage' ? 'in1' : cat === 'sensory' ? 'in2' : 'in3';
+        let val = document.getElementById(id).value;
+        if(val) {
+            gear[cat].push(val);
+            document.getElementById(id).value = '';
+            renderG();
         }
     }
 
-    function renderGear(cat, listId) {
-        let div = document.getElementById(listId);
-        div.innerHTML = masterGear[cat].map((item, i) => `
-            <div class="tag">${item} <span class="tag-del" onclick="masterGear['${cat}'].splice(${i}, 1); renderGear('${cat}', '${listId}')">×</span></div>
-        `).join('');
+    function renderG() {
+        ['bondage', 'sensory', 'toys'].forEach((cat, i) => {
+            document.getElementById('list'+(i+1)).innerHTML = gear[cat].map((item, idx) => 
+                `<div class="tag">${item}<span onclick="gear['${cat}'].splice(${idx},1);renderG()">×</span></div>`
+            ).join('');
+        });
     }
 
-    function generateRound() {
-        let choice = document.getElementById('activitySel').value;
-        let modes = ["Escape", "Shibari", "Truth or Dare", "Mind Fuck"];
-        let m = choice === "Random" ? modes[Math.floor(Math.random()*4)] : choice;
-        let lvl = Math.floor(Math.random()*10)+1;
-        
-        let sub = users[subIdx];
-        let dom = users[subIdx === 0 ? 1 : 0];
-        
-        let b = masterGear.bondage[Math.floor(Math.random()*masterGear.bondage.length)];
-        let s = masterGear.sensory.length ? masterGear.sensory[Math.floor(Math.random()*masterGear.sensory.length)] : "no blindfold";
-        let t = masterGear.toys.length ? masterGear.toys[Math.floor(Math.random()*masterGear.toys.length)] : "manual stimulation";
-
-        let html = `<b style="color:var(--gold)">${m.toUpperCase()} (LVL ${lvl})</b><br>`;
-        html += `${dom.name} secures ${sub.name} (${sub.gen}) with <b>${b}</b>. `;
-
-        if(m === "Escape") { 
-            html += `Include <b>${s}</b>. <br><br><b>TASK:</b> Break free before the clock hits zero.`; 
-            seconds = (lvl * 40) + 60; 
-        } else if(m === "Shibari") { 
-            html += `<br><br><b>TASK:</b> Focus on aesthetics. Master tie should be complex and restrictive for the full duration.`; 
-            seconds = 300; 
-        } else if(m === "Truth or Dare") { 
-            html += `<br><br><b>TASK:</b> Truth or Dare. Use <b>${t}</b> for penalty.`; 
-            seconds = 180; 
-        } else { 
-            html += `<br><br><b>TASK:</b> Sensory deprivation with <b>${s}</b>. Sub must perform mental focus tasks while distracted by <b>${t}</b>.`; 
-            seconds = 120; 
+    function updateStatus() {
+        if(players.length > 0) {
+            document.getElementById('status-bar').innerText = `Round ${currentRound} of ${totalRounds} | ${players[subIdx].n} is Sub`;
+            document.getElementById('card-y').classList.toggle('held', cardOwner === subIdx);
+            document.getElementById('card-r').classList.toggle('held', cardOwner === subIdx);
         }
-
-        document.getElementById('challengeBox').innerHTML = html;
-        document.getElementById('gBtn').style.display = "none";
-        document.getElementById('sBtn').style.display = "block";
     }
 
-    function startTimer() {
-        document.getElementById('setupArea').style.display = "none";
-        document.getElementById('timerArea').style.display = "block";
-        clock = setInterval(() => {
-            seconds--;
-            let mins = Math.floor(seconds/60), secs = seconds%60;
-            document.getElementById('timeClock').innerText = `${mins}:${secs<10?'0':''}${secs}`;
-            if(seconds <= 0) resolveRound(false);
+    function useCard(type) {
+        if(cardOwner !== subIdx) return;
+        if(type === 'yellow') {
+            beep(300, 200);
+            subIdx = (subIdx === 0 ? 1 : 0); // Swap roles
+            cardOwner = (subIdx === 0 ? 1 : 0); // Pass cards to new Master
+            generate();
+        } else {
+            beep(200, 500);
+            cardOwner = (subIdx === 0 ? 1 : 0); // Pass cards
+            endR(false, true);
+        }
+        updateStatus();
+    }
+
+    function generate() {
+        const mode = document.getElementById('mode-sel').value;
+        const sub = players[subIdx];
+        const master = players[subIdx==0?1:0];
+        const b = gear.bondage[Math.floor(Math.random()*gear.bondage.length)];
+        const s = gear.sensory.length ? gear.sensory[Math.floor(Math.random()*gear.sensory.length)] : "bare eyes";
+        const t = gear.toys.length ? gear.toys[Math.floor(Math.random()*gear.toys.length)] : "fingers";
+
+        let txt = "";
+        if(mode.includes("Tease") || mode === "Random") {
+            txt = `<b>TEASE & EDGE:</b> ${master.n} must bind ${sub.n} (${sub.g}) with ${b}. Using ${t}, bring them to the very edge of climax. Deny them. Repeat. No release allowed yet.`;
+            timeLeft = 300;
+        } else if (mode.includes("Escape")) {
+            txt = `<b>ESCAPE:</b> ${sub.n} is bound tightly with ${b} and blinded by ${s}. They must escape before the alarm sounds or face more ${t}.`;
+            timeLeft = 240;
+        } else {
+            txt = `<b>SENSORY FOCUS:</b> ${master.n} applies ${b} and ${s}. ${sub.n} must remain perfectly still while ${master.n} teases with ${t}. Any movement adds 1 minute to the timer.`;
+            timeLeft = 180;
+        }
+        document.getElementById('challenge-text').innerHTML = txt;
+        document.getElementById('gen-btn').style.display = 'none';
+        document.getElementById('start-btn').style.display = 'block';
+    }
+
+    function startT() {
+        document.getElementById('pre-round').style.display = 'none';
+        document.getElementById('active-round').style.display = 'block';
+        timer = setInterval(() => {
+            timeLeft--;
+            let m = Math.floor(timeLeft/60), s = timeLeft%60;
+            document.getElementById('clock').innerText = `${m}:${s<10?'0':''}${s}`;
+            
+            // Heartbeat tick
+            if(timeLeft > 0) beep(500, 10, 0.05);
+            
+            if(timeLeft <= 0) { 
+                clearInterval(timer); 
+                beep(800, 1000, 0.2); 
+                alert("Time is Up!"); 
+                endR(false); 
+            }
         }, 1000);
     }
 
-    function resolveRound(win) {
-        clearInterval(clock);
-        if(win) { subIdx = (subIdx === 0 ? 1 : 0); alert("Roles Swapped!"); }
-        document.getElementById('timerArea').style.display = "none";
-        document.getElementById('setupArea').style.display = "block";
-        document.getElementById('gBtn').style.display = "block";
-        document.getElementById('sBtn').style.display = "none";
-    }
-
-    function triggerSafety(type) {
-        clearInterval(clock);
-        const overlay = document.getElementById('overlay');
-        const title = document.getElementById('statusTitle');
-        const desc = document.getElementById('statusDesc');
-        
-        if(type === 'yellow') {
-            title.innerText = "YELLOW CARD";
-            title.style.color = "var(--yellow)";
-            desc.innerText = "Ease up. Slow down. Communicate with your partner before resuming.";
+    function endR(success, skipped = false) {
+        clearInterval(timer);
+        currentRound++;
+        if(currentRound > totalRounds) {
+            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Grand Finale</h1><p style="font-size:1.4rem;">The session is complete. The Winner may now claim their reward or grant release.</p></div>`;
         } else {
-            title.innerText = "RED CARD";
-            title.style.color = "var(--red)";
-            desc.innerText = "Stop immediately. The current round is terminated. Check in now.";
-            resolveRound(false);
+            document.getElementById('active-round').style.display = 'none';
+            document.getElementById('pre-round').style.display = 'block';
+            document.getElementById('gen-btn').style.display = 'block';
+            document.getElementById('start-btn').style.display = 'none';
+            updateStatus();
         }
-        overlay.style.display = "flex";
-    }
-
-    function resumeSession() {
-        document.getElementById('overlay').style.display = "none";
-        // If it was just yellow, we don't reset everything, but user must manually resume
     }
 </script>
 </body>
