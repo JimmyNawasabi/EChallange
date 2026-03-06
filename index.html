@@ -3,139 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mastery & Merit</title>
+    <title>Mastery & Merit: Sovereignty</title>
     <style>
         :root { 
             --accent: #c5a059; --soft-bg: #fdfaf5; --card-bg: #ffffff;
             --text: #2c2c2c; --crimson: #7b1a1a; --yellow: #ffd700; 
-            --red: #ee3333; --safe-green: #2e7d32; --blue: #1a5276;
+            --red: #ee3333; --safe-green: #2e7d32; --veto: #4a4a4a; --black: #000000;
         }
         
-        body { background: var(--soft-bg); color: var(--text); font-family: 'Arial', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 19px; }
-        .container { max-width: 650px; width: 100%; background: var(--card-bg); padding: 35px; box-shadow: 0 15px 50px rgba(0,0,0,0.08); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 5px; margin-bottom: 5px; font-size: 1.8rem; }
-        .subtitle { text-align: center; font-size: 0.85rem; color: #a18e8e; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; }
+        body { background: var(--soft-bg); color: var(--text); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 18px; line-height: 1.4; }
+        .container { max-width: 650px; width: 100%; background: var(--card-bg); padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); margin-top: 20px; }
+        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 6px; margin-bottom: 5px; font-size: 1.6rem; }
+        .subtitle { text-align: center; font-size: 0.8rem; color: #a18e8e; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; font-weight: bold; }
 
         .step { display: none; }
         .active { display: block; }
 
-        .box { background: #fffcf9; border: 2px solid #f5f2ed; padding: 25px; margin-bottom: 25px; border-radius: 30px; }
-        .inner-box { background: #ffffff; border: 1px solid #eee; padding: 20px; border-radius: 20px; margin-bottom: 15px; }
-        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: 1000; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1px; }
+        .box { background: #fffcf9; border: 2px solid #f5f2ed; padding: 20px; margin-bottom: 25px; border-radius: 25px; }
+        .inner-box { background: #ffffff; border: 1px solid #eee; padding: 15px; border-radius: 20px; margin-bottom: 15px; }
+        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1.5px; }
 
-        input[type="text"], select, input[type="number"] { width: 100%; padding: 15px; border: 2px solid #eee; border-radius: 15px; margin-bottom: 15px; box-sizing: border-box; font-size: 1rem; outline: none; display: block; }
+        input[type="text"], select, input[type="number"], textarea { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; font-size: 1rem; outline: none; display: block; font-family: inherit; }
+        textarea { height: 80px; resize: none; }
         
-        .tag-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
-        .tag { background: #f8f5f0; padding: 8px 15px; border-radius: 50px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; font-weight: bold; border: 1px solid #e8e4db; }
-        .tag span { color: var(--crimson); cursor: pointer; font-size: 1.2rem; }
+        /* CATEGORY TOGGLES */
+        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 5px; }
+        .tgl-btn { background: #f0f0f0; padding: 10px; border-radius: 12px; text-align: center; font-size: 0.7rem; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: 0.2s; color: #999; text-transform: uppercase; }
+        .tgl-btn.on { background: var(--crimson); color: white; border-color: var(--accent); }
 
-        .badge { display: inline-block; padding: 6px 18px; border-radius: 50px; font-size: 0.75rem; font-weight: 1000; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; color: white; }
+        /* TAGS */
+        .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+        .tag { background: #fdfbf7; padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; font-weight: bold; border: 1px solid #e8e4db; }
+        .tag span { color: var(--crimson); cursor: pointer; font-size: 1.1rem; }
+
+        /* BADGES */
+        .badge { display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 0.7rem; font-weight: 1000; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; color: white; }
         .b-truth { background: #5d6d7e; } .b-dare { background: #af601a; } .b-escape { background: #c0392b; }
-        .b-edging { background: #884ea0; } .b-physical { background: #1e8449; } .b-self { background: #2e4053; }
+        .b-edging { background: #884ea0; } .b-physical { background: #1e8449; } .b-selfbondage { background: #2e4053; }
+        .b-manual { background: var(--black); }
 
-        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 25px; font-size: 1.1rem; }
-        .btn-add { background: var(--accent); width: 80px; padding: 10px; border-radius: 12px; font-size: 0.8rem; }
-        .timer-display { font-size: 6rem; text-align: center; color: var(--crimson); font-weight: bold; margin: 20px 0; letter-spacing: -3px; }
-        .time-label { text-align: center; font-size: 0.8rem; text-transform: uppercase; color: #888; margin-top: -15px; margin-bottom: 20px; font-weight: bold; }
+        /* BUTTONS */
+        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 20px; font-size: 1rem; margin-bottom: 10px; transition: 0.2s; }
+        .btn:active { transform: scale(0.97); }
+        .btn-secondary { background: var(--accent); font-size: 0.85rem; padding: 12px; }
+        .btn-veto { background: var(--veto); font-size: 0.8rem; padding: 10px; border-radius: 15px; }
+        .btn-add { background: var(--accent); width: 70px; padding: 8px; border-radius: 10px; font-size: 0.75rem; }
+        
+        /* TIMER */
+        .timer-display { font-size: 5rem; text-align: center; color: var(--crimson); font-weight: bold; margin: 15px 0; letter-spacing: -2px; }
+        #manual-entry-area { display: none; margin-top: 15px; border-top: 2px dashed #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Mastery & Merit</h1>
-    <div class="subtitle">Timed Trials of Dominance</div>
+    <div class="subtitle">Sovereignty Edition</div>
 
     <div id="step1" class="step active">
         <div class="box">
-            <span class="label">Game Duration</span>
+            <span class="label">Total Game Rounds</span>
             <input type="number" id="maxRounds" value="6">
+            
             <div class="inner-box">
-                <span class="label">Slave Config</span>
+                <span class="label">Master's Selection: Active Categories</span>
+                <div class="toggle-grid">
+                    <div class="tgl-btn on" onclick="this.classList.toggle('on')" data-cat="truth">Truth</div>
+                    <div class="tgl-btn on" onclick="this.classList.toggle('on')" data-cat="dare">Dare</div>
+                    <div class="tgl-btn on" onclick="this.classList.toggle('on')" data-cat="escape">Escape</div>
+                    <div class="tgl-btn on" onclick="this.classList.toggle('on')" data-cat="edging">Edging</div>
+                    <div class="tgl-btn on" onclick="this.classList.toggle('on')" data-cat="physical">Physical</div>
+                    <div class="tgl-btn on" onclick="this.classList.toggle('on')" data-cat="selfbondage">Self Bondage</div>
+                </div>
+            </div>
+
+            <div class="inner-box">
+                <span class="label">Slave Name & Type</span>
                 <input type="text" id="p1" placeholder="Name">
-                <select id="g1"><option value="Male body">Male Body</option><option value="Female body">Female Body</option></select>
+                <select id="g1"><option value="male body">Male Body</option><option value="female body">Female Body</option></select>
             </div>
             <div class="inner-box">
-                <span class="label">Master Config</span>
+                <span class="label">Master Name</span>
                 <input type="text" id="p2" placeholder="Name">
-                <select id="g2"><option value="Male body">Male Body</option><option value="Female body">Female Body</option></select>
             </div>
         </div>
-        <button class="btn" onclick="nav(2)">Define Gear ></button>
+        <button class="btn" onclick="nav(2)">Define Inventory ></button>
     </div>
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Vision (Blindfolds)</span>
+            <span class="label">Vision Control (Blindfolds, Hoods)</span>
             <div style="display:flex; gap:10px;"><input type="text" id="in-vis"><button class="btn btn-add" onclick="addItem('vis')">Add</button></div><div id="list-vis" class="tag-row"></div>
-            <span class="label">Mouth (Gags)</span>
+            
+            <span class="label">Mouth Control (Gags, Tape)</span>
             <div style="display:flex; gap:10px;"><input type="text" id="in-speech"><button class="btn btn-add" onclick="addItem('speech')">Add</button></div><div id="list-speech" class="tag-row"></div>
-            <span class="label">Restraints (Ropes/Cuffs)</span>
+            
+            <span class="label">Restraints (Ropes, Cuffs, Chains)</span>
             <div style="display:flex; gap:10px;"><input type="text" id="in-rest"><button class="btn btn-add" onclick="addItem('rest')">Add</button></div><div id="list-rest" class="tag-row"></div>
-            <span class="label">Sensation (Toys/Wands)</span>
+            
+            <span class="label">Sensation (Wands, Ice, Spankers)</span>
             <div style="display:flex; gap:10px;"><input type="text" id="in-sens"><button class="btn btn-add" onclick="addItem('sens')">Add</button></div><div id="list-sens" class="tag-row"></div>
         </div>
-        <button class="btn" onclick="nav(3)">Enter Session</button>
+        <button class="btn" onclick="nav(3)">Begin Session</button>
     </div>
 
     <div id="step3" class="step">
         <div id="pre-round">
-            <div id="challenge-display" class="box" style="text-align:center;">
+            <div id="challenge-display" class="box" style="text-align:center; min-height: 120px;">
                 <div id="badge-container"></div>
-                <div id="task-text" style="font-size: 1.1rem; line-height: 1.6; color: #444;">Ready for Master's decree...</div>
+                <div id="task-text" style="font-size: 1.1rem; color: #444;">Click below to receive your first decree...</div>
             </div>
-            <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
-            <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Start Trial</button>
+            
+            <button class="btn" id="gen-btn" onclick="generate()">Generate Random Decree</button>
+            <button class="btn btn-secondary" id="show-manual-btn" onclick="toggleManual()">Issue Manual Decree</button>
+
+            <div id="manual-entry-area">
+                <span class="label">Master's Custom Direct Command</span>
+                <textarea id="custom-task" placeholder="e.g. Remain in a deep lunge while Master applies ice..."></textarea>
+                <span class="label">Allocated Time (Minutes)</span>
+                <input type="number" id="custom-time" value="5">
+                <button class="btn" style="background:var(--black);" onclick="applyManual()">Submit Direct Decree</button>
+            </div>
+
+            <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Accept Trial</button>
+            <button class="btn btn-veto" id="veto-btn" style="display:none;" onclick="vetoTask()">Veto & Purge Task</button>
         </div>
 
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
-            <div class="time-label" id="time-intensity">Intensity: Moderate</div>
-            <button class="btn" onclick="resolveTurn(true)">Submission Successful</button>
-            <button class="btn" style="background:#888; margin-top: 15px;" onclick="resolveTurn(false)">Submission Failed</button>
+            <button class="btn" onclick="resolveTurn(true)">Submission Completed</button>
+            <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Submission Failed</button>
         </div>
     </div>
 </div>
 
 <script>
     let inv = { vis: [], speech: [], rest: [], sens: [] };
-    let players = [], currentRound = 1, totalRounds = 6, subIdx = 0, timer, timeLeft;
+    let players = [], currentRound = 1, subIdx = 0, timer, timeLeft, currentCat = "", currentTaskIdx = -1, activeCats = [];
 
     const taskData = {
         truth: { class: "b-truth", time: 90, tasks: [
-            "CONFESSION: Admit the one thought that makes you feel most powerless while [REST].",
-            "REVELATION: Detail exactly how your [BODY] feels when [VIS] and [SPEECH] are applied simultaneously.",
-            "INTERROGATION: If Master used [SENS] for one hour, what would you say to make them stop?"
+            "CONFESSION: What is the most shameful thought you have when [REST] is applied?",
+            "REVELATION: Describe the exact sensation of being [VIS] and [SPEECH] simultaneously.",
+            "HONESTY: If Master used [SENS] for 20 minutes without stopping, what would be your 'break point'?",
+            "TRUTH: Which item in your current inventory do you fear most and why?"
         ]},
         dare: { class: "b-dare", time: 180, tasks: [
-            "SUBMISSION: Crawl to Master and worship their feet while [SPEECH] and [REST] are active.",
-            "EXPOSURE: Remain a human statue while Master explores your [BODY] with [SENS]. No movement.",
-            "SERVICE: Serve Master a drink while [VIS] and [REST] bind your hands behind you."
+            "SUBMISSION: Serve the Master while [VIS] and [REST] are active; do not stumble.",
+            "DEVOTION: Kiss the Master's feet 10 times while [SPEECH] is applied, making a distinct sound each time.",
+            "EXPOSURE: Remain perfectly still for 3 minutes while Master explores your [BODY] with [SENS].",
+            "MANTRA: Recite 'I am property' 30 times while [REST] binds your hands behind you."
         ]},
         escape: { class: "b-escape", time: 480, tasks: [
-            "FREEDOM TRIAL: Escape from the current [REST] while [VIS] and [SPEECH] are applied. Total silence required.",
-            "BLIND STRUGGLE: Shed a secondary layer of [REST] added by Master. You have 8 minutes.",
-            "SENSORY ESCAPE: Wriggle out of [REST] while Master uses [SENS] to break your concentration."
+            "FREEDOM TRIAL: You have 8 minutes to escape from [REST] while [VIS] and [SPEECH] are applied.",
+            "BLIND STRUGGLE: Master adds another layer of [REST]. Find your way out in the dark.",
+            "SENSORY ESCAPE: Wriggle out of [REST] while Master uses [SENS] to break your concentration.",
+            "TOOTH & NAIL: Free one limb from [REST] using only your opposite limb and your teeth."
         ]},
         edging: { class: "b-edging", time: 300, tasks: [
-            "THE BRINK: Master uses [SENS] until you reach 99%. You must stay there for the duration without release.",
-            "RAPID DENIAL: Endure the highest setting of [SENS] while [REST]. If you climax, you fail.",
-            "SENSORY FOCUS: Focus entirely on [SENS]. Master will push you to the brink 3 times during the 5 minutes."
+            "THE BRINK: Master uses [SENS] until you reach 99%. You must stay there for 5 minutes without release.",
+            "RAPID DENIAL: Endure the highest setting of [SENS] while [REST]. If you climax, you fail the round.",
+            "SENSORY FOCUS: Focus entirely on [SENS]. Master will push you to the edge 3 times; you must remain silent.",
+            "CONTROL: Edge yourself using [SENS] while [REST]. Stop immediately on Master's command."
         ]},
         physical: { class: "b-physical", time: 240, tasks: [
-            "STRESS POSITION: Hold a deep kneeling posture while [REST] and [VIS] are active. No shifting allowed.",
-            "CORE ENDURANCE: Perform slow leg lifts while ankles are in [REST] and [SPEECH] is applied.",
-            "BALANCE TRIAL: Maintain a wall-sit while Master applies [SENS] to your [BODY]."
+            "STRESS POSITION: Hold a deep kneeling 'frog' position while [REST] and [VIS] are active. No shifting.",
+            "CORE ENDURANCE: Perform 20 slow leg lifts while ankles are in [REST] and [SPEECH] is applied.",
+            "BALANCE TRIAL: Maintain a wall-sit while Master applies [SENS] to your [BODY] for the duration.",
+            "STATUE: Stand on one leg with arms extended while [VIS] and [REST] are active."
         ]},
-        selfbondage: { class: "b-self", time: 150, tasks: [
-            "AUTO-RESTRAINT: Bind your own limbs as tightly as possible with [REST] and present yourself for inspection.",
-            "SELF-DENIAL: Apply [SENS] to your own [BODY] until Master commands you to stop.",
-            "SENSORY WRAP: Apply [VIS] and [SPEECH] to yourself while kneeling, ensuring zero gaps or light."
+        selfbondage: { class: "b-selfbondage", time: 150, tasks: [
+            "AUTO-RESTRAINT: Bind your own limbs as tightly as possible with [REST] and present for inspection.",
+            "SELF-DENIAL: Apply [SENS] to your own [BODY] on Master's command until they tell you to stop.",
+            "SENSORY WRAP: Apply [VIS] and [SPEECH] to yourself while kneeling, ensuring no light or sound escapes.",
+            "LOCK-IN: Secure [REST] on your own wrists behind your back, then find a way to blindfold yourself."
         ]}
     };
 
     function nav(n) {
-        if(n===2) players = [{n:document.getElementById('p1').value||"Slave", g:document.getElementById('g1').value, wins:0},{n:document.getElementById('p2').value||"Master", g:document.getElementById('g2').value, wins:0}];
-        if(n===3 && (inv.vis.length===0 || inv.rest.length===0)) { alert("Fill gear first!"); return; }
+        if(n===2) {
+            players = [
+                {n:document.getElementById('p1').value||"Slave", g:document.getElementById('g1').value, wins:0},
+                {n:document.getElementById('p2').value||"Master", wins:0}
+            ];
+            activeCats = Array.from(document.querySelectorAll('.tgl-btn.on')).map(b => b.getAttribute('data-cat'));
+            if(activeCats.length === 0) return alert("Select at least one category.");
+        }
+        if(n===3 && (inv.vis.length===0 || inv.rest.length===0)) return alert("Add at least one Vision and one Restraint item.");
         document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
         document.getElementById('step'+n).classList.add('active');
     }
@@ -151,26 +205,61 @@
         });
     }
 
-    function generate() {
-        const categories = Object.keys(taskData);
-        const catKey = categories[Math.floor(Math.random()*categories.length)];
-        const category = taskData[catKey];
-        const slave = players[subIdx], master = players[subIdx===0?1:0];
-        
-        let task = category.tasks[Math.floor(Math.random()*category.tasks.length)];
-        task = task.replace("[VIS]", `<b>${inv.vis[Math.floor(Math.random()*inv.vis.length)]}</b>`);
-        task = task.replace("[SPEECH]", `<b>${inv.speech[Math.floor(Math.random()*inv.speech.length)]}</b>`);
-        task = task.replace("[REST]", `<b>${inv.rest[Math.floor(Math.random()*inv.rest.length)]}</b>`);
-        task = task.replace("[SENS]", `<b>${inv.sens[Math.floor(Math.random()*inv.sens.length)]}</b>`);
-        task = task.replace("[BODY]", `<b>${slave.g}</b>`);
+    function toggleManual() {
+        let area = document.getElementById('manual-entry-area');
+        area.style.display = area.style.display === 'block' ? 'none' : 'block';
+    }
 
-        document.getElementById('badge-container').innerHTML = `<span class="badge ${category.class}">${catKey}</span>`;
+    function applyManual() {
+        let task = document.getElementById('custom-task').value;
+        let time = parseInt(document.getElementById('custom-time').value) * 60;
+        if(!task) return alert("Master must enter a decree.");
+        
+        document.getElementById('badge-container').innerHTML = `<span class="badge b-manual">DIRECT DECREE</span>`;
+        document.getElementById('task-text').innerHTML = task;
+        timeLeft = time;
+        
+        document.getElementById('manual-entry-area').style.display = 'none';
+        document.getElementById('gen-btn').style.display = 'none';
+        document.getElementById('show-manual-btn').style.display = 'none';
+        document.getElementById('start-btn').style.display = 'block';
+        document.getElementById('veto-btn').style.display = 'none';
+    }
+
+    function generate() {
+        const categories = activeCats.filter(c => taskData[c].tasks.length > 0);
+        if(categories.length === 0) return alert("Task library empty for selected categories.");
+        
+        currentCat = categories[Math.floor(Math.random()*categories.length)];
+        const category = taskData[currentCat];
+        currentTaskIdx = Math.floor(Math.random()*category.tasks.length);
+        
+        const slave = players[subIdx], master = players[subIdx===0?1:0];
+        let task = category.tasks[currentTaskIdx];
+
+        // Format task with actual gear
+        task = task.replace(/\[VIS\]/g, `<b>${inv.vis[Math.floor(Math.random()*inv.vis.length)]}</b>`);
+        task = task.replace(/\[SPEECH\]/g, `<b>${inv.speech[Math.floor(Math.random()*inv.speech.length)] || "gag"}</b>`);
+        task = task.replace(/\[REST\]/g, `<b>${inv.rest[Math.floor(Math.random()*inv.rest.length)]}</b>`);
+        task = task.replace(/\[SENS\]/g, `<b>${inv.sens[Math.floor(Math.random()*inv.sens.length)] || "sensation"}</b>`);
+        task = task.replace(/\[BODY\]/g, `<b>${slave.g}</b>`);
+
+        document.getElementById('badge-container').innerHTML = `<span class="badge b-${currentCat}">${currentCat}</span>`;
         document.getElementById('task-text').innerHTML = task;
         
         timeLeft = category.time;
-        document.getElementById('time-intensity').innerText = timeLeft > 300 ? "Intensity: Extreme" : (timeLeft > 180 ? "Intensity: High" : "Intensity: Moderate");
         document.getElementById('gen-btn').style.display='none';
+        document.getElementById('show-manual-btn').style.display='none';
         document.getElementById('start-btn').style.display='block';
+        document.getElementById('veto-btn').style.display='block';
+    }
+
+    function vetoTask() {
+        if(currentCat && currentTaskIdx > -1) {
+            taskData[currentCat].tasks.splice(currentTaskIdx, 1);
+            alert("This task has been purged from the session.");
+            generate(); 
+        }
     }
 
     function startT() {
@@ -186,20 +275,21 @@
     function resolveTurn(win) {
         clearInterval(timer);
         const masterIdx = (subIdx === 0 ? 1 : 0);
-        if(win) { players[subIdx].wins++; subIdx = masterIdx; alert("Success! Role Reversal."); }
-        else { players[masterIdx].wins++; alert("Failure. Comply with Master."); }
+        if(win) { 
+            players[subIdx].wins++; 
+            subIdx = masterIdx; 
+            alert("Trial Success. Roles will now reverse."); 
+        } else { 
+            players[masterIdx].wins++; 
+            alert("Trial Failed. Master retains dominance."); 
+        }
         
         currentRound++;
         if(currentRound > parseInt(document.getElementById('maxRounds').value)) {
             let winIdx = players[0].wins > players[1].wins ? 0 : 1;
-            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Champion: ${players[winIdx].n}</h1><button class="btn" onclick="location.reload()">Reset</button></div>`;
+            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Champion: ${players[winIdx].n}</h1><p>Ascension complete.</p><button class="btn" onclick="location.reload()">Reset Session</button></div>`;
         } else {
             document.getElementById('active-round').style.display='none';
             document.getElementById('pre-round').style.display='block';
             document.getElementById('gen-btn').style.display='block';
-            document.getElementById('start-btn').style.display='none';
-        }
-    }
-</script>
-</body>
-</html>
+            document.getElementById('show-manual-btn').
