@@ -8,7 +8,7 @@
         :root { 
             --accent: #c5a059; --soft-bg: #fdfaf5; --card-bg: #ffffff;
             --text: #2c2c2c; --crimson: #7b1a1a; --yellow: #ffd700; 
-            --red: #ee3333; --safe-green: #2e7d32;
+            --red: #ee3333; --safe-green: #2e7d32; --blue: #1a5276;
         }
         
         body { background: var(--soft-bg); color: var(--text); font-family: 'Arial', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 19px; }
@@ -29,91 +29,67 @@
         .tag { background: #f8f5f0; padding: 8px 15px; border-radius: 50px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; font-weight: bold; border: 1px solid #e8e4db; }
         .tag span { color: var(--crimson); cursor: pointer; font-size: 1.2rem; }
 
-        .card-dock { display: flex; gap: 20px; margin-bottom: 30px; }
-        .card-ui { flex: 1; padding: 20px 5px; border-radius: 25px; font-weight: bold; text-align: center; cursor: pointer; opacity: 0.1; transition: 0.4s; font-size: 0.8rem; }
-        .card-ui.held { opacity: 1; transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
-        .c-yellow { background: var(--yellow); color: #222; }
-        .c-red { background: var(--red); color: white; }
+        .badge { display: inline-block; padding: 6px 18px; border-radius: 50px; font-size: 0.75rem; font-weight: 1000; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; color: white; }
+        .b-truth { background: #5d6d7e; } .b-dare { background: #af601a; } .b-escape { background: #c0392b; }
+        .b-edging { background: #884ea0; } .b-physical { background: #1e8449; } .b-self { background: #2e4053; }
 
         .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 25px; font-size: 1.1rem; }
         .btn-add { background: var(--accent); width: 80px; padding: 10px; border-radius: 12px; font-size: 0.8rem; }
-
         .timer-display { font-size: 6rem; text-align: center; color: var(--crimson); font-weight: bold; margin: 20px 0; letter-spacing: -3px; }
-        #cat-badge { display: inline-block; background: var(--crimson); color: white; padding: 5px 15px; border-radius: 50px; font-size: 0.7rem; margin-bottom: 10px; }
+        .time-label { text-align: center; font-size: 0.8rem; text-transform: uppercase; color: #888; margin-top: -15px; margin-bottom: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Mastery & Merit</h1>
-    <div class="subtitle">A Slave's Path to Ascension</div>
+    <div class="subtitle">Timed Trials of Dominance</div>
 
     <div id="step1" class="step active">
         <div class="box">
             <span class="label">Game Duration</span>
             <input type="number" id="maxRounds" value="6">
-            
             <div class="inner-box">
-                <span class="label">Initial Slave</span>
-                <input type="text" id="p1" placeholder="Slave Name">
-                <select id="g1">
-                    <option value="Male body">Male Body</option>
-                    <option value="Female body">Female Body</option>
-                    <option value="Neutral body">Neutral Body</option>
-                </select>
+                <span class="label">Slave Config</span>
+                <input type="text" id="p1" placeholder="Name">
+                <select id="g1"><option value="Male body">Male Body</option><option value="Female body">Female Body</option></select>
             </div>
-
             <div class="inner-box">
-                <span class="label">Initial Master</span>
-                <input type="text" id="p2" placeholder="Master Name">
-                <select id="g2">
-                    <option value="Male body">Male Body</option>
-                    <option value="Female body">Female Body</option>
-                    <option value="Neutral body">Neutral Body</option>
-                </select>
+                <span class="label">Master Config</span>
+                <input type="text" id="p2" placeholder="Name">
+                <select id="g2"><option value="Male body">Male Body</option><option value="Female body">Female Body</option></select>
             </div>
         </div>
-        <button class="btn" onclick="nav(2)">Inventory of Control ></button>
+        <button class="btn" onclick="nav(2)">Define Gear ></button>
     </div>
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Vision (Blindfolds, Hoods)</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in-vis"><button class="btn btn-add" onclick="addItem('vis')">Add</button></div>
-            <div id="list-vis" class="tag-row"></div>
-
-            <span class="label">Mouth (Gags, Tape)</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in-speech"><button class="btn btn-add" onclick="addItem('speech')">Add</button></div>
-            <div id="list-speech" class="tag-row"></div>
-
-            <span class="label">Restraints (Ropes, Cuffs)</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in-rest"><button class="btn btn-add" onclick="addItem('rest')">Add</button></div>
-            <div id="list-rest" class="tag-row"></div>
-
-            <span class="label">Sensation (Wands, Ice, Wax)</span>
-            <div style="display:flex; gap:10px;"><input type="text" id="in-sens"><button class="btn btn-add" onclick="addItem('sens')">Add</button></div>
-            <div id="list-sens" class="tag-row"></div>
+            <span class="label">Vision (Blindfolds)</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in-vis"><button class="btn btn-add" onclick="addItem('vis')">Add</button></div><div id="list-vis" class="tag-row"></div>
+            <span class="label">Mouth (Gags)</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in-speech"><button class="btn btn-add" onclick="addItem('speech')">Add</button></div><div id="list-speech" class="tag-row"></div>
+            <span class="label">Restraints (Ropes/Cuffs)</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in-rest"><button class="btn btn-add" onclick="addItem('rest')">Add</button></div><div id="list-rest" class="tag-row"></div>
+            <span class="label">Sensation (Toys/Wands)</span>
+            <div style="display:flex; gap:10px;"><input type="text" id="in-sens"><button class="btn btn-add" onclick="addItem('sens')">Add</button></div><div id="list-sens" class="tag-row"></div>
         </div>
         <button class="btn" onclick="nav(3)">Enter Session</button>
     </div>
 
     <div id="step3" class="step">
-        <div class="card-dock">
-            <div id="card-y" class="card-ui c-yellow">YELLOW</div>
-            <div id="card-r" class="card-ui c-red">RED</div>
-        </div>
-
         <div id="pre-round">
-            <div id="challenge-text" class="box" style="font-size: 1.1rem; line-height: 1.5; border-color: var(--accent);">
-                <span id="cat-badge">READY</span><br>
-                <div id="main-task">Awaiting Master's Decree...</div>
+            <div id="challenge-display" class="box" style="text-align:center;">
+                <div id="badge-container"></div>
+                <div id="task-text" style="font-size: 1.1rem; line-height: 1.6; color: #444;">Ready for Master's decree...</div>
             </div>
-            <button class="btn" id="gen-btn" onclick="generate()">Generate Random Decree</button>
-            <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Start Timer</button>
+            <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
+            <button class="btn" id="start-btn" style="display:none; background: var(--safe-green);" onclick="startT()">Start Trial</button>
         </div>
 
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
+            <div class="time-label" id="time-intensity">Intensity: Moderate</div>
             <button class="btn" onclick="resolveTurn(true)">Submission Successful</button>
             <button class="btn" style="background:#888; margin-top: 15px;" onclick="resolveTurn(false)">Submission Failed</button>
         </div>
@@ -124,44 +100,49 @@
     let inv = { vis: [], speech: [], rest: [], sens: [] };
     let players = [], currentRound = 1, totalRounds = 6, subIdx = 0, timer, timeLeft;
 
-    const data = {
-        truth: [
-            "Confess your deepest fantasy involving [SENS].", "What is the most shameful thought you've had while [VIS]?", "Describe in detail how you felt when [REST] was first applied.", "Which of Master's rules do you secretly struggle to obey?", "If you were permanent property, what would be your first daily chore?", "Who has the real power when you are [SPEECH]?", "Detail your most intense memory of being pushed to your limit.", "Admit a time you almost broke a rule but didn't.", "Describe the sensation of [SENS] on your skin without using the word 'good'.", "Confess what you find most intimidating about Master."
-        ],
-        dare: [
-            "Master uses [SENS] on you for 2 minutes; you must describe the sensation poetically while [SPEECH].", "Serve Master a drink while [REST] and [VIS].", "Crawl through the room and kiss Master's feet while [SPEECH].", "Choose an item from the room; Master must find a way to use it as [REST].", "Endure 3 minutes of heavy [SENS] while blindfolded with [VIS].", "Repeat a mantra of total submission while Master uses [SENS].", "Allow Master to reposition your [REST] into a more stressful posture.", "Stay perfectly still while Master explores your [BODY] with [SENS].", "Submit to being [SPEECH] and [VIS] while Master leaves the room for 2 minutes.", "Request a specific punishment for your next failure."
-        ],
-        escape: [
-            "Escape from [REST] within 4 minutes while [VIS].", "Master binds your [BODY] with extra [REST]; find your way out before the clock hits zero.", "Free one hand from [REST] using only your teeth while [SPEECH].", "Navigate across the room and touch the door while [REST] and [VIS].", "Wriggle out of [REST] without making a single sound; any noise resets the timer.", "Using only your legs, move a heavy object while your upper body is in [REST].", "Free yourself from [REST] while Master applies constant distraction with [SENS].", "Master adds a secondary [REST] halfway through; you must still escape.", "Escape the [REST] and immediately assume a kneeling position.", "A timed race: escape [REST] faster than your previous record."
-        ],
-        edging: [
-            "Endure [SENS] until the very brink; Master will stop only when they see the break. Repeat 3 times.", "While [REST] and [VIS], maintain a state of high arousal without touching yourself for 5 minutes.", "Master uses [SENS] and [SPEECH] to push you; you must signal with your body when you are at 99%.", "Total stillness while Master edges you with [SENS]. No sounds allowed.", "A long-game edge: Master teases for 4 minutes; if you climax, you lose the round immediately.", "Master commands you to edge yourself while [REST]. You must stop immediately on command.", "Focus solely on the tip of [SENS]; Master will drive you to the edge and leave you there.", "Endure a rapid-fire sensation from [SENS] until the 'point of no return'.", "While [VIS], guess which part of your [BODY] Master will touch next; failure results in 30 seconds of heavy edging.", "Master edges you; you must thank them for the denial while [SPEECH]."
-        ],
-        physical: [
-            "Hold a stress position (plank or wall-sit) while [REST] and [VIS].", "Hold a heavy object above your head while Master teases with [SENS].", "Perform 20 slow squats while [SPEECH] and [REST].", "Maintain a 'frog-stand' or kneeling posture without moving for the full duration.", "Master adds weight to your [REST]; hold the tension for 3 minutes.", "Balance an object on your [BODY] while Master uses [SENS]; if it falls, you fail.", "Perform 'mountain climbers' while your hands are in [REST].", "Hold a bridge position while Master applies [SENS] to your torso.", "Maintain a deep lunge while [VIS] and [SPEECH].", "Endure 1 minute of intense physical exertion followed by 1 minute of total stillness."
-        ],
-        selfbondage: [
-            "Use [REST] to bind your own wrists as tightly as possible; Master must approve.", "Apply [VIS] and [SPEECH] to yourself while Master watches; do it slowly and provocatively.", "Secure your own ankles with [REST] and hop 5 times.", "Blindfold yourself with [VIS] and then attempt to tie your own [REST].", "Place the [SPEECH] in your own mouth and secure it until it leaves a mark.", "Wrap [REST] around your chest/waist until you feel the restriction.", "Configure your [REST] so that you cannot stand up straight.", "Apply [SENS] to yourself on Master's designated areas until they say stop.", "Entwine your fingers in [REST] so that you cannot use your hands.", "Apply [VIS] and wait for Master to guide you into the next [REST]."
-        ]
+    const taskData = {
+        truth: { class: "b-truth", time: 90, tasks: [
+            "CONFESSION: Admit the one thought that makes you feel most powerless while [REST].",
+            "REVELATION: Detail exactly how your [BODY] feels when [VIS] and [SPEECH] are applied simultaneously.",
+            "INTERROGATION: If Master used [SENS] for one hour, what would you say to make them stop?"
+        ]},
+        dare: { class: "b-dare", time: 180, tasks: [
+            "SUBMISSION: Crawl to Master and worship their feet while [SPEECH] and [REST] are active.",
+            "EXPOSURE: Remain a human statue while Master explores your [BODY] with [SENS]. No movement.",
+            "SERVICE: Serve Master a drink while [VIS] and [REST] bind your hands behind you."
+        ]},
+        escape: { class: "b-escape", time: 480, tasks: [
+            "FREEDOM TRIAL: Escape from the current [REST] while [VIS] and [SPEECH] are applied. Total silence required.",
+            "BLIND STRUGGLE: Shed a secondary layer of [REST] added by Master. You have 8 minutes.",
+            "SENSORY ESCAPE: Wriggle out of [REST] while Master uses [SENS] to break your concentration."
+        ]},
+        edging: { class: "b-edging", time: 300, tasks: [
+            "THE BRINK: Master uses [SENS] until you reach 99%. You must stay there for the duration without release.",
+            "RAPID DENIAL: Endure the highest setting of [SENS] while [REST]. If you climax, you fail.",
+            "SENSORY FOCUS: Focus entirely on [SENS]. Master will push you to the brink 3 times during the 5 minutes."
+        ]},
+        physical: { class: "b-physical", time: 240, tasks: [
+            "STRESS POSITION: Hold a deep kneeling posture while [REST] and [VIS] are active. No shifting allowed.",
+            "CORE ENDURANCE: Perform slow leg lifts while ankles are in [REST] and [SPEECH] is applied.",
+            "BALANCE TRIAL: Maintain a wall-sit while Master applies [SENS] to your [BODY]."
+        ]},
+        selfbondage: { class: "b-self", time: 150, tasks: [
+            "AUTO-RESTRAINT: Bind your own limbs as tightly as possible with [REST] and present yourself for inspection.",
+            "SELF-DENIAL: Apply [SENS] to your own [BODY] until Master commands you to stop.",
+            "SENSORY WRAP: Apply [VIS] and [SPEECH] to yourself while kneeling, ensuring zero gaps or light."
+        ]}
     };
 
     function nav(n) {
-        if(n===2) {
-            players = [
-                {n:document.getElementById('p1').value||"Slave", g:document.getElementById('g1').value, wins:0},
-                {n:document.getElementById('p2').value||"Master", g:document.getElementById('g2').value, wins:0}
-            ];
-            totalRounds = parseInt(document.getElementById('maxRounds').value);
-        }
-        if(n===3 && (inv.vis.length===0 || inv.rest.length===0)) { alert("Fill all inventory categories first!"); return; }
+        if(n===2) players = [{n:document.getElementById('p1').value||"Slave", g:document.getElementById('g1').value, wins:0},{n:document.getElementById('p2').value||"Master", g:document.getElementById('g2').value, wins:0}];
+        if(n===3 && (inv.vis.length===0 || inv.rest.length===0)) { alert("Fill gear first!"); return; }
         document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
         document.getElementById('step'+n).classList.add('active');
-        updateStatus();
     }
 
     function addItem(c) {
-        let val = document.getElementById('in-'+c).value;
-        if(val) { inv[c].push(val); document.getElementById('in-'+c).value=''; renderInv(); }
+        let v = document.getElementById('in-'+c).value;
+        if(v) { inv[c].push(v); document.getElementById('in-'+c).value=''; renderInv(); }
     }
 
     function renderInv() {
@@ -170,32 +151,24 @@
         });
     }
 
-    function updateStatus() {
-        document.getElementById('p1Score').innerText = `${players[0].n}: ${players[0].wins}`;
-        document.getElementById('p2Score').innerText = `${players[1].n}: ${players[1].wins}`;
-        document.getElementById('card-y').classList.toggle('held', (subIdx === 0 ? 0 : 1));
-        document.getElementById('card-r').classList.toggle('held', (subIdx === 0 ? 0 : 1));
-    }
-
     function generate() {
-        const categories = Object.keys(data);
-        const cat = categories[Math.floor(Math.random()*categories.length)];
+        const categories = Object.keys(taskData);
+        const catKey = categories[Math.floor(Math.random()*categories.length)];
+        const category = taskData[catKey];
         const slave = players[subIdx], master = players[subIdx===0?1:0];
         
-        // Randomize 1 of the 10 basic templates for that category
-        let task = data[cat][Math.floor(Math.random()*data[cat].length)];
-        
-        // Inject Dynamic Gear
+        let task = category.tasks[Math.floor(Math.random()*category.tasks.length)];
         task = task.replace("[VIS]", `<b>${inv.vis[Math.floor(Math.random()*inv.vis.length)]}</b>`);
         task = task.replace("[SPEECH]", `<b>${inv.speech[Math.floor(Math.random()*inv.speech.length)]}</b>`);
         task = task.replace("[REST]", `<b>${inv.rest[Math.floor(Math.random()*inv.rest.length)]}</b>`);
         task = task.replace("[SENS]", `<b>${inv.sens[Math.floor(Math.random()*inv.sens.length)]}</b>`);
         task = task.replace("[BODY]", `<b>${slave.g}</b>`);
 
-        document.getElementById('cat-badge').innerText = cat.toUpperCase() + " CHALLENGE";
-        document.getElementById('main-task').innerHTML = task;
+        document.getElementById('badge-container').innerHTML = `<span class="badge ${category.class}">${catKey}</span>`;
+        document.getElementById('task-text').innerHTML = task;
         
-        timeLeft = 300;
+        timeLeft = category.time;
+        document.getElementById('time-intensity').innerText = timeLeft > 300 ? "Intensity: Extreme" : (timeLeft > 180 ? "Intensity: High" : "Intensity: Moderate");
         document.getElementById('gen-btn').style.display='none';
         document.getElementById('start-btn').style.display='block';
     }
@@ -213,17 +186,11 @@
     function resolveTurn(win) {
         clearInterval(timer);
         const masterIdx = (subIdx === 0 ? 1 : 0);
-        if(win) { 
-            players[subIdx].wins++; 
-            subIdx = masterIdx; 
-            alert("Success. Role Reversal!"); 
-        } else { 
-            players[masterIdx].wins++; 
-            alert("Failure. Comply with Master."); 
-        }
+        if(win) { players[subIdx].wins++; subIdx = masterIdx; alert("Success! Role Reversal."); }
+        else { players[masterIdx].wins++; alert("Failure. Comply with Master."); }
         
         currentRound++;
-        if(currentRound > totalRounds) {
+        if(currentRound > parseInt(document.getElementById('maxRounds').value)) {
             let winIdx = players[0].wins > players[1].wins ? 0 : 1;
             document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Champion: ${players[winIdx].n}</h1><button class="btn" onclick="location.reload()">Reset</button></div>`;
         } else {
@@ -231,7 +198,6 @@
             document.getElementById('pre-round').style.display='block';
             document.getElementById('gen-btn').style.display='block';
             document.getElementById('start-btn').style.display='none';
-            updateStatus();
         }
     }
 </script>
