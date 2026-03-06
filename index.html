@@ -96,7 +96,7 @@
             <div id="round-header" class="label" style="text-align:center; font-size: 1rem;">Round 1 / 6</div>
             
             <div class="inner-box">
-                <span class="label">Master's Choice: Toggle Active Categories</span>
+                <span class="label">Master's Round Decree: Select Categories</span>
                 <div class="toggle-grid" id="round-toggles">
                     <div class="tgl-btn on" data-cat="truth">Truth</div>
                     <div class="tgl-btn on" data-cat="dare">Dare</div>
@@ -112,7 +112,7 @@
                 <div id="task-text" style="font-size: 1.1rem;">Awaiting the Master's Choice...</div>
             </div>
             
-            <button class="btn" id="gen-btn" onclick="generate()">Generate Random Decree</button>
+            <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
             <button class="btn btn-secondary" id="show-manual-btn" onclick="toggleManual()">Manual Decree Override</button>
 
             <div id="manual-entry-area">
@@ -139,123 +139,3 @@
 
     const taskData = {
         truth: { class: "b-truth", time: 90, tasks: ["CONFESSION: Admit the thought that makes you feel most powerless while [REST].", "REVELATION: Describe the sensation of [VIS] and [SPEECH] on your [BODY]."] },
-        dare: { class: "b-dare", time: 180, tasks: ["SUBMISSION: Worship Master's feet while [SPEECH] and [REST] are active.", "EXPOSURE: Remain a human statue while Master uses [SENS] on your [BODY]."] },
-        escape: { class: "b-escape", time: 480, tasks: ["FREEDOM TRIAL: Escape from [REST] while [VIS] and [SPEECH] are applied.", "SENSORY ESCAPE: Wriggle out of [REST] while Master uses [SENS] to distract you."] },
-        edging: { class: "b-edging", time: 300, tasks: ["THE BRINK: Master uses [SENS] until you reach 99%. Hold for the duration.", "DENIAL: Endure the highest setting of [SENS] while [REST]. No climax allowed."] },
-        physical: { class: "b-physical", time: 240, tasks: ["STRESS POSITION: Hold a deep kneeling posture while [REST] and [VIS] are active.", "CORE: Perform leg lifts while ankles are in [REST] and Master uses [SENS]."] },
-        selfbondage: { class: "b-selfbondage", time: 150, tasks: ["AUTO-RESTRAINT: Bind your own limbs as tightly as possible with [REST].", "SENSORY WRAP: Apply [VIS] and [SPEECH] to yourself perfectly."] }
-    };
-
-    const finalOutcomes = [
-        "PUNISHMENT: One hour of total [REST] and [VIS] in a corner.",
-        "REWARD: Full release followed by a warm bath administered by the loser.",
-        "PUNISHMENT: The loser must remain [SPEECH] and [REST] for the rest of the evening.",
-        "REWARD: The winner may choose any [SENS] activity for 15 minutes with no resistance.",
-        "PUNISHMENT: Loser must perform 50 pushups or squats while [REST] binds their wrists."
-    ];
-
-    function nav(n) {
-        if(n===2) players = [{n:document.getElementById('p1').value||"Slave", g:document.getElementById('g1').value, wins:0},{n:document.getElementById('p2').value||"Master", g:document.getElementById('g2').value, wins:0}];
-        if(n===3 && (inv.vis.length===0 || inv.rest.length===0)) return alert("Gear required!");
-        document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
-        document.getElementById('step'+n).classList.add('active');
-        document.querySelectorAll('#round-toggles .tgl-btn').forEach(b => b.onclick = () => b.classList.toggle('on'));
-    }
-
-    function addItem(c) {
-        let v = document.getElementById('in-'+c).value;
-        if(v) { inv[c].push(v); document.getElementById('in-'+c).value=''; renderInv(); }
-    }
-
-    function renderInv() {
-        ['vis','speech','rest','sens'].forEach(c=>{
-            document.getElementById('list-'+c).innerHTML = inv[c].map((it,idx)=>`<div class="tag">${it}<span onclick="inv['${c}'].splice(${idx},1);renderInv()">×</span></div>`).join('');
-        });
-    }
-
-    function toggleManual() {
-        let area = document.getElementById('manual-entry-area');
-        area.style.display = area.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function applyManual() {
-        let task = document.getElementById('custom-task').value;
-        if(!task) return;
-        document.getElementById('badge-container').innerHTML = `<span class="badge b-manual">DIRECT DECREE</span>`;
-        document.getElementById('task-text').innerHTML = task;
-        timeLeft = parseInt(document.getElementById('custom-time').value) * 60;
-        prepTrial();
-    }
-
-    function generate() {
-        let activeCats = Array.from(document.querySelectorAll('#round-toggles .tgl-btn.on')).map(b => b.getAttribute('data-cat'));
-        if(activeCats.length === 0) return alert("Enable a category!");
-        currentCat = activeCats[Math.floor(Math.random()*activeCats.length)];
-        let cat = taskData[currentCat];
-        currentTaskIdx = Math.floor(Math.random()*cat.tasks.length);
-        let task = cat.tasks[currentTaskIdx];
-        
-        task = task.replace(/\[VIS\]/g, `<b>${inv.vis[0]||"blindfold"}</b>`).replace(/\[SPEECH\]/g, `<b>${inv.speech[0]||"gag"}</b>`).replace(/\[REST\]/g, `<b>${inv.rest[0]||"rope"}</b>`).replace(/\[SENS\]/g, `<b>${inv.sens[0]||"wand"}</b>`).replace(/\[BODY\]/g, `<b>${players[subIdx].g}</b>`);
-        
-        document.getElementById('badge-container').innerHTML = `<span class="badge b-${currentCat}">${currentCat}</span>`;
-        document.getElementById('task-text').innerHTML = task;
-        timeLeft = cat.time;
-        prepTrial();
-    }
-
-    function prepTrial() {
-        document.getElementById('gen-btn').style.display='none';
-        document.getElementById('show-manual-btn').style.display='none';
-        document.getElementById('manual-entry-area').style.display='none';
-        document.getElementById('start-btn').style.display='block';
-        document.getElementById('veto-btn').style.display='block';
-    }
-
-    function vetoTask() {
-        if(currentCat) taskData[currentCat].tasks.splice(currentTaskIdx, 1);
-        resetRoundView();
-    }
-
-    function startT() {
-        document.getElementById('pre-round').style.display='none';
-        document.getElementById('active-round').style.display='block';
-        timer = setInterval(()=>{
-            timeLeft--;
-            document.getElementById('clock').innerText=`${Math.floor(timeLeft/60)}:${(timeLeft%60).toString().padStart(2,'0')}`;
-            if(timeLeft<=0){ clearInterval(timer); resolveTurn(false); }
-        }, 1000);
-    }
-
-    function resolveTurn(win) {
-        clearInterval(timer);
-        if(win) { players[subIdx].wins++; subIdx = (subIdx === 0 ? 1 : 0); alert("Success! Roles Reversed."); }
-        else { players[subIdx === 0 ? 1 : 0].wins++; alert("Failure."); }
-        
-        currentRound++;
-        if(currentRound > parseInt(document.getElementById('maxRounds').value)) finalize();
-        else resetRoundView();
-    }
-
-    function resetRoundView() {
-        document.getElementById('round-header').innerText = `Round ${currentRound} / ${document.getElementById('maxRounds').value}`;
-        document.getElementById('active-round').style.display='none';
-        document.getElementById('pre-round').style.display='block';
-        document.getElementById('gen-btn').style.display='block';
-        document.getElementById('show-manual-btn').style.display='block';
-        document.getElementById('start-btn').style.display='none';
-        document.getElementById('veto-btn').style.display='none';
-        document.getElementById('task-text').innerText = "Awaiting the Master's Choice...";
-        document.getElementById('badge-container').innerHTML = "";
-    }
-
-    function finalize() {
-        let winIdx = players[0].wins > players[1].wins ? 0 : 1;
-        let loseIdx = winIdx === 0 ? 1 : 0;
-        let outcome = finalOutcomes[Math.floor(Math.random()*finalOutcomes.length)];
-        outcome = outcome.replace(/\[REST\]/g, inv.rest[0]||"restraints").replace(/\[VIS\]/g, inv.vis[0]||"blindfold").replace(/\[SENS\]/g, inv.sens[0]||"toys").replace(/\[SPEECH\]/g, inv.speech[0]||"gag");
-
-        document.body.innerHTML = `<div class="container final-screen"><h1>Session Complete</h1><div class="box"><span class="label">Ascended Master</span><div style="font-size:2rem; color:var(--crimson)">${players[winIdx].n}</div></div><div class="box"><span class="label">The Fate of ${players[loseIdx].n}</span><div class="punishment-text">${outcome}</div></div><button class="btn" onclick="location.reload()">Reset Engine</button></div>`;
-    }
-</script>
-</body>
-</html>
