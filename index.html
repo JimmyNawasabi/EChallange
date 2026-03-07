@@ -123,21 +123,22 @@
 </div>
 
 <script>
+    // Internal data keys updated to match your required naming conventions
     let rawInv = {
-        vis: [
+        blindfolds: [
             {n:"Bandage", on:true}, {n:"Tape", on:true}, {n:"Cloth", on:true}, 
-            {n:"Gas Mask", on:true}, {n:"Pillow Case", on:true}, {n:"Blindfold", on:false}
+            {n:"Gas Mask", on:true}, {n:"Pillow Case", on:true}
         ],
-        speech: [
+        gags: [
             {n:"Tape", on:true}, {n:"Pallet Wrap", on:true}, {n:"Cloth", on:true}, 
             {n:"Panties", on:true}, {n:"Bandage", on:true}, {n:"Rope", on:true}, 
-            {n:"Ring Gag", on:true}, {n:"Gas Mask", on:true}, {n:"Hood", on:true}, {n:"Ball Gag", on:false}
+            {n:"Ring Gag", on:true}, {n:"Gas Mask", on:true}, {n:"Hood", on:true}
         ],
-        rest: [
+        restraints: [
             {n:"Leather Cuffs", on:true}, {n:"Tape", on:true}, {n:"Pallet Wrap", on:true}, 
-            {n:"String", on:true}, {n:"Belt", on:true}, {n:"Ribbon", on:true}, {n:"Rope", on:false}
+            {n:"String", on:true}, {n:"Belt", on:true}, {n:"Ribbon", on:true}
         ],
-        sens: [
+        sensation: [
             {n:"Insertable", on:true}, {n:"Dildo", on:true}, {n:"Anal Hook", on:true}, 
             {n:"Pussy Hook", on:true}, {n:"Butt Plug", on:true}, {n:"Anal Dildo", on:true}, 
             {n:"E-stim Machine", on:true}, {n:"Paddle", on:true}, {n:"Vibrator", on:true}, 
@@ -161,18 +162,37 @@
     function renderInv() {
         const container = document.getElementById('inv-container');
         container.innerHTML = '';
-        // Updated Names here
-        const catMap = {vis: "Blindfolds", speech: "Gags", rest: "Restraints", sens: "Sensation"};
+        
+        // Match keys with labels for rendering
+        const catLabels = {
+            blindfolds: "Blindfolds", 
+            gags: "Gags", 
+            restraints: "Restraints", 
+            sensation: "Sensation"
+        };
+
         for (let key in rawInv) {
             let section = document.createElement('div');
-            section.innerHTML = `<div class="cat-header"><span class="label">${catMap[key]}</span><span class="toggle-all" onclick="toggleAll('${key}')">Toggle All</span></div><div style="display:flex; gap:10px; margin-bottom: 10px;"><input type="text" id="add-${key}" placeholder="Add..."><button class="btn-add" onclick="addNewItem('${key}')">+</button></div><div class="tag-row" id="tags-${key}"></div>`;
+            section.innerHTML = `
+                <div class="cat-header">
+                    <span class="label">${catLabels[key]}</span>
+                    <span class="toggle-all" onclick="toggleAll('${key}')">Toggle All</span>
+                </div>
+                <div style="display:flex; gap:10px; margin-bottom: 10px;">
+                    <input type="text" id="add-${key}" placeholder="Add custom...">
+                    <button class="btn-add" onclick="addNewItem('${key}')">+</button>
+                </div>
+                <div class="tag-row" id="tags-${key}"></div>`;
+            
             container.appendChild(section);
+            const tagRow = section.querySelector(`#tags-${key}`);
+            
             rawInv[key].forEach((item, idx) => {
                 let tag = document.createElement('div');
                 tag.className = `tag ${item.on ? 'on' : ''}`;
                 tag.innerText = item.n;
                 tag.onclick = () => { item.on = !item.on; renderInv(); };
-                section.querySelector(`#tags-${key}`).appendChild(tag);
+                tagRow.appendChild(tag);
             });
         }
     }
@@ -185,7 +205,11 @@
 
     function addNewItem(cat) {
         let input = document.getElementById(`add-${cat}`);
-        if (input.value.trim()) { rawInv[cat].push({n: input.value.trim(), on: true}); input.value = ''; renderInv(); }
+        if (input.value.trim()) { 
+            rawInv[cat].push({n: input.value.trim(), on: true}); 
+            input.value = ''; 
+            renderInv(); 
+        }
     }
 
     function goToStep(n) {
@@ -197,7 +221,10 @@
             renderInv();
         }
         if (n === 3) {
-            if (!rawInv.vis.some(i=>i.on) || !rawInv.rest.some(i=>i.on)) return alert("Select Gear!");
+            // Updated validation to use new keys
+            if (!rawInv.blindfolds.some(i=>i.on) || !rawInv.restraints.some(i=>i.on)) {
+                return alert("Select at least one Blindfold and one Restraint!");
+            }
             updateIdentity();
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -228,8 +255,11 @@
                 return p.length ? `<b>${p[Math.floor(Math.random()*p.length)].n}</b>` : "gear";
             };
 
-            res = task.replace(/\[VIS\]/g, pick('vis')).replace(/\[SPEECH\]/g, pick('speech'))
-                      .replace(/\[REST\]/g, pick('rest')).replace(/\[SENS\]/g, pick('sens'))
+            // Mapping legacy placeholder types to new keys
+            res = task.replace(/\[VIS\]/g, pick('blindfolds'))
+                      .replace(/\[SPEECH\]/g, pick('gags'))
+                      .replace(/\[REST\]/g, pick('restraints'))
+                      .replace(/\[SENS\]/g, pick('sensation'))
                       .replace(/\[BODY\]/g, `<b>${players[subIdx].g}</b>`);
         } while (res === lastTaskString && (cats.length > 1 || taskData[k].tasks.length > 1));
 
@@ -254,8 +284,15 @@
 
     function resolveTurn(success) {
         clearInterval(timer);
-        if (success) { players[subIdx].wins++; subIdx = (subIdx === 0 ? 1 : 0); alert("Success! Roles Swapped."); }
-        else { players[subIdx === 0 ? 1 : 0].wins++; alert("Failure. Master remains."); }
+        if (success) { 
+            players[subIdx].wins++; 
+            subIdx = (subIdx === 0 ? 1 : 0); 
+            alert("Success! Roles Swapped."); 
+        }
+        else { 
+            players[subIdx === 0 ? 1 : 0].wins++; 
+            alert("Failure. Master remains."); 
+        }
         currentRound++;
         if (currentRound > parseInt(document.getElementById('maxRounds').value)) finalize();
         else { updateIdentity(); resetUI(); }
