@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sovereignty: The Eternal Vault</title>
+    <title>Sovereignty: Unified Command</title>
     <style>
         :root { 
             --accent: #c5a059; --bg: #fdfaf5; --card: #ffffff;
-            --text: #2c2c2c; --crimson: #7b1a1a; --gold: #f1c40f; --off: #d1d1d1;
+            --text: #2c2c2c; --crimson: #7b1a1a; --gold: #f1c40f; --off: #e0e0e0;
         }
         body { background: var(--bg); color: var(--text); font-family: 'Georgia', serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 750px; width: 100%; background: var(--card); padding: 35px; box-shadow: 0 25px 70px rgba(0,0,0,0.15); border-radius: 45px; border: 1px solid rgba(197, 160, 89, 0.3); margin-top: 20px; }
@@ -18,60 +18,52 @@
         .step { display: none; }
         .active { display: block !important; }
 
-        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 25px; border-radius: 30px; line-height: 1.6; }
-        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 12px; letter-spacing: 2px; }
+        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 20px; margin-bottom: 20px; border-radius: 25px; line-height: 1.6; }
+        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 2px; }
 
         .identity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         input[type="text"], input[type="number"], select { 
-            width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 15px; 
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; 
             font-family: inherit; font-size: 0.95rem; box-sizing: border-box; background: white;
         }
 
         .vault-section { margin-bottom: 25px; padding: 15px; background: white; border-radius: 20px; border: 1px solid #eee; }
         .add-bar { display: flex; gap: 10px; margin-bottom: 15px; }
-        .add-bar input { flex: 1; border-color: var(--accent); }
-        .add-btn { background: var(--crimson); color: white; border: none; padding: 0 20px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.2rem; }
+        .add-btn { background: var(--crimson); color: white; border: none; padding: 0 15px; border-radius: 10px; cursor: pointer; font-weight: bold; }
         
-        .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; }
-        .tag { background: var(--off); color: #777; padding: 10px 18px; border-radius: 12px; font-size: 0.85rem; cursor: pointer; border: 1px solid #ccc; transition: 0.3s; display: flex; align-items: center; }
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { background: var(--off); color: #777; padding: 8px 14px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; border: 1px solid #ccc; display: flex; align-items: center; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        .del-icon { margin-left: 10px; font-weight: bold; padding: 2px 6px; border-radius: 50%; background: rgba(0,0,0,0.1); font-size: 0.7rem; }
+        .del-icon { margin-left: 8px; font-weight: bold; opacity: 0.6; }
+
+        /* UNIFIED COMMAND STYLES */
+        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .t-btn { padding: 12px; border-radius: 12px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 0.75rem; font-weight: bold; text-align: center; text-transform: uppercase; transition: 0.2s; }
+        .t-btn.on { background: var(--accent); color: white; border-color: var(--accent); }
+        .t-btn.gear-on { background: var(--crimson); color: white; border-color: var(--crimson); }
 
         .timer-big { font-size: 5rem; text-align: center; color: var(--crimson); font-family: monospace; font-weight: bold; margin: 15px 0; }
         .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 18px; margin-bottom: 12px; letter-spacing: 2px; }
         .btn-sec { background: #888; }
-
-        /* MANIFEST STYLES */
-        .manifest-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; }
-        .m-item { padding: 15px; border-radius: 15px; background: #eee; border: 1px solid #ddd; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; }
-        .m-item.on { background: var(--accent); color: white; border-color: var(--accent); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Sovereignty</h1>
-    <div class="subtitle">The Eternal Vault</div>
+    <div class="subtitle">Unified Command</div>
 
     <div id="step1" class="step active">
         <div class="box">
             <span class="label">Participant 1</span>
             <div class="identity-row">
                 <input type="text" id="p1_n" placeholder="Name">
-                <select id="p1_g">
-                    <option value="Male Body">Male Body</option>
-                    <option value="Female Body">Female Body</option>
-                    <option value="Neutral">Neutral</option>
-                </select>
+                <select id="p1_g"><option>Male Body</option><option>Female Body</option><option>Neutral</option></select>
             </div>
             <span class="label">Participant 2</span>
             <div class="identity-row">
                 <input type="text" id="p2_n" placeholder="Name">
-                <select id="p2_g">
-                    <option value="Female Body">Female Body</option>
-                    <option value="Male Body">Male Body</option>
-                    <option value="Neutral">Neutral</option>
-                </select>
+                <select id="p2_g"><option>Female Body</option><option>Male Body</option><option>Neutral</option></select>
             </div>
             <span class="label">Session Duration (Rounds)</span>
             <input type="number" id="max_r" value="10">
@@ -81,10 +73,10 @@
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Master's Permanent Vault</span>
+            <span class="label">The Eternal Vault</span>
             <div id="vault-inject"></div>
         </div>
-        <button class="btn" onclick="nav(3)">Commence Ceremony</button>
+        <button class="btn" onclick="nav(3)">Enter Command Center</button>
     </div>
 
     <div id="step3" class="step">
@@ -92,18 +84,20 @@
             <div id="round-header" class="label" style="text-align:center; color:var(--crimson); font-size: 1rem;">ROUND 1</div>
             
             <div class="box">
-                <span class="label">Active Activity Manifest</span>
-                <div class="manifest-grid" id="manifest-list"></div>
-                <p style="font-size:0.65rem; color:#888; text-align:center;">Toggle activities for this round. One will be chosen randomly.</p>
+                <span class="label">1. Select Active Trial Types</span>
+                <div class="toggle-grid" id="trial-toggles"></div>
             </div>
 
-            <button class="btn" onclick="generateDecree()">Generate Decree</button>
+            <div class="box">
+                <span class="label">2. Select Allowed Gear Categories</span>
+                <div class="toggle-grid" id="gear-toggles"></div>
+            </div>
+
+            <button class="btn" onclick="generateDecree()">Generate Random Decree</button>
         </div>
 
         <div id="active-round" style="display:none;">
-            <div class="box">
-                <div id="active-trial-text" style="font-size: 0.95rem;"></div>
-            </div>
+            <div class="box"><div id="active-trial-text" style="font-size: 0.95rem;"></div></div>
             <div class="timer-big" id="clock">00:00</div>
             <button class="btn" onclick="finish(true)">Success (+1)</button>
             <button class="btn btn-sec" onclick="finish(false)">Failure (+0)</button>
@@ -125,8 +119,10 @@
         { n: "The Solitary Constraint", t: 600, d: "Subject must use [REST] to bind themselves as Master commands. Master then applies [VIS] and [GAG].", on: true },
         { n: "The Inquisitor's Gambit", t: 450, d: "Truth or Dare. Truth: Confession during [SENS]. Dare: Task while wearing [GAG] and [VIS].", on: true },
         { n: "The Bound Statue", t: 600, d: "Master uses [REST] to secure the Subject. Apply [SENS] while they remain perfectly still.", on: true },
-        { n: "Void Deprivation", t: 400, d: "Seal [VIS] and [GAG]. Master uses [SENS] in a slow, unpredictable rhythm.", on: true }
+        { n: "Void Deprivation", t: 400, d: "Seal [VIS] and [GAG]. Master uses [SENS] in a slow rhythm.", on: true }
     ];
+
+    let gearCats = { "Blindfolds": true, "Gags": true, "Restraints": true, "Sensation": true };
 
     let vault = JSON.parse(localStorage.getItem('sov_rollback_vault')) || null;
     if(!vault) {
@@ -139,14 +135,11 @@
 
     function nav(n) {
         if(n === 2) {
-            players = [
-                {n: document.getElementById('p1_n').value || "P1", g: document.getElementById('p1_g').value, score: 0},
-                {n: document.getElementById('p2_n').value || "P2", g: document.getElementById('p2_g').value, score: 0}
-            ];
+            players = [{n: document.getElementById('p1_n').value || "P1", score: 0}, {n: document.getElementById('p2_n').value || "P2", score: 0}];
             maxR = parseInt(document.getElementById('max_r').value);
             renderVault();
         }
-        if(n === 3) renderManifest();
+        if(n === 3) renderCommandCenter();
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step'+n).classList.add('active');
     }
@@ -180,26 +173,40 @@
         if(confirm(`Delete "${vault[c][i].n}"?`)) { vault[c].splice(i, 1); save(); renderVault(); }
     }
 
-    function renderManifest() {
+    function renderCommandCenter() {
         document.getElementById('round-header').innerText = `ROUND ${curR} | Master: ${players[masterIdx].n}`;
-        const mList = document.getElementById('manifest-list');
-        mList.innerHTML = '';
+        
+        // Render Trial Toggles
+        const tGrid = document.getElementById('trial-toggles');
+        tGrid.innerHTML = '';
         trials.forEach((t, i) => {
-            let d = document.createElement('div');
-            d.className = `m-item ${t.on ? 'on' : ''}`;
-            d.innerHTML = `<span>${t.n}</span> <span>${t.on ? 'ACTIVE' : 'OFF'}</span>`;
-            d.onclick = () => { trials[i].on = !trials[i].on; renderManifest(); };
-            mList.appendChild(d);
+            let b = document.createElement('button');
+            b.className = `t-btn ${t.on ? 'on' : ''}`;
+            b.innerText = t.n;
+            b.onclick = () => { trials[i].on = !trials[i].on; b.classList.toggle('on'); };
+            tGrid.appendChild(b);
         });
+
+        // Render Gear Toggles
+        const gGrid = document.getElementById('gear-toggles');
+        gGrid.innerHTML = '';
+        for(let c in gearCats) {
+            let b = document.createElement('button');
+            b.className = `t-btn ${gearCats[c] ? 'gear-on' : ''}`;
+            b.innerText = c;
+            b.onclick = () => { gearCats[c] = !gearCats[c]; b.classList.toggle('gear-on'); };
+            gGrid.appendChild(b);
+        }
     }
 
     function generateDecree() {
         let activeTrials = trials.filter(t => t.on);
-        if(activeTrials.length === 0) { alert("At least one activity must be ACTIVE."); return; }
+        if(activeTrials.length === 0) return alert("Select at least one Activity.");
 
         let t = activeTrials[Math.floor(Math.random() * activeTrials.length)];
         
-        const pick = (c) => { 
+        const pick = (c, placeholder) => { 
+            if(!gearCats[c]) return `<span style="color:#888;">[Skipped: ${c} disabled]</span>`;
             let p = vault[c].filter(i=>i.on); 
             return p.length ? `<b style="color:var(--crimson);">${p[Math.floor(Math.random()*p.length)].n}</b>` : `(Any ${c})`; 
         };
@@ -230,7 +237,7 @@
         else {
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('active-round').style.display = 'none';
-            renderManifest();
+            renderCommandCenter();
         }
     }
 </script>
