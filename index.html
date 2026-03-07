@@ -21,8 +21,7 @@
         .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 25px; border-radius: 25px; line-height: 1.8; position: relative; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1.5px; }
 
-        /* FIXED IDENTITY CARDS */
-        .identity-card { background: #ffffff; border: 1px solid #eee; padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .identity-card { background: #ffffff; border: 1px solid #eee; padding: 20px; border-radius: 20px; margin-bottom: 15px; }
         input[type="text"], select, input[type="number"] { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 12px; margin-top: 8px; font-size: 1rem; font-family: inherit; box-sizing: border-box; display: block; background: #fff; }
         
         .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
@@ -52,8 +51,8 @@
             <input type="number" id="maxRounds" value="6" placeholder="Rounds">
             
             <div class="identity-card">
-                <span class="label">Participant One</span>
-                <input type="text" id="p1_name" placeholder="Name for Player 1...">
+                <span class="label">Player 1</span>
+                <input type="text" id="p1_name" placeholder="Enter Name">
                 <select id="p1_gender">
                     <option value="male body">Male Body</option>
                     <option value="female body">Female Body</option>
@@ -61,8 +60,8 @@
             </div>
 
             <div class="identity-card">
-                <span class="label">Participant Two</span>
-                <input type="text" id="p2_name" placeholder="Name for Player 2...">
+                <span class="label">Player 2</span>
+                <input type="text" id="p2_name" placeholder="Enter Name">
                 <select id="p2_gender">
                     <option value="female body">Female Body</option>
                     <option value="male body">Male Body</option>
@@ -86,7 +85,7 @@
             <div class="box" style="text-align:left;">
                 <div id="intensity-display" class="intensity-pill">---</div>
                 <div id="badge-container"></div>
-                <div id="task-text">Assigning initial roles...</div>
+                <div id="task-text">Randomizing initial authority...</div>
             </div>
             <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
             <div id="pre-start-controls" style="display:none;">
@@ -97,8 +96,8 @@
 
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
-            <button class="btn" onclick="resolveTurn(true)">Merit Achieved (Swap Roles)</button>
-            <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Task Failed (Maintain Roles)</button>
+            <button class="btn" onclick="resolveTurn(true)">Success (Role Swap)</button>
+            <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Failure (Keep Roles)</button>
         </div>
     </div>
 </div>
@@ -113,9 +112,7 @@
 
     let activeInv = {};
     let players = []; 
-    let currentRound = 1;
-    let masterIdx, slaveIdx;
-    let timer, timeLeft;
+    let currentRound = 1, masterIdx, slaveIdx, timer, timeLeft;
 
     function initGear() {
         for (let cat in gearPool) {
@@ -126,14 +123,13 @@
 
     function getMethod(item, intensity) {
         item = item.toLowerCase();
-        if (item === "pillow case") return "Drape the heavy fabric over the head, folding it to ensure triple-layer thickness over the eyes. Secure it loosely at the neck to ensure total darkness and muffled sensory input.";
-        if (item === "gas mask") return "Seal the mask against the face, tightening the rubber straps until the seal is airtight and breathing is loud and heavy through the filter.";
-        if (item === "tape") return `Apply horizontal strips across the ${item.includes('gag') ? 'lips' : 'eyes'}, pressing the adhesive deep into the skin to prevent any ${item.includes('gag') ? 'sound' : 'light'} from escaping.`;
-        if (item === "pallet wrap") return "Circle the head three times, binding the mouth closed and ensuring the plastic clings tightly to the jawline and inhibits all speech.";
-        if (item.includes("hook")) return `Apply sterile lubricant. Slowly slide the metal into the ${item.includes('anal') ? 'rectum' : 'genitals'} until the base is flush with the skin, allowing the weight to hang and pull the skin taut.`;
-        if (item === "rope" || item === "string") return `Execute a tight figure-eight wrap around the wrists. Knot it with a ${intensity === 'tight' ? 'binding double-knot' : 'secure but soft square-knot'}.`;
-        if (item === "leather cuffs") return `Lock the hardware around the limbs, cinching it to the ${intensity === 'tight' ? 'tightest notch' : 'middle notch'} to restrict movement.`;
-        return `Apply the ${item} with ${intensity} focus, ensuring the Slave feels the full weight and texture of the object.`;
+        if (item === "pillow case") return "Drape the heavy fabric over the head, ensuring multiple folds cover the eyes. Secure it at the neck with a soft tie for total darkness.";
+        if (item === "gas mask") return "Seal the mask against the face, tightening the rubber straps until the seal is airtight and breathing is loud through the filter.";
+        if (item === "tape") return `Apply horizontal strips across the ${item.includes('gag') ? 'lips' : 'eyes'}, pressing the adhesive deep into the skin.`;
+        if (item === "pallet wrap") return "Circle the head three times, binding the mouth closed and ensuring the plastic clings tightly to the jawline.";
+        if (item.includes("hook")) return `Apply lubricant. Slowly slide the metal into the ${item.includes('anal') ? 'rectum' : 'genitals'} until flush with the skin.`;
+        if (item === "rope" || item === "string") return `Execute a tight figure-eight wrap around the wrists and knot it with a ${intensity === 'tight' ? 'binding double-knot' : 'secure square-knot'}.`;
+        return `Apply the ${item} with ${intensity} focus, ensuring the Slave feels the full weight and texture.`;
     }
 
     function renderInv() {
@@ -162,7 +158,7 @@
             renderInv();
         }
         if (n === 3) {
-            // RANDOM SELECTION OF ROLES AT START
+            // RANDOMIZE STARTING ROLES
             masterIdx = Math.floor(Math.random() * 2);
             slaveIdx = masterIdx === 0 ? 1 : 0;
             updateHeader();
@@ -186,20 +182,16 @@
         let k = Object.keys(tasks)[Math.floor(Math.random()*Object.keys(tasks).length)];
         let intensity = ["soft", "firm", "tight"][Math.floor(Math.random()*3)];
         let template = tasks[k].templates[0];
-        
         const pick = (c) => {
             let p = activeInv[c].filter(i=>i.on);
             return p.length ? p[Math.floor(Math.random()*p.length)].n : "the selected item";
         };
-
         let v = pick('Blindfolds'), g = pick('Gags'), r = pick('Restraints'), s = pick('Sensation');
-
         let res = template.replace(/\[DESC-VIS\]/g, `apply the <b>${v}</b>: ${getMethod(v, intensity)}`)
                           .replace(/\[DESC-GAG\]/g, `apply the <b>${g}</b>: ${getMethod(g, intensity)}`)
                           .replace(/\[DESC-REST\]/g, `apply the <b>${r}</b>: ${getMethod(r, intensity)}`)
                           .replace(/\[DESC-SENS\]/g, `apply the <b>${s}</b>: ${getMethod(s, intensity)}`)
                           .replace(/\[BODY\]/g, players[slaveIdx].g);
-
         document.getElementById('intensity-display').innerText = `Intensity: ${intensity}`;
         document.getElementById('badge-container').innerHTML = `<span class="badge b-${k}">${tasks[k].label}</span>`;
         document.getElementById('task-text').innerHTML = res;
@@ -222,16 +214,12 @@
     function resolveTurn(success) {
         clearInterval(timer);
         if (success) {
-            let temp = masterIdx;
-            masterIdx = slaveIdx;
-            slaveIdx = temp;
-            alert("The Subject has earned their freedom. Role Swap!");
-        } else {
-            alert("The Subject has failed the trial. Authority remains unchanged.");
-        }
+            let temp = masterIdx; masterIdx = slaveIdx; slaveIdx = temp;
+            alert("Role Swap!");
+        } else { alert("Master maintains authority."); }
         currentRound++;
         if (currentRound > parseInt(document.getElementById('maxRounds').value)) {
-            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Ascension Complete</h1><button class="btn" onclick="location.reload()">Start Anew</button></div>`;
+            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Ascension Complete</h1><button class="btn" onclick="location.reload()">Reset Session</button></div>`;
         } else {
             updateHeader();
             document.getElementById('active-round').style.display = 'none';
