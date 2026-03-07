@@ -32,6 +32,7 @@
         .identity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         input, select { width: 100%; padding: 20px; border: 1px solid #444; border-radius: 18px; background: #000; color: white; font-size: 1.2rem; box-sizing: border-box; font-family: Arial, sans-serif; }
         
+        /* Arsenal Management Styling */
         .add-row { display: flex; gap: 10px; margin-bottom: 15px; }
         .add-input { flex: 1; padding: 15px; border-radius: 15px; font-size: 1.1rem; border: 1px solid #444; background: #000; color: #fff; }
         .add-btn { background: var(--accent); color: black; border: none; padding: 0 20px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 1.5rem; }
@@ -49,7 +50,6 @@
         .tag { background: #000; padding: 12px 18px; border-radius: 15px; font-size: 1.1rem; cursor: pointer; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 10px; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
         .del-x { color: #f00; font-weight: bold; font-size: 1.2rem; margin-left: 5px; opacity: 0.6; }
-        .del-x:hover { opacity: 1; }
 
         .timer-big { font-size: 6.5rem; text-align: center; color: #fff; font-weight: bold; margin: 20px 0; }
         .instruction-highlight { color: var(--accent); font-weight: bold; font-size: 1.4rem; text-transform: uppercase; }
@@ -92,7 +92,7 @@
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">The Arsenal</span>
+            <span class="label">Customize Your Arsenal</span>
             <div id="vault-inject"></div>
         </div>
         <button class="btn" onclick="vibrate(50); playSnd('click'); nav(3);">Confirm Protocol</button>
@@ -119,19 +119,18 @@
     let players = [], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft;
     
     const defaultVault = {
-        "Blindfolds": ["Sleep Mask", "Hood", "Tape"],
-        "Gags": ["Ball Gag", "Sock Gag", "Tape"],
-        "Restraints": ["Rope", "Zip Ties", "Cuffs"],
-        "Sensation": ["Whip", "Ice", "Vibrator"]
+        "Blindfolds": ["Sleep Mask", "Hood", "Silk Scarf"],
+        "Gags": ["Ball Gag", "Sock Gag", "Medical Tape"],
+        "Restraints": ["Rope", "Zip Ties", "Leather Cuffs"],
+        "Sensation": ["Whip", "Ice Cube", "Vibrator", "Wartenberg Wheel"]
     };
 
-    let vault = JSON.parse(localStorage.getItem('sov_v2_vault')) || null;
+    let vault = JSON.parse(localStorage.getItem('sov_final_v3')) || null;
     if(!vault) {
         vault = {};
         for(let c in defaultVault) vault[c] = defaultVault[c].map(n => ({n, on: true}));
     }
 
-    /* REWRITTEN DESCRIPTIVE TRIALS */
     let trials = [
         { 
             n: "The Architect's Bind", 
@@ -216,7 +215,7 @@
         saveVault(); renderVault();
     }
 
-    function saveVault() { localStorage.setItem('sov_v2_vault', JSON.stringify(vault)); }
+    function saveVault() { localStorage.setItem('sov_final_v3', JSON.stringify(vault)); }
 
     function renderCommandCenter() {
         document.getElementById('round-header').innerText = `ROUND ${curR} | Master: ${players[masterIdx].n}`;
@@ -236,7 +235,7 @@
 
     function generateDecree() {
         let activeTrials = trials.filter(t => t.on);
-        if(!activeTrials.length) return alert("Select a Trial.");
+        if(!activeTrials.length) return alert("Select at least one Trial.");
         let t = activeTrials[Math.floor(Math.random() * activeTrials.length)];
         const pick = (c) => { 
             if(!gearCats[c]) return `<span style="opacity:0.3; font-size:1rem;">[SKIP ${c}]</span>`;
@@ -257,7 +256,7 @@
             let m = Math.floor(timeLeft/60), s = timeLeft%60;
             document.getElementById('clock').innerText = `${m}:${s < 10 ? '0'+s : s}`;
             if(timeLeft === 10) { playSnd('alarm'); vibrate([100, 100, 100]); }
-            if(timeLeft <= 0) { vibrate([500, 200, 500]); finish(false); }
+            if(timeLeft <= 0) { clearInterval(timer); vibrate([500, 200, 500]); finish(false); }
         }, 1000);
     }
 
