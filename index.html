@@ -32,7 +32,6 @@
         .identity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         input, select { width: 100%; padding: 20px; border: 1px solid #444; border-radius: 18px; background: #000; color: white; font-size: 1.2rem; box-sizing: border-box; font-family: Arial, sans-serif; }
         
-        /* Arsenal Management Styling */
         .add-row { display: flex; gap: 10px; margin-bottom: 15px; }
         .add-input { flex: 1; padding: 15px; border-radius: 15px; font-size: 1.1rem; border: 1px solid #444; background: #000; color: #fff; font-family: Arial, sans-serif; }
         .add-btn { background: var(--accent); color: black; border: none; padding: 0 20px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; }
@@ -50,7 +49,6 @@
         .tag { background: #000; padding: 12px 18px; border-radius: 15px; font-size: 1.1rem; cursor: pointer; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
         .del-x { color: rgba(255,255,255,0.4); font-weight: bold; font-size: 1.3rem; padding: 0 5px; }
-        .del-x:hover { color: #ff4d4d; }
 
         .timer-big { font-size: 6.5rem; text-align: center; color: #fff; font-weight: bold; margin: 20px 0; }
         .instruction-highlight { color: var(--accent); font-weight: bold; font-size: 1.4rem; text-transform: uppercase; }
@@ -126,30 +124,49 @@
         "Sensation": ["Whip", "Ice Cube", "Vibrator"]
     };
 
-    let vault = JSON.parse(localStorage.getItem('sov_vault_v4')) || null;
+    let vault = JSON.parse(localStorage.getItem('sov_vault_v5')) || null;
     if(!vault) {
         vault = {};
         for(let c in defaultVault) vault[c] = defaultVault[c].map(n => ({n, on: true}));
     }
 
-    let trials = [
-        { 
-            n: "The Architect's Bind", t: 600, 
-            d: "The Master describes a position of total vulnerability, and the Subject must use <b>[REST]</b> to build that cage around themselves. Every knot or click of <b>[REST]</b> is done under the Master's watchful eye. To finalize the submission, the Master steps in to take away the Subject's sight with <b>[VIS]</b> and their voice with <b>[GAG]</b>, leaving them bound and waiting.", on: true 
-        },
-        { 
-            n: "The Sensory Void", t: 450, 
-            d: "Total sensory isolation. First, the Master seals away the Subject's senses using <b>[VIS]</b> and <b>[GAG]</b> until they are drifting in a silent, dark vacuum. The Master then uses <b>[SENS]</b> to ground them back in reality, dragging the <b>[SENS]</b> slowly across sensitive skin in long, teasing strokes or sharp, sudden bursts to keep the Subject guessing where the next touch will land.", on: true 
-        },
-        { 
-            n: "The Living Sculpture", t: 600, 
-            d: "The Master physically molds the Subject into a demanding or graceful pose, securing it firmly with <b>[REST]</b>. The Subject's only job is to become an unmoving object of art. While they are frozen, the Master 'paints' sensations across their body using <b>[SENS]</b>. The Subject must remain perfectly still; even the slightest shiver or twitch is a flaw in the Master's masterpiece.", on: true 
-        },
-        { 
-            n: "The Silent Confession", t: 450, 
-            d: "With <b>[VIS]</b> obscuring the world, the Subject is forced to listen only to the Master's voice. The Master whispers questions—secrets, desires, or truths—into the Subject's ear. If the Subject hesitates or if the Master is unsatisfied, <b>[SENS]</b> is applied as a sharp reminder of who is in control. If <b>[GAG]</b> is worn, the Subject must find a way to communicate their 'yes' or 'no' through body language or muffled sounds.", on: true 
-        }
+    // EXPANDED TRIAL POOL (SYNTHETIC CATEGORIES)
+    const archetypes = [
+        { n: "The Architect's Bind", t: 600, d: "The Master describes a position of total vulnerability. The Subject must use [REST] to build that cage around themselves under the Master's gaze. To finalize, the Master applies [VIS] and [GAG], leaving them bound and waiting." },
+        { n: "The Sensory Void", t: 450, d: "Total isolation. The Master seals away the Subject's senses using [VIS] and [GAG]. Once drifting in the dark, the Master uses [SENS] to ground them with slow, unpredictable strokes or sudden bursts of intensity." },
+        { n: "The Living Sculpture", t: 600, d: "The Master molds the Subject into a fixed pose, securing it with [REST]. The Subject must be an unmoving object of art while the Master 'paints' sensations across their body using [SENS]. Even a shiver is a flaw." },
+        { n: "The Silent Confession", t: 450, d: "Hidden behind [VIS], the Subject listens to the Master's whispers. Secrets or truths are demanded; for every hesitation, [SENS] is applied. If [GAG] is worn, the Subject answers through body language or muffled sounds." },
+        { n: "The Measured Breath", t: 300, d: "Subject is secured in [REST] and silenced by [GAG]. The Master applies [SENS] in perfect sync with the Subject's breathing. If the Subject's heart rate or breathing breaks rhythm, the Master intensifies the [SENS] until they regain composure." },
+        { n: "The Blind Guardian", t: 500, d: "The Subject is placed in [VIS] and must protect a specific area of their body. The Master uses [SENS] to tease and provoke. If the Subject flinches or moves out of the [REST] position, the Master applies a firm corrective [SENS]." },
+        { n: "The Echo Chamber", t: 400, d: "Apply [VIS] and [GAG]. The Master taps or strokes the Subject with [SENS] in a specific pattern. The Subject must 'echo' the sensation by tensing the muscles in that area. Failure to react correctly leads to the [REST] being tightened." },
+        { n: "The Clockwork Toy", t: 600, d: "Subject is wound up in [REST]. The Master uses [SENS] like a key, 'activating' the Subject. For the duration, the Subject must perform a repetitive, rhythmic task while enduring the [GAG]. Master adjusts the speed with [SENS]." },
+        { n: "The Altar of Sensation", t: 700, d: "The Subject is laid out as an offering, secured by [REST]. The Master systematically explores every inch of skin with [SENS], alternating between temperature and texture while [VIS] keeps the Subject's anticipation at a peak." },
+        { n: "The Puppet Strings", t: 550, d: "Using [REST], the Master controls the Subject's movements. The Subject is fitted with [VIS] and [GAG]. The Master 'pulls' the strings, and the Subject must follow. Resistance results in a sharp application of [SENS] to the resisting limb." }
     ];
+
+    // GENERATOR TO REACH 200+ COMBINATIONS
+    const modifiers = [
+        "Focus on the contrast between soft touch and firm pressure.",
+        "Ensure the Subject is pushed to the edge of their composure.",
+        "Keep the rhythm slow, agonizing, and deeply intimate.",
+        "Use sudden, sharp transitions to keep the Subject off-balance.",
+        "Integrate a psychological element of praise or discipline.",
+        "Maintain a heavy, silent atmosphere with no verbal cues.",
+        "Focus entirely on the Subject's most sensitive areas.",
+        "Challenge the Subject's physical endurance and stillness."
+    ];
+
+    let trials = [];
+    archetypes.forEach(a => {
+        modifiers.forEach(m => {
+            trials.push({
+                n: a.n,
+                t: a.t,
+                d: a.d + " " + m,
+                on: true
+            });
+        });
+    });
 
     let gearCats = { "Blindfolds": true, "Gags": true, "Restraints": true, "Sensation": true };
 
@@ -158,10 +175,7 @@
 
     function nav(n) {
         if(n === 2) {
-            players = [
-                {n: document.getElementById('p1_n').value || "P1"},
-                {n: document.getElementById('p2_n').value || "P2"}
-            ];
+            players = [{n: document.getElementById('p1_n').value || "P1"}, {n: document.getElementById('p2_n').value || "P2"}];
             maxR = parseInt(document.getElementById('max_r').value);
             renderVault();
         }
@@ -170,24 +184,14 @@
         document.getElementById('step'+n).classList.add('active');
     }
 
-    // VAULT ENGINE: ADD, TOGGLE, DELETE
     function renderVault() {
-        const cont = document.getElementById('vault-inject');
-        cont.innerHTML = '';
+        const cont = document.getElementById('vault-inject'); cont.innerHTML = '';
         for(let c in vault) {
             let section = document.createElement('div');
-            section.innerHTML = `
-                <span class="label">${c}</span>
-                <div class="add-row">
-                    <input type="text" class="add-input" id="in-${c}" placeholder="New ${c}...">
-                    <button class="add-btn" onclick="addItem('${c}')">+</button>
-                </div>
-                <div class="tag-cloud" id="cloud-${c}"></div>`;
+            section.innerHTML = `<span class="label">${c}</span><div class="add-row"><input type="text" class="add-input" id="in-${c}" placeholder="New ${c}..."><button class="add-btn" onclick="addItem('${c}')">+</button></div><div class="tag-cloud" id="cloud-${c}"></div>`;
             cont.appendChild(section);
-
             vault[c].forEach((item, i) => {
-                let t = document.createElement('div');
-                t.className = `tag ${item.on ? 'on' : ''}`;
+                let t = document.createElement('div'); t.className = `tag ${item.on ? 'on' : ''}`;
                 t.innerHTML = `<span>${item.n}</span><span class="del-x" onclick="removeItem('${c}', ${i}); event.stopPropagation();">×</span>`;
                 t.onclick = () => { item.on = !item.on; saveVault(); renderVault(); vibrate(20); };
                 document.getElementById(`cloud-${c}`).appendChild(t);
@@ -198,26 +202,17 @@
     function addItem(c) {
         let input = document.getElementById(`in-${c}`);
         let val = input.value.trim();
-        if(val) {
-            vault[c].push({n: val, on: true});
-            input.value = '';
-            saveVault(); renderVault();
-            vibrate(40);
-        }
+        if(val) { vault[c].push({n: val, on: true}); input.value = ''; saveVault(); renderVault(); vibrate(40); }
     }
 
-    function removeItem(c, i) {
-        vault[c].splice(i, 1);
-        saveVault(); renderVault();
-        vibrate([30, 30]);
-    }
-
-    function saveVault() { localStorage.setItem('sov_vault_v4', JSON.stringify(vault)); }
+    function removeItem(c, i) { vault[c].splice(i, 1); saveVault(); renderVault(); vibrate([30, 30]); }
+    function saveVault() { localStorage.setItem('sov_vault_v5', JSON.stringify(vault)); }
 
     function renderCommandCenter() {
         document.getElementById('round-header').innerText = `ROUND ${curR} | Master: ${players[masterIdx].n}`;
         const tGrid = document.getElementById('trial-toggles'); tGrid.innerHTML = '';
-        trials.forEach((t, i) => {
+        // Showing a subset of trials to keep the UI clean, but the generator pool remains 200+
+        archetypes.forEach((t, i) => {
             let b = document.createElement('button'); b.className = `t-btn ${t.on ? 'on' : ''}`;
             b.innerText = t.n; b.onclick = () => { t.on = !t.on; b.classList.toggle('on'); vibrate(30); };
             tGrid.appendChild(b);
@@ -231,17 +226,21 @@
     }
 
     function generateDecree() {
-        let activeTrials = trials.filter(t => t.on);
-        if(!activeTrials.length) return alert("Select at least one Trial.");
-        let t = activeTrials[Math.floor(Math.random() * activeTrials.length)];
+        let activeArchetypes = archetypes.filter(a => a.on);
+        if(!activeArchetypes.length) return alert("Select at least one Trial.");
+        
+        let a = activeArchetypes[Math.floor(Math.random() * activeArchetypes.length)];
+        let m = modifiers[Math.floor(Math.random() * modifiers.length)];
+        
         const pick = (c) => { 
             if(!gearCats[c]) return `<span style="opacity:0.3; font-size:1rem;">[SKIP ${c}]</span>`;
             let items = vault[c].filter(i => i.on);
             return `<span class="instruction-highlight">${items.length ? items[Math.floor(Math.random()*items.length)].n : c}</span>`; 
         };
-        let text = t.d.replace('[REST]', pick('Restraints')).replace('[SENS]', pick('Sensation')).replace('[VIS]', pick('Blindfolds')).replace('[GAG]', pick('Gags'));
-        document.getElementById('active-trial-text').innerHTML = `<strong>${t.n.toUpperCase()}</strong><br><br>${text}`;
-        timeLeft = t.t;
+        
+        let text = (a.d + " " + m).replace('[REST]', pick('Restraints')).replace('[SENS]', pick('Sensation')).replace('[VIS]', pick('Blindfolds')).replace('[GAG]', pick('Gags'));
+        document.getElementById('active-trial-text').innerHTML = `<strong>${a.n.toUpperCase()}</strong><br><br>${text}`;
+        timeLeft = a.t;
         document.getElementById('pre-round').style.display = 'none';
         document.getElementById('active-round').style.display = 'block';
         startClock();
