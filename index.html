@@ -17,21 +17,26 @@
         }
 
         .container { 
-            max-width: 580px; width: 100%; background: var(--card); 
-            padding: 30px; border-radius: 30px; border: 2px solid #222; 
+            max-width: 500px; width: 100%; background: var(--card); 
+            padding: 30px; border-radius: 30px; border: 2px solid #333; 
             box-shadow: 0 50px 100px rgba(0,0,0,0.9);
         }
         
-        h1 { font-weight: bold; text-align: center; text-transform: uppercase; letter-spacing: 10px; color: var(--accent); margin-bottom: 5px; font-size: 1.8rem; }
-        .subtitle { text-align: center; font-size: 0.7rem; color: #666; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 5px; }
+        h1 { font-weight: bold; text-align: center; text-transform: uppercase; letter-spacing: 8px; color: var(--accent); margin-bottom: 5px; font-size: 1.8rem; }
+        .subtitle { text-align: center; font-size: 0.7rem; color: #666; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; }
         
         .box { background: #1f1f1f; padding: 20px; margin-bottom: 20px; border-radius: 20px; border: 1px solid #333; }
-        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 12px; letter-spacing: 2px; }
+        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 2px; }
 
-        /* FIXED: Column layout for player inputs */
-        .identity-stack { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
-        input { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 12px; background: #000; color: white; font-size: 1rem; box-sizing: border-box; }
-        
+        /* Setup UI Fixes */
+        .setup-group { margin-bottom: 20px; }
+        .setup-group label { display: block; color: #888; font-size: 0.8rem; margin-bottom: 5px; text-transform: uppercase; }
+        input[type="text"], input[type="number"] { 
+            width: 100%; padding: 16px; border: 1px solid #444; border-radius: 12px; 
+            background: #000; color: white; font-size: 1.1rem; box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
         .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
         .tag { background: #000; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; cursor: pointer; border: 1px solid #333; color: #999; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
@@ -40,11 +45,11 @@
         .btn-sec { background: var(--off); margin-top: 10px; color: #aaa; }
 
         .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .t-btn { padding: 12px; border-radius: 12px; border: 1px solid #333; background: #111; color: #666; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; text-align: center; }
+        .t-btn { padding: 12px; border-radius: 12px; border: 1px solid #333; background: #111; color: #666; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; text-align: center; height: 50px; display: flex; align-items: center; justify-content: center;}
         .t-btn.on { background: var(--accent); color: #000; border-color: var(--accent); }
         .t-btn.gear-on { background: var(--crimson); color: white; border-color: var(--crimson); }
         
-        .master-all { grid-column: span 2; background: #222; color: var(--accent); border: 1px dashed var(--accent); margin-bottom: 5px; height: 45px;}
+        .master-all { grid-column: span 2; background: #222; color: var(--accent); border: 1px dashed var(--accent); margin-bottom: 5px; font-size: 0.8rem;}
 
         .timer-big { font-size: 4rem; text-align: center; color: #fff; font-weight: bold; margin: 10px 0; }
         .instruction-highlight { color: var(--accent); font-weight: bold; }
@@ -61,43 +66,48 @@
 
     <div id="step1" class="step active">
         <div class="box">
-            <span class="label">Participants</span>
-            <div class="identity-stack">
-                <input type="text" id="p1_n" placeholder="Player 1 Name (Master)">
-                <input type="text" id="p2_n" placeholder="Player 2 Name (Subject)">
+            <div class="setup-group">
+                <label>First Participant (Master)</label>
+                <input type="text" id="p1_n" placeholder="Enter Name...">
             </div>
-            <span class="label">Session Length (Rounds)</span>
-            <input type="number" id="max_r" value="10">
+            <div class="setup-group">
+                <label>Second Participant (Subject)</label>
+                <input type="text" id="p2_n" placeholder="Enter Name...">
+            </div>
+            <div class="setup-group">
+                <label>Session Rounds</label>
+                <input type="number" id="max_r" value="10" min="1">
+            </div>
         </div>
         <button class="btn" onclick="nav(2)">Access the Arsenal</button>
     </div>
 
     <div id="step2" class="step">
         <div class="box" id="vault-inject"></div>
-        <button class="btn" onclick="nav(3)">Confirm Arsenal</button>
+        <button class="btn" onclick="nav(3)">Confirm & Proceed</button>
     </div>
 
     <div id="step3" class="step">
         <div id="pre-round">
             <div id="round-header" class="label" style="text-align:center;">ROUND 1</div>
             <div class="box">
-                <span class="label">Trials</span>
+                <span class="label">Categories</span>
                 <div class="toggle-grid" id="trial-toggles"></div>
             </div>
             <div class="box">
-                <span class="label">Available Gear</span>
+                <span class="label">Active Gear</span>
                 <div class="toggle-grid" id="gear-toggles"></div>
             </div>
             <button class="btn" onclick="generateDecree()">Generate Decree</button>
         </div>
 
         <div id="active-round" style="display:none;">
-            <div class="box" style="font-size: 1.1rem; line-height:1.6; min-height: 150px; display: flex; align-items: center; justify-content: center;">
+            <div class="box" style="font-size: 1.1rem; line-height:1.6; min-height: 180px; display: flex; align-items: center; justify-content: center;">
                 <div id="active-trial-text" style="text-align:center;"></div>
             </div>
             <div class="timer-big" id="clock">00:00</div>
-            <button class="btn" style="background:var(--success);" onclick="finish(true)">Success</button>
-            <button class="btn btn-sec" onclick="finish(false)">Fail</button>
+            <button class="btn" style="background:var(--success);" onclick="finish(true)">Objective Complete</button>
+            <button class="btn btn-sec" onclick="finish(false)">Fail / Skip</button>
         </div>
     </div>
 </div>
@@ -105,22 +115,21 @@
 <script>
     let players = [], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft;
     
-    // Core categories with 50 unique items synthesized per logic
     const trials = [
-        { n: "The Solitary Bind", t: 450, on: true, d: ["Bind your ankles and wrists together using [REST]. Apply [VIS].", "Secure dominant arm behind back with [REST]. Wear [GAG]."] },
-        { n: "Naked Confessions", t: 300, on: true, d: ["Confess a secret shame while Master teases with [SENS].", "Detail your arousal level. Master applies [REST] to your hands."] },
-        { n: "Reckless Abandon", t: 300, on: true, d: ["Apply [SENS] to your inner thigh until Master says stop.", "I dare you to let Master apply [GAG] and [VIS] for the round."] },
-        { n: "Desperate Liberation", t: 600, on: true, d: ["Master binds you with [REST]. Escape before the clock runs out.", "Wiggle out of a tight [REST] harness while blindfolded with [VIS]."] },
-        { n: "The Crucible of Flesh", t: 600, on: true, d: ["Hold a squat while Master uses [SENS] on your back.", "Plank until failure. If you drop, Master applies [REST]."] },
-        { n: "The Edge of Ruin", t: 600, on: true, d: ["Master teases you to the brink with [SENS], then denies you.", "Edge yourself. Stop immediately when [GAG] is applied."] },
-        { n: "Silken Geometry", t: 900, on: true, d: ["Master ties a complex chest harness using [REST].", "Master creates a decorative leg tie with [REST]. Wear [VIS]."] },
-        { n: "Velvet Surrender", t: 450, on: true, d: ["Master traces your lips with [SENS]. Surrender to the touch.", "Receive a gentle massage while lightly bound with [REST]."] }
+        { n: "The Solitary Bind", t: 450, on: true, d: ["Secure [REST] around your ankles and wrists. Apply [VIS].", "Bind your dominant arm behind your back with [REST]. Use [GAG]."] },
+        { n: "Naked Confessions", t: 300, on: true, d: ["Confess a secret fantasy while Master uses [SENS].", "Detail your arousal level. Master applies [REST] to your wrists."] },
+        { n: "Reckless Abandon", t: 300, on: true, d: ["I dare you to apply [SENS] to your inner thigh until Master stops you.", "Let Master apply [GAG] and [VIS] for the duration of the round."] },
+        { n: "Desperate Liberation", t: 600, on: true, d: ["Master binds you with [REST]. Escape before the clock hits zero.", "Wiggle out of a tight [REST] harness while blindfolded with [VIS]."] },
+        { n: "The Crucible of Flesh", t: 600, on: true, d: ["Hold a wall-sit while Master traces your skin with [SENS].", "Maintain a plank. Master places [REST] on your back; don't let it fall."] },
+        { n: "The Edge of Ruin", t: 600, on: true, d: ["Master teases you to the edge with [SENS], then denies you.", "Edge yourself. Stop immediately when Master applies [GAG]."] },
+        { n: "Silken Geometry", t: 900, on: true, d: ["Master ties a decorative chest harness with [REST].", "Master creates a decorative leg tie with [REST]. Apply [VIS]."] },
+        { n: "Velvet Surrender", t: 450, on: true, d: ["Master traces your lips with [SENS]. Surrender to the touch.", "Receive a gentle massage while bound loosely with [REST]."] }
     ];
 
-    // Seed 50 variants
+    // Seed 50 variants per category
     trials.forEach(t => {
         const base = [...t.d];
-        while(t.d.length < 50) t.d.push(base[Math.floor(Math.random()*base.length)] + " (Variant " + (t.d.length+1) + ")");
+        while(t.d.length < 50) t.d.push(base[Math.floor(Math.random()*base.length)] + " (Variation " + (t.d.length+1) + ")");
     });
 
     let gearCats = { "Blindfolds": true, "Gags": true, "Restraints": true, "Sensation": true };
@@ -134,10 +143,10 @@
     function nav(n) {
         if(n === 2) {
             players = [
-                {n: document.getElementById('p1_n').value || "P1"},
-                {n: document.getElementById('p2_n').value || "P2"}
+                {n: document.getElementById('p1_n').value || "Master"},
+                {n: document.getElementById('p2_n').value || "Subject"}
             ];
-            maxR = parseInt(document.getElementById('max_r').value);
+            maxR = parseInt(document.getElementById('max_r').value) || 10;
             renderVault();
         }
         if(n === 3) renderCommand();
@@ -147,9 +156,9 @@
 
     function renderVault() {
         const v = document.getElementById('vault-inject');
-        v.innerHTML = '<span class="label">The Arsenal</span>';
+        v.innerHTML = '<span class="label">Arsenal Configuration</span>';
         for (let c in vault) {
-            v.innerHTML += `<span class="label" style="color:#555; margin-top:10px;">${c}</span>`;
+            v.innerHTML += `<span class="label" style="color:#555; margin-top:10px; font-size:0.65rem;">${c}</span>`;
             const cloud = document.createElement('div');
             cloud.className = 'tag-cloud';
             vault[c].forEach(i => {
@@ -166,7 +175,7 @@
     function renderCommand() {
         document.getElementById('round-header').innerText = `ROUND ${curR} | MASTER: ${players[masterIdx].n}`;
         const tg = document.getElementById('trial-toggles');
-        tg.innerHTML = '<button class="t-btn master-all" onclick="toggleAll()">Toggle All Categories</button>';
+        tg.innerHTML = '<button class="t-btn master-all" onclick="toggleAll()">Master Toggle: All Categories</button>';
         trials.forEach(t => {
             const b = document.createElement('button');
             b.className = `t-btn ${t.on ? 'on' : ''}`;
@@ -199,10 +208,10 @@
         const repl = (cat) => {
             const items = vault[cat].filter(i => i.on);
             const val = items.length ? items[Math.floor(Math.random() * items.length)].n : cat;
-            return gearCats[cat] ? `<span class="instruction-highlight">${val}</span>` : `[${cat} Disabled]`;
+            return gearCats[cat] ? `<span class="instruction-highlight">${val}</span>` : `[${cat} Off]`;
         };
         txt = txt.replace(/\[REST\]/g, repl('Restraints')).replace(/\[SENS\]/g, repl('Sensation')).replace(/\[VIS\]/g, repl('Blindfolds')).replace(/\[GAG\]/g, repl('Gags'));
-        document.getElementById('active-trial-text').innerHTML = `<strong>${tr.n}</strong><br><br>${txt}`;
+        document.getElementById('active-trial-text').innerHTML = `<strong>${tr.n.toUpperCase()}</strong><br><br>${txt}`;
         document.getElementById('pre-round').style.display = 'none';
         document.getElementById('active-round').style.display = 'block';
         timeLeft = tr.t; runClock();
@@ -221,7 +230,7 @@
     function finish(win) {
         clearInterval(timer);
         curR++; masterIdx = (masterIdx === 0 ? 1 : 0);
-        if(curR > maxR) { alert("Session Complete."); location.reload(); }
+        if(curR > maxR) { alert("Session Terminated."); location.reload(); }
         else {
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('active-round').style.display = 'none';
