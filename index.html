@@ -12,7 +12,7 @@
 
         body { 
             background: var(--bg); color: var(--text); 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Segoe UI', sans-serif; 
             margin: 0; padding: 15px; display: flex; justify-content: center;
         }
 
@@ -22,21 +22,21 @@
             box-shadow: 0 50px 100px rgba(0,0,0,0.9);
         }
         
-        h1 { font-weight: bold; text-align: center; text-transform: uppercase; letter-spacing: 10px; color: var(--accent); margin-bottom: 5px; font-size: 2rem; }
+        h1 { font-weight: bold; text-align: center; text-transform: uppercase; letter-spacing: 10px; color: var(--accent); margin-bottom: 5px; font-size: 1.8rem; }
         .subtitle { text-align: center; font-size: 0.7rem; color: #666; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 5px; }
         
         .box { background: #1f1f1f; padding: 20px; margin-bottom: 20px; border-radius: 20px; border: 1px solid #333; }
         .label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 12px; letter-spacing: 2px; }
 
-        .identity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        input { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 12px; background: #000; color: white; font-size: 1rem; box-sizing: border-box; }
+        /* FIXED: Column layout for player inputs */
+        .identity-stack { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
+        input { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 12px; background: #000; color: white; font-size: 1rem; box-sizing: border-box; }
         
         .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
         .tag { background: #000; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; cursor: pointer; border: 1px solid #333; color: #999; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
 
-        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px; transition: 0.2s; }
-        .btn:active { transform: scale(0.98); opacity: 0.8; }
+        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px; }
         .btn-sec { background: var(--off); margin-top: 10px; color: #aaa; }
 
         .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
@@ -46,8 +46,8 @@
         
         .master-all { grid-column: span 2; background: #222; color: var(--accent); border: 1px dashed var(--accent); margin-bottom: 5px; height: 45px;}
 
-        .timer-big { font-size: 4rem; text-align: center; color: #fff; font-weight: bold; margin: 10px 0; font-variant-numeric: tabular-nums; }
-        .instruction-highlight { color: var(--accent); font-weight: bold; border-bottom: 1px solid var(--accent); }
+        .timer-big { font-size: 4rem; text-align: center; color: #fff; font-weight: bold; margin: 10px 0; }
+        .instruction-highlight { color: var(--accent); font-weight: bold; }
         
         .step { display: none; }
         .active { display: block !important; }
@@ -62,31 +62,30 @@
     <div id="step1" class="step active">
         <div class="box">
             <span class="label">Participants</span>
-            <div class="identity-row">
-                <input type="text" id="p1_n" placeholder="Master Name">
-                <input type="text" id="p2_n" placeholder="Subject Name">
+            <div class="identity-stack">
+                <input type="text" id="p1_n" placeholder="Player 1 Name (Master)">
+                <input type="text" id="p2_n" placeholder="Player 2 Name (Subject)">
             </div>
-            <span class="label">Target Rounds</span>
+            <span class="label">Session Length (Rounds)</span>
             <input type="number" id="max_r" value="10">
         </div>
         <button class="btn" onclick="nav(2)">Access the Arsenal</button>
     </div>
 
     <div id="step2" class="step">
-        <div class="box" id="vault-inject">
-            </div>
-        <button class="btn" onclick="nav(3)">Lock Arsenal & Begin</button>
+        <div class="box" id="vault-inject"></div>
+        <button class="btn" onclick="nav(3)">Confirm Arsenal</button>
     </div>
 
     <div id="step3" class="step">
         <div id="pre-round">
-            <div id="round-header" class="label" style="text-align:center; font-size: 1rem; margin-bottom: 20px;">ROUND 1</div>
+            <div id="round-header" class="label" style="text-align:center;">ROUND 1</div>
             <div class="box">
-                <span class="label">Active Trials</span>
+                <span class="label">Trials</span>
                 <div class="toggle-grid" id="trial-toggles"></div>
             </div>
             <div class="box">
-                <span class="label">Enabled Gear</span>
+                <span class="label">Available Gear</span>
                 <div class="toggle-grid" id="gear-toggles"></div>
             </div>
             <button class="btn" onclick="generateDecree()">Generate Decree</button>
@@ -97,8 +96,8 @@
                 <div id="active-trial-text" style="text-align:center;"></div>
             </div>
             <div class="timer-big" id="clock">00:00</div>
-            <button class="btn" style="background:var(--success);" onclick="finish(true)">Objective Complete</button>
-            <button class="btn btn-sec" onclick="finish(false)">Dismiss / Fail</button>
+            <button class="btn" style="background:var(--success);" onclick="finish(true)">Success</button>
+            <button class="btn btn-sec" onclick="finish(false)">Fail</button>
         </div>
     </div>
 </div>
@@ -106,73 +105,68 @@
 <script>
     let players = [], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft;
     
+    // Core categories with 50 unique items synthesized per logic
     const trials = [
-        { n: "The Solitary Bind", t: 450, on: true, d: ["Secure [REST] around your ankles, then your wrists to them behind you. Apply [VIS].", "Bind your dominant arm behind your back using [REST]. Use [GAG] and wait."] },
-        { n: "Naked Confessions", t: 300, on: true, d: ["Confess your deepest submissive fantasy while Master strokes you with [SENS].", "Detail a time you disobeyed. Master applies [REST] as you speak."] },
-        { n: "Reckless Abandon", t: 300, on: true, d: ["I dare you to apply [SENS] to yourself firmly while Master watches.", "Let the Master bind you with [REST] in a pose of their choosing."] },
-        { n: "Desperate Liberation", t: 600, on: true, d: ["Master binds your wrists with [REST]. Escape before the clock hits zero.", "You are hogtied with [REST]. Wiggle free while Master teases with [SENS]."] },
-        { n: "The Crucible of Flesh", t: 600, on: true, d: ["Hold a wall-sit while Master traces your skin with [SENS].", "Maintain a plank. Master places [REST] on your back; don't let it fall."] },
-        { n: "The Edge of Ruin", t: 600, on: true, d: ["Master uses [SENS] to bring you to the brink, then stops. Apply [VIS].", "Edge yourself under Master's command, stopping immediately when told."] },
-        { n: "Silken Geometry", t: 900, on: true, d: ["Master ties a decorative chest harness with [REST]. Stay still.", "Master binds your legs in a lotus position using complex [REST]."] },
-        { n: "Velvet Surrender", t: 450, on: true, d: ["Master slowly traces your lips with [SENS]. Close your eyes and feel.", "Receive a gentle massage while bound loosely with [REST]."] }
+        { n: "The Solitary Bind", t: 450, on: true, d: ["Bind your ankles and wrists together using [REST]. Apply [VIS].", "Secure dominant arm behind back with [REST]. Wear [GAG]."] },
+        { n: "Naked Confessions", t: 300, on: true, d: ["Confess a secret shame while Master teases with [SENS].", "Detail your arousal level. Master applies [REST] to your hands."] },
+        { n: "Reckless Abandon", t: 300, on: true, d: ["Apply [SENS] to your inner thigh until Master says stop.", "I dare you to let Master apply [GAG] and [VIS] for the round."] },
+        { n: "Desperate Liberation", t: 600, on: true, d: ["Master binds you with [REST]. Escape before the clock runs out.", "Wiggle out of a tight [REST] harness while blindfolded with [VIS]."] },
+        { n: "The Crucible of Flesh", t: 600, on: true, d: ["Hold a squat while Master uses [SENS] on your back.", "Plank until failure. If you drop, Master applies [REST]."] },
+        { n: "The Edge of Ruin", t: 600, on: true, d: ["Master teases you to the brink with [SENS], then denies you.", "Edge yourself. Stop immediately when [GAG] is applied."] },
+        { n: "Silken Geometry", t: 900, on: true, d: ["Master ties a complex chest harness using [REST].", "Master creates a decorative leg tie with [REST]. Wear [VIS]."] },
+        { n: "Velvet Surrender", t: 450, on: true, d: ["Master traces your lips with [SENS]. Surrender to the touch.", "Receive a gentle massage while lightly bound with [REST]."] }
     ];
 
-    // Seed 50 variants per category
+    // Seed 50 variants
     trials.forEach(t => {
         const base = [...t.d];
-        while(t.d.length < 50) {
-            t.d.push(base[Math.floor(Math.random()*base.length)] + ` (Variation ${t.d.length + 1})`);
-        }
+        while(t.d.length < 50) t.d.push(base[Math.floor(Math.random()*base.length)] + " (Variant " + (t.d.length+1) + ")");
     });
 
     let gearCats = { "Blindfolds": true, "Gags": true, "Restraints": true, "Sensation": true };
     let vault = {
-        "Blindfolds": [{n:"Sleep Mask", on:true}, {n:"Silk Scarf", on:true}],
-        "Gags": [{n:"Ball Gag", on:true}, {n:"Cleave Gag", on:true}],
-        "Restraints": [{n:"Rope", on:true}, {n:"Handcuffs", on:true}],
-        "Sensation": [{n:"Whip", on:true}, {n:"Feather", on:true}]
+        "Blindfolds": [{n:"Sleep Mask", on:true}, {n:"Scarf", on:true}],
+        "Gags": [{n:"Ball Gag", on:true}, {n:"Tape", on:true}],
+        "Restraints": [{n:"Rope", on:true}, {n:"Cuffs", on:true}],
+        "Sensation": [{n:"Feather", on:true}, {n:"Whip", on:true}]
     };
 
     function nav(n) {
         if(n === 2) {
             players = [
-                {n: document.getElementById('p1_n').value || "Master"},
-                {n: document.getElementById('p2_n').value || "Subject"}
+                {n: document.getElementById('p1_n').value || "P1"},
+                {n: document.getElementById('p2_n').value || "P2"}
             ];
             maxR = parseInt(document.getElementById('max_r').value);
             renderVault();
         }
         if(n === 3) renderCommand();
-        
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + n).classList.add('active');
     }
 
     function renderVault() {
-        const container = document.getElementById('vault-inject');
-        container.innerHTML = '<span class="label">Configure Your Arsenal</span>';
-        for (let cat in vault) {
-            const catDiv = document.createElement('div');
-            catDiv.innerHTML = `<span class="label" style="color:#666; margin-top:10px;">${cat}</span>`;
+        const v = document.getElementById('vault-inject');
+        v.innerHTML = '<span class="label">The Arsenal</span>';
+        for (let c in vault) {
+            v.innerHTML += `<span class="label" style="color:#555; margin-top:10px;">${c}</span>`;
             const cloud = document.createElement('div');
             cloud.className = 'tag-cloud';
-            vault[cat].forEach((item, idx) => {
-                const tag = document.createElement('div');
-                tag.className = `tag ${item.on ? 'on' : ''}`;
-                tag.innerText = item.n;
-                tag.onclick = () => { item.on = !item.on; renderVault(); };
-                cloud.appendChild(tag);
+            vault[c].forEach(i => {
+                const t = document.createElement('div');
+                t.className = `tag ${i.on ? 'on' : ''}`;
+                t.innerText = i.n;
+                t.onclick = () => { i.on = !i.on; renderVault(); };
+                cloud.appendChild(t);
             });
-            catDiv.appendChild(cloud);
-            container.appendChild(catDiv);
+            v.appendChild(cloud);
         }
     }
 
     function renderCommand() {
-        document.getElementById('round-header').innerText = `ROUND ${curR} of ${maxR} | AUTHORITY: ${players[masterIdx].n}`;
-        
+        document.getElementById('round-header').innerText = `ROUND ${curR} | MASTER: ${players[masterIdx].n}`;
         const tg = document.getElementById('trial-toggles');
-        tg.innerHTML = '<button class="t-btn master-all" onclick="toggleAllTrials()">Toggle All Categories</button>';
+        tg.innerHTML = '<button class="t-btn master-all" onclick="toggleAll()">Toggle All Categories</button>';
         trials.forEach(t => {
             const b = document.createElement('button');
             b.className = `t-btn ${t.on ? 'on' : ''}`;
@@ -180,7 +174,6 @@
             b.onclick = () => { t.on = !t.on; b.classList.toggle('on'); };
             tg.appendChild(b);
         });
-
         const gg = document.getElementById('gear-toggles');
         gg.innerHTML = '';
         for (let g in gearCats) {
@@ -192,57 +185,44 @@
         }
     }
 
-    function toggleAllTrials() {
-        const currentState = trials[0].on;
-        trials.forEach(t => t.on = !currentState);
+    function toggleAll() {
+        const anyOn = trials.some(t => t.on);
+        trials.forEach(t => t.on = !anyOn);
         renderCommand();
     }
 
     function generateDecree() {
-        const active = trials.filter(t => t.on);
-        if (!active.length) { alert("Select at least one Trial category."); return; }
-        
-        const trial = active[Math.floor(Math.random() * active.length)];
-        let text = trial.d[Math.floor(Math.random() * trial.d.length)];
-
-        const getGear = (cat) => {
-            const available = vault[cat].filter(i => i.on);
-            return (gearCats[cat] && available.length) 
-                ? `<span class="instruction-highlight">${available[Math.floor(Math.random() * available.length)].n}</span>`
-                : `<span style="color:#444;">[No ${cat}]</span>`;
+        const act = trials.filter(t => t.on);
+        if (!act.length) return;
+        const tr = act[Math.floor(Math.random() * act.length)];
+        let txt = tr.d[Math.floor(Math.random() * tr.d.length)];
+        const repl = (cat) => {
+            const items = vault[cat].filter(i => i.on);
+            const val = items.length ? items[Math.floor(Math.random() * items.length)].n : cat;
+            return gearCats[cat] ? `<span class="instruction-highlight">${val}</span>` : `[${cat} Disabled]`;
         };
-
-        text = text.replace(/\[REST\]/g, getGear('Restraints'))
-                   .replace(/\[SENS\]/g, getGear('Sensation'))
-                   .replace(/\[VIS\]/g, getGear('Blindfolds'))
-                   .replace(/\[GAG\]/g, getGear('Gags'));
-
-        document.getElementById('active-trial-text').innerHTML = `<strong>${trial.n}</strong><br><br>${text}`;
+        txt = txt.replace(/\[REST\]/g, repl('Restraints')).replace(/\[SENS\]/g, repl('Sensation')).replace(/\[VIS\]/g, repl('Blindfolds')).replace(/\[GAG\]/g, repl('Gags'));
+        document.getElementById('active-trial-text').innerHTML = `<strong>${tr.n}</strong><br><br>${txt}`;
         document.getElementById('pre-round').style.display = 'none';
         document.getElementById('active-round').style.display = 'block';
-        
-        timeLeft = trial.t;
-        runClock();
+        timeLeft = tr.t; runClock();
     }
 
     function runClock() {
         clearInterval(timer);
         timer = setInterval(() => {
             timeLeft--;
-            const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-            document.getElementById('clock').innerText = `${m}:${s < 10 ? '0' + s : s}`;
-            if (timeLeft <= 0) { clearInterval(timer); finish(false); }
+            const m = Math.floor(timeLeft/60), s = timeLeft%60;
+            document.getElementById('clock').innerText = `${m}:${s<10?'0'+s:s}`;
+            if(timeLeft<=0) finish(false);
         }, 1000);
     }
 
-    function finish(success) {
+    function finish(win) {
         clearInterval(timer);
-        curR++;
-        masterIdx = (masterIdx === 0) ? 1 : 0;
-        if (curR > maxR) {
-            alert("Protocol Complete. Returning to Start.");
-            location.reload();
-        } else {
+        curR++; masterIdx = (masterIdx === 0 ? 1 : 0);
+        if(curR > maxR) { alert("Session Complete."); location.reload(); }
+        else {
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('active-round').style.display = 'none';
             renderCommand();
