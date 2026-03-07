@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,9 +30,6 @@
         input[type="text"], select, input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; margin-top: 5px; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
         
         .category-block { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #e2d1b3; }
-        .add-row { display: flex; gap: 8px; margin-bottom: 10px; }
-        .add-row input { flex-grow: 1; margin-top: 0; }
-        .add-btn { background: var(--accent); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
         .tag { background: #f9f4eb; padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
@@ -70,11 +66,11 @@
             <div class="identity-card"><span class="label">Player 1</span><input type="text" id="p1_name" placeholder="Name"><select id="p1_gender"><option value="male body">Male Body</option><option value="female body">Female Body</option></select></div>
             <div class="identity-card"><span class="label">Player 2</span><input type="text" id="p2_name" placeholder="Name"><select id="p2_gender"><option value="female body">Female Body</option><option value="male body">Male Body</option></select></div>
         </div>
-        <button class="btn" onclick="goToStep(2)">Configure Arsenal ></button>
+        <button class="btn" onclick="goToStep(2)">Verify Inventory ></button>
     </div>
 
     <div id="step2" class="step">
-        <div class="box"><span class="label">Inventory Management</span><div id="inv-container"></div></div>
+        <div class="box"><span class="label">Arsenal Checklist</span><div id="inv-container"></div></div>
         <button class="btn" onclick="goToStep(3)">Commence Ceremony</button>
     </div>
 
@@ -124,9 +120,9 @@
     let players = [], currentRound = 1, masterIdx, slaveIdx, cardHolderIdx, timer, timeLeft, currentTaskKey = "";
 
     const detailMap = {
-        "Tape": "Apply the adhesive directly to the skin, pressing firmly to ensure it grips the fine hairs. For gags, ensure multiple layers cover the lips entirely, forcing muzzled silence.",
+        "Tape": "Apply the cold adhesive directly to the skin, pressing firmly to ensure it grips the fine hairs. For gags, ensure multiple layers cover the lips entirely, forcing muzzled silence.",
         "Gas Mask": "Seal the rubber against the face, tightening the straps until the intake of air is restricted and loud. The smell of rubber should dominate the Slave's senses.",
-        "Rope": "Execute a complex tie with high tension. The rough fibers should bite into the skin, creating visible ridges and providing the psychological weight of total immobilization.",
+        "Rope": "Execute a complex tie with high tension. The rough hemp fibers should bite into the skin, creating visible ridges and providing the psychological weight of total immobilization.",
         "Pillow Case": "The fabric should be heavy and opaque. Fold it twice before draping it over the head, cinching it at the throat to create a private, lightless world.",
         "Ice": "The shock of the freezing texture should be moved slowly over sensitive areas, leaving a trail of numbing cold that heightens the reaction to the next touch.",
         "Ball Gag": "The silicone should be forced deep, filling the mouth and stretching the jaw. Tighten the strap until the Slave is unable to swallow, leaving them drooling and silenced.",
@@ -134,7 +130,26 @@
         "Leather Cuffs": "The cool, stiff leather should be cinched until there is no room for escape. The weight of the metal rings should remind the Slave of their master's tether.",
         "Zip Ties": "The plastic should be zipped tight until the pulse can be felt beneath. The clinical, sharp edge of the plastic is a reminder of absolute constraint.",
         "Whip": "The tail should sting across the skin, creating a blooming heat. Master must vary the tempo to keep the Slave guessing the next point of impact.",
-        "Clamps": "The pressure should be applied to sensitive peaks, creating a sharp, constant throb that pulses with every heartbeat the Slave makes."
+        "Clamps": "The pressure should be applied to sensitive peaks, creating a sharp, constant throb that pulses with every heartbeat the Slave makes.",
+        "Pallet Wrap": "Wrap the clear plastic tightly around the designated area, layering it until the skin is compressed and the Slave's movements are restricted by the squeaking, airtight bond.",
+        "Cane": "The thin wood should whistle through the air before making a sharp, localized 'crack' against the skin, leaving a stinging line of heat that lasts long after the strike.",
+        "Sleep Mask": "The soft, padded fabric should be positioned perfectly, plunging the Slave into a velvet darkness that forces them to rely entirely on sound and touch.",
+        "Panties": "The fabric is to be stuffed firmly into the mouth as a soft gag, then secured with a secondary tie to ensure the Slave is silenced by the Master's scent."
+    };
+
+    let activeInv = { 
+        "Blindfolds": [
+            {n: "Tape", on: true}, {n: "Gas Mask", on: true}, {n: "Pillow Case", on: true}, {n: "Sleep Mask", on: true}
+        ], 
+        "Gags": [
+            {n: "Tape", on: true}, {n: "Ball Gag", on: true}, {n: "Pallet Wrap", on: true}, {n: "Panties", on: true}
+        ], 
+        "Restraints": [
+            {n: "Rope", on: true}, {n: "Leather Cuffs", on: true}, {n: "Zip Ties", on: true}, {n: "Pallet Wrap", on: true}
+        ], 
+        "Sensation": [
+            {n: "Whip", on: true}, {n: "Ice", on: true}, {n: "Vibrator", on: true}, {n: "Clamps", on: true}, {n: "Cane", on: true}
+        ] 
     };
 
     let taskPool = {
@@ -146,16 +161,12 @@
         edging: { label: "Merciless Edging", time: 360, text: "Using <b>[REST]</b> ([REST_DET]) to hold them fast, Master will apply <b>[SENS]</b> to the Slave's [BODY]. Master must bring the Slave to the absolute peak of climax 3 times, pulling back only at the last second. [SENS_DET]" }
     };
 
-    let gear = { "Blindfolds": ["Tape", "Gas Mask", "Pillow Case"], "Gags": ["Tape", "Ball Gag", "Pallet Wrap"], "Restraints": ["Rope", "Leather Cuffs", "Zip Ties"], "Sensation": ["Whip", "Ice", "Vibrator", "Clamps"] };
-    let activeInv = {};
-    for (let c in gear) activeInv[c] = gear[c].map(i => ({ n: i, on: true }));
-
     function renderInv() {
         const cont = document.getElementById('inv-container'); cont.innerHTML = '';
         for (let c in activeInv) {
             let div = document.createElement('div');
             div.className = 'category-block';
-            div.innerHTML = `<span class="label">${c}</span><div class="add-row"><input type="text" id="in-${c}" placeholder="Add..."><button class="add-btn" onclick="add('${c}')">+</button></div><div class="tag-row" id="tags-${c}"></div>`;
+            div.innerHTML = `<span class="label">${c}</span><div class="tag-row" id="tags-${c}"></div>`;
             cont.appendChild(div);
             let tagRow = div.querySelector(`#tags-${c}`);
             activeInv[c].forEach((item, i) => {
@@ -166,10 +177,11 @@
         }
     }
 
-    function add(c) { let v = document.getElementById(`in-${c}`).value; if(v) { activeInv[c].push({n:v, on:true}); renderInv(); document.getElementById(`in-${c}`).value = ""; } }
-
     function goToStep(n) {
-        if(n === 2) { players = [{n: document.getElementById('p1_name').value || "Player 1", g: document.getElementById('p1_gender').value, score: 0}, {n: document.getElementById('p2_name').value || "Player 2", g: document.getElementById('p2_gender').value, score: 0}]; renderInv(); }
+        if(n === 2) { 
+            players = [{n: document.getElementById('p1_name').value || "P1", g: document.getElementById('p1_gender').value, score: 0}, {n: document.getElementById('p2_name').value || "P2", g: document.getElementById('p2_gender').value, score: 0}]; 
+            renderInv(); 
+        }
         if(n === 3) { masterIdx = Math.floor(Math.random()*2); slaveIdx = masterIdx === 0 ? 1 : 0; cardHolderIdx = Math.floor(Math.random()*2); updateUI(); }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active')); document.getElementById('step'+n).classList.add('active');
     }
@@ -199,7 +211,7 @@
         const pick = (cat) => { 
             let items = activeInv[cat].filter(i=>i.on); 
             let itemN = items.length ? items[Math.floor(Math.random()*items.length)].n : "standard gear";
-            return { n: itemN, d: detailMap[itemN] || `Apply the ${itemN} with firm intent, focusing on how the texture interacts with the skin.` };
+            return { n: itemN, d: detailMap[itemN] || `Apply the ${itemN} with firm intent and focus.` };
         };
         let v = pick('Blindfolds'), g = pick('Gags'), r = pick('Restraints'), s = pick('Sensation');
         let txt = t.text.replace('[VIS]', `<b>${v.n}</b>`).replace('[VIS_DET]', v.d)
@@ -214,8 +226,8 @@
     function backToChoice() { document.getElementById('choice-area').style.display = 'block'; document.getElementById('display-area').style.display = 'none'; }
     function useVeto() { delete taskPool[currentTaskKey]; alert("Category Deleted."); backToChoice(); updateUI(); }
     function startTimer() { document.getElementById('pre-round').style.display = 'none'; document.getElementById('active-round').style.display = 'block'; timer = setInterval(() => { timeLeft--; let m = Math.floor(timeLeft/60), s = timeLeft%60; document.getElementById('clock').innerText = `${m}:${s < 10 ? '0' + s : s}`; if(timeLeft <= 0) resolve(false); }, 1000); }
-    function useRed() { clearInterval(timer); cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Red Card used. Round Ends."); next(); }
-    function useYellow() { let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m; cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Yellow Card used. Roles Swapped."); updateUI(); }
+    function useRed() { clearInterval(timer); cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Red Card: Skip. Card Transferred."); next(); }
+    function useYellow() { let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m; cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Yellow Card: Role Swap. Card Transferred."); updateUI(); }
     function useSafeWord() { clearInterval(timer); players[slaveIdx].score = Math.max(0, players[slaveIdx].score - 5); alert("Safe Word. Penalty Applied."); next(); }
     function resolve(s) { clearInterval(timer); if(s) { players[slaveIdx].score += 1; let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m; } next(); }
 
@@ -233,8 +245,8 @@
         let winner = players[0].score > players[1].score ? players[0] : players[1];
         let loser = players[0].score > players[1].score ? players[1] : players[0];
         document.getElementById('finale-content').innerHTML = `
-            <strong>MASTER OF SOVEREIGNTY: ${winner.n}</strong><br>
-            <strong>THE SUBJECT: ${loser.n}</strong><hr>
+            <strong>MASTER OF SOVEREIGNTY: ${winner.n} (${winner.score} pts)</strong><br>
+            <strong>THE SUBJECT: ${loser.n} (${loser.score} pts)</strong><hr>
             <strong>PHASE I: The Heavy Shibari Gauntlet (120 mins)</strong><br>
             ${loser.n} must be stripped and bound in a high-tension suspension harness. Every limb must be restricted with <b>Rope</b> fibers biting into the skin. ${winner.n} will use this time to perform a "Sensation Map" using impact, wax, and ice, ensuring no inch of the Slave's [BODY] is left untouched.<br><br>
             <strong>PHASE II: Total Sensory Erasure (60 mins)</strong><br>
