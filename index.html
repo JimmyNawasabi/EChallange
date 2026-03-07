@@ -25,6 +25,11 @@
         .identity-card { background: #ffffff; border: 1px solid #eee; padding: 15px; border-radius: 20px; margin-bottom: 10px; }
         input[type="text"], select, input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; margin-top: 5px; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
         
+        /* TACTICAL STATUS TRACKER */
+        .tactical-status { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; padding: 10px; background: #fefefe; border-radius: 15px; border: 1px solid #eee; }
+        .holder-badge { font-size: 0.7rem; padding: 5px 12px; border-radius: 20px; font-weight: bold; text-transform: uppercase; border: 1px solid transparent; }
+        .has-cards { border-color: var(--accent); background: #fff9eb; color: #7b6a4a; box-shadow: 0 2px 5px rgba(197,160,89,0.2); }
+
         /* INVENTORY */
         .category-block { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #e2d1b3; }
         .add-row { display: flex; gap: 8px; margin-bottom: 10px; }
@@ -37,9 +42,9 @@
         /* CARDS */
         .card-dock { display: flex; justify-content: space-around; margin: 15px 0; gap: 8px; }
         .tactical-card { flex: 1; padding: 12px 5px; border-radius: 10px; text-align: center; font-size: 0.65rem; font-weight: 900; cursor: pointer; color: white; text-transform: uppercase; border: none; transition: 0.2s; }
-        .t-red { background: var(--red-card); }
-        .t-yellow { background: var(--gold); color: black; }
-        .t-safe { background: black; }
+        .t-red { background: var(--red-card); box-shadow: 0 4px 0 #922b21; }
+        .t-yellow { background: var(--gold); color: black; box-shadow: 0 4px 0 #b7950b; }
+        .t-safe { background: black; box-shadow: 0 4px 0 #333; }
         .t-veto { background: var(--veto-grey); width: 100%; margin-top: 10px; }
 
         .score-row { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; font-size: 0.85rem; color: var(--crimson); }
@@ -47,7 +52,7 @@
         .timer-display { font-size: 3.5rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 10px 0; }
         
         b { color: var(--crimson); }
-        .finale-text { font-size: 0.95rem; text-align: left; background: #000; color: #fff; padding: 25px; border-radius: 20px; line-height: 1.8; }
+        .finale-text { font-size: 0.95rem; text-align: left; background: #000; color: #fff; padding: 25px; border-radius: 20px; line-height: 1.8; max-height: 500px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -91,6 +96,11 @@
     </div>
 
     <div id="step3" class="step">
+        <div class="tactical-status" id="tactical-tracker">
+            <div id="status-p1" class="holder-badge">P1: No Cards</div>
+            <div id="status-p2" class="holder-badge">P2: No Cards</div>
+        </div>
+
         <div class="score-row">
             <div id="p1-score">---</div>
             <div id="p2-score">---</div>
@@ -99,24 +109,24 @@
         <div id="pre-round">
             <div id="round-header" class="label" style="text-align:center;">---</div>
             <div class="box">
-                <div id="task-text" style="font-style: italic;">Awaiting manifestation...</div>
-                <button id="veto-btn" class="tactical-card t-veto" style="display:none;" onclick="useVeto()">Veto (Delete Task)</button>
+                <div id="task-text" style="font-style: italic;">Consulting the void...</div>
+                <button id="veto-btn" class="tactical-card t-veto" style="display:none;" onclick="useVeto()">Veto Activity (Permanent Deletion)</button>
             </div>
-            <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
-            <button class="btn" id="start-btn" style="background:var(--safe-green); display:none;" onclick="startTimer()">Begin Execution</button>
+            <button class="btn" id="gen-btn" onclick="generate()">Generate Task</button>
+            <button class="btn" id="start-btn" style="background:var(--safe-green); display:none;" onclick="startTimer()">Accept & Begin</button>
         </div>
 
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
             
             <div class="card-dock">
-                <button class="tactical-card t-red" onclick="useRed()">Red Card</button>
-                <button class="tactical-card t-yellow" onclick="useYellow()">Yellow Card</button>
+                <button id="red-card-btn" class="tactical-card t-red" onclick="useRed()">Red Card</button>
+                <button id="yellow-card-btn" class="tactical-card t-yellow" onclick="useYellow()">Yellow Card</button>
                 <button class="tactical-card t-safe" onclick="useSafeWord()">Safe Word</button>
             </div>
 
-            <button class="btn" onclick="resolve(true)">Merit Achieved</button>
-            <button class="btn" style="background:#888;" onclick="resolve(false)">Task Failed</button>
+            <button class="btn" onclick="resolve(true)">Merit Achieved (Swap Roles)</button>
+            <button class="btn" style="background:#888;" onclick="resolve(false)">Task Failed (Stay)</button>
         </div>
     </div>
 
@@ -133,12 +143,12 @@
     let currentTaskKey = "";
     
     let taskPool = {
-        truth: { label: "Truth", time: 120, text: "Master shall apply [VIS] and [GAG]. Slave must confess a secret." },
-        dare: { label: "Dare", time: 300, text: "Master must apply [REST] and [VIS]. Then use [SENS] on the Slave's [BODY]." },
-        escape: { label: "Escape", time: 480, text: "Master must apply [REST] with maximum tension and [VIS]. Slave must struggle free." },
-        shibari_floor: { label: "Shibari Floor Play", time: 600, text: "Master will execute a complex floor harness using <b>Rope</b>. Once immobilized, Master will use [SENS] to explore the Slave's [BODY] while they are pinned." },
-        shibari_suspension: { label: "Suspension", time: 900, text: "Master will apply a suspension-ready harness. Slave's [BODY] will be partially or fully lifted. While suspended, Master will use [VIS] and [SENS] for 10 minutes of uninterrupted focus." },
-        edging: { label: "Edging", time: 360, text: "Master will apply [REST] and use [SENS] to bring Slave's [BODY] to the brink 3 times." }
+        truth: { label: "Truth", time: 120, text: "Master shall apply [VIS] and [GAG]. Slave must confess a secret or desire through the binding." },
+        dare: { label: "Dare", time: 300, text: "Master must apply [REST] and [VIS]. Then use [SENS] on the Slave's [BODY] until the timer ends." },
+        escape: { label: "Escape", time: 480, text: "Master must apply [REST] with maximum tension and [VIS]. Slave must struggle free before the buzzer." },
+        shibari_floor: { label: "Shibari Floor Play", time: 600, text: "Master executes a restrictive floor harness using <b>Rope</b>. Once pinned, Master explores the Slave's [BODY] with [SENS]." },
+        shibari_suspension: { label: "Suspension", time: 900, text: "Master applies a suspension harness. Slave's [BODY] is partially or fully lifted. Master applies [VIS] and [SENS] during the float." },
+        edging: { label: "Edging", time: 360, text: "Master will apply [REST] and use [SENS] to bring Slave's [BODY] to the brink 3 times, denying release." }
     };
 
     let gear = {
@@ -151,25 +161,6 @@
     let activeInv = {};
     for (let c in gear) activeInv[c] = gear[c].map(i => ({ n: i, on: true }));
 
-    function renderInv() {
-        const cont = document.getElementById('inv-container');
-        cont.innerHTML = '';
-        for (let c in activeInv) {
-            let div = document.createElement('div');
-            div.className = 'category-block';
-            div.innerHTML = `<span class="label">${c}</span><div class="add-row"><input type="text" id="in-${c}" placeholder="Add..."><button class="add-btn" onclick="add('${c}')">+</button></div><div class="tag-row" id="tags-${c}"></div>`;
-            cont.appendChild(div);
-            activeInv[c].forEach((item, i) => {
-                let t = document.createElement('div');
-                t.className = `tag ${item.on ? 'on' : ''}`;
-                t.innerText = item.n;
-                t.onclick = () => { activeInv[c][i].on = !activeInv[c][i].on; renderInv(); };
-                div.querySelector(`#tags-${cat}`).appendChild(t); // Fix here: tags-${c}
-            });
-        }
-    }
-
-    // Fixed rendering loop logic
     function renderInv() {
         const cont = document.getElementById('inv-container');
         cont.innerHTML = '';
@@ -215,17 +206,29 @@
     function updateUI() {
         document.getElementById('p1-score').innerText = `${players[0].n}: ${players[0].score}`;
         document.getElementById('p2-score').innerText = `${players[1].n}: ${players[1].score}`;
-        document.getElementById('round-header').innerHTML = `ROUND ${currentRound} | Master: <b>${players[masterIdx].n}</b><br><small>Cards: ${players[cardHolderIdx].n}</small>`;
+        document.getElementById('round-header').innerHTML = `ROUND ${currentRound} | Master: <b>${players[masterIdx].n}</b>`;
+        
+        // Update Tactical Tracker
+        const p1T = document.getElementById('status-p1');
+        const p2T = document.getElementById('status-p2');
+        p1T.innerText = `${players[0].n}: ${cardHolderIdx === 0 ? 'HAS CARDS' : 'NO CARDS'}`;
+        p2T.innerText = `${players[1].n}: ${cardHolderIdx === 1 ? 'HAS CARDS' : 'NO CARDS'}`;
+        p1T.className = `holder-badge ${cardHolderIdx === 0 ? 'has-cards' : ''}`;
+        p2T.className = `holder-badge ${cardHolderIdx === 1 ? 'has-cards' : ''}`;
+
+        // Disable card buttons if not holder
+        document.getElementById('red-card-btn').disabled = (cardHolderIdx !== masterIdx && cardHolderIdx !== slaveIdx); // Red/Yellow can be used by whoever holds them
+        // Note: The logic is that the holder can use them regardless of role
     }
 
     function generate() {
         let keys = Object.keys(taskPool);
-        if(!keys.length) return alert("All tasks vetoed!");
+        if(!keys.length) return alert("Task database empty!");
         currentTaskKey = keys[Math.floor(Math.random()*keys.length)];
         let t = taskPool[currentTaskKey];
         const p = (c) => {
             let items = activeInv[c].filter(i=>i.on);
-            return items.length ? items[Math.floor(Math.random()*items.length)].n : "gear";
+            return items.length ? items[Math.floor(Math.random()*items.length)].n : "the gear";
         };
         let txt = t.text.replace('[VIS]', `<b>${p('Blindfolds')}</b>`).replace('[GAG]', `<b>${p('Gags')}</b>`).replace('[REST]', `<b>${p('Restraints')}</b>`).replace('[SENS]', `<b>${p('Sensation')}</b>`).replace('[BODY]', players[slaveIdx].g);
         document.getElementById('task-text').innerHTML = `[${t.label}]<br>${txt}`;
@@ -235,94 +238,4 @@
         document.getElementById('veto-btn').style.display = 'block';
     }
 
-    function useVeto() {
-        delete taskPool[currentTaskKey];
-        alert("Task deleted permanently.");
-        document.getElementById('start-btn').style.display = 'none';
-        document.getElementById('veto-btn').style.display = 'none';
-        document.getElementById('gen-btn').style.display = 'block';
-        generate();
-    }
-
-    function startTimer() {
-        document.getElementById('pre-round').style.display = 'none';
-        document.getElementById('active-round').style.display = 'block';
-        timer = setInterval(() => {
-            timeLeft--;
-            let m = Math.floor(timeLeft/60), s = timeLeft%60;
-            document.getElementById('clock').innerText = `${m}:${s < 10 ? '0' + s : s}`;
-            if(timeLeft <= 0) { clearInterval(timer); resolve(false); }
-        }, 1000);
-    }
-
-    function useRed() {
-        clearInterval(timer);
-        alert("Red Card! Task skipped.");
-        cardHolderIdx = cardHolderIdx === 0 ? 1 : 0;
-        next();
-    }
-
-    function useYellow() {
-        alert("Yellow Card! Roles swapped.");
-        let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m;
-        cardHolderIdx = cardHolderIdx === 0 ? 1 : 0;
-        updateUI();
-    }
-
-    function useSafeWord() {
-        clearInterval(timer);
-        players[slaveIdx].score = Math.max(0, players[slaveIdx].score - 5);
-        alert("Safe Word! Penalty applied.");
-        next();
-    }
-
-    function resolve(success) {
-        clearInterval(timer);
-        if(success) {
-            players[slaveIdx].score += 5;
-            let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m;
-        } else {
-            players[masterIdx].score += 2;
-        }
-        next();
-    }
-
-    function next() {
-        currentRound++;
-        if(currentRound > parseInt(document.getElementById('maxRounds').value)) {
-            triggerFinale();
-        } else {
-            updateUI();
-            document.getElementById('active-round').style.display = 'none';
-            document.getElementById('pre-round').style.display = 'block';
-            document.getElementById('gen-btn').style.display = 'block';
-            document.getElementById('start-btn').style.display = 'none';
-            document.getElementById('veto-btn').style.display = 'none';
-            document.getElementById('task-text').innerText = "Awaiting the next decree...";
-        }
-    }
-
-    function triggerFinale() {
-        document.getElementById('step3').classList.remove('active');
-        document.getElementById('stepFinale').classList.add('active');
-        
-        let winner = players[0].score > players[1].score ? players[0] : players[1];
-        let loser = players[0].score > players[1].score ? players[1] : players[0];
-        
-        document.getElementById('finale-content').innerHTML = `
-            <strong>The Sovereign: ${winner.n} (${winner.score} pts)</strong><br>
-            <strong>The Subject: ${loser.n} (${loser.score} pts)</strong><br><hr>
-            The game has concluded. ${winner.n} now holds total sovereignty. The following "Reward and Punishment" contract must be executed immediately and may take 3-5 hours.<br><br>
-            <strong>Phase I: The Total Binding (60 mins)</strong><br>
-            ${loser.n} is to be placed in a full-body Shibari suit, including a crotch-harness and suspension lines. They must be blindfolded and gagged. ${winner.n} will spend this hour marking ${loser.n}'s body with wax, impact, or sensation play.<br><br>
-            <strong>Phase II: The Sensory Deprivation Challenge (45 mins)</strong><br>
-            While suspended or pinned, ${loser.n} must remain perfectly still. For every movement or sound, ${winner.n} shall apply a punishment of their choice. ${winner.n} may use vibrators or estim to keep ${loser.n} on the constant edge of climax without allowing them to release.<br><br>
-            <strong>Phase III: The Sexual Rite (90 mins)</strong><br>
-            ${winner.n} will now utilize ${loser.n} for their total sexual gratification. This must include multiple heavy-BDSM kinks (e.g., impact, breath play, or forced positions). ${winner.n} is entitled to as many climaxes as they desire.<br><br>
-            <strong>Phase IV: The Final Release</strong><br>
-            Only when ${winner.n} is satisfied, ${loser.n} may be granted a "Ruined Orgasm" or a "Mandatory Climax" at the Sovereign's discretion. ${loser.n} must then clean the Sovereign and remain in a position of service until dismissed.
-        `;
-    }
-</script>
-</body>
-</html>
+    function useVeto()
