@@ -3,35 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Down to get dirty: Sovereign</title>
+    <title>Sovereignty: The Full Arsenal</title>
     <style>
-        :root { 
-            --accent: #c5a059; --soft-bg: #fdfaf5; --card-bg: #ffffff;
-            --text: #2c2c2c; --crimson: #7b1a1a; --gold: #f1c40f; 
-        }
-        body { background: var(--soft-bg); color: var(--text); font-family: 'Georgia', serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .container { max-width: 800px; width: 100%; background: var(--card-bg); padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; font-style: italic; }
+        :root { --crimson: #7b1a1a; --gold: #c5a059; --bg: #fdfaf5; --card: #ffffff; }
+        body { background: var(--bg); font-family: 'Georgia', serif; margin: 0; padding: 20px; display: flex; justify-content: center; color: #2c2c2c; }
+        .container { max-width: 800px; width: 100%; background: var(--card); padding: 30px; border-radius: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid var(--gold); }
+        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 3px; font-style: italic; }
         .step { display: none; }
-        .active { display: block !important; }
+        .active { display: block; }
+        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+        .label { font-size: 0.75rem; font-weight: bold; color: var(--gold); text-transform: uppercase; display: block; margin-bottom: 10px; border-bottom: 1px solid #eee; }
         
-        /* INVENTORY STYLES */
-        .inv-section { background: #fffcf9; border: 1px solid #f0e6d2; padding: 20px; border-radius: 25px; margin-bottom: 20px; }
-        .category-header { font-size: 0.75rem; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: block; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        
-        .add-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .add-input-group input { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit; }
-        .plus-btn { background: var(--crimson); color: white; border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-
+        /* INVENTORY SYSTEM */
+        .add-area { display: flex; gap: 10px; margin-bottom: 15px; }
+        .add-area input { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #ddd; }
+        .add-btn { background: var(--crimson); color: white; border: none; padding: 0 15px; border-radius: 10px; cursor: pointer; font-weight: bold; }
         .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag { background: white; border: 1px solid #ddd; padding: 8px 15px; border-radius: 12px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        .tag .remove { color: #aaa; font-weight: bold; font-size: 1rem; }
-        .tag.on .remove { color: white; }
+        .tag { background: #fff; border: 1px solid #ddd; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; cursor: pointer; position: relative; display: flex; align-items: center; gap: 8px; }
+        .tag.selected { background: var(--crimson); color: white; border-color: var(--crimson); }
+        .delete-x { color: #999; font-weight: bold; font-size: 1.2rem; cursor: pointer; }
+        .tag.selected .delete-x { color: #ffcccc; }
 
-        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; margin-top: 10px; }
-        .timer-display { font-size: 4rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 20px 0; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; }
+        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; margin-top: 10px; font-size: 1rem; }
+        .timer { font-size: 4rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 20px 0; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -40,207 +35,198 @@
     <h1>Down to get dirty</h1>
 
     <div id="step1" class="step active">
-        <div class="inv-section">
-            <span class="category-header">Setup Session</span>
-            <input type="number" id="rounds" value="10" placeholder="Number of Rounds">
-            <input type="text" id="p1" placeholder="Player 1 Name" style="margin-top:10px;">
-            <input type="text" id="p2" placeholder="Player 2 Name" style="margin-top:10px;">
+        <div class="box">
+            <span class="label">Session Parameters</span>
+            <input type="number" id="rounds" value="10" placeholder="Rounds">
+            <input type="text" id="p1" placeholder="Master Name" style="margin-top:10px;">
+            <input type="text" id="p2" placeholder="Subject Name" style="margin-top:10px;">
         </div>
-        <button class="btn" onclick="nav(2)">Open Sovereign Arsenal ></button>
+        <button class="btn" onclick="toStep(2)">Manage Permanent Arsenal ></button>
     </div>
 
     <div id="step2" class="step">
-        <div id="vault-root"></div>
-        <button class="btn" onclick="nav(3)">Commence Ceremony</button>
-        <button class="btn" style="background:#888; margin-top:5px;" onclick="factoryReset()">Reset to Default Items</button>
+        <div class="box" id="vault-content">
+            </div>
+        <button class="btn" onclick="toStep(3)">Commence Ceremony</button>
+        <button class="btn" style="background:#888; margin-top:10px;" onclick="clearVault()">Factory Reset Arsenal</button>
     </div>
 
     <div id="step3" class="step">
-        <div style="text-align:center; font-weight:bold; color:var(--crimson);" id="score-line"></div>
-        <div id="round-view">
-            <div id="choice-buttons" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;"></div>
-            <div id="task-display" style="display:none; margin-top:20px;">
-                <div class="inv-section" id="task-body"></div>
-                <button class="btn" style="background:green;" onclick="startTimer()">Accept Decree</button>
-                <button class="btn" style="background:#888;" onclick="resetRound()">Change Choice</button>
+        <div id="game-ui">
+            <div id="round-header" style="text-align:center; font-weight:bold; color:var(--crimson);"></div>
+            <div id="choice-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;"></div>
+            
+            <div id="task-view" style="display:none; margin-top:20px;">
+                <div class="box" id="task-text"></div>
+                <button class="btn" style="background:#2e7d32;" onclick="startClock()">Start Timer</button>
+                <button class="btn" style="background:#888;" onclick="backToChoices()">Choose Different Trial</button>
             </div>
         </div>
-        <div id="timer-view" style="display:none;">
-            <div class="timer-display" id="clock">00:00</div>
-            <button class="btn" onclick="endRound(true)">Task Completed (+1)</button>
-            <button class="btn" style="background:#888;" onclick="endRound(false)">Task Failed (+0)</button>
+
+        <div id="timer-ui" style="display:none;">
+            <div class="timer" id="countdown">00:00</div>
+            <button class="btn" onclick="finishRound(true)">Task Successful (+1)</button>
+            <button class="btn" style="background:#888;" onclick="finishRound(false)">Task Failed (+0)</button>
         </div>
     </div>
 </div>
 
 <script>
-    let state = {
-        players: [],
-        curRound: 1,
-        totalRounds: 10,
-        masterIdx: 0,
-        timeLeft: 0,
-        timer: null,
-        // PRE-LOADED FULL LIST
-        inventory: JSON.parse(localStorage.getItem('dirty_vault')) || {
-            "Blindfolds": ["Tape", "Gas Mask", "Pillow Case", "Sleep Mask", "Hood", "Black Silk"],
-            "Gags": ["Tape", "Ball Gag", "Pallet Wrap", "Panties", "Sock Gag", "Bit Gag"],
-            "Restraints": ["Rope", "Leather Cuffs", "Zip Ties", "Pallet Wrap", "Duct Tape", "Chain"],
-            "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane", "Hot Wax", "Feather"]
-        },
-        activeItems: JSON.parse(localStorage.getItem('dirty_active')) || {}
+    // THE FULL ITEM DATABASE
+    const defaultArsenal = {
+        "Blindfolds": ["Tape", "Gas Mask", "Pillow Case", "Sleep Mask", "Hood", "Black Silk Tie"],
+        "Gags": ["Tape", "Ball Gag", "Pallet Wrap", "Panties", "Sock Gag", "Bit Gag", "Cleave Gag"],
+        "Restraints": ["Rope", "Leather Cuffs", "Zip Ties", "Pallet Wrap", "Duct Tape", "Chain", "Spreader Bar"],
+        "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane", "Hot Wax", "Feather", "Crops"]
     };
 
-    // Initialize active states if first time
-    if(Object.keys(state.activeItems).length === 0) {
-        for(let cat in state.inventory) state.activeItems[cat] = [...state.inventory[cat]];
-    }
+    // LOAD FROM STORAGE OR USE DEFAULTS
+    let vault = JSON.parse(localStorage.getItem('dirty_sovereign_vault')) || defaultArsenal;
+    let selectedItems = JSON.parse(localStorage.getItem('dirty_sovereign_selected')) || JSON.parse(JSON.stringify(vault));
+
+    let gameState = { players: [], curRound: 1, totalRounds: 10, masterIdx: 0, timer: null, time: 0 };
 
     function save() {
-        localStorage.setItem('dirty_vault', JSON.stringify(state.inventory));
-        localStorage.setItem('dirty_active', JSON.stringify(state.activeItems));
+        localStorage.setItem('dirty_sovereign_vault', JSON.stringify(vault));
+        localStorage.setItem('dirty_sovereign_selected', JSON.stringify(selectedItems));
     }
 
-    function factoryReset() {
-        localStorage.clear();
-        location.reload();
-    }
+    function clearVault() { localStorage.clear(); location.reload(); }
 
     function renderVault() {
-        const root = document.getElementById('vault-root');
-        root.innerHTML = '<span class="category-header" style="text-align:center; font-size:1rem; margin-bottom:20px;">Master Arsenal Control</span>';
+        const container = document.getElementById('vault-content');
+        container.innerHTML = '<span class="label" style="text-align:center; font-size:1rem;">Master Arsenal (Saved Automatically)</span>';
         
-        for (let cat in state.inventory) {
-            let section = document.createElement('div');
-            section.className = 'inv-section';
-            section.innerHTML = `
-                <span class="category-header">${cat}</span>
-                <div class="add-input-group">
-                    <input type="text" id="in-${cat}" placeholder="Add custom ${cat}...">
-                    <button class="plus-btn" onclick="addNew('${cat}')">ADD</button>
+        for (let cat in vault) {
+            let div = document.createElement('div');
+            div.style.marginBottom = "25px";
+            div.innerHTML = `
+                <span class="label">${cat}</span>
+                <div class="add-area">
+                    <input type="text" id="input-${cat}" placeholder="Add new ${cat} item...">
+                    <button class="add-btn" onclick="addItem('${cat}')">ADD</button>
                 </div>
-                <div class="tag-cloud" id="cloud-${cat}"></div>
+                <div class="tag-cloud" id="tags-${cat}"></div>
             `;
-            root.appendChild(section);
-            
-            let cloud = section.querySelector('.tag-cloud');
-            state.inventory[cat].forEach(item => {
-                let isOn = state.activeItems[cat].includes(item);
+            container.appendChild(div);
+
+            let cloud = div.querySelector('.tag-cloud');
+            vault[cat].forEach(item => {
+                let isSel = selectedItems[cat].includes(item);
                 let tag = document.createElement('div');
-                tag.className = `tag ${isOn ? 'on' : ''}`;
-                tag.innerHTML = `${item} <span class="remove" onclick="deleteItem('${cat}', '${item}'); event.stopPropagation();">×</span>`;
+                tag.className = `tag ${isSel ? 'selected' : ''}`;
+                tag.innerHTML = `${item} <span class="delete-x" onclick="deleteItem('${cat}', '${item}'); event.stopPropagation();">×</span>`;
                 tag.onclick = () => toggleItem(cat, item);
                 cloud.appendChild(tag);
             });
         }
     }
 
-    function addNew(cat) {
-        let val = document.getElementById(`in-${cat}`).value.trim();
-        if(val && !state.inventory[cat].includes(val)) {
-            state.inventory[cat].push(val);
-            state.activeItems[cat].push(val);
+    function addItem(cat) {
+        let val = document.getElementById('input-' + cat).value.trim();
+        if(val) {
+            if(!vault[cat].includes(val)) vault[cat].push(val);
+            if(!selectedItems[cat].includes(val)) selectedItems[cat].push(val);
             save(); renderVault();
         }
     }
 
     function toggleItem(cat, item) {
-        let idx = state.activeItems[cat].indexOf(item);
-        if(idx > -1) state.activeItems[cat].splice(idx, 1);
-        else state.activeItems[cat].push(item);
+        let idx = selectedItems[cat].indexOf(item);
+        if(idx > -1) selectedItems[cat].splice(idx, 1);
+        else selectedItems[cat].push(item);
         save(); renderVault();
     }
 
     function deleteItem(cat, item) {
-        state.inventory[cat] = state.inventory[cat].filter(i => i !== item);
-        state.activeItems[cat] = state.activeItems[cat].filter(i => i !== item);
+        vault[cat] = vault[cat].filter(i => i !== item);
+        selectedItems[cat] = selectedItems[cat].filter(i => i !== item);
         save(); renderVault();
     }
 
-    function nav(n) {
+    function toStep(n) {
         if(n === 2) {
-            state.totalRounds = document.getElementById('rounds').value;
-            state.players = [
-                {name: document.getElementById('p1').value || "P1", score: 0},
-                {name: document.getElementById('p2').value || "P2", score: 0}
+            gameState.totalRounds = document.getElementById('rounds').value;
+            gameState.players = [
+                {name: document.getElementById('p1').value || "Master", score: 0},
+                {name: document.getElementById('p2').value || "Subject", score: 0}
             ];
             renderVault();
         }
-        if(n === 3) setupGame();
+        if(n === 3) startSession();
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step'+n).classList.add('active');
     }
 
-    const tasks = [
-        { n: "Total Restraint", t: 600, d: "Master uses <b>[REST]</b> to pin the Slave. Use <b>[SENS]</b> to explore their [BODY] while they are helpless." },
-        { n: "Sensory Void", t: 400, d: "Apply <b>[VIS]</b> and <b>[GAG]</b>. In total darkness and silence, Master will use <b>[SENS]</b> relentlessly." },
-        { n: "The Edge", t: 480, d: "Master uses <b>[SENS]</b>. Slave must be brought to the peak 3 times. Release is only by Master's decree." },
-        { n: "Escape Trial", t: 300, d: "Master binds Slave with <b>[REST]</b> and <b>[VIS]</b>. Slave has until the clock hits zero to break free." }
+    const trials = [
+        { n: "The Bound Statue", t: 600, d: "Master uses <b>[REST]</b> to secure the Subject. Apply <b>[SENS]</b> to their body while they remain motionless." },
+        { n: "Void Deprivation", t: 400, d: "Seal the <b>[VIS]</b> and <b>[GAG]</b>. Master will use <b>[SENS]</b> in a slow, unpredictable rhythm." },
+        { n: "Escape Trial", t: 300, d: "Bind the Subject with <b>[REST]</b>. They must struggle free before the timer expires or face a penalty." },
+        { n: "Peak & Hold", t: 480, d: "Using <b>[SENS]</b>, Master brings the Subject to the brink of climax 3 times. Release is forbidden." }
     ];
 
-    function setupGame() {
-        document.getElementById('score-line').innerText = `${state.players[0].name}: ${state.players[0].score} | ${state.players[1].name}: ${state.players[1].score}`;
-        let btns = document.getElementById('choice-buttons');
-        btns.innerHTML = '';
-        tasks.forEach((task, i) => {
+    function startSession() {
+        document.getElementById('round-header').innerText = `ROUND ${gameState.curRound} | Master: ${gameState.players[gameState.masterIdx].name}`;
+        let grid = document.getElementById('choice-grid');
+        grid.innerHTML = '';
+        trials.forEach((trial, i) => {
             let b = document.createElement('button');
-            b.className = 'btn';
-            b.style.marginTop = '0';
-            b.innerText = task.n;
-            b.onclick = () => showTask(i);
-            btns.appendChild(b);
+            b.className = 'btn'; b.style.marginTop = '0';
+            b.innerText = trial.n;
+            b.onclick = () => showTrial(i);
+            grid.appendChild(b);
         });
     }
 
-    function showTask(idx) {
-        let t = tasks[idx];
-        const r = (c) => {
-            let pool = state.activeItems[c];
-            return pool[Math.floor(Math.random()*pool.length)] || "Standard Gear";
-        };
-        let bodyText = t.d.replace('[REST]', r('Restraints'))
-                        .replace('[SENS]', r('Sensation'))
-                        .replace('[VIS]', r('Blindfolds'))
-                        .replace('[GAG]', r('Gags'))
-                        .replace('[BODY]', "Body");
+    function showTrial(idx) {
+        let trial = trials[idx];
+        const pick = (c) => {
+            let p = selectedItems[c];
+            return p.length ? p[Math.floor(Math.random()*p.length)] : "Basic Item";
+        }
+        let text = trial.d.replace('[REST]', pick('Restraints'))
+                         .replace('[SENS]', pick('Sensation'))
+                         .replace('[VIS]', pick('Blindfolds'))
+                         .replace('[GAG]', pick('Gags'));
         
-        document.getElementById('task-body').innerHTML = `<strong>${t.n}</strong><br><br>${bodyText}`;
-        state.timeLeft = t.t;
-        document.getElementById('choice-buttons').style.display = 'none';
-        document.getElementById('task-display').style.display = 'block';
+        document.getElementById('task-text').innerHTML = `<strong>${trial.n}</strong><br><br>${text}`;
+        gameState.time = trial.t;
+        document.getElementById('choice-grid').style.display = 'none';
+        document.getElementById('task-view').style.display = 'block';
     }
 
-    function resetRound() {
-        document.getElementById('choice-buttons').style.display = 'grid';
-        document.getElementById('task-display').style.display = 'none';
+    function backToChoices() {
+        document.getElementById('choice-grid').style.display = 'grid';
+        document.getElementById('task-view').style.display = 'none';
     }
 
-    function startTimer() {
-        document.getElementById('round-view').style.display = 'none';
-        document.getElementById('timer-view').style.display = 'block';
-        state.timer = setInterval(() => {
-            state.timeLeft--;
-            let m = Math.floor(state.timeLeft/60), s = state.timeLeft%60;
-            document.getElementById('clock').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-            if(state.timeLeft <= 0) endRound(false);
+    function startClock() {
+        document.getElementById('game-ui').style.display = 'none';
+        document.getElementById('timer-ui').style.display = 'block';
+        gameState.timer = setInterval(() => {
+            gameState.time--;
+            let m = Math.floor(gameState.time / 60), s = gameState.time % 60;
+            document.getElementById('countdown').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+            if(gameState.time <= 0) finishRound(false);
         }, 1000);
     }
 
-    function endRound(success) {
-        clearInterval(state.timer);
-        if(success) {
-            let slaveIdx = state.masterIdx === 0 ? 1 : 0;
-            state.players[slaveIdx].score++;
-            state.masterIdx = slaveIdx; // Swap
+    function finishRound(win) {
+        clearInterval(gameState.timer);
+        if(win) {
+            let subIdx = gameState.masterIdx === 0 ? 1 : 0;
+            gameState.players[subIdx].score++;
+            gameState.masterIdx = subIdx; // Swap roles
         }
-        state.curRound++;
-        if(state.curRound > state.totalRounds) {
-            document.getElementById('step3').innerHTML = "<h1>CEREMONY COMPLETE</h1><div class='inv-section'>Final Scores recorded. Proceed to Final Decree.</div>";
+        gameState.curRound++;
+        if(gameState.curRound > gameState.totalRounds) {
+            alert("Game Over! Final Scores: " + gameState.players[0].name + ": " + gameState.players[0].score + " | " + gameState.players[1].name + ": " + gameState.players[1].score);
+            location.reload();
         } else {
-            document.getElementById('round-view').style.display = 'block';
-            document.getElementById('timer-view').style.display = 'none';
-            resetRound();
-            setupGame();
+            document.getElementById('game-ui').style.display = 'block';
+            document.getElementById('timer-ui').style.display = 'none';
+            backToChoices();
+            startSession();
         }
     }
 </script>
