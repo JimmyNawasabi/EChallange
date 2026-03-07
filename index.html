@@ -3,44 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sovereignty: Manual Command</title>
+    <title>Sovereignty: Manual Control</title>
     <style>
         :root { 
             --accent: #c5a059; --soft-bg: #fdfaf5; --card-bg: #ffffff;
             --text: #2c2c2c; --crimson: #7b1a1a; --safe-green: #2e7d32; 
         }
-        body { background: var(--soft-bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .container { max-width: 650px; width: 100%; background: var(--card-bg); padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 20px; border: 1px solid #ddd; margin-top: 20px; }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; margin-bottom: 5px; }
+        body { background: var(--soft-bg); color: var(--text); font-family: 'Georgia', serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .container { max-width: 650px; width: 100%; background: var(--card-bg); padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border-radius: 30px; border: 1px solid #ddd; margin-top: 20px; }
+        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 2px; }
         .step { display: none; }
         .active { display: block !important; }
 
-        /* BOX STYLES */
-        .box { background: #fff; border: 2px solid #eee; padding: 20px; margin-bottom: 20px; border-radius: 15px; }
-        .label { font-size: 0.8rem; font-weight: bold; color: var(--accent); display: block; margin-bottom: 10px; text-transform: uppercase; }
+        /* BOXES */
+        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 20px; margin-bottom: 20px; border-radius: 20px; }
+        .label { font-size: 0.75rem; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; text-transform: uppercase; }
 
-        /* GENDER RADIOS - Standard Unstyled for Visibility */
-        .gender-container { margin: 15px 0; padding: 10px; border: 1px inset #eee; border-radius: 10px; }
-        .gender-option { margin-right: 15px; display: inline-block; cursor: pointer; }
-        .gender-option input { margin-right: 5px; }
+        /* DROPDOWNS & INPUTS */
+        select, input[type="text"], input[type="number"] { 
+            width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 10px; 
+            margin-bottom: 15px; font-family: inherit; font-size: 1rem; box-sizing: border-box;
+            background-color: white; color: black !important;
+        }
 
-        input[type="text"], input[type="number"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-
-        /* VAULT & ADD */
-        .category-block { margin-bottom: 20px; padding: 15px; background: #fafafa; border-radius: 10px; border: 1px solid #ddd; }
-        .add-row { display: flex; gap: 5px; margin-bottom: 10px; }
-        .add-row input { flex: 1; }
-        .add-btn { background: var(--crimson); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .tag-row { display: flex; flex-wrap: wrap; gap: 5px; }
-        .tag { background: #eee; padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; cursor: pointer; border: 1px solid #ccc; }
-        .tag.on { background: var(--crimson); color: white; }
+        /* VAULT & TAGS */
+        .category-block { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 15px; border: 1px solid #eee; }
+        .add-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        .add-row input { flex: 1; margin-bottom: 0; }
+        .add-btn { background: var(--crimson); color: white; border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1.2rem; }
+        .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { background: #f9f4eb; padding: 8px 15px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; border: 1px solid #e2d1b3; display: flex; align-items: center; }
+        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
+        .del-x { margin-left: 8px; font-weight: bold; opacity: 0.5; }
 
         /* CONSOLE */
-        .item-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        select { width: 100%; padding: 10px; border-radius: 8px; }
-        .timer-display { font-size: 4rem; text-align: center; color: var(--crimson); margin: 10px 0; font-weight: bold; }
-        
-        .btn { background: var(--crimson); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-bottom: 10px; }
+        .timer-display { font-size: 5rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 15px 0; font-weight: bold; }
+        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; margin-bottom: 10px; font-size: 1rem; }
     </style>
 </head>
 <body>
@@ -50,28 +48,28 @@
 
     <div id="step1" class="step active">
         <div class="box">
-            <span class="label">Participant 1 (Master)</span>
+            <span class="label">Participant 1 (The Master)</span>
             <input type="text" id="p1_name" placeholder="Enter Name">
-            <div class="gender-container">
-                <span class="label" style="font-size: 0.65rem;">Select Gender:</span>
-                <label class="gender-option"><input type="radio" name="p1_g" value="Male" checked> Male</label>
-                <label class="gender-option"><input type="radio" name="p1_g" value="Female"> Female</label>
-                <label class="gender-option"><input type="radio" name="p1_g" value="Neutral"> Neutral</label>
-            </div>
+            <span class="label">Select Gender / Body Type:</span>
+            <select id="p1_gender">
+                <option value="Male Body">Male Body</option>
+                <option value="Female Body">Female Body</option>
+                <option value="Neutral / NB">Neutral / NB</option>
+            </select>
 
-            <span class="label">Participant 2 (Subject)</span>
+            <span class="label" style="margin-top:20px;">Participant 2 (The Subject)</span>
             <input type="text" id="p2_name" placeholder="Enter Name">
-            <div class="gender-container">
-                <span class="label" style="font-size: 0.65rem;">Select Gender:</span>
-                <label class="gender-option"><input type="radio" name="p2_g" value="Male"> Male</label>
-                <label class="gender-option"><input type="radio" name="p2_g" value="Female" checked> Female</label>
-                <label class="gender-option"><input type="radio" name="p2_g" value="Neutral"> Neutral</label>
-            </div>
+            <span class="label">Select Gender / Body Type:</span>
+            <select id="p2_gender">
+                <option value="Female Body">Female Body</option>
+                <option value="Male Body">Male Body</option>
+                <option value="Neutral / NB">Neutral / NB</option>
+            </select>
 
-            <span class="label">Total Rounds</span>
+            <span class="label">Number of Rounds</span>
             <input type="number" id="rounds" value="10">
         </div>
-        <button class="btn" onclick="nav(2)">Go to Vault ></button>
+        <button class="btn" onclick="nav(2)">Open Permanent Vault ></button>
     </div>
 
     <div id="step2" class="step">
@@ -79,23 +77,27 @@
             <span class="label">Permanent Arsenal (Saved Locally)</span>
             <div id="vault-list"></div>
         </div>
-        <button class="btn" onclick="nav(3)">Enter Command Center</button>
-        <button class="btn" style="background:#666;" onclick="resetVault()">Reset Everything</button>
+        <button class="btn" onclick="nav(3)">Enter Command Console</button>
+        <button class="btn" style="background:#888;" onclick="resetVault()">Factory Reset Vault</button>
     </div>
 
     <div id="step3" class="step">
         <div class="box">
             <div id="setup-view">
-                <div id="status-line" style="text-align:center; font-weight:bold; margin-bottom:15px; color:var(--crimson);"></div>
-                <div id="manual-pickers" class="item-picker"></div>
-                <span class="label">Timer (Seconds)</span>
+                <div id="status-text" class="label" style="text-align:center; color:var(--crimson); font-size:1rem; margin-bottom:20px;"></div>
+                <span class="label">Master's Active Gear:</span>
+                <div id="manual-picks" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;"></div>
+                
+                <span class="label">Round Duration (Seconds)</span>
                 <input type="number" id="manual-timer" value="300">
-                <button class="btn" style="background:var(--safe-green); margin-top:15px;" onclick="startRun()">Begin</button>
+                
+                <button class="btn" style="background:var(--safe-green);" onclick="startRun()">Begin Command</button>
             </div>
+
             <div id="run-view" style="display:none;">
                 <div class="timer-display" id="clock">00:00</div>
-                <button class="btn" onclick="endRun(true)">Success</button>
-                <button class="btn" style="background:#888;" onclick="endRun(false)">Fail</button>
+                <button class="btn" onclick="endRun(true)">Success (+1)</button>
+                <button class="btn" style="background:#888;" onclick="endRun(false)">Failure (+0)</button>
             </div>
         </div>
     </div>
@@ -111,21 +113,21 @@
         "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane", "Hot Wax"]
     };
 
-    let vault = JSON.parse(localStorage.getItem('sov_manual_v9')) || null;
+    let vault = JSON.parse(localStorage.getItem('sov_manual_v10')) || null;
     if(!vault) {
         vault = {};
         for(let c in defaultItems) vault[c] = defaultItems[c].map(n => ({n, on: true}));
-        localStorage.setItem('sov_manual_v9', JSON.stringify(vault));
+        localStorage.setItem('sov_manual_v10', JSON.stringify(vault));
     }
 
-    function save() { localStorage.setItem('sov_manual_v9', JSON.stringify(vault)); }
-    function resetVault() { localStorage.removeItem('sov_manual_v9'); location.reload(); }
+    function save() { localStorage.setItem('sov_manual_v10', JSON.stringify(vault)); }
+    function resetVault() { localStorage.removeItem('sov_manual_v10'); location.reload(); }
 
     function nav(n) {
         if(n === 2) {
             players = [
-                { n: document.getElementById('p1_name').value || "P1", g: document.querySelector('input[name="p1_g"]:checked').value, score: 0 },
-                { n: document.getElementById('p2_name').value || "P2", g: document.querySelector('input[name="p2_g"]:checked').value, score: 0 }
+                { n: document.getElementById('p1_name').value || "P1", g: document.getElementById('p1_gender').value, score: 0 },
+                { n: document.getElementById('p2_name').value || "P2", g: document.getElementById('p2_gender').value, score: 0 }
             ];
             maxRounds = document.getElementById('rounds').value;
             renderVault();
@@ -142,13 +144,16 @@
             let div = document.createElement('div');
             div.className = 'category-block';
             div.innerHTML = `<span class="label">${c}</span>
-                <div class="add-row"><input type="text" id="in-${c}"><button class="add-btn" onclick="add('${c}')">+</button></div>
+                <div class="add-row">
+                    <input type="text" id="in-${c}" placeholder="Add item...">
+                    <button class="add-btn" onclick="add('${c}')">+</button>
+                </div>
                 <div class="tag-row"></div>`;
             cont.appendChild(div);
             vault[c].forEach((item, i) => {
                 let t = document.createElement('div');
                 t.className = `tag ${item.on ? 'on' : ''}`;
-                t.innerHTML = `${item.n} <span onclick="remove('${c}', ${i}); event.stopPropagation();">×</span>`;
+                t.innerHTML = `${item.n} <span class="del-x" onclick="remove('${c}', ${i}); event.stopPropagation();">×</span>`;
                 t.onclick = () => { vault[c][i].on = !vault[c][i].on; save(); renderVault(); };
                 div.querySelector('.tag-row').appendChild(t);
             });
@@ -157,19 +162,19 @@
 
     function add(c) {
         let v = document.getElementById(`in-${c}`).value;
-        if(v) { vault[c].push({n:v, on:true}); save(); renderVault(); }
+        if(v) { vault[c].push({n:v, on:true}); save(); renderVault(); document.getElementById(`in-${c}`).value=""; }
     }
     function remove(c, i) { vault[c].splice(i, 1); save(); renderVault(); }
 
     function prepConsole() {
-        document.getElementById('status-line').innerText = `ROUND ${curRound} | Master: ${players[masterIdx].n} (${players[masterIdx].g})`;
-        const pickers = document.getElementById('manual-pickers');
-        pickers.innerHTML = '';
+        document.getElementById('status-text').innerText = `ROUND ${curRound} | Master: ${players[masterIdx].n} (${players[masterIdx].g})`;
+        const picks = document.getElementById('manual-picks');
+        picks.innerHTML = '';
         for(let c in vault) {
             let sel = document.createElement('select');
             sel.innerHTML = `<option value="">-- No ${c} --</option>`;
             vault[c].filter(i => i.on).forEach(item => { sel.innerHTML += `<option>${item.n}</option>`; });
-            pickers.appendChild(sel);
+            picks.appendChild(sel);
         }
     }
 
@@ -189,7 +194,7 @@
         clearInterval(timer);
         if(win) { let si = masterIdx === 0 ? 1 : 0; masterIdx = si; }
         curRound++;
-        if(curRound > maxRounds) { alert("Session Over"); location.reload(); }
+        if(curRound > maxRounds) { alert("Session Complete."); location.reload(); }
         else { document.getElementById('setup-view').style.display = 'block'; document.getElementById('run-view').style.display = 'none'; prepConsole(); }
     }
 </script>
