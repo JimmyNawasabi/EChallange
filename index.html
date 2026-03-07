@@ -7,8 +7,7 @@
     <style>
         :root { 
             --accent: #c5a059; --soft-bg: #fdfaf5; --card-bg: #ffffff;
-            --text: #2c2c2c; --crimson: #7b1a1a; --yellow: #ffd700; 
-            --red: #ee3333; --safe-green: #2e7d32; --veto: #4a4a4a; --black: #000000;
+            --text: #2c2c2c; --crimson: #7b1a1a; --safe-green: #2e7d32; --veto: #4a4a4a;
         }
         
         body { background: var(--soft-bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 18px; }
@@ -19,22 +18,18 @@
         .step { display: none; }
         .active { display: block !important; }
 
-        .box { background: #fffcf9; border: 2px solid #f5f2ed; padding: 20px; margin-bottom: 25px; border-radius: 25px; }
+        .box { background: #fffcf9; border: 2px solid #f5f2ed; padding: 25px; margin-bottom: 25px; border-radius: 25px; line-height: 1.6; }
         .inner-box { background: #ffffff; border: 1px solid #eee; padding: 15px; border-radius: 20px; margin-bottom: 15px; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1.5px; }
 
-        .status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #fefefe; border-radius: 15px; border: 1px solid #eee; font-size: 0.8rem; }
-        .role-indicator { font-weight: 900; color: var(--crimson); text-transform: uppercase; letter-spacing: 1px; }
-        .score-pill { background: #eee; padding: 4px 10px; border-radius: 50px; font-weight: bold; color: #666; }
-
-        input[type="text"], select, input[type="number"] { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; font-size: 1rem; outline: none; display: block; font-family: inherit; }
+        input[type="text"], select, input[type="number"] { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; font-size: 1rem; outline: none; font-family: inherit; }
         
         .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
         .tgl-btn { background: #f0f0f0; padding: 12px 8px; border-radius: 12px; text-align: center; font-size: 0.75rem; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: 0.2s; color: #999; text-transform: uppercase; }
         .tgl-btn.on { background: var(--crimson); color: white; border-color: var(--accent); }
 
         .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; }
-        .tag { background: #eee; padding: 5px 10px; border-radius: 50px; font-size: 0.75rem; display: flex; align-items: center; border: 1px solid transparent; cursor: pointer; color: #888; transition: 0.15s; }
+        .tag { background: #eee; padding: 5px 12px; border-radius: 50px; font-size: 0.75rem; cursor: pointer; color: #888; border: 1px solid transparent; transition: 0.15s; }
         .tag.on { background: #fff; border-color: var(--accent); color: var(--text); font-weight: bold; }
         
         .cat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
@@ -45,14 +40,14 @@
         .b-edging { background: #884ea0; } .b-physical { background: #1e8449; } .b-selfbondage { background: #2e4053; }
         
         .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 20px; font-size: 1rem; margin-bottom: 10px; }
-        .btn-add { background: var(--accent); width: 60px; color: white; font-weight: bold; border-radius: 10px; border: none; cursor: pointer; }
+        .timer-display { font-size: 4.5rem; text-align: center; color: var(--crimson); font-weight: bold; margin: 15px 0; }
         
-        .timer-display { font-size: 5rem; text-align: center; color: var(--crimson); font-weight: bold; margin: 15px 0; }
+        b { color: var(--crimson); border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
-<div class="container" id="app">
+<div class="container">
     <h1>Mastery & Merit</h1>
     <div class="subtitle">Sovereignty Edition</div>
 
@@ -76,40 +71,32 @@
 
     <div id="step2" class="step">
         <div class="box">
-            <p style="font-size: 0.8rem; color: #888; margin-bottom: 20px; text-align: center;">Tap items to enable/disable them.</p>
             <div id="inv-container"></div>
         </div>
         <button class="btn" onclick="goToStep(3)">Start Session</button>
     </div>
 
     <div id="step3" class="step">
-        <div class="status-bar">
-            <div><span class="label" style="margin:0">Master</span><div id="master-name" class="role-indicator">---</div></div>
-            <div id="scoreboard"><span class="score-pill" id="score-p1"></span> <span class="score-pill" id="score-p2"></span></div>
-            <div style="text-align:right;"><span class="label" style="margin:0">Slave</span><div id="slave-name" class="role-indicator">---</div></div>
-        </div>
-
         <div id="pre-round">
             <div id="round-header" class="label" style="text-align:center; font-size: 1rem;">Round 1</div>
             <div class="inner-box">
                 <span class="label">Active Categories</span>
                 <div class="toggle-grid">
-                    <div class="tgl-btn on" data-cat="truth" onclick="this.classList.toggle('on')">Truth</div>
-                    <div class="tgl-btn on" data-cat="dare" onclick="this.classList.toggle('on')">Dare</div>
-                    <div class="tgl-btn on" data-cat="escape" onclick="this.classList.toggle('on')">Escape</div>
-                    <div class="tgl-btn on" data-cat="edging" onclick="this.classList.toggle('on')">Edging</div>
-                    <div class="tgl-btn on" data-cat="physical" onclick="this.classList.toggle('on')">Physical</div>
-                    <div class="tgl-btn on" data-cat="selfbondage" onclick="this.classList.toggle('on')">Self-Bondage</div>
+                    <div class="tgl-btn on" data-cat="truth">Truth</div>
+                    <div class="tgl-btn on" data-cat="dare">Dare</div>
+                    <div class="tgl-btn on" data-cat="escape">Escape</div>
+                    <div class="tgl-btn on" data-cat="edging">Edging</div>
+                    <div class="tgl-btn on" data-cat="physical">Physical</div>
                 </div>
             </div>
-            <div class="box" style="text-align:center;">
+            <div class="box" style="text-align:left;">
                 <div id="badge-container"></div>
-                <div id="task-text" style="font-weight: 500; min-height: 60px;">Awaiting command...</div>
+                <div id="task-text" style="font-size: 1.1rem;">Awaiting command...</div>
             </div>
             <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
             <div id="pre-start-controls" style="display:none;">
                 <button class="btn" style="background: var(--safe-green);" onclick="startT()">Start Clock</button>
-                <button class="btn" style="background: var(--veto); font-size:0.8rem;" onclick="generate()">Veto (Reroll)</button>
+                <button class="btn" style="background: var(--veto); font-size:0.8rem;" onclick="generate()">Veto</button>
             </div>
         </div>
 
@@ -122,123 +109,127 @@
 </div>
 
 <script>
-    // HARDCODED UNIFIED LIST
-    const unifiedArsenal = {
+    // THE FULL UNIFIED LIST
+    const gear = {
         "Blindfolds": ["Bandage", "Tape", "Cloth", "Gas Mask", "Pillow Case", "Blindfold", "Sleep Mask", "Silk Scarf", "Hood"],
         "Gags": ["Tape", "Pallet Wrap", "Cloth", "Panties", "Bandage", "Rope", "Ring Gag", "Gas Mask", "Hood", "Ball Gag", "Cleave Gag", "Muzzle"],
         "Restraints": ["Leather Cuffs", "Tape", "Pallet Wrap", "String", "Belt", "Ribbon", "Rope", "Handcuffs", "Ankle Cuffs", "Leather Straps"],
-        "Sensation": ["Insertable", "Dildo", "Anal Hook", "Pussy Hook", "Butt Plug", "Anal Dildo", "E-stim Machine", "Paddle", "Vibrator", "Cane", "Needle", "Sharpies", "Tape", "Candle", "Feather", "Ice Cube", "Wand Vibrator", "Clamps", "Flogger"]
+        "Sensation": ["Insertable", "Dildo", "Anal Hook", "Pussy Hook", "Butt Plug", "Anal Dildo", "E-stim Machine", "Paddle", "Vibrator", "Cane", "Needle", "Sharpies", "Tape", "Candle", "Feather", "Ice Cube", "Clamps", "Flogger"]
     };
 
-    let activeInventory = {};
+    let activeInv = {};
     let players = [], currentRound = 1, subIdx = 0, timer, timeLeft;
-    let lastTaskString = "";
 
-    // IMMEDIATELY PREPARE DATA ON LOAD
+    // HIGH-DETAIL VERB ENGINE
+    const getVerb = (item) => {
+        item = item.toLowerCase();
+        if (item.includes("tape") || item.includes("wrap")) return "tightly wrap and secure";
+        if (item.includes("bandage") || item.includes("scarf") || item.includes("cloth")) return "wrap and knot";
+        if (item.includes("hook") || item.includes("plug") || item.includes("insert") || item.includes("dildo")) return "carefully lubricate and insert";
+        if (item.includes("cuffs") || item.includes("belt") || item.includes("strap")) return "cinch and lock";
+        if (item.includes("rope") || item.includes("string") || item.includes("ribbon")) return "tie securely with multiple knots";
+        if (item.includes("mask") || item.includes("hood") || item.includes("gag")) return "place and fasten";
+        return "apply";
+    };
+
+    const getAction = (item) => {
+        item = item.toLowerCase();
+        if (item.includes("paddle") || item.includes("cane") || item.includes("flogger")) return "deliver rhythmic strikes to the";
+        if (item.includes("needle") || item.includes("sharpie")) return "trace and mark patterns across the";
+        if (item.includes("ice") || item.includes("feather") || item.includes("candle")) return "slowly trail and drip across the";
+        if (item.includes("vibrator") || item.includes("e-stim")) return "place on a high setting against the";
+        if (item.includes("clamps")) return "firmly pinch and attach to the";
+        return "focus the use of the item on the";
+    };
+
     function boot() {
-        for (let cat in unifiedArsenal) {
-            activeInventory[cat] = unifiedArsenal[cat].map(item => ({ n: item, on: true }));
-        }
+        for (let cat in gear) { activeInv[cat] = gear[cat].map(i => ({ n: i, on: true })); }
+        document.querySelectorAll('.tgl-btn').forEach(b => b.onclick = () => b.classList.toggle('on'));
     }
     boot();
 
     function renderInv() {
         const container = document.getElementById('inv-container');
-        if (!container) return;
         container.innerHTML = '';
-        
-        for (let cat in activeInventory) {
+        for (let cat in activeInv) {
             let section = document.createElement('div');
-            section.innerHTML = `
-                <div class="cat-header"><span class="label">${cat}</span><span class="toggle-all" onclick="toggleAll('${cat}')">Toggle All</span></div>
-                <div style="display:flex; gap:10px; margin-bottom: 10px;">
-                    <input type="text" id="add-${cat}" placeholder="Add..."><button class="btn-add" onclick="addNewItem('${cat}')">+</button>
-                </div>
-                <div class="tag-row" id="tags-${cat}"></div>`;
+            section.innerHTML = `<div class="cat-header"><span class="label">${cat}</span><span class="toggle-all" onclick="toggleAll('${cat}')">All</span></div><div class="tag-row" id="tags-${cat}"></div>`;
             container.appendChild(section);
-            
-            const tagRow = section.querySelector(`#tags-${cat}`);
-            activeInventory[cat].forEach((item) => {
+            activeInv[cat].forEach(item => {
                 let tag = document.createElement('div');
                 tag.className = `tag ${item.on ? 'on' : ''}`;
                 tag.innerText = item.n;
                 tag.onclick = () => { item.on = !item.on; renderInv(); };
-                tagRow.appendChild(tag);
+                section.querySelector(`#tags-${cat}`).appendChild(tag);
             });
         }
     }
 
     function toggleAll(cat) {
-        const allOn = activeInventory[cat].every(i => i.on);
-        activeInventory[cat].forEach(i => i.on = !allOn);
+        let allOn = activeInv[cat].every(i => i.on);
+        activeInv[cat].forEach(i => i.on = !allOn);
         renderInv();
-    }
-
-    function addNewItem(cat) {
-        let input = document.getElementById(`add-${cat}`);
-        if (input && input.value.trim()) { 
-            activeInventory[cat].push({n: input.value.trim(), on: true}); 
-            input.value = ''; 
-            renderInv(); 
-        }
     }
 
     function goToStep(n) {
         if (n === 2) {
-            players = [
-                {n: document.getElementById('p1').value || "Slave", g: document.getElementById('g1').value, wins: 0},
-                {n: document.getElementById('p2').value || "Master", g: document.getElementById('g2').value, wins: 0}
-            ];
+            players = [{n: document.getElementById('p1').value || "Slave", g: document.getElementById('g1').value, wins: 0},
+                       {n: document.getElementById('p2').value || "Master", g: document.getElementById('g2').value, wins: 0}];
             renderInv();
-        }
-        if (n === 3) {
-            if (!activeInventory["Blindfolds"].some(i=>i.on)) return alert("Enable at least one Blindfold!");
-            updateIdentity();
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + n).classList.add('active');
+        if (n === 3) updateIdentity();
     }
 
-    const taskData = {
-        truth: { label: "Truth", class: "b-truth", time: 90, tasks: ["CONFESSION: Admit a desire while bound in [REST].", "SENSORY: Describe [SENS] while [VIS] is applied."] },
-        dare: { label: "Dare", class: "b-dare", time: 180, tasks: ["SERVICE: Serve Master while [REST] and [GAGS] are active.", "STATUE: Endure [SENS] on your [BODY] without flinching."] },
-        escape: { label: "Escape", class: "b-escape", time: 420, tasks: ["FREEDOM: Escape from [REST] while [VIS] is applied.", "TRIAL: Escape [REST] while Master uses [SENS]."] },
-        edging: { label: "Edging", class: "b-edging", time: 300, tasks: ["CONTROL: Master uses [SENS] to edge you.", "DENIAL: Endure [SENS] while in [REST]."] },
-        physical: { label: "Physical", class: "b-physical", time: 200, tasks: ["STRESS: Hold a kneeling pose while [REST] is applied.", "STRENGTH: Hold a plank while ankles are in [REST]."] },
-        selfbondage: { label: "Self-Bondage", class: "b-selfbondage", time: 150, tasks: ["BIND: Apply [REST] to yourself tightly.", "PRESENT: Present yourself with [VIS] and [GAGS] applied."] }
+    const tasks = {
+        truth: { label: "Truth", time: 120, templates: [
+            "While Slave is blindfolded with <b>[VIS]</b>, Master must <b>[VERB-GAG] [GAG]</b>. Slave must then confess a secret while the gag is in place.",
+            "Master shall <b>[VERB-REST] [REST]</b> around the Slave's wrists. Slave must answer: 'What is the most shameful thing you enjoy while bound?'"
+        ]},
+        dare: { label: "Dare", time: 240, templates: [
+            "Master must <b>[VERB-REST] [REST]</b> to bind the Slave's ankles. Once secure, Master will <b>[SENS-ACT] [SENS]</b> on the Slave's <b>[BODY]</b> for 2 minutes.",
+            "Master will <b>[VERB-VIS] [VIS]</b> over the Slave's eyes. Then, Master must <b>[VERB-GAG] [GAG]</b> and command the Slave to perform a submissive task blindly."
+        ]},
+        escape: { label: "Escape", time: 480, templates: [
+            "Master must <b>[VERB-REST] [REST]</b> around the Slave's hands and <b>[VERB-VIS] [VIS]</b> over their eyes. Slave has the duration of the clock to struggle free.",
+            "Master will <b>[VERB-REST] [REST]</b> to tether the Slave to a fixed object. Master will then <b>[VERB-GAG] [GAG]</b>. Slave must escape before the timer ends."
+        ]},
+        edging: { label: "Edging", time: 360, templates: [
+            "Master must <b>[VERB-REST] [REST]</b> to secure the Slave's limbs. Master will then <b>[SENS-ACT] [SENS]</b> to bring the Slave to the brink of climax 3 times.",
+            "Slave is to be blindfolded with <b>[VIS]</b>. Master will <b>[VERB-SENS] [SENS]</b> and use it to tease the Slave's <b>[BODY]</b> until they beg for mercy."
+        ]},
+        physical: { label: "Physical", time: 300, templates: [
+            "Master will <b>[VERB-REST] [REST]</b> to bind the Slave's hands behind their back. Slave must hold a deep squat while Master <b>[VERB-VIS] [VIS]</b>.",
+            "Master must <b>[VERB-GAG] [GAG]</b>. Slave must then hold a plank position. If the Slave's body touches the floor, the round is a failure."
+        ]}
     };
 
     function updateIdentity() {
         let mIdx = (subIdx === 0 ? 1 : 0);
-        document.getElementById('master-name').innerText = players[mIdx].n;
-        document.getElementById('slave-name').innerText = players[subIdx].n;
-        document.getElementById('score-p1').innerText = `${players[0].n}: ${players[0].wins}`;
-        document.getElementById('score-p2').innerText = `${players[1].n}: ${players[1].wins}`;
-        document.getElementById('round-header').innerText = `Round ${currentRound} / ${document.getElementById('maxRounds').value}`;
+        document.getElementById('round-header').innerText = `Round ${currentRound} (Master: ${players[mIdx].n} | Slave: ${players[subIdx].n})`;
     }
 
     function generate() {
         let cats = Array.from(document.querySelectorAll('.tgl-btn.on')).map(b => b.getAttribute('data-cat'));
-        if (!cats.length) return alert("Select a category!");
+        let k = cats[Math.floor(Math.random()*cats.length)];
+        let template = tasks[k].templates[Math.floor(Math.random()*tasks[k].templates.length)];
         
-        let k, task, res;
-        do {
-            k = cats[Math.floor(Math.random()*cats.length)];
-            let pool = taskData[k].tasks;
-            task = pool[Math.floor(Math.random()*pool.length)];
-            const pick = (type) => {
-                let p = activeInventory[type].filter(i=>i.on);
-                return p.length ? `<b>${p[Math.floor(Math.random()*p.length)].n}</b>` : "gear";
-            };
-            res = task.replace(/\[VIS\]/g, pick('Blindfolds')).replace(/\[GAGS\]/g, pick('Gags'))
-                      .replace(/\[REST\]/g, pick('Restraints')).replace(/\[SENS\]/g, pick('Sensation'))
-                      .replace(/\[BODY\]/g, `<b>${players[subIdx].g}</b>`);
-        } while (res === lastTaskString && (cats.length > 1 || taskData[k].tasks.length > 1));
+        const pick = (c) => {
+            let p = activeInv[c].filter(i=>i.on);
+            return p.length ? p[Math.floor(Math.random()*p.length)].n : "gear";
+        };
 
-        lastTaskString = res;
-        document.getElementById('badge-container').innerHTML = `<span class="badge b-${k}">${taskData[k].label}</span>`;
+        let v = pick('Blindfolds'), g = pick('Gags'), r = pick('Restraints'), s = pick('Sensation');
+
+        let res = template.replace(/\[VIS\]/g, v).replace(/\[GAG\]/g, g).replace(/\[REST\]/g, r).replace(/\[SENS\]/g, s)
+                  .replace(/\[VERB-VIS\]/g, getVerb(v)).replace(/\[VERB-GAG\]/g, getVerb(g))
+                  .replace(/\[VERB-REST\]/g, getVerb(r)).replace(/\[VERB-SENS\]/g, getVerb(s))
+                  .replace(/\[SENS-ACT\]/g, getAction(s)).replace(/\[BODY\]/g, players[subIdx].g);
+
+        document.getElementById('badge-container').innerHTML = `<span class="badge b-${k}">${tasks[k].label}</span>`;
         document.getElementById('task-text').innerHTML = res;
-        timeLeft = taskData[k].time;
+        timeLeft = tasks[k].time;
         document.getElementById('gen-btn').style.display = 'none';
         document.getElementById('pre-start-controls').style.display = 'block';
     }
@@ -259,22 +250,16 @@
         if (success) { players[subIdx].wins++; subIdx = (subIdx === 0 ? 1 : 0); }
         else { players[subIdx === 0 ? 1 : 0].wins++; }
         currentRound++;
-        if (currentRound > parseInt(document.getElementById('maxRounds').value)) finalize();
-        else { updateIdentity(); resetUI(); }
-    }
-
-    function resetUI() {
-        document.getElementById('active-round').style.display = 'none';
-        document.getElementById('pre-round').style.display = 'block';
-        document.getElementById('gen-btn').style.display = 'block';
-        document.getElementById('pre-start-controls').style.display = 'none';
-        document.getElementById('task-text').innerText = "Awaiting command...";
-        document.getElementById('badge-container').innerHTML = "";
-    }
-
-    function finalize() {
-        let w = players[0].wins >= players[1].wins ? 0 : 1;
-        document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Ascension</h1><div class="box"><span class="label">Victor</span><div style="font-size:2rem;color:var(--crimson);font-weight:bold;">${players[w].n}</div></div><button class="btn" onclick="location.reload()">Reset Session</button></div>`;
+        if (currentRound > parseInt(document.getElementById('maxRounds').value)) {
+            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Finis</h1><button class="btn" onclick="location.reload()">New Session</button></div>`;
+        } else {
+            updateIdentity();
+            document.getElementById('active-round').style.display = 'none';
+            document.getElementById('pre-round').style.display = 'block';
+            document.getElementById('gen-btn').style.display = 'block';
+            document.getElementById('pre-start-controls').style.display = 'none';
+            document.getElementById('task-text').innerText = "Awaiting command...";
+        }
     }
 </script>
 </body>
