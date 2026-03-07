@@ -44,40 +44,32 @@
         }
         .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
-        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .t-btn { 
-            padding: 12px; border-radius: 12px; border: 1px solid #333; background: #111; 
-            color: #666; cursor: pointer; font-weight: bold; text-transform: uppercase; 
-            font-size: 0.7rem; text-align: center; min-height: 50px; display: flex; align-items: center; justify-content: center;
-        }
-        .t-btn.on { background: var(--accent); color: #000; border-color: var(--accent); }
-        .t-btn.gear-on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        
-        .master-all { grid-column: span 2; background: #222; color: var(--accent); border: 1px dashed var(--accent); margin-bottom: 5px; }
-
         .btn { 
             background: var(--crimson); color: white; border: none; padding: 20px; 
             width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; 
             border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px;
         }
-        .btn-sec { background: var(--off); margin-top: 10px; color: #aaa; }
-
-        .timer-big { font-size: 4rem; text-align: center; font-weight: bold; margin: 10px 0; }
-        .instruction-highlight { color: var(--accent); font-weight: bold; }
-        
-        .step { display: none; }
-        .active { display: block !important; }
 
         /* ARSENAL TOOLS */
         .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
         .tag { background: #000; padding: 8px 12px; border-radius: 10px; font-size: 0.9rem; cursor: pointer; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 8px; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        .del-x { color: rgba(255,255,255,0.3); font-weight: bold; padding-left: 5px; }
-        .del-x:hover { color: white; }
+        .del-x { color: rgba(255,255,255,0.4); font-weight: bold; font-size: 1.2rem; line-height: 1; padding: 2px 5px; }
         
-        .add-row { display: flex; gap: 5px; margin-top: 5px; margin-bottom: 15px; }
-        .add-row input { margin-bottom: 0; padding: 10px; font-size: 0.9rem; }
-        .add-btn { background: #333; color: var(--accent); border: none; padding: 0 15px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .add-row { display: flex; gap: 8px; margin-top: 5px; margin-bottom: 20px; }
+        .add-row input { margin-bottom: 0; padding: 12px; font-size: 0.9rem; flex-grow: 1; }
+        .add-btn { background: var(--accent); color: #000; border: none; padding: 0 20px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.5rem; }
+
+        /* COMMAND PAGE STYLES */
+        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .t-btn { padding: 12px; border-radius: 12px; border: 1px solid #333; background: #111; color: #666; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; text-align: center; min-height: 50px; display: flex; align-items: center; justify-content: center; }
+        .t-btn.on { background: var(--accent); color: #000; border-color: var(--accent); }
+        .t-btn.gear-on { background: var(--crimson); color: white; border-color: var(--crimson); }
+        .master-all { grid-column: span 2; background: #222; color: var(--accent); border: 1px dashed var(--accent); margin-bottom: 5px; }
+        .timer-big { font-size: 4rem; text-align: center; font-weight: bold; margin: 10px 0; }
+        .instruction-highlight { color: var(--accent); font-weight: bold; }
+        .step { display: none; }
+        .active { display: block !important; }
     </style>
 </head>
 <body>
@@ -96,7 +88,6 @@
                 <div class="g-btn" id="p1n" onclick="setGender(1,'NB')">NB</div>
             </div>
         </div>
-
         <div class="box-section">
             <span class="label">Secondary Participant (Subject)</span>
             <input type="text" id="p2_n" placeholder="Name">
@@ -106,12 +97,10 @@
                 <div class="g-btn" id="p2n" onclick="setGender(2,'NB')">NB</div>
             </div>
         </div>
-
         <div class="box-section">
             <span class="label">Rounds</span>
             <input type="number" id="max_r" value="10">
         </div>
-
         <button class="btn" onclick="nav(2)">Access the Arsenal</button>
     </div>
 
@@ -128,19 +117,18 @@
                 <div class="toggle-grid" id="trial-toggles"></div>
             </div>
             <div class="box-section">
-                <span class="label">Gear</span>
+                <span class="label">Gear System</span>
                 <div class="toggle-grid" id="gear-toggles"></div>
             </div>
             <button class="btn" onclick="generateDecree()">Generate Decree</button>
         </div>
-
         <div id="active-round" style="display:none;">
             <div class="box-section" style="min-height: 180px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; line-height: 1.6;">
                 <div id="active-trial-text" style="text-align:center;"></div>
             </div>
             <div class="timer-big" id="clock">00:00</div>
-            <button class="btn" style="background:var(--success);" onclick="finish(true)">Complete</button>
-            <button class="btn btn-sec" onclick="finish(false)">Fail</button>
+            <button class="btn" style="background:#1e4d2b;" onclick="finish(true)">Complete</button>
+            <button class="btn" style="background:#2a2a2a; margin-top:10px; color:#aaa;" onclick="finish(false)">Fail</button>
         </div>
     </div>
 </div>
@@ -193,32 +181,41 @@
 
     function renderVault() {
         const v = document.getElementById('vault-inject');
-        v.innerHTML = '<span class="label">The Arsenal</span>';
+        v.innerHTML = '<span class="label">Inventory & Arsenal</span>';
+        
         for (let c in vault) {
-            v.innerHTML += `<span class="label" style="color:#555; margin-top:10px;">${c}</span>`;
+            const section = document.createElement('div');
+            section.innerHTML = `<span class="label" style="color:#666; margin-top:10px;">${c}</span>`;
+            
             const cloud = document.createElement('div');
             cloud.className = 'tag-cloud';
-            vault[c].forEach((i, idx) => {
-                const t = document.createElement('div');
-                t.className = `tag ${i.on ? 'on' : ''}`;
-                t.innerHTML = `${i.n} <span class="del-x" onclick="event.stopPropagation(); deleteItem('${c}', ${idx})">✕</span>`;
-                t.onclick = () => { i.on = !i.on; renderVault(); };
-                cloud.appendChild(t);
+            
+            vault[c].forEach((item, idx) => {
+                const tag = document.createElement('div');
+                tag.className = `tag ${item.on ? 'on' : ''}`;
+                tag.innerHTML = `${item.n} <span class="del-x" onclick="event.stopPropagation(); deleteItem('${c}', ${idx})">×</span>`;
+                tag.onclick = () => { item.on = !item.on; renderVault(); };
+                cloud.appendChild(tag);
             });
-            v.appendChild(cloud);
+            
+            section.appendChild(cloud);
             
             const addRow = document.createElement('div');
             addRow.className = 'add-row';
-            addRow.innerHTML = `<input type="text" id="add-${c}" placeholder="Add New ${c}...">
-                                <button class="add-btn" onclick="addItem('${c}')">+</button>`;
-            v.appendChild(addRow);
+            addRow.innerHTML = `
+                <input type="text" id="in-${c}" placeholder="New ${c}..." onkeydown="if(event.key==='Enter') addItem('${c}')">
+                <button class="add-btn" onclick="addItem('${c}')">+</button>
+            `;
+            section.appendChild(addRow);
+            v.appendChild(section);
         }
     }
 
     function addItem(cat) {
-        const inp = document.getElementById(`add-${cat}`);
-        if(inp.value.trim()) {
-            vault[cat].push({n: inp.value.trim(), on: true});
+        const input = document.getElementById(`in-${cat}`);
+        const val = input.value.trim();
+        if(val) {
+            vault[cat].push({n: val, on: true});
             renderVault();
         }
     }
