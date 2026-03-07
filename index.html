@@ -34,8 +34,8 @@
         
         /* Arsenal Management Styling */
         .add-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .add-input { flex: 1; padding: 15px; border-radius: 15px; font-size: 1.1rem; border: 1px solid #444; background: #000; color: #fff; }
-        .add-btn { background: var(--accent); color: black; border: none; padding: 0 20px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 1.5rem; }
+        .add-input { flex: 1; padding: 15px; border-radius: 15px; font-size: 1.1rem; border: 1px solid #444; background: #000; color: #fff; font-family: Arial, sans-serif; }
+        .add-btn { background: var(--accent); color: black; border: none; padding: 0 20px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; }
 
         .btn { background: var(--crimson); color: white; border: none; padding: 25px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 25px; font-size: 1.3rem; letter-spacing: 3px; transition: 0.2s; }
         .btn:active { transform: scale(0.95); opacity: 0.9; }
@@ -47,9 +47,10 @@
         .t-btn.gear-on { background: var(--crimson); color: white; border-color: var(--crimson); }
 
         .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
-        .tag { background: #000; padding: 12px 18px; border-radius: 15px; font-size: 1.1rem; cursor: pointer; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 10px; }
+        .tag { background: #000; padding: 12px 18px; border-radius: 15px; font-size: 1.1rem; cursor: pointer; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        .del-x { color: #f00; font-weight: bold; font-size: 1.2rem; margin-left: 5px; opacity: 0.6; }
+        .del-x { color: rgba(255,255,255,0.4); font-weight: bold; font-size: 1.3rem; padding: 0 5px; }
+        .del-x:hover { color: #ff4d4d; }
 
         .timer-big { font-size: 6.5rem; text-align: center; color: #fff; font-weight: bold; margin: 20px 0; }
         .instruction-highlight { color: var(--accent); font-weight: bold; font-size: 1.4rem; text-transform: uppercase; }
@@ -92,10 +93,10 @@
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Customize Your Arsenal</span>
+            <span class="label">Manage Arsenal</span>
             <div id="vault-inject"></div>
         </div>
-        <button class="btn" onclick="vibrate(50); playSnd('click'); nav(3);">Confirm Protocol</button>
+        <button class="btn" onclick="vibrate(50); playSnd('click'); nav(3);">Confirm Arsenal</button>
     </div>
 
     <div id="step3" class="step">
@@ -122,10 +123,10 @@
         "Blindfolds": ["Sleep Mask", "Hood", "Silk Scarf"],
         "Gags": ["Ball Gag", "Sock Gag", "Medical Tape"],
         "Restraints": ["Rope", "Zip Ties", "Leather Cuffs"],
-        "Sensation": ["Whip", "Ice Cube", "Vibrator", "Wartenberg Wheel"]
+        "Sensation": ["Whip", "Ice Cube", "Vibrator"]
     };
 
-    let vault = JSON.parse(localStorage.getItem('sov_final_v3')) || null;
+    let vault = JSON.parse(localStorage.getItem('sov_vault_v4')) || null;
     if(!vault) {
         vault = {};
         for(let c in defaultVault) vault[c] = defaultVault[c].map(n => ({n, on: true}));
@@ -133,28 +134,20 @@
 
     let trials = [
         { 
-            n: "The Architect's Bind", 
-            t: 600, 
-            d: "The Master describes a position of total vulnerability, and the Subject must use <b>[REST]</b> to build that cage around themselves. Every knot or click of <b>[REST]</b> is done under the Master's watchful eye. To finalize the submission, the Master steps in to take away the Subject's sight with <b>[VIS]</b> and their voice with <b>[GAG]</b>, leaving them bound and waiting.", 
-            on: true 
+            n: "The Architect's Bind", t: 600, 
+            d: "The Master describes a position of total vulnerability, and the Subject must use <b>[REST]</b> to build that cage around themselves. Every knot or click of <b>[REST]</b> is done under the Master's watchful eye. To finalize the submission, the Master steps in to take away the Subject's sight with <b>[VIS]</b> and their voice with <b>[GAG]</b>, leaving them bound and waiting.", on: true 
         },
         { 
-            n: "The Sensory Void", 
-            t: 450, 
-            d: "Total sensory isolation. First, the Master seals away the Subject's senses using <b>[VIS]</b> and <b>[GAG]</b> until they are drifting in a silent, dark vacuum. The Master then uses <b>[SENS]</b> to ground them back in reality, dragging the <b>[SENS]</b> slowly across sensitive skin in long, teasing strokes or sharp, sudden bursts to keep the Subject guessing where the next touch will land.", 
-            on: true 
+            n: "The Sensory Void", t: 450, 
+            d: "Total sensory isolation. First, the Master seals away the Subject's senses using <b>[VIS]</b> and <b>[GAG]</b> until they are drifting in a silent, dark vacuum. The Master then uses <b>[SENS]</b> to ground them back in reality, dragging the <b>[SENS]</b> slowly across sensitive skin in long, teasing strokes or sharp, sudden bursts to keep the Subject guessing where the next touch will land.", on: true 
         },
         { 
-            n: "The Living Sculpture", 
-            t: 600, 
-            d: "The Master physically molds the Subject into a demanding or graceful pose, securing it firmly with <b>[REST]</b>. The Subject's only job is to become an unmoving object of art. While they are frozen, the Master 'paints' sensations across their body using <b>[SENS]</b>. The Subject must remain perfectly still; even the slightest shiver or twitch is a flaw in the Master's masterpiece.", 
-            on: true 
+            n: "The Living Sculpture", t: 600, 
+            d: "The Master physically molds the Subject into a demanding or graceful pose, securing it firmly with <b>[REST]</b>. The Subject's only job is to become an unmoving object of art. While they are frozen, the Master 'paints' sensations across their body using <b>[SENS]</b>. The Subject must remain perfectly still; even the slightest shiver or twitch is a flaw in the Master's masterpiece.", on: true 
         },
         { 
-            n: "The Silent Confession", 
-            t: 450, 
-            d: "With <b>[VIS]</b> obscuring the world, the Subject is forced to listen only to the Master's voice. The Master whispers questions—secrets, desires, or truths—into the Subject's ear. If the Subject hesitates or if the Master is unsatisfied, <b>[SENS]</b> is applied as a sharp reminder of who is in control. If <b>[GAG]</b> is worn, the Subject must find a way to communicate their 'yes' or 'no' through body language or muffled sounds.", 
-            on: true 
+            n: "The Silent Confession", t: 450, 
+            d: "With <b>[VIS]</b> obscuring the world, the Subject is forced to listen only to the Master's voice. The Master whispers questions—secrets, desires, or truths—into the Subject's ear. If the Subject hesitates or if the Master is unsatisfied, <b>[SENS]</b> is applied as a sharp reminder of who is in control. If <b>[GAG]</b> is worn, the Subject must find a way to communicate their 'yes' or 'no' through body language or muffled sounds.", on: true 
         }
     ];
 
@@ -177,6 +170,7 @@
         document.getElementById('step'+n).classList.add('active');
     }
 
+    // VAULT ENGINE: ADD, TOGGLE, DELETE
     function renderVault() {
         const cont = document.getElementById('vault-inject');
         cont.innerHTML = '';
@@ -202,20 +196,23 @@
     }
 
     function addItem(c) {
-        let val = document.getElementById(`in-${c}`).value;
+        let input = document.getElementById(`in-${c}`);
+        let val = input.value.trim();
         if(val) {
             vault[c].push({n: val, on: true});
-            document.getElementById(`in-${c}`).value = '';
+            input.value = '';
             saveVault(); renderVault();
+            vibrate(40);
         }
     }
 
     function removeItem(c, i) {
         vault[c].splice(i, 1);
         saveVault(); renderVault();
+        vibrate([30, 30]);
     }
 
-    function saveVault() { localStorage.setItem('sov_final_v3', JSON.stringify(vault)); }
+    function saveVault() { localStorage.setItem('sov_vault_v4', JSON.stringify(vault)); }
 
     function renderCommandCenter() {
         document.getElementById('round-header').innerText = `ROUND ${curR} | Master: ${players[masterIdx].n}`;
