@@ -30,14 +30,13 @@
         input[type="text"], select, input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; margin-top: 5px; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
         
         .category-block { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #e2d1b3; }
-        .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
-        .tag { background: #f9f4eb; padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; }
+        .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+        .tag { background: #f9f4eb; padding: 8px 15px; border-radius: 12px; font-size: 0.8rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; font-weight: bold; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
 
         .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .choice-btn { background: #fff; border: 2px solid var(--accent); color: var(--accent); padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
-        .choice-btn:hover { background: var(--accent); color: white; }
-
+        
         .card-dock { display: flex; justify-content: space-around; margin: 15px 0; gap: 8px; }
         .tactical-card { flex: 1; padding: 12px 5px; border-radius: 10px; text-align: center; font-size: 0.65rem; font-weight: 900; cursor: pointer; color: white; text-transform: uppercase; border: none; }
         .t-red { background: var(--red-card); box-shadow: 0 4px 0 #922b21; }
@@ -66,11 +65,11 @@
             <div class="identity-card"><span class="label">Player 1</span><input type="text" id="p1_name" placeholder="Name"><select id="p1_gender"><option value="male body">Male Body</option><option value="female body">Female Body</option></select></div>
             <div class="identity-card"><span class="label">Player 2</span><input type="text" id="p2_name" placeholder="Name"><select id="p2_gender"><option value="female body">Female Body</option><option value="male body">Male Body</option></select></div>
         </div>
-        <button class="btn" onclick="goToStep(2)">Verify Inventory ></button>
+        <button class="btn" onclick="goToStep(2)">Configure Arsenal ></button>
     </div>
 
     <div id="step2" class="step">
-        <div class="box"><span class="label">Arsenal Checklist</span><div id="inv-container"></div></div>
+        <div class="box"><span class="label">Full Tactical Arsenal</span><div id="inv-container"></div></div>
         <button class="btn" onclick="goToStep(3)">Commence Ceremony</button>
     </div>
 
@@ -162,7 +161,8 @@
     };
 
     function renderInv() {
-        const cont = document.getElementById('inv-container'); cont.innerHTML = '';
+        const cont = document.getElementById('inv-container');
+        cont.innerHTML = ''; 
         for (let c in activeInv) {
             let div = document.createElement('div');
             div.className = 'category-block';
@@ -170,20 +170,35 @@
             cont.appendChild(div);
             let tagRow = div.querySelector(`#tags-${c}`);
             activeInv[c].forEach((item, i) => {
-                let t = document.createElement('div'); t.className = `tag ${item.on ? 'on' : ''}`; t.innerText = item.n;
-                t.onclick = () => { activeInv[c][i].on = !activeInv[c][i].on; renderInv(); };
+                let t = document.createElement('div');
+                t.className = `tag ${item.on ? 'on' : ''}`;
+                t.innerText = item.n;
+                t.onclick = () => { 
+                    activeInv[c][i].on = !activeInv[c][i].on; 
+                    renderInv(); 
+                };
                 tagRow.appendChild(t);
             });
         }
     }
 
     function goToStep(n) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step'+n).classList.add('active');
+        
         if(n === 2) { 
-            players = [{n: document.getElementById('p1_name').value || "P1", g: document.getElementById('p1_gender').value, score: 0}, {n: document.getElementById('p2_name').value || "P2", g: document.getElementById('p2_gender').value, score: 0}]; 
-            renderInv(); 
+            players = [
+                {n: document.getElementById('p1_name').value || "P1", g: document.getElementById('p1_gender').value, score: 0},
+                {n: document.getElementById('p2_name').value || "P2", g: document.getElementById('p2_gender').value, score: 0}
+            ]; 
+            renderInv(); // FORCED RENDER HERE
         }
-        if(n === 3) { masterIdx = Math.floor(Math.random()*2); slaveIdx = masterIdx === 0 ? 1 : 0; cardHolderIdx = Math.floor(Math.random()*2); updateUI(); }
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active')); document.getElementById('step'+n).classList.add('active');
+        if(n === 3) { 
+            masterIdx = Math.floor(Math.random()*2); 
+            slaveIdx = masterIdx === 0 ? 1 : 0; 
+            cardHolderIdx = Math.floor(Math.random()*2); 
+            updateUI(); 
+        }
     }
 
     function updateUI() {
@@ -198,10 +213,14 @@
     }
 
     function renderChoices() {
-        const grid = document.getElementById('master-choices'); grid.innerHTML = '';
+        const grid = document.getElementById('master-choices');
+        grid.innerHTML = '';
         Object.keys(taskPool).forEach(key => {
-            let btn = document.createElement('button'); btn.className = 'choice-btn'; btn.innerText = taskPool[key].label;
-            btn.onclick = () => generateTask(key); grid.appendChild(btn);
+            let btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.innerText = taskPool[key].label;
+            btn.onclick = () => generateTask(key);
+            grid.appendChild(btn);
         });
     }
 
@@ -220,7 +239,9 @@
                         .replace('[SENS]', `<b>${s.n}</b>`).replace('[SENS_DET]', s.d)
                         .replace('[BODY]', players[slaveIdx].g);
         document.getElementById('task-text').innerHTML = `<strong style="color:var(--crimson)">${t.label}</strong><br><br>${txt}`;
-        timeLeft = t.time; document.getElementById('choice-area').style.display = 'none'; document.getElementById('display-area').style.display = 'block';
+        timeLeft = t.time; 
+        document.getElementById('choice-area').style.display = 'none'; 
+        document.getElementById('display-area').style.display = 'block';
     }
 
     function backToChoice() { document.getElementById('choice-area').style.display = 'block'; document.getElementById('display-area').style.display = 'none'; }
@@ -235,8 +256,11 @@
         currentRound++;
         if(currentRound > parseInt(document.getElementById('maxRounds').value)) triggerFinale();
         else { 
-            updateUI(); document.getElementById('active-round').style.display = 'none'; document.getElementById('pre-round').style.display = 'block';
-            document.getElementById('choice-area').style.display = 'block'; document.getElementById('display-area').style.display = 'none';
+            updateUI(); 
+            document.getElementById('active-round').style.display = 'none'; 
+            document.getElementById('pre-round').style.display = 'block';
+            document.getElementById('choice-area').style.display = 'block'; 
+            document.getElementById('display-area').style.display = 'none';
         }
     }
 
