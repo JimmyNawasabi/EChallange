@@ -3,180 +3,458 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bound & Brave: Fixed Logic</title>
+    <title>Sovereignty: The Command Protocol</title>
     <style>
-        :root { --crimson: #8b0000; --gold: #d4af37; --bg: #0a0a0a; }
-        body { background: var(--bg); color: #e0e0e0; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .container { max-width: 600px; width: 100%; background: #111; border: 2px solid #333; padding: 20px; box-shadow: 0 0 30px #000; display: flex; flex-direction: column; min-height: 95vh; }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; border-bottom: 2px solid var(--crimson); padding-bottom: 10px; margin-bottom: 15px; }
-        .step { display: none; flex-grow: 1; overflow-y: auto; padding-bottom: 80px; }
-        .active { display: flex; flex-direction: column; }
-        
-        /* CATEGORY SECTIONS */
-        .cat-section { background: #080808; padding: 15px; border: 1px solid #222; margin-bottom: 20px; border-radius: 4px; }
-        .cat-header { font-size: 0.8em; color: var(--gold); margin-bottom: 10px; border-bottom: 1px solid var(--crimson); padding-bottom: 5px; font-weight: bold; text-transform: uppercase; }
-        .inventory-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .inv-item { background: #1a1a1a; padding: 10px; border: 1px solid #333; font-size: 0.75em; display: flex; align-items: center; gap: 10px; }
-        
-        .add-row { display: flex; gap: 8px; margin-bottom: 10px; }
-        .add-row input { margin-bottom: 0; flex: 1; border: 1px solid #555; background: #000; color: #fff; padding: 8px; }
-        .add-btn { background: var(--crimson); color: #fff; border: 1px solid var(--gold); padding: 0 20px; cursor: pointer; font-weight: bold; }
+        :root { 
+            --accent: #d4af37; --bg: #0a0a0a; --card: #161616;
+            --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --off: #2a2a2a;
+        }
 
-        /* PLAY CARDS */
-        .challenge-card { background: #000; border: 1px solid #444; padding: 25px; line-height: 1.8; font-size: 0.95em; border-left: 5px solid var(--gold); position: relative; }
-        .mode-badge { display: inline-block; padding: 4px 15px; background: var(--crimson); color: #fff; font-size: 0.9em; font-weight: bold; border-radius: 2px; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .intensity-pill { position: absolute; top: 25px; right: 25px; color: var(--gold); font-weight: bold; border: 1px solid var(--gold); padding: 2px 10px; font-size: 0.7em; }
-        .mod-header { color: var(--gold); font-weight: bold; text-transform: uppercase; font-size: 0.75em; display: block; margin-top: 20px; border-bottom: 1px solid #222; }
+        body { 
+            background: var(--bg); color: var(--text); 
+            font-family: Arial, Helvetica, sans-serif; 
+            -webkit-font-smoothing: antialiased;
+            margin: 0; padding: 15px; display: flex; justify-content: center;
+        }
+
+        .container { 
+            max-width: 580px; width: 100%; background: var(--card); 
+            padding: 40px; border-radius: 40px; border: 2px solid #222; 
+            box-shadow: 0 50px 100px rgba(0,0,0,0.9); margin-top: 10px;
+        }
         
-        .fixed-footer { position: sticky; bottom: 0; background: #111; padding: 15px 0; border-top: 1px solid #333; margin-top: auto; z-index: 100; }
-        .btn { background: var(--crimson); color: white; border: 1px solid var(--gold); padding: 18px; width: 100%; cursor: pointer; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
-        .timer-val { font-size: 5em; color: #ff0000; font-family: 'Impact', sans-serif; text-align: center; margin: 20px 0; text-shadow: 0 0 15px rgba(255,0,0,0.4); }
+        h1 { font-weight: bold; text-align: center; text-transform: uppercase; letter-spacing: 12px; color: var(--accent); margin-bottom: 5px; font-size: 2.4rem; }
+        .subtitle { text-align: center; font-size: 0.9rem; color: #666; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 6px; }
+        
+        .box { background: #1f1f1f; padding: 30px; margin-bottom: 30px; border-radius: 30px; border: 1px solid #333; font-size: 1.3rem; line-height: 1.8; color: #eee; }
+        .label { font-size: 0.9rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 15px; letter-spacing: 2px; }
+
+        .identity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        input, select { width: 100%; padding: 20px; border: 1px solid #444; border-radius: 18px; background: #000; color: white; font-size: 1.2rem; box-sizing: border-box; font-family: Arial, sans-serif; }
+        
+        .add-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .add-input { flex: 1; padding: 15px; border-radius: 15px; font-size: 1.1rem; border: 1px solid #444; background: #000; color: #fff; font-family: Arial, sans-serif; }
+        .add-btn { background: var(--accent); color: black; border: none; padding: 0 20px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; }
+
+        .btn { background: var(--crimson); color: white; border: none; padding: 25px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 25px; font-size: 1.3rem; letter-spacing: 3px; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); opacity: 0.9; }
+        .btn-sec { background: var(--off); margin-top: 12px; color: #aaa; }
+
+        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .t-btn { padding: 22px; border-radius: 20px; border: 1px solid #333; background: #111; color: #777; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.9rem; }
+        .t-btn.on { background: var(--accent); color: #000; border-color: var(--accent); }
+        .t-btn.gear-on { background: var(--crimson); color: white; border-color: var(--crimson); }
+
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
+        .tag { background: #000; padding: 12px 18px; border-radius: 15px; font-size: 1.1rem; cursor: pointer; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 10px; transition: 0.2s; }
+        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
+        .del-x { color: rgba(255,255,255,0.4); font-weight: bold; font-size: 1.3rem; padding: 0 5px; }
+        .del-x:hover { color: #ff4d4d; }
+
+        .timer-big { font-size: 6.5rem; text-align: center; color: #fff; font-weight: bold; margin: 20px 0; }
+        .instruction-highlight { color: var(--accent); font-weight: bold; font-size: 1.4rem; text-transform: uppercase; }
+        
+        .step { display: none; }
+        .active { display: block !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Bound & Brave</h1>
+    <h1>SOVEREIGNTY</h1>
+    <div class="subtitle">The Command Protocol</div>
+
+    <audio id="snd-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+    <audio id="snd-alarm" src="https://assets.mixkit.co/active_storage/sfx/951/951-preview.mp3"></audio>
+    <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
     <div id="step1" class="step active">
-        <div style="background:#000; padding:20px; border-left:4px solid var(--gold);">
-            <label style="color:var(--gold); font-size:0.7em; display:block; margin-bottom:5px;">SUBMISSIVE NAME</label>
-            <input type="text" id="p1Name" placeholder="Enter Name..." style="width:100%; background:#111; border:1px solid #333; color:#fff; padding:12px; margin-bottom:15px;">
-            <label style="color:var(--gold); font-size:0.7em; display:block; margin-bottom:5px;">MASTER NAME</label>
-            <input type="text" id="p2Name" placeholder="Enter Name..." style="width:100%; background:#111; border:1px solid #333; color:#fff; padding:12px;">
+        <div class="box">
+            <span class="label">Participant 1</span>
+            <div class="identity-row">
+                <input type="text" id="p1_n" placeholder="Name">
+                <select id="p1_g"><option>Male Body</option><option>Female Body</option><option>Neutral</option></select>
+            </div>
+            <span class="label">Participant 2</span>
+            <div class="identity-row">
+                <input type="text" id="p2_n" placeholder="Name">
+                <select id="p2_g"><option>Female Body</option><option>Male Body</option><option>Neutral</option></select>
+            </div>
+            <span class="label" style="margin-top:10px;">Session Duration (Rounds)</span>
+            <input type="number" id="max_r" value="10">
         </div>
-        <p style="color:#666; font-size:0.7em; text-align:center; margin-top:20px;">Intensity and Time are calculated randomly per round.</p>
-        <div class="fixed-footer"><button class="btn" onclick="nav(2)">Add Gear ></button></div>
+        <button class="btn" onclick="vibrate(50); playSnd('click'); nav(2);">Access The Arsenal</button>
     </div>
 
     <div id="step2" class="step">
-        <div class="cat-section">
-            <div class="cat-header">1. Bondage (Tie)</div>
-            <div class="add-row"><input type="text" id="inBond" placeholder="e.g. Rope..."><button class="add-btn" onclick="addItem('bondage')">+</button></div>
-            <div id="gridBond" class="inventory-grid"></div>
+        <div class="box">
+            <span class="label">Manage Arsenal</span>
+            <div id="vault-inject"></div>
         </div>
-        <div class="cat-section">
-            <div class="cat-header">2. Sensory (Deprive)</div>
-            <div class="add-row"><input type="text" id="inSens" placeholder="e.g. Blindfold..."><button class="add-btn" onclick="addItem('sensory')">+</button></div>
-            <div id="gridSens" class="inventory-grid"></div>
-        </div>
-        <div class="cat-section">
-            <div class="cat-header">3. Toys (Stimulate)</div>
-            <div class="add-row"><input type="text" id="inToys" placeholder="e.g. Flogger..."><button class="add-btn" onclick="addItem('toys')">+</button></div>
-            <div id="gridToys" class="inventory-grid"></div>
-        </div>
-        <div class="fixed-footer"><button class="btn" onclick="nav(3)">Start Game ></button></div>
+        <button class="btn" onclick="vibrate(50); playSnd('click'); nav(3);">Confirm Arsenal</button>
     </div>
 
     <div id="step3" class="step">
-        <div id="prepPhase">
-            <div class="challenge-card" id="taskBox">Awaiting Synthesis...</div>
-            <button class="btn" id="genBtn" onclick="generate()" style="margin-top:20px;">Generate Random Challenge</button>
-            <button class="btn" id="startBtn" style="display:none; margin-top:20px;" onclick="showTimer()">Confirm & Start Clock</button>
+        <div id="pre-round">
+            <div id="round-header" class="label" style="text-align:center; color:var(--accent); font-size: 1.3rem; margin-bottom:25px;">ROUND 1</div>
+            <div class="box"><span class="label">Active Trials</span><div class="toggle-grid" id="trial-toggles"></div></div>
+            <div class="box"><span class="label">Allowed Gear</span><div class="toggle-grid" id="gear-toggles"></div></div>
+            <button class="btn" onclick="vibrate(100); playSnd('click'); generateDecree();">Generate Decree</button>
         </div>
-        <div id="timerPhase" style="display:none;">
-            <div class="timer-val" id="timeDisp">00:00</div>
-            <button class="btn" onclick="resolve(true)">SUCCESS</button>
-            <button class="btn" style="background:#222; margin-top:10px;" onclick="resolve(false)">FAILURE</button>
+
+        <div id="active-round" style="display:none;">
+            <div class="box"><div id="active-trial-text" style="text-align:center;"></div></div>
+            <div class="timer-big" id="clock">00:00</div>
+            <button class="btn" style="background:var(--success);" onclick="vibrate(200); playSnd('success'); finish(true);">Success</button>
+            <button class="btn btn-sec" onclick="finish(false);">Failure</button>
         </div>
     </div>
 </div>
 
 <script>
-    let items = { bondage: [], sensory: [], toys: [] };
-    let players = [], active = { bondage: [], sensory: [], toys: [] }, subIdx = 0, domIdx = 1, clock, secs;
+    let players = [], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft;
+    
+    const defaultVault = {
+        "Blindfolds": ["Sleep Mask", "Hood", "Silk Scarf"],
+        "Gags": ["Ball Gag", "Sock Gag", "Medical Tape"],
+        "Restraints": ["Rope", "Zip Ties", "Leather Cuffs"],
+        "Sensation": ["Whip", "Ice Cube", "Vibrator"]
+    };
 
-    function nav(s) {
-        if(s===2) {
-            players = [{ name: document.getElementById('p1Name').value || "Sub" }, { name: document.getElementById('p2Name').value || "Master" }];
-        }
-        if(s===3) {
-            active.bondage = getChecked('gridBond');
-            active.sensory = getChecked('gridSens');
-            active.toys = getChecked('gridToys');
-            if(active.bondage.length === 0) { alert("Please add at least 1 Bondage item."); nav(2); return; }
-        }
-        document.querySelectorAll('.step').forEach(d => d.classList.remove('active'));
-        document.getElementById('step'+s).classList.add('active');
+    let vault = JSON.parse(localStorage.getItem('sov_vault_v6')) || null;
+    if(!vault) {
+        vault = {};
+        for(let c in defaultVault) vault[c] = defaultVault[c].map(n => ({n, on: true}));
     }
 
-    function addItem(cat) {
-        const input = document.getElementById(cat === 'bondage' ? 'inBond' : cat === 'sensory' ? 'inSens' : 'inToys');
-        if (input.value.trim()) {
-            items[cat].push(input.value.trim());
-            const grid = document.getElementById(cat === 'bondage' ? 'gridBond' : cat === 'sensory' ? 'gridSens' : 'gridToys');
-            grid.innerHTML = "";
-            items[cat].slice().reverse().forEach(i => grid.innerHTML += `<div class="inv-item"><input type="checkbox" value="${i}" checked> ${i}</div>`);
-            input.value = "";
+    // EXPLICIT 200+ ACTIVITY LIST
+    let trials = [
+        { 
+            n: "Constraint & Confinement", t: 600, on: true,
+            d: [
+                "Instruct the Subject to kneel. Secure their wrists tightly behind their back using [REST]. Apply [VIS] and [GAG]. Step back and observe their vulnerability.",
+                "Direct the Subject to lie spread-eagle face up. Use [REST] to anchor all four limbs to the floor or bed. Drag [SENS] lightly down their torso.",
+                "Have the Subject stand facing a wall, hands flat against it. Use [REST] to bind their ankles together so they cannot step away. Apply [VIS].",
+                "Command the Subject to cross their arms over their chest. Use [REST] to secure their elbows behind their back, forcing their chest forward. Apply [GAG].",
+                "Subject lies face down. Bind their wrists to their ankles behind their back with [REST] to create a severe arch. Apply [VIS].",
+                "Sit the Subject in a chair. Use [REST] to secure their torso to the backrest, and their wrists to the legs of the chair. Apply [GAG].",
+                "Have the Subject kneel upright with hands behind their head. Wrap [REST] around their elbows to lock the pose. Use [SENS] on their exposed chest.",
+                "Secure the Subject's wrists together in front of them with [REST]. Bind their ankles with a separate [REST], leaving just enough slack to shuffle.",
+                "Direct the Subject to a hands-and-knees crawl position. Bind their left wrist to their left ankle using [REST]. Apply [VIS].",
+                "Subject lies on their side in a fetal position. Use [REST] to bind their wrists to their knees, completely immobilizing them. Apply [GAG].",
+                "Stand the Subject in the center of the room. Secure their hands behind their back with [REST]. Place [VIS] on them and slowly circle them.",
+                "Have the Subject lie on their back, knees bent and spread wide. Use [REST] to lock their knees in the open position. Apply [SENS] to their inner thighs.",
+                "Command the Subject to sit on the floor, legs straight out. Bind their wrists to their ankles using [REST], forcing them into a deep forward stretch.",
+                "Secure [REST] around the Subject's neck like a collar (safely). Hold the other end like a leash. Apply [VIS] and guide them around the room.",
+                "Subject lies face up, hands pinned under their lower back. Use [REST] to bind their thighs tightly together. Apply [GAG].",
+                "Kneel the Subject in front of you. Secure a [REST] around their wrists and hook it over their neck, lifting their arms slightly. Apply [VIS].",
+                "Have the Subject lean over a piece of furniture. Secure their wrists to the base of it using [REST]. Apply [GAG] and use [SENS] across their back.",
+                "Subject stands with legs spread wide. Use [REST] to bind their right wrist to their right ankle, and left wrist to left ankle. Apply [VIS].",
+                "Sit the Subject cross-legged. Use [REST] to bind their wrists together and slip them over their knees, locking them into the seated position.",
+                "Lie the Subject face down. Secure their arms straight down to their sides using [REST] wrapped around their entire torso. Apply [GAG].",
+                "Subject stands on their tiptoes facing a wall. Secure their hands high above their head with [REST]. If their heels touch the floor, use [SENS].",
+                "Have the Subject kneel on a pillow. Secure their wrists to their ankles with [REST]. Apply [VIS] and enforce total silence.",
+                "Subject lies on their back, arms spread wide like a cross. Secure both wrists to heavy objects using [REST]. Apply [GAG].",
+                "Command the Subject to hug their knees to their chest. Wrap [REST] around their entire body, bundling them tightly. Apply [VIS].",
+                "Subject stands facing you. Bind their wrists behind their back with [REST], then blindfold them with [VIS]. Rest your hands heavily on their shoulders.",
+                "Have the Subject kneel over a chair seat. Secure their ankles to the chair legs with [REST]. Use [SENS] on their exposed lower half.",
+                "Subject lies face down, arms extended forward. Bind their wrists together with [REST], and their ankles together with [REST]. Apply [GAG].",
+                "Stand the Subject back-to-back with a chair. Secure their arms behind them around the chair back using [REST]. Apply [VIS].",
+                "Direct the Subject to a crawling position. Bind their wrists together with [REST] to make moving difficult. Apply [GAG].",
+                "Subject sits back on their heels. Use [REST] to secure their wrists behind their thighs. Apply [VIS] and wait in absolute silence.",
+                "Have the Subject lie flat on their back. Bind their dominant arm to their side with [REST], leaving the other free but useless. Apply [GAG].",
+                "Subject stands with hands clasped behind their neck. Use [REST] to tightly bind their elbows together behind their back. Apply [SENS] to their ribs.",
+                "Command the Subject to lie face down. Secure their ankles with [REST] and pull them upwards, hooking them over the Subject's bound wrists.",
+                "Subject sits in a chair, legs extended. Bind their ankles to a heavy object in front of them using [REST]. Secure their hands with [REST] behind the chair.",
+                "Have the Subject kneel with their face buried in their knees. Use [REST] to bind their hands over the back of their neck. Apply [GAG].",
+                "Subject stands flat against a door. Use [REST] to secure their hands to the doorknobs on either side if possible, or bind them in front. Apply [VIS].",
+                "Lie the Subject on their side. Bind their wrists to their ankles behind their back with [REST], creating a tight, awkward bow. Apply [GAG].",
+                "Subject kneels facing you. Bind their elbows together behind their back with [REST]. Use [SENS] to trace their jawline.",
+                "Have the Subject sit on the edge of a bed. Secure their wrists behind them with [REST]. Apply [VIS] and push them onto their back.",
+                "Subject stands on one leg. Bind their lifted ankle to their thigh using [REST]. Apply [GAG] and command them to keep their balance.",
+                "Command the Subject to lie face up, hands under their head. Use [REST] to bind their elbows flat to the floor. Apply [VIS].",
+                "Subject kneels with thighs spread wide. Secure their wrists between their knees to the floor using [REST]. Use [SENS] on their inner thighs.",
+                "Have the Subject lie face down, arms straight out to the sides. Use [REST] to bind their wrists to heavy weights. Apply [GAG].",
+                "Subject sits cross-legged. Wrap [REST] multiple times around their torso and arms, pinning them tightly. Apply [VIS].",
+                "Stand the Subject facing a corner. Secure their wrists behind their back with [REST]. Apply [GAG] and enforce strict stillness.",
+                "Subject lies on their back, legs raised in the air. Bind their ankles together with [REST]. Apply [VIS] and stroke their calves with [SENS].",
+                "Have the Subject kneel on a hard surface. Secure their hands behind their back with [REST]. Apply [GAG] and do not let them shift weight.",
+                "Subject lies face down. Bind their wrists to their ankles with [REST], then place a heavy object on their back to hold them down. Apply [VIS].",
+                "Sit the Subject in a chair. Use [REST] to bind their thighs tightly together, and their ankles to the front legs. Apply [GAG].",
+                "Have the Subject stand entirely vulnerable. Hand them the [REST] and command them to tie their own ankles together. Once done, apply [VIS]."
+            ]
+        },
+        { 
+            n: "Sensory Deprivation & Teasing", t: 450, on: true,
+            d: [
+                "Apply [VIS] and [GAG]. Plunge the Subject into total darkness. Trace [SENS] lightly from their collarbone down to their navel, moving painfully slow.",
+                "With the Subject in [VIS], hold [SENS] very close to their skin without touching it. Let the anticipation build before making sharp, sudden contact.",
+                "Secure the Subject's hands with [REST] and apply [VIS]. Whisper instructions in one ear while using [SENS] on the opposite side of their body.",
+                "Apply [GAG] and [VIS]. Use your bare hands to caress their skin, then suddenly switch to [SENS] to shock their senses.",
+                "With the Subject blindfolded using [VIS], lightly trace letters onto their skin using [SENS]. If they cannot guess the word, apply a sharp sting.",
+                "Apply [VIS]. Have the Subject hold out their hands. Place [SENS] in their palms briefly, take it away, and then use it unpredictably on their back.",
+                "Silence the Subject with [GAG]. Use [SENS] in a rhythmic tapping motion on their thighs, slowly increasing the pressure until they squirm.",
+                "Apply [VIS] and [GAG]. Blow gently on the back of the Subject's neck, then immediately follow up with a sharp strike from [SENS].",
+                "Bind the Subject with [REST] and apply [VIS]. Drag [SENS] up their inner arm to the armpit, focusing on the most ticklish and sensitive nerves.",
+                "With the Subject in [VIS], walk loudly around them. Stop randomly and apply [SENS] to the back of their knees or thighs.",
+                "Apply [GAG]. Use [SENS] to stroke the Subject's face and jawline. The contrast between the harsh [GAG] and soft touch should be intense.",
+                "Apply [VIS]. Drip a few drops of cold water onto their chest, then aggressively rub the area with [SENS].",
+                "Secure the Subject with [REST] and apply [VIS]. Hover [SENS] just above their lips, teasing them before dragging it down their throat.",
+                "With [VIS] securely on, pinch the Subject's skin gently. When they relax, apply a sudden, sharp impact with [SENS].",
+                "Apply [GAG] and [VIS]. Tap [SENS] rhythmically against the floor, then suddenly transition the rhythm onto their ribs.",
+                "Bind the Subject's wrists with [REST]. Apply [VIS]. Trace the exact path of the restraints using [SENS], highlighting their captivity.",
+                "Apply [VIS]. Lightly drag [SENS] over the Subject's stomach. If their breathing hitches, intensify the pressure of the tool.",
+                "With the Subject in [VIS] and [GAG], sit silently for one full minute to let their anxiety build, then strike quickly with [SENS].",
+                "Apply [VIS]. Press the flat side of [SENS] against their cheek so they can feel its temperature, then use it on their inner thighs.",
+                "Secure the Subject with [REST] and apply [GAG]. Trace [SENS] down their spine, pressing hard into the vertebrae.",
+                "Apply [VIS]. Snap your fingers near their left ear, then apply [SENS] to their right hip. Disorient their senses completely.",
+                "With the Subject blindfolded by [VIS], use [SENS] to trace circles around their navel, slowly tightening the spiral until you reach the center.",
+                "Apply [GAG]. Hold [SENS] against their throat (safely) just tight enough for them to feel its presence. Maintain eye contact.",
+                "Apply [VIS] and [REST]. Use [SENS] in a sweeping motion across their chest, alternating between feather-light and heavy pressure.",
+                "With the Subject in [VIS], breathe warmly against their ear. Immediately slap the opposite thigh sharply with your hand or [SENS].",
+                "Silence the Subject with [GAG]. Drag [SENS] from their ankle all the way up to their hip in one continuous, excruciatingly slow movement.",
+                "Apply [VIS]. Tap [SENS] lightly against their collarbone to a heartbeat rhythm. Gradually speed up the rhythm, increasing the force.",
+                "Secure the Subject with [REST] and apply [VIS]. Run [SENS] through their hair and across their scalp, pulling slightly at the roots.",
+                "With [VIS] applied, drag [SENS] across the soles of the Subject's feet. If they jerk away, apply a firm strike to their calves.",
+                "Apply [GAG] and [VIS]. Use two different types of [SENS] (if available) simultaneously on different parts of their body to overload them.",
+                "Apply [VIS]. Make a loud sound with [SENS] right next to their face, but strike them on the back of the legs.",
+                "Bind the Subject with [REST] and apply [VIS]. Drag [SENS] across their lips, teasing them with what they cannot see.",
+                "With the Subject in [VIS], alternate between kissing their neck and pressing the cold, hard edge of [SENS] against their skin.",
+                "Apply [GAG]. Slowly drag [SENS] down the center of their chest, pausing at the sternum to press firmly inward.",
+                "Apply [VIS] and [REST]. Trace the veins in their arms using the tip of [SENS], focusing on the delicate skin of the inner elbow.",
+                "With the Subject in [VIS], hold [SENS] against their skin and slowly drag it downwards, applying increasing pressure until they make a sound.",
+                "Apply [GAG] and [VIS]. Use your fingertips to massage their shoulders, then suddenly crack [SENS] against their lower back.",
+                "Apply [VIS]. Brush [SENS] lightly against the back of their knees. If they buckle, use [REST] to bind them in that weakened position.",
+                "Secure the Subject with [REST] and apply [VIS]. Place [SENS] between their shoulder blades and leave it there, demanding they focus only on its weight.",
+                "With [VIS] on, gently stroke their cheek with the back of your hand, then drag [SENS] harshly across their opposite shoulder.",
+                "Apply [GAG]. Use [SENS] to trace the outline of their jaw and neck, asserting complete physical dominance over their airway.",
+                "Apply [VIS] and [REST]. Tap [SENS] against the floor to create a false rhythm, then break the rhythm by striking their thigh.",
+                "With the Subject in [VIS], hold [SENS] against their pulse point on their wrist. Let them feel you monitoring their racing heart.",
+                "Apply [GAG] and [VIS]. Drag [SENS] from the base of their spine up to the nape of their neck in a slow, agonizingly steady line.",
+                "Apply [VIS]. Brush [SENS] against their earlobe, whispering that the next strike could land anywhere on their body.",
+                "Secure the Subject with [REST] and apply [VIS]. Use [SENS] to lightly flick their nipples or other highly sensitive areas.",
+                "With [VIS] on, apply [SENS] with heavy pressure to their thighs, demanding they push back against the sensation rather than pulling away.",
+                "Apply [GAG] and [VIS]. Alternate between blowing hot breath and placing cold [SENS] on their stomach.",
+                "Apply [VIS]. Drag [SENS] across their lower stomach, hovering just above the beltline to maximize teasing.",
+                "Secure the Subject with [REST] and apply [VIS]. Use [SENS] to trace a line from their ear down to their hip, demanding absolute silence."
+            ]
+        },
+        { 
+            n: "The Living Sculpture", t: 600, on: true,
+            d: [
+                "Command the Subject to hold a deep squat. Apply [VIS]. If their thighs begin to shake and they drop, apply [SENS] to their hamstrings.",
+                "Have the Subject kneel with arms extended straight out. Balance a small object on their wrists. If it falls, secure them with [REST] and use [SENS].",
+                "Instruct the Subject to hold a plank position. Place [SENS] flat on their back. If it slides off due to form breaking, apply [REST].",
+                "Command the Subject to stand on their tiptoes. Apply [GAG] and [VIS]. Use [SENS] lightly on their calves; they must not drop their heels.",
+                "Have the Subject sit in an imaginary chair against a wall (wall sit). Apply [VIS]. Drag [SENS] across their quads as they burn.",
+                "Subject lies face up, lifting their legs six inches off the floor. Apply [GAG]. If their heels touch down, strike their stomach with [SENS].",
+                "Command the Subject to bend over, touching their toes. Secure their wrists to their ankles with [REST]. Leave them in this stretch.",
+                "Have the Subject hold their arms straight up in the air. Apply [VIS]. Walk around them; any drop in their arms earns a strike from [SENS].",
+                "Subject kneels, leaning torso back at a 45-degree angle. Apply [GAG]. Hold [SENS] over their chest—if they sit up, they hit the tool.",
+                "Instruct the Subject to balance on one leg with their eyes closed ([VIS]). Use [SENS] to distract them. If they fall, bind them with [REST].",
+                "Command the Subject to hold a push-up position (halfway down). Apply [VIS]. Use [SENS] on their triceps to test their endurance.",
+                "Have the Subject kneel upright, hands behind their head. Apply [GAG]. Trace [SENS] down their ribs. They must not flinch or squirm.",
+                "Subject lies on their back and lifts their pelvis into a bridge. Apply [VIS]. Rest a lightweight object on their stomach to ensure they don't drop.",
+                "Command the Subject to stand with legs wide apart and arms out. Use [REST] to bind their wrists to heavy objects. Apply [SENS] to the stretched muscles.",
+                "Have the Subject hold a side plank. Apply [GAG]. If their hip sags to the floor, use [REST] to bind them in a fetal position.",
+                "Subject kneels and holds a heavy object out in front of them. Apply [VIS]. As their arms fatigue, lightly trail [SENS] over their shoulders.",
+                "Command the Subject to sit in a 'V' shape (legs and torso raised). Apply [GAG]. If their form breaks, apply a firm strike with [SENS].",
+                "Have the Subject stand perfectly still. Apply [VIS] and [GAG]. Use [SENS] to strike the back of their knees—they must lock their legs and not fall.",
+                "Subject lies face down, lifting their chest and legs off the floor (Superman pose). Apply [VIS]. Use [SENS] on their lower back if they drop.",
+                "Command the Subject to hold their breath for 20 seconds while you drag [SENS] across their chest. If they exhale early, apply [REST].",
+                "Have the Subject kneel with their face hovering exactly one inch above the floor. Apply [REST] to their hands behind their back. They must hold it.",
+                "Subject stands on tiptoes with arms crossed over their chest. Apply [GAG]. Wrap [REST] around their chest tightly. Do not let them drop.",
+                "Command the Subject to hold a lunge position. Apply [VIS]. Drag [SENS] down their front thigh. Switch legs halfway through the timer.",
+                "Have the Subject lie on their back, drawing their knees to their chest. Use [REST] to bind them tightly. They must remain perfectly still.",
+                "Subject stands, bending one knee to hold their foot behind them. Bind the foot to their thigh with [REST]. Apply [VIS] and test their balance.",
+                "Command the Subject to hold their arms out laterally. Drape [REST] over their wrists like weights. Apply [GAG] and enforce strict posture.",
+                "Have the Subject kneel and look straight up at the ceiling. Apply [VIS]. Place [SENS] lightly against their throat. They must not look down.",
+                "Subject holds a downward dog yoga pose. Apply [GAG]. Use [SENS] across their exposed lower back and hamstrings if their arms buckle.",
+                "Command the Subject to sit back on their heels, spine perfectly straight. Apply [VIS]. Any slouching is corrected sharply with [SENS].",
+                "Have the Subject balance a small book on their head while standing. Apply [REST] to their wrists behind their back. If it falls, use [SENS].",
+                "Subject lies face up, holding their hands and feet two inches off the ground. Apply [GAG]. Strike their thighs with [SENS] to test their core.",
+                "Command the Subject to kneel and hold a wide, forced smile. Apply [VIS]. If the smile drops, apply a sharp sting with [SENS] to their shoulder.",
+                "Have the Subject stand in a wide sumo squat. Apply [REST] to bind their wrists behind their knees. Apply [GAG] and force them to hold it.",
+                "Subject holds a deep bow, torso parallel to the floor. Apply [VIS]. Rest a small object on their back; if it drops, use [SENS].",
+                "Command the Subject to lie flat and perfectly tense every muscle in their body. Apply [GAG]. Use [SENS] to prod them; if you find a soft spot, strike it.",
+                "Have the Subject kneel with arms extended forward, palms up. Place [SENS] in their palms. They must hold it perfectly still for the duration.",
+                "Subject stands on one leg, arms out. Apply [VIS]. Gently push their shoulders to throw them off balance; they must fight to stay upright.",
+                "Command the Subject to hold a wall sit, but on their tiptoes. Apply [GAG]. This intense burn must be endured in total silence.",
+                "Have the Subject lie on their stomach, hands bound behind their back with [REST]. Apply [VIS]. They must arch their back and hold their chest off the floor.",
+                "Subject kneels, holding [REST] taut between their hands above their head. If the rope goes slack, apply [SENS] to their ribs.",
+                "Command the Subject to hold a high plank. Apply [VIS]. Place [SENS] directly under their chest. If they drop, they land on it.",
+                "Have the Subject stand with their back against a wall, sliding down into a squat. Bind their ankles with [REST] so they cannot stand up easily.",
+                "Subject lies on their back, legs straight up. Apply [GAG]. Loop [REST] around their ankles and hold it taut, forcing them to keep their legs up.",
+                "Command the Subject to freeze mid-stride. Apply [VIS]. Use [SENS] to trace their frozen limbs, punishing any micro-movements.",
+                "Have the Subject hold their arms in a 'surrender' pose. Secure their wrists to the wall behind them with [REST]. Apply [GAG].",
+                "Subject holds a bridge pose. Place [SENS] just beneath their lower back. If their glutes drop, they will feel the bite of the tool.",
+                "Command the Subject to kneel and clasp their hands behind their back. Apply [VIS]. Drag [SENS] heavily down their spine.",
+                "Have the Subject hold their breath while you count slowly to ten. Apply [GAG]. If they gasp through the gag, restart the count and use [SENS].",
+                "Subject holds a deep forward fold. Use [REST] to bind their arms behind their calves, pulling them deeper into the stretch.",
+                "Command the Subject to assume a position of their own choosing, but it must be agonizing. Once chosen, apply [VIS], [GAG], and use [SENS] to enforce it."
+            ]
+        },
+        { 
+            n: "The Silent Confession", t: 450, on: true,
+            d: [
+                "Apply [VIS]. Ask the Subject a deeply personal question. If they hesitate for more than three seconds, apply a sharp strike with [SENS].",
+                "Apply [GAG]. The Subject must hum a song of your choosing. Every time they pause for breath, tap them firmly with [SENS].",
+                "Bind the Subject with [REST] and apply [VIS]. Command them to count backwards from 100 by 7s. Any mistake earns a strike from [SENS].",
+                "Apply [VIS]. Whisper an embarrassing command. The Subject must repeat it out loud perfectly. If they stumble, use [SENS].",
+                "Secure the Subject with [REST]. Apply [GAG]. Ask yes/no questions. They must nod for yes, shake for no. Wrong answers earn [SENS].",
+                "Apply [VIS]. The Subject must confess a secret they have never told you. If you deem it uninteresting or fake, apply a heavy strike with [SENS].",
+                "Apply [GAG] and [VIS]. Tap [SENS] against their thigh 5 times. Remove the gag. They must state exactly how many times you tapped. If wrong, double the taps.",
+                "Bind the Subject with [REST]. Command them to verbally praise you continuously for two minutes. Any break in speech results in [SENS].",
+                "Apply [VIS]. Ask the Subject to describe, in explicit detail, the sensation of [SENS] on their skin as you slowly drag it across their chest.",
+                "Apply [GAG]. Ask the Subject a question they want to say 'No' to. They must force themselves to nod 'Yes'. If they resist, use [REST] to bind them tighter.",
+                "Apply [VIS]. Command the Subject to recite the alphabet backwards. For every letter they get wrong, apply [SENS] to their inner thigh.",
+                "Secure the Subject with [REST] and apply [VIS]. Whisper their name close to their ear. They must not react. If they shiver or sigh, use [SENS].",
+                "Apply [GAG]. Command the Subject to look you directly in the eyes without blinking. If they blink, trail [SENS] down their cheek.",
+                "Apply [VIS]. The Subject must recount their worst fear in detail. While they speak, lightly trace [SENS] across their most sensitive areas.",
+                "Bind the Subject with [REST]. Ask them to rate their current level of arousal/fear from 1-10. Whatever the number, strike them that many times with [SENS].",
+                "Apply [GAG] and [VIS]. Trace a shape on their back with [SENS]. Remove the gag. If they guess the shape wrong, trace it again, but harder.",
+                "Apply [VIS]. Command the Subject to beg for [SENS]. They must convince you they truly want it before you apply it.",
+                "Secure the Subject with [REST]. Ask them a question about your relationship. A brutally honest answer earns soft touches; a lie earns sharp [SENS].",
+                "Apply [GAG]. The Subject must moan into the gag as loudly as possible. If they are too quiet, apply a harsh strike with [SENS].",
+                "Apply [VIS]. Command the Subject to describe their favorite part of your body. Interrupt them randomly with sharp taps from [SENS].",
+                "Bind the Subject with [REST]. Play a game of 'Simon Says'. If they obey a command without 'Simon Says', apply [SENS].",
+                "Apply [GAG] and [VIS]. Leave the room and close the door loudly. Wait 30 seconds, sneak back in, and apply a sudden strike with [SENS].",
+                "Apply [VIS]. Command the Subject to spell their full name. For every vowel, apply a heavy strike with [SENS].",
+                "Secure the Subject with [REST]. Ask them to explain why they deserve to be bound. If their reasoning is weak, tighten the [REST].",
+                "Apply [GAG]. Command the Subject to take deep, slow breaths. If their breathing becomes erratic, use [SENS] to snap them back to focus.",
+                "Apply [VIS]. Whisper a trigger word. Every time you say it during the round, they must flinch. If they forget, use [SENS].",
+                "Bind the Subject with [REST] and apply [VIS]. The Subject must correctly guess which body part you are going to touch next. If wrong, strike it with [SENS].",
+                "Apply [GAG]. Ask the Subject to remember a specific date. They must hum the number of the month. If wrong, use [SENS].",
+                "Apply [VIS]. Command the Subject to insult themselves. If they don't sound sincere, apply [SENS] and make them start over.",
+                "Secure the Subject with [REST]. The Subject must ask permission to swallow. If they swallow without asking, apply [SENS] to their throat.",
+                "Apply [GAG] and [VIS]. Command the Subject to imagine [SENS] striking them. Wait a full minute before actually making impact.",
+                "Apply [VIS]. The Subject must describe the room they are in perfectly from memory. Every missed detail earns a tap with [SENS].",
+                "Bind the Subject with [REST]. Ask them to apologize for a past mistake. The apology must be lengthy and detailed. Interrupt with [SENS].",
+                "Apply [GAG]. Command the Subject to hold back any vocalizations. Use [SENS] aggressively. If they make a sound through the gag, intensify it.",
+                "Apply [VIS]. Tell the Subject a short story. They must repeat it back perfectly. For every missed word, apply [SENS].",
+                "Secure the Subject with [REST] and apply [VIS]. Whisper contradictory commands (e.g., 'relax' while striking them with [SENS]). Punish confusion.",
+                "Apply [GAG]. The Subject must communicate their desire to stop using only their eyes. Stare them down until they break eye contact.",
+                "Apply [VIS]. Command the Subject to count every single time you touch them with [SENS]. Remove the blindfold. If the count is wrong, double the strikes.",
+                "Bind the Subject with [REST]. Ask the Subject what their limit is. Once stated, bring them exactly to the edge of it using [SENS] and hold them there.",
+                "Apply [GAG] and [VIS]. The Subject must nod their head to a rhythm you tap on their shoulder. If they lose the beat, use [SENS].",
+                "Apply [VIS]. The Subject must list 5 reasons why they submitted to you today. If they pause for too long, strike their thigh with [SENS].",
+                "Secure the Subject with [REST]. Command them to stay absolutely silent. Bait them by asking questions. If they answer, apply [SENS].",
+                "Apply [GAG]. Instruct the Subject to show gratitude through their posture. If they slouch or look away, use [SENS] to correct them.",
+                "Apply [VIS]. Describe in detail a painful act you are going to perform, but then do something incredibly gentle instead. Watch their reaction.",
+                "Bind the Subject with [REST]. The Subject must verbally guide you on where to strike them with [SENS]. If they hesitate, you choose the worst spot.",
+                "Apply [GAG] and [VIS]. Humiliate the Subject by describing their bound, helpless state to them in detail. Trace their jaw with [SENS].",
+                "Apply [VIS]. Ask the Subject an impossible math question. While they struggle to calculate it, apply rapid, distracting strikes with [SENS].",
+                "Secure the Subject with [REST]. Command them to say 'Thank You' after every strike of [SENS]. If they forget, the strike doesn't count.",
+                "Apply [GAG]. Use [SENS] to evoke a strong reaction. If they try to pull away, use [REST] to bind them tighter to the surface.",
+                "Apply [VIS]. The Subject must confess a fantasy they have been too afraid to share. Listen closely, and use [SENS] to encourage them to finish."
+            ]
+        }
+    ];
+
+    let gearCats = { "Blindfolds": true, "Gags": true, "Restraints": true, "Sensation": true };
+
+    function playSnd(id) { document.getElementById('snd-'+id).play(); }
+    function vibrate(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
+
+    function nav(n) {
+        if(n === 2) {
+            players = [{n: document.getElementById('p1_n').value || "P1"}, {n: document.getElementById('p2_n').value || "P2"}];
+            maxR = parseInt(document.getElementById('max_r').value);
+            renderVault();
+        }
+        if(n === 3) renderCommandCenter();
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step'+n).classList.add('active');
+    }
+
+    // VAULT ENGINE
+    function renderVault() {
+        const cont = document.getElementById('vault-inject'); cont.innerHTML = '';
+        for(let c in vault) {
+            let section = document.createElement('div');
+            section.innerHTML = `<span class="label">${c}</span><div class="add-row"><input type="text" class="add-input" id="in-${c}" placeholder="New ${c}..."><button class="add-btn" onclick="addItem('${c}')">+</button></div><div class="tag-cloud" id="cloud-${c}"></div>`;
+            cont.appendChild(section);
+            vault[c].forEach((item, i) => {
+                let t = document.createElement('div'); t.className = `tag ${item.on ? 'on' : ''}`;
+                t.innerHTML = `<span>${item.n}</span><span class="del-x" onclick="removeItem('${c}', ${i}); event.stopPropagation();">×</span>`;
+                t.onclick = () => { item.on = !item.on; saveVault(); renderVault(); vibrate(20); };
+                document.getElementById(`cloud-${c}`).appendChild(t);
+            });
         }
     }
 
-    function getChecked(id) {
-        return Array.from(document.querySelectorAll(`#${id} input:checked`)).map(i => i.value);
+    function addItem(c) {
+        let input = document.getElementById(`in-${c}`);
+        let val = input.value.trim();
+        if(val) { vault[c].push({n: val, on: true}); input.value = ''; saveVault(); renderVault(); vibrate(40); }
     }
 
-    function generate() {
-        const sub = players[subIdx];
-        const dom = players[domIdx];
+    function removeItem(c, i) { vault[c].splice(i, 1); saveVault(); renderVault(); vibrate([30, 30]); }
+    function saveVault() { localStorage.setItem('sov_vault_v6', JSON.stringify(vault)); }
+
+    // COMMAND CENTER
+    function renderCommandCenter() {
+        document.getElementById('round-header').innerText = `ROUND ${curR} | Master: ${players[masterIdx].n}`;
+        const tGrid = document.getElementById('trial-toggles'); tGrid.innerHTML = '';
+        trials.forEach((t, i) => {
+            let b = document.createElement('button'); b.className = `t-btn ${t.on ? 'on' : ''}`;
+            b.innerText = t.n; b.onclick = () => { t.on = !t.on; b.classList.toggle('on'); vibrate(30); };
+            tGrid.appendChild(b);
+        });
+        const gGrid = document.getElementById('gear-toggles'); gGrid.innerHTML = '';
+        for(let c in gearCats) {
+            let b = document.createElement('button'); b.className = `t-btn ${gearCats[c] ? 'gear-on' : ''}`;
+            b.innerText = c; b.onclick = () => { gearCats[c] = !gearCats[c]; b.classList.toggle('gear-on'); vibrate(30); };
+            gGrid.appendChild(b);
+        }
+    }
+
+    // UPDATED LOGIC TO PULL FROM THE 200+ STRINGS
+    function generateDecree() {
+        let activeTrials = trials.filter(t => t.on);
+        if(!activeTrials.length) return alert("Select at least one Trial.");
         
-        // 1. FORCED RANDOM INTENSITY
-        const intensity = Math.floor(Math.random() * 10) + 1;
+        // Pick a random trial category
+        let t = activeTrials[Math.floor(Math.random() * activeTrials.length)];
+        // Pick a random detailed instruction from the 50 in that category
+        let selectedDesc = t.d[Math.floor(Math.random() * t.d.length)];
         
-        // 2. FORCED MODE SELECTION
-        const modes = ["Truth or Dare", "Mind Fuck", "Shibari", "Escape"];
-        const mode = modes[Math.floor(Math.random() * modes.length)];
+        const pick = (c) => { 
+            if(!gearCats[c]) return `<span style="opacity:0.3; font-size:1rem;">[SKIP ${c}]</span>`;
+            let items = vault[c].filter(i => i.on);
+            return `<span class="instruction-highlight">${items.length ? items[Math.floor(Math.random()*items.length)].n : c}</span>`; 
+        };
         
-        // 3. GEAR PICKING
-        let b = active.bondage[Math.floor(Math.random() * active.bondage.length)];
-        let s = active.sensory.length > 0 ? active.sensory[Math.floor(Math.random() * active.sensory.length)] : "None";
-        let t = active.toys.length > 0 ? active.toys[Math.floor(Math.random() * active.toys.length)] : "None";
-
-        let content = `<div class="mode-badge">${mode}</div><div class="intensity-pill">LVL ${intensity}</div>`;
-        content += `<span class="mod-header">RESTRAINT</span> ${dom.name} must secure ${sub.name} using <b>${b}</b> at intensity <b>${intensity}/10</b>.`;
-
-        // 4. MODE LOGIC
-        if(mode === "Truth or Dare") {
-            content += `<span class="mod-header">THE CHALLENGE</span> ${dom.name} asks a Truth or Dare. If the Sub fails or refuses, they must endure <b>${intensity * 10} seconds</b> of application with <b>${t}</b>.`;
-            secs = 180;
-        } else if(mode === "Mind Fuck") {
-            content += `<span class="mod-header">THE CHALLENGE</span> ${sub.name} is blinded with <b>${s}</b>. ${dom.name} will apply <b>${t}</b> while ${sub.name} must solve math problems or recite the alphabet backward without error.`;
-            secs = 120;
-        } else if(mode === "Shibari") {
-            content += `<span class="mod-header">THE CHALLENGE</span> Focus on the aesthetic. ${dom.name} must use <b>${b}</b> to create a decorative but tight binding. ${sub.name} must remain perfectly still.`;
-            secs = 300;
-        } else if(mode === "Escape") {
-            content += `<span class="mod-header">THE CHALLENGE</span> ${sub.name} must attempt to fully free themselves from the <b>${b}</b> before the clock runs out.`;
-            secs = (intensity * 40) + 60;
-        }
-
-        document.getElementById('taskBox').innerHTML = content;
-        document.getElementById('genBtn').style.display = 'none';
-        document.getElementById('startBtn').style.display = 'block';
+        // Replace all instances of the tags globally
+        let text = selectedDesc.replace(/\[REST\]/g, pick('Restraints')).replace(/\[SENS\]/g, pick('Sensation')).replace(/\[VIS\]/g, pick('Blindfolds')).replace(/\[GAG\]/g, pick('Gags'));
+        
+        document.getElementById('active-trial-text').innerHTML = `<strong>${t.n.toUpperCase()}</strong><br><br>${text}`;
+        timeLeft = t.t;
+        document.getElementById('pre-round').style.display = 'none';
+        document.getElementById('active-round').style.display = 'block';
+        startClock();
     }
 
-    function resolve(success) {
-        clearInterval(clock);
-        if(success) { 
-            alert("OBJECTIVE COMPLETE. Swapping Roles."); 
-            subIdx = (subIdx === 0) ? 1 : 0; domIdx = (domIdx === 0) ? 1 : 0; 
-        } else { 
-            alert("OBJECTIVE FAILED. Master maintains control."); 
-        }
-        document.getElementById('timerPhase').style.display = 'none';
-        document.getElementById('prepPhase').style.display = 'block';
-        document.getElementById('genBtn').style.display = 'block';
-        document.getElementById('startBtn').style.display = 'none';
-    }
-
-    function showTimer() {
-        document.getElementById('prepPhase').style.display = 'none';
-        document.getElementById('timerPhase').style.display = 'block';
-        clock = setInterval(() => {
-            secs--;
-            let m = Math.floor(secs/60), s = secs%60;
-            document.getElementById('timeDisp').innerText = `${m}:${s<10?'0':''}${s}`;
-            if(secs <= 0) resolve(false);
+    function startClock() {
+        timer = setInterval(() => {
+            timeLeft--;
+            let m = Math.floor(timeLeft/60), s = timeLeft%60;
+            document.getElementById('clock').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+            if(timeLeft === 10) { playSnd('alarm'); vibrate([100, 100, 100]); }
+            if(timeLeft <= 0) { clearInterval(timer); vibrate([500, 200, 500]); finish(false); }
         }, 1000);
+    }
+
+    function finish(win) {
+        clearInterval(timer);
+        masterIdx = (masterIdx === 0 ? 1 : 0);
+        curR++;
+        if(curR > maxR) { alert("Protocol Concluded."); location.reload(); }
+        else {
+            document.getElementById('pre-round').style.display = 'block';
+            document.getElementById('active-round').style.display = 'none';
+            renderCommandCenter();
+        }
     }
 </script>
 </body>
