@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sovereignty: Manual Control</title>
+    <title>Sovereignty: Identity & Vault</title>
     <style>
         :root { 
             --accent: #c5a059; --soft-bg: #fdfaf5; --card-bg: #ffffff;
@@ -20,9 +20,9 @@
         .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 20px; border-radius: 25px; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1.5px; }
 
-        /* PLAYER ENTRY FIX */
-        .player-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .player-row input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 12px; font-family: inherit; }
+        /* IDENTITY ENTRY */
+        .player-card { background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 15px; margin-bottom: 15px; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; font-family: inherit; box-sizing: border-box; margin-top: 5px; }
 
         /* VAULT & ADD SYSTEM */
         .category-block { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 20px; border: 1px solid #eee; }
@@ -35,8 +35,8 @@
         .del-x { margin-left: 8px; font-weight: bold; opacity: 0.5; }
 
         /* COMMAND CONSOLE */
-        .console-header { text-align: center; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .item-picker { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .console-header { text-align: center; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: var(--crimson); }
+        .item-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .timer-display { font-size: 4rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 15px 0; }
         
         .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; margin-bottom: 10px; font-size: 1rem; }
@@ -47,30 +47,45 @@
 
 <div class="container">
     <h1>Sovereignty</h1>
-    <div class="subtitle">Scratch Manual Build</div>
+    <div class="subtitle">Manual Command Build</div>
 
     <div id="step1" class="step active">
         <div class="box">
-            <span class="label">Initiate Participants</span>
-            <div class="player-row">
-                <input type="text" id="p1_name" placeholder="Player 1 (The Master)">
+            <span class="label">Session Protocol</span>
+            
+            <div class="player-card">
+                <span class="label">Participant 1</span>
+                <input type="text" id="p1_name" placeholder="Name">
+                <select id="p1_gender">
+                    <option value="Male">Male Body</option>
+                    <option value="Female">Female Body</option>
+                    <option value="Non-Binary">Non-Binary</option>
+                </select>
             </div>
-            <div class="player-row">
-                <input type="text" id="p2_name" placeholder="Player 2 (The Subject)">
+
+            <div class="player-card">
+                <span class="label">Participant 2</span>
+                <input type="text" id="p2_name" placeholder="Name">
+                <select id="p2_gender">
+                    <option value="Female">Female Body</option>
+                    <option value="Male">Male Body</option>
+                    <option value="Non-Binary">Non-Binary</option>
+                </select>
             </div>
-            <span class="label">Session Length</span>
-            <input type="number" id="rounds" value="10" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd;">
+
+            <span class="label">Round Count</span>
+            <input type="number" id="rounds" value="10">
         </div>
         <button class="btn" onclick="toStep(2)">Configure Arsenal ></button>
     </div>
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Your Permanent Vault (Auto-Saves)</span>
+            <span class="label">Permanent Arsenal (Saves Locally)</span>
             <div id="vault-container"></div>
         </div>
         <button class="btn" onclick="toStep(3)">Begin Command Console</button>
-        <button class="btn btn-sec" onclick="resetVault()">Reset to Defaults</button>
+        <button class="btn btn-sec" onclick="resetVault()">Factory Reset Vault</button>
     </div>
 
     <div id="step3" class="step">
@@ -78,12 +93,13 @@
             <div class="console-header" id="round-info">ROUND 1</div>
             
             <div id="setup-view">
-                <span class="label">Master, Select Your Instruments:</span>
-                <div class="item-picker" id="active-picks">
-                    </div>
-                <span class="label">Set Duration (Seconds)</span>
-                <input type="number" id="timer-input" value="300" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 20px;">
-                <button class="btn" style="background:var(--safe-green);" onclick="startCommand()">Execute Command</button>
+                <span class="label">Active Selection:</span>
+                <div class="item-picker" id="active-picks"></div>
+                
+                <span class="label">Time Allocation (Seconds)</span>
+                <input type="number" id="timer-input" value="300">
+                
+                <button class="btn" style="background:var(--safe-green); margin-top:20px;" onclick="startCommand()">Execute Command</button>
             </div>
 
             <div id="timer-view" style="display:none;">
@@ -96,7 +112,8 @@
 </div>
 
 <script>
-    let players = [], curRound = 1, maxRounds = 10, masterIdx = 0, timer, timeLeft;
+    let players = [], curRound = 1, maxRounds = 10, masterIdx = 0;
+    let timer, timeLeft;
 
     const defaultItems = {
         "Blindfolds": ["Tape", "Gas Mask", "Pillow Case", "Sleep Mask", "Hood"],
@@ -105,15 +122,15 @@
         "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane", "Hot Wax"]
     };
 
-    let vault = JSON.parse(localStorage.getItem('sov_manual_vault')) || null;
+    let vault = JSON.parse(localStorage.getItem('sov_v5_vault')) || null;
     if(!vault) {
         vault = {};
         for(let c in defaultItems) vault[c] = defaultItems[c].map(n => ({n, on: true}));
-        localStorage.setItem('sov_manual_vault', JSON.stringify(vault));
+        localStorage.setItem('sov_v5_vault', JSON.stringify(vault));
     }
 
-    function save() { localStorage.setItem('sov_manual_vault', JSON.stringify(vault)); }
-    function resetVault() { localStorage.removeItem('sov_manual_vault'); location.reload(); }
+    function save() { localStorage.setItem('sov_v5_vault', JSON.stringify(vault)); }
+    function resetVault() { localStorage.removeItem('sov_v5_vault'); location.reload(); }
 
     function renderVault() {
         const cont = document.getElementById('vault-container');
@@ -123,7 +140,7 @@
             div.className = 'category-block';
             div.innerHTML = `<span class="label">${c}</span>
                 <div class="add-row">
-                    <input type="text" id="add-${c}" placeholder="Add permanent ${c}...">
+                    <input type="text" id="add-${c}" placeholder="Add item...">
                     <button class="add-btn" onclick="addItem('${c}')">+</button>
                 </div>
                 <div class="tag-row"></div>`;
@@ -133,13 +150,11 @@
                 let t = document.createElement('div');
                 t.className = `tag ${item.on ? 'on' : ''}`;
                 t.innerHTML = `${item.n} <span class="del-x" onclick="removeItem('${c}', ${i}); event.stopPropagation();">×</span>`;
-                t.onclick = () => { vault[c][i].on = !vault[c][i].on; save(); renderInv(); };
+                t.onclick = () => { vault[c][i].on = !vault[c][i].on; save(); renderVault(); };
                 tagRow.appendChild(t);
             });
         }
     }
-    // Alias for consistent naming
-    function renderInv() { renderVault(); }
 
     function addItem(cat) {
         let v = document.getElementById(`add-${cat}`).value.trim();
@@ -150,8 +165,8 @@
     function toStep(n) {
         if(n === 2) {
             players = [
-                {n: document.getElementById('p1_name').value || "Master", score: 0},
-                {n: document.getElementById('p2_name').value || "Subject", score: 0}
+                {n: document.getElementById('p1_name').value || "P1", g: document.getElementById('p1_gender').value, score: 0},
+                {n: document.getElementById('p2_name').value || "P2", g: document.getElementById('p2_gender').value, score: 0}
             ];
             maxRounds = document.getElementById('rounds').value;
             renderVault();
@@ -162,18 +177,19 @@
     }
 
     function prepConsole() {
-        document.getElementById('round-info').innerText = `ROUND ${curRound} | Master: ${players[masterIdx].n}`;
+        document.getElementById('round-info').innerText = `ROUND ${curRound} | Master: ${players[masterIdx].n} (${players[masterIdx].g})`;
         const picker = document.getElementById('active-picks');
         picker.innerHTML = '';
         for(let c in vault) {
+            let wrapper = document.createElement('div');
+            wrapper.innerHTML = `<span class="label" style="font-size:0.5rem">${c}</span>`;
             let sel = document.createElement('select');
-            sel.style.padding = "10px";
-            sel.style.borderRadius = "10px";
-            sel.innerHTML = `<option value="">-- No ${c} --</option>`;
+            sel.innerHTML = `<option value="">None</option>`;
             vault[c].filter(i => i.on).forEach(item => {
                 sel.innerHTML += `<option value="${item.n}">${item.n}</option>`;
             });
-            picker.appendChild(sel);
+            wrapper.appendChild(sel);
+            picker.appendChild(wrapper);
         }
     }
 
@@ -194,11 +210,11 @@
         if(win) { 
             let subIdx = masterIdx === 0 ? 1 : 0;
             players[subIdx].score++;
-            masterIdx = subIdx; // Role Swap
+            masterIdx = subIdx; // Rotation
         }
         curRound++;
         if(curRound > maxRounds) {
-            alert(`Session Complete! Final: ${players[0].n} ${players[0].score} - ${players[1].n} ${players[1].score}`);
+            alert(`Sovereignty Complete. Final: ${players[0].n} ${players[0].score} | ${players[1].n} ${players[1].score}`);
             location.reload();
         } else {
             document.getElementById('setup-view').style.display = 'block';
