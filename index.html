@@ -29,7 +29,6 @@
 
         input[type="text"], select, input[type="number"] { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; font-size: 1rem; outline: none; display: block; font-family: inherit; }
         
-        /* Updated Grid for full-length names */
         .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
         .tgl-btn { background: #f0f0f0; padding: 12px 8px; border-radius: 12px; text-align: center; font-size: 0.75rem; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: 0.2s; color: #999; text-transform: uppercase; }
         .tgl-btn.on { background: var(--crimson); color: white; border-color: var(--accent); }
@@ -125,10 +124,26 @@
 
 <script>
     let rawInv = {
-        vis: [{n:"Blindfold", on:true}, {n:"Sleep Mask", on:true}, {n:"Silk Scarf", on:true}],
-        speech: [{n:"Ball Gag", on:true}, {n:"Medical Tape", on:true}, {n:"Muzzle", on:false}],
-        rest: [{n:"Rope", on:true}, {n:"Handcuffs", on:true}, {n:"Ankle Cuffs", on:true}],
-        sens: [{n:"Feather", on:true}, {n:"Ice Cube", on:true}, {n:"Wand Vibrator", on:true}, {n:"Flogger", on:true}]
+        vis: [
+            {n:"Bandage", on:true}, {n:"Tape", on:true}, {n:"Cloth", on:true}, 
+            {n:"Gas Mask", on:true}, {n:"Pillow Case", on:true}, {n:"Blindfold", on:false}
+        ],
+        speech: [
+            {n:"Tape", on:true}, {n:"Pallet Wrap", on:true}, {n:"Cloth", on:true}, 
+            {n:"Panties", on:true}, {n:"Bandage", on:true}, {n:"Rope", on:true}, 
+            {n:"Ring Gag", on:true}, {n:"Gas Mask", on:true}, {n:"Hood", on:true}, {n:"Ball Gag", on:false}
+        ],
+        rest: [
+            {n:"Leather Cuffs", on:true}, {n:"Tape", on:true}, {n:"Pallet Wrap", on:true}, 
+            {n:"String", on:true}, {n:"Belt", on:true}, {n:"Ribbon", on:true}, {n:"Rope", on:false}
+        ],
+        sens: [
+            {n:"Insertable", on:true}, {n:"Dildo", on:true}, {n:"Anal Hook", on:true}, 
+            {n:"Pussy Hook", on:true}, {n:"Butt Plug", on:true}, {n:"Anal Dildo", on:true}, 
+            {n:"E-stim Machine", on:true}, {n:"Paddle", on:true}, {n:"Vibrator", on:true}, 
+            {n:"Cane", on:true}, {n:"Needle", on:true}, {n:"Sharpies", on:true}, 
+            {n:"Tape", on:true}, {n:"Candle", on:true}
+        ]
     };
 
     let players = [], currentRound = 1, subIdx = 0, timer, timeLeft;
@@ -146,7 +161,8 @@
     function renderInv() {
         const container = document.getElementById('inv-container');
         container.innerHTML = '';
-        const catMap = {vis: "Vision", speech: "Mouth", rest: "Restraints", sens: "Sensation"};
+        // Updated Names here
+        const catMap = {vis: "Blindfolds", speech: "Gags", rest: "Restraints", sens: "Sensation"};
         for (let key in rawInv) {
             let section = document.createElement('div');
             section.innerHTML = `<div class="cat-header"><span class="label">${catMap[key]}</span><span class="toggle-all" onclick="toggleAll('${key}')">Toggle All</span></div><div style="display:flex; gap:10px; margin-bottom: 10px;"><input type="text" id="add-${key}" placeholder="Add..."><button class="btn-add" onclick="addNewItem('${key}')">+</button></div><div class="tag-row" id="tags-${key}"></div>`;
