@@ -21,14 +21,12 @@
         .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 25px; border-radius: 30px; line-height: 1.6; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 12px; letter-spacing: 2px; }
 
-        /* IDENTITY FIX: HIGH VISIBILITY */
         .identity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         input[type="text"], input[type="number"], select { 
             width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 15px; 
             font-family: inherit; font-size: 0.95rem; box-sizing: border-box; background: white;
         }
 
-        /* THE VAULT: PERMANENT & ADDABLE */
         .vault-section { margin-bottom: 25px; padding: 15px; background: white; border-radius: 20px; border: 1px solid #eee; }
         .add-bar { display: flex; gap: 10px; margin-bottom: 15px; }
         .add-bar input { flex: 1; border-color: var(--accent); }
@@ -37,9 +35,7 @@
         .tag { background: #f9f4eb; padding: 10px 18px; border-radius: 12px; font-size: 0.85rem; cursor: pointer; border: 1px solid #e2d1b3; transition: 0.3s; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); box-shadow: 0 4px 10px rgba(123, 26, 26, 0.2); }
         .tag .del { margin-left: 8px; font-weight: bold; color: #888; }
-        .tag.on .del { color: #ffcccc; }
 
-        /* CARDS & UI */
         .card-dock { display: flex; gap: 10px; margin: 20px 0; }
         .t-card { flex: 1; padding: 15px; border-radius: 12px; color: white; text-align: center; font-weight: 900; font-size: 0.7rem; text-transform: uppercase; cursor: pointer; border: none; }
         .t-red { background: #e74c3c; box-shadow: 0 5px 0 #922b21; }
@@ -67,7 +63,6 @@
                     <option value="Neutral">Neutral</option>
                 </select>
             </div>
-
             <span class="label">Initiate Participant 2</span>
             <div class="identity-row">
                 <input type="text" id="p2_n" placeholder="Name">
@@ -77,7 +72,6 @@
                     <option value="Neutral">Neutral</option>
                 </select>
             </div>
-
             <span class="label">Session Duration (Rounds)</span>
             <input type="number" id="max_r" value="15">
         </div>
@@ -90,7 +84,6 @@
             <div id="vault-inject"></div>
         </div>
         <button class="btn" onclick="nav(3)">Commence Ceremony</button>
-        <button class="btn btn-sec" onclick="resetV()">Factory Reset Gear</button>
     </div>
 
     <div id="step3" class="step">
@@ -127,10 +120,10 @@
     let players = [], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft;
 
     const defaultVault = {
-        "Blindfolds": ["Tape", "Gas Mask", "Pillow Case", "Sleep Mask", "Hood", "Silk Tie"],
-        "Gags": ["Tape", "Ball Gag", "Pallet Wrap", "Panties", "Sock Gag", "Bit Gag"],
-        "Restraints": ["Rope", "Leather Cuffs", "Zip Ties", "Pallet Wrap", "Duct Tape", "Chains"],
-        "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane", "Hot Wax", "Feather"]
+        "Blindfolds": ["Tape", "Gas Mask", "Sleep Mask", "Hood"],
+        "Gags": ["Tape", "Ball Gag", "Pallet Wrap", "Panties", "Sock Gag"],
+        "Restraints": ["Rope", "Leather Cuffs", "Zip Ties", "Pallet Wrap", "Duct Tape"],
+        "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane", "Hot Wax"]
     };
 
     let vault = JSON.parse(localStorage.getItem('sov_rollback_vault')) || null;
@@ -141,7 +134,6 @@
     }
 
     function save() { localStorage.setItem('sov_rollback_vault', JSON.stringify(vault)); }
-    function resetV() { localStorage.removeItem('sov_rollback_vault'); location.reload(); }
 
     function nav(n) {
         if(n === 2) {
@@ -187,10 +179,10 @@
     function delItem(c, i) { vault[c].splice(i, 1); save(); renderVault(); }
 
     const trials = [
+        { n: "The Solitary Constraint", t: 600, d: "Subject must use <b>[REST]</b> to bind themselves as Master commands. Master then applies <b>[VIS]</b> and <b>[GAG]</b> while Subject is immobile." },
+        { n: "The Inquisitor's Gambit", t: 450, d: "Truth or Dare. Subject chooses. <b>Truth:</b> Answering a deep confession while <b>[SENS]</b> is applied. <b>Dare:</b> Performing a 5-minute task while wearing <b>[GAG]</b> and <b>[VIS]</b>." },
         { n: "The Bound Statue", t: 600, d: "Master uses <b>[REST]</b> to secure the Subject. Apply <b>[SENS]</b> while they remain perfectly still." },
-        { n: "Void Deprivation", t: 400, d: "Seal <b>[VIS]</b> and <b>[GAG]</b>. Master uses <b>[SENS]</b> in a slow, unpredictable rhythm." },
-        { n: "Escape Trial", t: 300, d: "Bind Subject with <b>[REST]</b>. They must struggle free before time expires or face penalty." },
-        { n: "Sensory Overload", t: 480, d: "Using <b>[SENS]</b> and <b>[GAG]</b>, Master maintains a constant state of high arousal." }
+        { n: "Void Deprivation", t: 400, d: "Seal <b>[VIS]</b> and <b>[GAG]</b>. Master uses <b>[SENS]</b> in a slow, unpredictable rhythm." }
     ];
 
     function startSession() {
@@ -234,7 +226,6 @@
 
     function useCard(type) {
         clearInterval(timer);
-        alert(type + " CARD USED.");
         if(type === 'YELLOW') masterIdx = (masterIdx === 0 ? 1 : 0);
         finish(false);
     }
