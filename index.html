@@ -41,9 +41,10 @@
         .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 18px; margin-bottom: 12px; letter-spacing: 2px; }
         .btn-sec { background: #888; }
 
-        .cat-toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .cat-btn { padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
-        .cat-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        /* MANIFEST STYLES */
+        .manifest-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 20px; }
+        .m-item { padding: 15px; border-radius: 15px; background: #eee; border: 1px solid #ddd; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; }
+        .m-item.on { background: var(--accent); color: white; border-color: var(--accent); }
     </style>
 </head>
 <body>
@@ -89,22 +90,20 @@
     <div id="step3" class="step">
         <div id="pre-round">
             <div id="round-header" class="label" style="text-align:center; color:var(--crimson); font-size: 1rem;">ROUND 1</div>
-            <div id="trial-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px;"></div>
             
-            <div id="trial-display" style="display:none; margin-top:25px;">
-                <div class="box" id="trial-info">
-                    <strong id="trial-name">Trial Name</strong>
-                    <div id="trial-desc" style="font-size: 0.9rem; margin-top:10px; font-style: italic;">Description...</div>
-                    <div class="label" style="margin-top:20px;">Select Active Gear Categories:</div>
-                    <div class="cat-toggle-grid" id="cat-toggles"></div>
-                </div>
-                <button class="btn" style="background:#2e7d32;" onclick="confirmTrial()">Confirm Selection</button>
-                <button class="btn btn-sec" onclick="backToTrials()">Cancel</button>
+            <div class="box">
+                <span class="label">Active Activity Manifest</span>
+                <div class="manifest-grid" id="manifest-list"></div>
+                <p style="font-size:0.65rem; color:#888; text-align:center;">Toggle activities for this round. One will be chosen randomly.</p>
             </div>
+
+            <button class="btn" onclick="generateDecree()">Generate Decree</button>
         </div>
 
         <div id="active-round" style="display:none;">
-            <div class="box" id="active-trial-text" style="font-size: 0.9rem;"></div>
+            <div class="box">
+                <div id="active-trial-text" style="font-size: 0.95rem;"></div>
+            </div>
             <div class="timer-big" id="clock">00:00</div>
             <button class="btn" onclick="finish(true)">Success (+1)</button>
             <button class="btn btn-sec" onclick="finish(false)">Failure (+0)</button>
@@ -113,8 +112,7 @@
 </div>
 
 <script>
-    let players = [], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft, selectedTrialIdx = null;
-    let activeCats = { "Blindfolds": true, "Gags": true, "Restraints": true, "Sensation": true };
+    let players = [], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft;
 
     const defaultVault = {
         "Blindfolds": ["Tape", "Gas Mask", "Sleep Mask", "Hood"],
@@ -122,6 +120,13 @@
         "Restraints": ["Rope", "Leather Cuffs", "Zip Ties", "Pallet Wrap", "Duct Tape"],
         "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane", "Hot Wax"]
     };
+
+    let trials = [
+        { n: "The Solitary Constraint", t: 600, d: "Subject must use [REST] to bind themselves as Master commands. Master then applies [VIS] and [GAG].", on: true },
+        { n: "The Inquisitor's Gambit", t: 450, d: "Truth or Dare. Truth: Confession during [SENS]. Dare: Task while wearing [GAG] and [VIS].", on: true },
+        { n: "The Bound Statue", t: 600, d: "Master uses [REST] to secure the Subject. Apply [SENS] while they remain perfectly still.", on: true },
+        { n: "Void Deprivation", t: 400, d: "Seal [VIS] and [GAG]. Master uses [SENS] in a slow, unpredictable rhythm.", on: true }
+    ];
 
     let vault = JSON.parse(localStorage.getItem('sov_rollback_vault')) || null;
     if(!vault) {
@@ -141,7 +146,7 @@
             maxR = parseInt(document.getElementById('max_r').value);
             renderVault();
         }
-        if(n === 3) startSession();
+        if(n === 3) renderManifest();
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step'+n).classList.add('active');
     }
@@ -172,52 +177,33 @@
     }
 
     function confirmDelete(c, i) {
-        if(confirm(`Delete "${vault[c][i].n}" permanently?`)) { vault[c].splice(i, 1); save(); renderVault(); }
+        if(confirm(`Delete "${vault[c][i].n}"?`)) { vault[c].splice(i, 1); save(); renderVault(); }
     }
 
-    const trials = [
-        { n: "The Solitary Constraint", t: 600, d: "Subject must use [REST] to bind themselves as Master commands. Master then applies [VIS] and [GAG] while Subject is immobile." },
-        { n: "The Inquisitor's Gambit", t: 450, d: "Truth or Dare. Truth: Answering confession while [SENS] is applied. Dare: 5-minute task while wearing [GAG] and [VIS]." },
-        { n: "The Bound Statue", t: 600, d: "Master uses [REST] to secure the Subject. Apply [SENS] while they remain perfectly still." },
-        { n: "Void Deprivation", t: 400, d: "Seal [VIS] and [GAG]. Master uses [SENS] in a slow rhythm." }
-    ];
-
-    function startSession() {
+    function renderManifest() {
         document.getElementById('round-header').innerText = `ROUND ${curR} | Master: ${players[masterIdx].n}`;
-        let grid = document.getElementById('trial-grid'); grid.innerHTML = '';
+        const mList = document.getElementById('manifest-list');
+        mList.innerHTML = '';
         trials.forEach((t, i) => {
-            let b = document.createElement('button'); b.className = 'btn'; b.innerText = t.n;
-            b.onclick = () => selectTrial(i);
-            grid.appendChild(b);
+            let d = document.createElement('div');
+            d.className = `m-item ${t.on ? 'on' : ''}`;
+            d.innerHTML = `<span>${t.n}</span> <span>${t.on ? 'ACTIVE' : 'OFF'}</span>`;
+            d.onclick = () => { trials[i].on = !trials[i].on; renderManifest(); };
+            mList.appendChild(d);
         });
     }
 
-    function selectTrial(idx) {
-        selectedTrialIdx = idx;
-        document.getElementById('trial-name').innerText = trials[idx].n;
-        document.getElementById('trial-desc').innerText = trials[idx].d.replace(/\[REST\]|\[VIS\]|\[GAG\]|\[SENS\]/g, "(Selected Gear)");
-        
-        let toggles = document.getElementById('cat-toggles');
-        toggles.innerHTML = '';
-        const labels = { "Blindfolds": "VIS", "Gags": "GAG", "Restraints": "REST", "Sensation": "SENS" };
-        for(let c in vault) {
-            let b = document.createElement('button');
-            b.className = `cat-btn ${activeCats[c] ? 'active' : ''}`;
-            b.innerText = c;
-            b.onclick = () => { activeCats[c] = !activeCats[c]; b.classList.toggle('active'); };
-            toggles.appendChild(b);
-        }
-        document.getElementById('trial-grid').style.display = 'none';
-        document.getElementById('trial-display').style.display = 'block';
-    }
+    function generateDecree() {
+        let activeTrials = trials.filter(t => t.on);
+        if(activeTrials.length === 0) { alert("At least one activity must be ACTIVE."); return; }
 
-    function confirmTrial() {
-        let t = trials[selectedTrialIdx];
-        const pick = (c, tag) => { 
-            if(!activeCats[c]) return `<span style="color:#888;">[No ${c}]</span>`;
+        let t = activeTrials[Math.floor(Math.random() * activeTrials.length)];
+        
+        const pick = (c) => { 
             let p = vault[c].filter(i=>i.on); 
             return p.length ? `<b style="color:var(--crimson);">${p[Math.floor(Math.random()*p.length)].n}</b>` : `(Any ${c})`; 
         };
+
         let text = t.d.replace('[REST]', pick('Restraints')).replace('[SENS]', pick('Sensation')).replace('[VIS]', pick('Blindfolds')).replace('[GAG]', pick('Gags'));
         
         document.getElementById('active-trial-text').innerHTML = `<strong>${t.n}</strong><br><br>${text}`;
@@ -225,11 +211,6 @@
         document.getElementById('pre-round').style.display = 'none';
         document.getElementById('active-round').style.display = 'block';
         startClock();
-    }
-
-    function backToTrials() {
-        document.getElementById('trial-grid').style.display = 'grid';
-        document.getElementById('trial-display').style.display = 'none';
     }
 
     function startClock() {
@@ -249,7 +230,7 @@
         else {
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('active-round').style.display = 'none';
-            backToTrials(); startSession();
+            renderManifest();
         }
     }
 </script>
