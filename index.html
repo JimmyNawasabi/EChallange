@@ -3,209 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Down to get dirty</title>
+    <title>Down to get dirty: Sovereign</title>
     <style>
         :root { 
             --accent: #c5a059; --soft-bg: #fdfaf5; --card-bg: #ffffff;
-            --text: #2c2c2c; --crimson: #7b1a1a; --safe-green: #2e7d32; 
-            --gold: #f1c40f; --red-card: #e74c3c; --veto-grey: #4a4a4a;
+            --text: #2c2c2c; --crimson: #7b1a1a; --gold: #f1c40f; 
         }
-        body { background: var(--soft-bg); color: var(--text); font-family: 'Georgia', serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 18px; }
-        .container { max-width: 750px; width: 100%; background: var(--card-bg); padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); margin-top: 20px; }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 5px; font-size: 1.8rem; font-style: italic; }
-        .subtitle { text-align: center; font-size: 0.8rem; color: #a18e8e; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 4px; font-weight: bold; }
+        body { background: var(--soft-bg); color: var(--text); font-family: 'Georgia', serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .container { max-width: 800px; width: 100%; background: var(--card-bg); padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); }
+        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; font-style: italic; }
         .step { display: none; }
         .active { display: block !important; }
-        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 20px; border-radius: 25px; line-height: 1.8; position: relative; }
-        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 5px; letter-spacing: 1.5px; }
-        .category-block { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 20px; border: 1px solid #eee; }
-        .add-row { display: flex; gap: 8px; margin-bottom: 12px; }
-        .add-row input { flex-grow: 1; padding: 10px; border-radius: 10px; border: 1px solid #ddd; }
-        .add-btn { background: var(--accent); color: white; border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag { background: #f9f4eb; padding: 8px 15px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; display: flex; align-items: center; gap: 5px; }
+        
+        /* INVENTORY STYLES */
+        .inv-section { background: #fffcf9; border: 1px solid #f0e6d2; padding: 20px; border-radius: 25px; margin-bottom: 20px; }
+        .category-header { font-size: 0.75rem; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: block; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        
+        .add-input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .add-input-group input { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit; }
+        .plus-btn { background: var(--crimson); color: white; border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { background: white; border: 1px solid #ddd; padding: 8px 15px; border-radius: 12px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        .del-item { font-size: 0.7rem; opacity: 0.5; padding-left: 5px; }
-        .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .choice-btn { background: #fff; border: 2px solid var(--accent); color: var(--accent); padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
-        .score-row { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; font-size: 0.85rem; color: var(--crimson); }
-        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; margin-bottom: 10px; }
-        .timer-display { font-size: 3.5rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 10px 0; }
-        .finale-text { font-size: 0.95rem; background: #000; color: #fff; padding: 30px; border-radius: 20px; line-height: 2; max-height: 500px; overflow-y: auto; }
+        .tag .remove { color: #aaa; font-weight: bold; font-size: 1rem; }
+        .tag.on .remove { color: white; }
+
+        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; margin-top: 10px; }
+        .timer-display { font-size: 4rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 20px 0; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Down to get dirty</h1>
-    <div class="subtitle">Sovereignty Edition</div>
 
     <div id="step1" class="step active">
-        <div class="box">
-            <span class="label">Session Config</span>
-            <input type="number" id="maxRounds" value="20" placeholder="Rounds">
-            <input type="text" id="p1_name" placeholder="Player 1 Name" style="margin-top:10px;">
-            <input type="text" id="p2_name" placeholder="Player 2 Name" style="margin-top:10px;">
+        <div class="inv-section">
+            <span class="category-header">Setup Session</span>
+            <input type="number" id="rounds" value="10" placeholder="Number of Rounds">
+            <input type="text" id="p1" placeholder="Player 1 Name" style="margin-top:10px;">
+            <input type="text" id="p2" placeholder="Player 2 Name" style="margin-top:10px;">
         </div>
-        <button class="btn" onclick="goToStep(2)">Manage Permanent Arsenal ></button>
+        <button class="btn" onclick="nav(2)">Open Sovereign Arsenal ></button>
     </div>
 
     <div id="step2" class="step">
-        <div class="box">
-            <span class="label">Vault Management (Saves Automatically)</span>
-            <div id="inv-container"></div>
-        </div>
-        <button class="btn" onclick="goToStep(3)">Commence Ceremony</button>
-        <button class="btn" style="background:#888;" onclick="resetInventory()">Factory Reset Inventory</button>
+        <div id="vault-root"></div>
+        <button class="btn" onclick="nav(3)">Commence Ceremony</button>
+        <button class="btn" style="background:#888; margin-top:5px;" onclick="factoryReset()">Reset to Default Items</button>
     </div>
 
     <div id="step3" class="step">
-        <div class="score-row"><div id="p1-score">---</div><div id="p2-score">---</div></div>
-        <div id="pre-round">
-            <div id="round-header" class="label" style="text-align:center;">---</div>
-            <div id="choice-area">
-                <div class="choice-grid" id="master-choices"></div>
-            </div>
-            <div id="display-area" style="display:none;">
-                <div class="box"><div id="task-text">...</div></div>
-                <button class="btn" style="background:var(--safe-green);" onclick="startTimer()">Accept & Begin</button>
-                <button class="btn" style="background:#888;" onclick="backToChoice()">Change Choice</button>
+        <div style="text-align:center; font-weight:bold; color:var(--crimson);" id="score-line"></div>
+        <div id="round-view">
+            <div id="choice-buttons" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;"></div>
+            <div id="task-display" style="display:none; margin-top:20px;">
+                <div class="inv-section" id="task-body"></div>
+                <button class="btn" style="background:green;" onclick="startTimer()">Accept Decree</button>
+                <button class="btn" style="background:#888;" onclick="resetRound()">Change Choice</button>
             </div>
         </div>
-        <div id="active-round" style="display:none;">
+        <div id="timer-view" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
-            <button class="btn" onclick="resolve(true)">Success (+1)</button>
-            <button class="btn" style="background:#888;" onclick="resolve(false)">Failure (+0)</button>
+            <button class="btn" onclick="endRound(true)">Task Completed (+1)</button>
+            <button class="btn" style="background:#888;" onclick="endRound(false)">Task Failed (+0)</button>
         </div>
-    </div>
-
-    <div id="stepFinale" class="step">
-        <h1 style="color: gold;">ULTIMATE SOVEREIGNTY</h1>
-        <div class="finale-text" id="finale-content"></div>
     </div>
 </div>
 
 <script>
-    let players = [], currentRound = 1, masterIdx = 0, slaveIdx = 1, timer, timeLeft;
-
-    const defaultInv = {
-        "Blindfolds": ["Tape", "Gas Mask", "Pillow Case", "Sleep Mask", "Hood"],
-        "Gags": ["Tape", "Ball Gag", "Pallet Wrap", "Panties", "Sock Gag"],
-        "Restraints": ["Rope", "Leather Cuffs", "Zip Ties", "Pallet Wrap", "Duct Tape"],
-        "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane", "Hot Wax"]
+    let state = {
+        players: [],
+        curRound: 1,
+        totalRounds: 10,
+        masterIdx: 0,
+        timeLeft: 0,
+        timer: null,
+        // PRE-LOADED FULL LIST
+        inventory: JSON.parse(localStorage.getItem('dirty_vault')) || {
+            "Blindfolds": ["Tape", "Gas Mask", "Pillow Case", "Sleep Mask", "Hood", "Black Silk"],
+            "Gags": ["Tape", "Ball Gag", "Pallet Wrap", "Panties", "Sock Gag", "Bit Gag"],
+            "Restraints": ["Rope", "Leather Cuffs", "Zip Ties", "Pallet Wrap", "Duct Tape", "Chain"],
+            "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane", "Hot Wax", "Feather"]
+        },
+        activeItems: JSON.parse(localStorage.getItem('dirty_active')) || {}
     };
 
-    let activeInv = JSON.parse(localStorage.getItem('dirty_inv')) || null;
-
-    if (!activeInv) {
-        activeInv = {};
-        for (let cat in defaultInv) {
-            activeInv[cat] = defaultInv[cat].map(n => ({ n, on: true }));
-        }
-        save();
+    // Initialize active states if first time
+    if(Object.keys(state.activeItems).length === 0) {
+        for(let cat in state.inventory) state.activeItems[cat] = [...state.inventory[cat]];
     }
 
-    function save() { localStorage.setItem('dirty_inv', JSON.stringify(activeInv)); }
-    function resetInventory() { localStorage.removeItem('dirty_inv'); location.reload(); }
+    function save() {
+        localStorage.setItem('dirty_vault', JSON.stringify(state.inventory));
+        localStorage.setItem('dirty_active', JSON.stringify(state.activeItems));
+    }
 
-    function renderInv() {
-        const cont = document.getElementById('inv-container');
-        cont.innerHTML = '';
-        for (let c in activeInv) {
-            let div = document.createElement('div');
-            div.className = 'category-block';
-            div.innerHTML = `<span class="label">${c}</span>
-                <div class="add-row">
-                    <input type="text" id="add-${c}" placeholder="Add to ${c}...">
-                    <button class="add-btn" onclick="addItem('${c}')">+</button>
+    function factoryReset() {
+        localStorage.clear();
+        location.reload();
+    }
+
+    function renderVault() {
+        const root = document.getElementById('vault-root');
+        root.innerHTML = '<span class="category-header" style="text-align:center; font-size:1rem; margin-bottom:20px;">Master Arsenal Control</span>';
+        
+        for (let cat in state.inventory) {
+            let section = document.createElement('div');
+            section.className = 'inv-section';
+            section.innerHTML = `
+                <span class="category-header">${cat}</span>
+                <div class="add-input-group">
+                    <input type="text" id="in-${cat}" placeholder="Add custom ${cat}...">
+                    <button class="plus-btn" onclick="addNew('${cat}')">ADD</button>
                 </div>
-                <div class="tag-row" id="tags-${c}"></div>`;
-            cont.appendChild(div);
-            activeInv[c].forEach((item, i) => {
-                let t = document.createElement('div');
-                t.className = `tag ${item.on ? 'on' : ''}`;
-                t.innerHTML = `${item.n} <span class="del-item" onclick="removeItem('${c}', ${i}); event.stopPropagation();">×</span>`;
-                t.onclick = () => { activeInv[c][i].on = !activeInv[c][i].on; save(); renderInv(); };
-                div.querySelector('.tag-row').appendChild(t);
+                <div class="tag-cloud" id="cloud-${cat}"></div>
+            `;
+            root.appendChild(section);
+            
+            let cloud = section.querySelector('.tag-cloud');
+            state.inventory[cat].forEach(item => {
+                let isOn = state.activeItems[cat].includes(item);
+                let tag = document.createElement('div');
+                tag.className = `tag ${isOn ? 'on' : ''}`;
+                tag.innerHTML = `${item} <span class="remove" onclick="deleteItem('${cat}', '${item}'); event.stopPropagation();">×</span>`;
+                tag.onclick = () => toggleItem(cat, item);
+                cloud.appendChild(tag);
             });
         }
     }
 
-    function addItem(cat) {
-        let val = document.getElementById(`add-${cat}`).value;
-        if (val) {
-            activeInv[cat].push({ n: val, on: true });
-            save(); renderInv();
-            document.getElementById(`add-${cat}`).value = "";
+    function addNew(cat) {
+        let val = document.getElementById(`in-${cat}`).value.trim();
+        if(val && !state.inventory[cat].includes(val)) {
+            state.inventory[cat].push(val);
+            state.activeItems[cat].push(val);
+            save(); renderVault();
         }
     }
 
-    function removeItem(cat, idx) { activeInv[cat].splice(idx, 1); save(); renderInv(); }
+    function toggleItem(cat, item) {
+        let idx = state.activeItems[cat].indexOf(item);
+        if(idx > -1) state.activeItems[cat].splice(idx, 1);
+        else state.activeItems[cat].push(item);
+        save(); renderVault();
+    }
 
-    function goToStep(n) {
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById('step' + n).classList.add('active');
-        if (n === 2) renderInv();
-        if (n === 3) {
-            players = [
-                { n: document.getElementById('p1_name').value || "P1", score: 0 },
-                { n: document.getElementById('p2_name').value || "P2", score: 0 }
+    function deleteItem(cat, item) {
+        state.inventory[cat] = state.inventory[cat].filter(i => i !== item);
+        state.activeItems[cat] = state.activeItems[cat].filter(i => i !== item);
+        save(); renderVault();
+    }
+
+    function nav(n) {
+        if(n === 2) {
+            state.totalRounds = document.getElementById('rounds').value;
+            state.players = [
+                {name: document.getElementById('p1').value || "P1", score: 0},
+                {name: document.getElementById('p2').value || "P2", score: 0}
             ];
-            updateUI();
+            renderVault();
         }
+        if(n === 3) setupGame();
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step'+n).classList.add('active');
     }
 
-    const taskPool = {
-        shibari: { label: "Binding", time: 600, text: "Master uses <b>[REST]</b> to bind Slave. Focus on restriction. Apply <b>[SENS]</b> to test their resolve." },
-        overload: { label: "Overload", time: 400, text: "Master applies <b>[GAG]</b> and <b>[VIS]</b>. In darkness, use <b>[SENS]</b> relentlessly." },
-        escape: { label: "Escape", time: 300, text: "Master binds Slave with <b>[REST]</b>. Slave must escape before the clock hits zero." },
-        edging: { label: "The Peak", time: 480, text: "Master uses <b>[SENS]</b> to bring Slave to the edge 3 times. Release is forbidden." }
-    };
+    const tasks = [
+        { n: "Total Restraint", t: 600, d: "Master uses <b>[REST]</b> to pin the Slave. Use <b>[SENS]</b> to explore their [BODY] while they are helpless." },
+        { n: "Sensory Void", t: 400, d: "Apply <b>[VIS]</b> and <b>[GAG]</b>. In total darkness and silence, Master will use <b>[SENS]</b> relentlessly." },
+        { n: "The Edge", t: 480, d: "Master uses <b>[SENS]</b>. Slave must be brought to the peak 3 times. Release is only by Master's decree." },
+        { n: "Escape Trial", t: 300, d: "Master binds Slave with <b>[REST]</b> and <b>[VIS]</b>. Slave has until the clock hits zero to break free." }
+    ];
 
-    function updateUI() {
-        document.getElementById('p1-score').innerText = `${players[0].n}: ${players[0].score}`;
-        document.getElementById('p2-score').innerText = `${players[1].n}: ${players[1].score}`;
-        document.getElementById('round-header').innerHTML = `ROUND ${currentRound} | Master: ${players[masterIdx].n}`;
-        const grid = document.getElementById('master-choices');
-        grid.innerHTML = '';
-        Object.keys(taskPool).forEach(key => {
-            let b = document.createElement('button'); b.className = 'choice-btn'; b.innerText = taskPool[key].label;
-            b.onclick = () => {
-                let t = taskPool[key];
-                let v = pick('Blindfolds'), g = pick('Gags'), r = pick('Restraints'), s = pick('Sensation');
-                document.getElementById('task-text').innerHTML = t.text.replace('[VIS]', v).replace('[GAG]', g).replace('[REST]', r).replace('[SENS]', s);
-                timeLeft = t.time; document.getElementById('choice-area').style.display = 'none'; document.getElementById('display-area').style.display = 'block';
-            };
-            grid.appendChild(b);
+    function setupGame() {
+        document.getElementById('score-line').innerText = `${state.players[0].name}: ${state.players[0].score} | ${state.players[1].name}: ${state.players[1].score}`;
+        let btns = document.getElementById('choice-buttons');
+        btns.innerHTML = '';
+        tasks.forEach((task, i) => {
+            let b = document.createElement('button');
+            b.className = 'btn';
+            b.style.marginTop = '0';
+            b.innerText = task.n;
+            b.onclick = () => showTask(i);
+            btns.appendChild(b);
         });
     }
 
-    function pick(cat) {
-        let items = activeInv[cat].filter(i => i.on);
-        return items.length ? items[Math.floor(Math.random() * items.length)].n : "Basic Gear";
+    function showTask(idx) {
+        let t = tasks[idx];
+        const r = (c) => {
+            let pool = state.activeItems[c];
+            return pool[Math.floor(Math.random()*pool.length)] || "Standard Gear";
+        };
+        let bodyText = t.d.replace('[REST]', r('Restraints'))
+                        .replace('[SENS]', r('Sensation'))
+                        .replace('[VIS]', r('Blindfolds'))
+                        .replace('[GAG]', r('Gags'))
+                        .replace('[BODY]', "Body");
+        
+        document.getElementById('task-body').innerHTML = `<strong>${t.n}</strong><br><br>${bodyText}`;
+        state.timeLeft = t.t;
+        document.getElementById('choice-buttons').style.display = 'none';
+        document.getElementById('task-display').style.display = 'block';
     }
 
-    function backToChoice() { document.getElementById('choice-area').style.display = 'block'; document.getElementById('display-area').style.display = 'none'; }
+    function resetRound() {
+        document.getElementById('choice-buttons').style.display = 'grid';
+        document.getElementById('task-display').style.display = 'none';
+    }
+
     function startTimer() {
-        document.getElementById('pre-round').style.display = 'none'; document.getElementById('active-round').style.display = 'block';
-        timer = setInterval(() => {
-            timeLeft--; let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
-            document.getElementById('clock').innerText = `${m}:${s < 10 ? '0' + s : s}`;
-            if (timeLeft <= 0) resolve(false);
+        document.getElementById('round-view').style.display = 'none';
+        document.getElementById('timer-view').style.display = 'block';
+        state.timer = setInterval(() => {
+            state.timeLeft--;
+            let m = Math.floor(state.timeLeft/60), s = state.timeLeft%60;
+            document.getElementById('clock').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+            if(state.timeLeft <= 0) endRound(false);
         }, 1000);
     }
 
-    function resolve(success) {
-        clearInterval(timer);
-        if (success) { players[slaveIdx].score++; [masterIdx, slaveIdx] = [slaveIdx, masterIdx]; }
-        currentRound++;
-        if (currentRound > document.getElementById('maxRounds').value) {
-            document.getElementById('step3').classList.remove('active'); document.getElementById('stepFinale').classList.add('active');
-            document.getElementById('finale-content').innerHTML = `Winner: ${players[0].score > players[1].score ? players[0].n : players[1].n}. The Sovereign's decree is final. Phase I: Total binding with Rope. Phase II: Sensory deprivation with Gas Mask.`;
+    function endRound(success) {
+        clearInterval(state.timer);
+        if(success) {
+            let slaveIdx = state.masterIdx === 0 ? 1 : 0;
+            state.players[slaveIdx].score++;
+            state.masterIdx = slaveIdx; // Swap
+        }
+        state.curRound++;
+        if(state.curRound > state.totalRounds) {
+            document.getElementById('step3').innerHTML = "<h1>CEREMONY COMPLETE</h1><div class='inv-section'>Final Scores recorded. Proceed to Final Decree.</div>";
         } else {
-            document.getElementById('active-round').style.display = 'none'; document.getElementById('pre-round').style.display = 'block';
-            document.getElementById('choice-area').style.display = 'block'; document.getElementById('display-area').style.display = 'none';
-            updateUI();
+            document.getElementById('round-view').style.display = 'block';
+            document.getElementById('timer-view').style.display = 'none';
+            resetRound();
+            setupGame();
         }
     }
 </script>
