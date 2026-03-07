@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,10 +19,12 @@
         .step { display: none; }
         .active { display: block !important; }
 
-        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 30px; margin-bottom: 25px; border-radius: 25px; line-height: 1.8; position: relative; }
+        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 25px; border-radius: 25px; line-height: 1.8; position: relative; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1.5px; }
 
-        input[type="text"], select, input[type="number"] { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 12px; margin-bottom: 15px; font-size: 1rem; font-family: inherit; }
+        /* ENSURING INPUT STABILITY */
+        .input-group { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 15px; border: 1px solid #eee; }
+        input[type="text"], select, input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin-top: 5px; font-size: 1rem; font-family: inherit; display: block; box-sizing: border-box; }
         
         .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
         .tag { background: #f9f4eb; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; transition: 0.2s; }
@@ -32,13 +35,10 @@
         .b-edging { background: #884ea0; } .b-physical { background: #1e8449; }
         
         .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; font-size: 1rem; margin-bottom: 10px; transition: 0.3s; }
-        .btn:hover { letter-spacing: 2px; background: #5a1212; }
-        
         .timer-display { font-size: 5rem; text-align: center; color: var(--crimson); font-weight: 100; margin: 20px 0; font-family: monospace; }
         .intensity-pill { position: absolute; top: 15px; right: 15px; font-size: 0.6rem; padding: 4px 10px; border-radius: 50px; border: 1px solid var(--accent); color: var(--accent); text-transform: uppercase; font-weight: 800; }
         
         b { color: var(--crimson); text-decoration: underline; }
-        i { color: #666; font-size: 0.95rem; }
     </style>
 </head>
 <body>
@@ -49,18 +49,34 @@
 
     <div id="step1" class="step active">
         <div class="box">
-            <span class="label">Session Config</span>
-            <input type="number" id="maxRounds" value="6" title="Rounds">
-            <input type="text" id="p1" placeholder="Slave Name">
-            <select id="g1"><option value="male body">Male Body</option><option value="female body">Female Body</option></select>
-            <input type="text" id="p2" placeholder="Master Name">
+            <span class="label">Rounds to Ascension</span>
+            <input type="number" id="maxRounds" value="6">
+            
+            <div class="input-group">
+                <span class="label">Primary Authority (Player 1)</span>
+                <input type="text" id="p1_name" placeholder="Name (Starts as Master)">
+                <select id="p1_gender">
+                    <option value="male body">Male Body</option>
+                    <option value="female body">Female Body</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <span class="label">The Subject (Player 2)</span>
+                <input type="text" id="p2_name" placeholder="Name (Starts as Slave)">
+                <select id="p2_gender">
+                    <option value="male body">Male Body</option>
+                    <option value="female body">Female Body</option>
+                </select>
+            </div>
         </div>
         <button class="btn" onclick="goToStep(2)">Curate Arsenal ></button>
     </div>
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Inventory Selection</span>
+            <span class="label">Active Inventory</span>
+            <p style="font-size: 0.7rem; color: #888; margin-top: -5px;">Select gear available for this session.</p>
             <div id="inv-container"></div>
         </div>
         <button class="btn" onclick="goToStep(3)">Commence Ceremony</button>
@@ -68,74 +84,60 @@
 
     <div id="step3" class="step">
         <div id="pre-round">
-            <div id="round-header" class="label" style="text-align:center;">Round 1</div>
-            <div class="box" style="text-align:left;">
+            <div id="round-header" class="label" style="text-align:center; font-size: 0.9rem;">---</div>
+            <div class="box" style="text-align:left; min-height: 150px;">
                 <div id="intensity-display" class="intensity-pill">---</div>
                 <div id="badge-container"></div>
-                <div id="task-text">Press the button to receive your decree.</div>
+                <div id="task-text">Press the button below to manifest a decree.</div>
             </div>
             <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
             <div id="pre-start-controls" style="display:none;">
-                <button class="btn" style="background: var(--safe-green);" onclick="startT()">Start Clock</button>
+                <button class="btn" style="background: var(--safe-green);" onclick="startT()">Begin Execution</button>
                 <button class="btn" style="background: var(--veto); font-size:0.8rem;" onclick="generate()">Reroll Decree</button>
             </div>
         </div>
 
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
-            <button class="btn" onclick="resolveTurn(true)">Success (Role Swap)</button>
-            <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Failure (No Swap)</button>
+            <button class="btn" onclick="resolveTurn(true)">Merit Achieved (Swap Roles)</button>
+            <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Task Failed (Maintain Roles)</button>
         </div>
     </div>
 </div>
 
 <script>
-    const gear = {
+    const gearPool = {
         "Blindfolds": ["Pillow Case", "Gas Mask", "Bandage", "Tape", "Cloth", "Sleep Mask", "Silk Scarf", "Hood"],
         "Gags": ["Gas Mask", "Tape", "Pallet Wrap", "Cloth", "Panties", "Bandage", "Rope", "Ring Gag", "Ball Gag", "Hood"],
         "Restraints": ["Leather Cuffs", "Tape", "Pallet Wrap", "String", "Belt", "Ribbon", "Rope", "Handcuffs"],
-        "Sensation": ["Anal Hook", "Pussy Hook", "E-stim Machine", "Anal Dildo", "Insertable", "Dildo", "Butt Plug", "Paddle", "Vibrator", "Cane", "Needle", "Sharpies", "Candle", "Clamps"]
+        "Sensation": ["Anal Hook", "Pussy Hook", "E-stim Machine", "Anal Dildo", "Insertable", "Dildo", "Butt Plug", "Paddle", "Vibrator", "Cane", "Needle", "Sharpies", "Tape", "Candle", "Clamps"]
     };
 
     let activeInv = {};
-    let players = [], currentRound = 1, subIdx = 0, timer, timeLeft;
+    let players = []; 
+    let currentRound = 1;
+    let masterIdx = 0; // Player 1 starts as Master
+    let slaveIdx = 1;  // Player 2 starts as Slave
+    let timer, timeLeft;
 
-    // ELABORATE METHOD ENGINE
-    const getApplicationMethod = (item, intensity) => {
-        item = item.toLowerCase();
-        let desc = "";
-
-        // VISUAL INHIBITORS
-        if (item === "pillow case") desc = "Drape the fabric entirely over the Slave's head. If possible, secure it loosely around the neck with a soft tie, ensuring the excess fabric hangs heavy to block all light.";
-        else if (item === "gas mask") desc = "Fit the mask over the Slave's face, cinching the rubber straps until the seal is airtight against the skin, creating a claustrophobic sensory vacuum.";
-        else if (item === "tape") desc = "Apply three horizontal strips across the eyes, pressing the edges firmly into the temples to ensure zero light leakage.";
-        else if (item === "bandage" || item === "cloth" || item === "silk scarf") desc = `Fold the material into a thick 3-inch band. Wrap it twice around the head and knot it ${intensity === 'tight' ? 'firmly at the base of the skull' : 'softly over the ears'}.`;
-        
-        // GAGS
-        else if (item === "pallet wrap" || item === "tape") desc = `Force the Slave to open wide, then wrap the ${item} around the circumference of the head three times, covering the mouth entirely to muffle all sound.`;
-        else if (item === "panties" || item === "cloth") desc = "Stuff the fabric deep into the oral cavity until the jaws are stretched, then secure it in place by tying a secondary binding over the lips.";
-        else if (item === "ring gag" || item === "ball gag") desc = "Insert the bit and pull the buckle to the third hole, forcing the Slave's mouth into a permanent, straining 'O' shape.";
-
-        // RESTRAINTS
-        else if (item === "leather cuffs" || item === "handcuffs") desc = `Cinch the hardware around the wrists. ${intensity === 'tight' ? 'Ensure there is no gap between the skin and the lining' : 'Leave exactly one finger-width of space for slight movement'}.`;
-        else if (item === "rope" || item === "string") desc = `Execute a figure-eight wrap around the wrists. Cross the binds four times and finish with a double-knot, ensuring the hands are held ${intensity === 'tight' ? 'crushed together' : 'loosely adjacent'}.`;
-        else if (item === "belt") desc = "Loop the leather around the limbs and pull until the Slave's movement is completely restricted by the weight of the strap.";
-
-        // SENSATION
-        else if (item.includes("hook")) desc = `Lubricate the metal thoroughly. Slowly introduce the curve into the ${item.includes('anal') ? 'rectum' : 'genitals'} until the weight of the hook hangs naturally, pulling the skin taut.`;
-        else if (item === "e-stim machine") desc = "Affix the pads to the sensitive areas of the inner thighs. Start at zero and slowly rotate the dial until the Slave's muscles begin to twitch visibly.";
-        else if (item === "paddle" || item === "cane") desc = `Deliver ${intensity === 'tight' ? 'forceful, stinging' : 'measured, rhythmic'} strikes, aiming for the fleshy parts of the seat, waiting for the skin to flush a deep crimson.`;
-        else if (item === "clamps") desc = "Depress the springs and attach them to the most sensitive points. Once attached, tug the chain gently to remind the Slave of their presence.";
-        
-        else desc = `Apply the ${item} with focus and intent, ensuring the Slave is fully aware of its weight and texture.`;
-
-        return desc;
-    };
-
-    function boot() {
-        for (let cat in gear) { activeInv[cat] = gear[cat].map(i => ({ n: i, on: true })); }
+    function initGear() {
+        for (let cat in gearPool) {
+            activeInv[cat] = gearPool[cat].map(i => ({ n: i, on: true }));
+        }
     }
-    boot();
+    initGear();
+
+    function getMethod(item, intensity) {
+        item = item.toLowerCase();
+        if (item === "pillow case") return "Drape the fabric entirely over the Slave's head. Secure it loosely at the neck to ensure total darkness and muffled sensory input.";
+        if (item === "gas mask") return "Seal the mask against the Slave's face, tightening the head straps until the seal is firm and breathing is audible through the filter.";
+        if (item === "tape") return `Apply horizontally across the ${item.includes('gag') ? 'lips' : 'eyes'}, pressing the edges deep into the skin to prevent any ${item.includes('gag') ? 'sound' : 'light'} escaping.`;
+        if (item === "pallet wrap") return "Circle the head three times, binding the mouth closed and ensuring the plastic clings tightly to the jawline.";
+        if (item.includes("hook")) return `Apply sterile lubricant. Slowly slide the curve into the ${item.includes('anal') ? 'rectum' : 'genitals'} until the base is flush with the skin, allowing the weight to hang.`;
+        if (item === "rope" || item === "string") return `Loop the material twice around the wrists. Knot it with a ${intensity === 'tight' ? 'binding double-knot' : 'secure but soft square-knot'}.`;
+        if (item === "leather cuffs") return `Lock the hardware around the limbs, cinching it to the ${intensity === 'tight' ? 'tightest comfortable notch' : 'middle notch'}.`;
+        return `Apply the ${item} with ${intensity} focus, ensuring the Slave feels the full weight and texture of the object.`;
+    }
 
     function renderInv() {
         const container = document.getElementById('inv-container');
@@ -156,63 +158,45 @@
 
     function goToStep(n) {
         if (n === 2) {
-            players = [{n: document.getElementById('p1').value || "Slave", g: document.getElementById('g1').value, wins: 0},
-                       {n: document.getElementById('p2').value || "Master", g: document.getElementById('p2').value || "Master", wins: 0}];
+            players = [
+                {n: document.getElementById('p1_name').value || "Player 1", g: document.getElementById('p1_gender').value},
+                {n: document.getElementById('p2_name').value || "Player 2", g: document.getElementById('p2_gender').value}
+            ];
             renderInv();
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + n).classList.add('active');
-        if (n === 3) updateIdentity();
+        if (n === 3) updateHeader();
+    }
+
+    function updateHeader() {
+        document.getElementById('round-header').innerHTML = `ROUND ${currentRound} <br> <b>Master: ${players[masterIdx].n}</b> | Slave: ${players[slaveIdx].n}`;
     }
 
     const tasks = {
-        truth: { label: "Truth", time: 120, templates: [
-            "<b>The Sensory Confession:</b> Master shall first <b>[DESC-VIS]</b>. Once the Slave is in total darkness, Master will <b>[DESC-GAG]</b>. Slave must then attempt to confess their deepest submissive urge through the binding.",
-            "<b>The Exposed Inquiry:</b> Master will <b>[DESC-REST]</b>. While the Slave is unable to move, Master will whisper a question. Slave must answer truthfully or face a round of sensation."
-        ]},
-        dare: { label: "Dare", time: 300, templates: [
-            "<b>The Bound Statue:</b> Master must <b>[DESC-REST]</b> and then <b>[DESC-VIS]</b>. Once the Slave is blind and bound, Master will <b>[DESC-SENS]</b>. Slave must remain perfectly still for the duration of the clock.",
-            "<b>The Muffled Service:</b> Master will <b>[DESC-GAG]</b> and <b>[DESC-REST]</b>. Slave must then spend the round performing a menial task (like tidying or posing) exactly as Master commands, without a single sound."
-        ]},
-        escape: { label: "Escape", time: 480, templates: [
-            "<b>The Great Release:</b> Master must <b>[DESC-REST]</b> using maximum tension. Master will then <b>[DESC-VIS]</b>. Slave is given the full duration of the timer to struggle out of the bindings. If they fail, Master wins the round.",
-            "<b>The Weighted Struggle:</b> Master will <b>[DESC-SENS]</b> to provide a distraction, then <b>[DESC-REST]</b>. Slave must escape the restraints while the sensation item remains in place."
-        ]},
-        edging: { label: "Edging", time: 400, templates: [
-            "<b>The Brink of Sovereignty:</b> Master will <b>[DESC-REST]</b> the Slave's limbs. Master will then use <b>[DESC-SENS]</b> to bring the Slave to the absolute peak of climax, only to stop and command 'Still' until the feeling subsides. Repeat 3 times.",
-            "<b>Blind Denial:</b> Master shall <b>[DESC-VIS]</b>. Using <b>[DESC-SENS]</b>, Master will tease the Slave's <b>[BODY]</b>. Slave is forbidden from touching themselves or reaching climax."
-        ]},
-        physical: { label: "Physical", time: 300, templates: [
-            "<b>The Burden of Mercy:</b> Master will <b>[DESC-REST]</b> the Slave's hands behind their back and <b>[DESC-GAG]</b>. Slave must hold a kneeling 'stress position' (back straight, heels under seat) for the entire round.",
-            "<b>The Blind Balance:</b> Master shall <b>[DESC-VIS]</b> and <b>[DESC-REST]</b> the Slave's ankles together. Slave must balance on one knee without toppling."
-        ]}
+        truth: { label: "Truth", time: 120, templates: ["Master shall [DESC-VIS]. In this darkness, Master will [DESC-GAG]. Slave must attempt to confess a secret through the binding."] },
+        dare: { label: "Dare", time: 300, templates: ["Master must [DESC-REST] and then [DESC-VIS]. Once blind and bound, Master will [DESC-SENS] on the Slave's [BODY]."] },
+        escape: { label: "Escape", time: 480, templates: ["Master must [DESC-REST] with maximum tension and [DESC-VIS]. Slave has until the clock ends to struggle free."] },
+        edging: { label: "Edging", time: 360, templates: ["Master will [DESC-REST] and then use [DESC-SENS] to tease the Slave's [BODY] to the absolute brink of climax 3 times."] }
     };
 
-    function updateIdentity() {
-        let mName = (subIdx === 0 ? players[1].n : players[0].n);
-        document.getElementById('round-header').innerText = `Round ${currentRound} | Master: ${mName} | Slave: ${players[subIdx].n}`;
-    }
-
     function generate() {
-        let cats = Array.from(document.querySelectorAll('.tgl-btn.on')).map(b => b.getAttribute('data-cat'));
-        if (!cats.length) cats = ["truth", "dare", "escape", "edging", "physical"];
-        
-        let k = cats[Math.floor(Math.random()*cats.length)];
+        let k = Object.keys(tasks)[Math.floor(Math.random()*Object.keys(tasks).length)];
         let intensity = ["soft", "firm", "tight"][Math.floor(Math.random()*3)];
-        let template = tasks[k].templates[Math.floor(Math.random()*tasks[k].templates.length)];
+        let template = tasks[k].templates[0];
         
         const pick = (c) => {
             let p = activeInv[c].filter(i=>i.on);
-            return p.length ? p[Math.floor(Math.random()*p.length)].n : "the selected item";
+            return p.length ? p[Math.floor(Math.random()*p.length)].n : "gear";
         };
 
         let v = pick('Blindfolds'), g = pick('Gags'), r = pick('Restraints'), s = pick('Sensation');
 
-        let res = template.replace(/\[DESC-VIS\]/g, `apply the <b>${v}</b>: ${getApplicationMethod(v, intensity)}`)
-                          .replace(/\[DESC-GAG\]/g, `apply the <b>${g}</b>: ${getApplicationMethod(g, intensity)}`)
-                          .replace(/\[DESC-REST\]/g, `apply the <b>${r}</b>: ${getApplicationMethod(r, intensity)}`)
-                          .replace(/\[DESC-SENS\]/g, `apply the <b>${s}</b>: ${getApplicationMethod(s, intensity)}`)
-                          .replace(/\[BODY\]/g, players[subIdx].g);
+        let res = template.replace(/\[DESC-VIS\]/g, `apply the <b>${v}</b>: ${getMethod(v, intensity)}`)
+                          .replace(/\[DESC-GAG\]/g, `apply the <b>${g}</b>: ${getMethod(g, intensity)}`)
+                          .replace(/\[DESC-REST\]/g, `apply the <b>${r}</b>: ${getMethod(r, intensity)}`)
+                          .replace(/\[DESC-SENS\]/g, `apply the <b>${s}</b>: ${getMethod(s, intensity)}`)
+                          .replace(/\[BODY\]/g, players[slaveIdx].g);
 
         document.getElementById('intensity-display').innerText = `Intensity: ${intensity}`;
         document.getElementById('badge-container').innerHTML = `<span class="badge b-${k}">${tasks[k].label}</span>`;
@@ -235,17 +219,25 @@
 
     function resolveTurn(success) {
         clearInterval(timer);
-        if (success) { subIdx = (subIdx === 0 ? 1 : 0); }
+        if (success) {
+            // Swap Indices
+            let temp = masterIdx;
+            masterIdx = slaveIdx;
+            slaveIdx = temp;
+            alert("Merit Recognized. Roles have been swapped.");
+        } else {
+            alert("The Slave has failed. Authority remains unchanged.");
+        }
         currentRound++;
         if (currentRound > parseInt(document.getElementById('maxRounds').value)) {
-            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Session Concluded</h1><button class="btn" onclick="location.reload()">Return to Foyer</button></div>`;
+            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Session Complete</h1><button class="btn" onclick="location.reload()">Reset</button></div>`;
         } else {
-            updateIdentity();
+            updateHeader();
             document.getElementById('active-round').style.display = 'none';
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('gen-btn').style.display = 'block';
             document.getElementById('pre-start-controls').style.display = 'none';
-            document.getElementById('task-text').innerHTML = "<i>The air thickens as the next decree prepares to manifest...</i>";
+            document.getElementById('task-text').innerHTML = "The air settles... Prepare for the next decree.";
         }
     }
 </script>
