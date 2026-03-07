@@ -22,18 +22,23 @@
         .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 20px; border-radius: 25px; line-height: 1.8; position: relative; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 5px; letter-spacing: 1.5px; }
 
+        /* ARSENAL UI */
+        .category-block { margin-bottom: 25px; padding: 15px; background: #fff; border: 1px solid #eee; border-radius: 20px; }
+        .add-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        .add-row input { flex-grow: 1; padding: 8px; border-radius: 8px; border: 1px solid #ddd; }
+        .add-btn { background: var(--accent); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.2rem; }
+        .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag { background: #f9f4eb; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; }
+        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
+
+        /* STATUS TRACKER */
         .tactical-status { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; padding: 10px; background: #fff; border-radius: 15px; border: 1px solid #eee; }
-        .holder-badge { font-size: 0.7rem; padding: 8px 15px; border-radius: 20px; font-weight: bold; text-transform: uppercase; color: #ccc; border: 1px solid #eee; transition: 0.3s; }
+        .holder-badge { font-size: 0.7rem; padding: 8px 15px; border-radius: 20px; font-weight: bold; text-transform: uppercase; color: #ccc; border: 1px solid #eee; }
         .has-cards { border-color: var(--crimson); background: var(--crimson); color: white; box-shadow: 0 4px 10px rgba(123, 26, 26, 0.3); }
 
         .identity-card { background: #ffffff; border: 1px solid #eee; padding: 15px; border-radius: 20px; margin-bottom: 10px; }
         input[type="text"], select, input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; margin-top: 5px; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
         
-        .category-block { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #e2d1b3; }
-        .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-        .tag { background: #f9f4eb; padding: 8px 15px; border-radius: 12px; font-size: 0.8rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; font-weight: bold; }
-        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-
         .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
         .choice-btn { background: #fff; border: 2px solid var(--accent); color: var(--accent); padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
         
@@ -69,7 +74,10 @@
     </div>
 
     <div id="step2" class="step">
-        <div class="box"><span class="label">Full Tactical Arsenal</span><div id="inv-container"></div></div>
+        <div class="box">
+            <span class="label">The Master's Inventory</span>
+            <div id="inv-container"></div>
+        </div>
         <button class="btn" onclick="goToStep(3)">Commence Ceremony</button>
     </div>
 
@@ -88,11 +96,11 @@
             </div>
             <div id="display-area" style="display:none;">
                 <div class="box">
-                    <div id="task-text">Awaiting the Decree...</div>
-                    <button id="veto-btn" class="tactical-card t-veto" onclick="useVeto()">Veto (Delete Category)</button>
+                    <div id="task-text">...Generating Mandate...</div>
+                    <button id="veto-btn" class="tactical-card t-veto" onclick="useVeto()">Veto (Expunge Category)</button>
                 </div>
                 <button class="btn" style="background:var(--safe-green);" onclick="startTimer()">Accept & Begin</button>
-                <button class="btn" style="background:#888;" onclick="backToChoice()">Back to Choices</button>
+                <button class="btn" style="background:#888;" onclick="backToChoice()">Change Strategy</button>
             </div>
         </div>
 
@@ -119,21 +127,21 @@
     let players = [], currentRound = 1, masterIdx, slaveIdx, cardHolderIdx, timer, timeLeft, currentTaskKey = "";
 
     const detailMap = {
-        "Tape": "Apply the cold adhesive directly to the skin, pressing firmly to ensure it grips the fine hairs. For gags, ensure multiple layers cover the lips entirely, forcing muzzled silence.",
-        "Gas Mask": "Seal the rubber against the face, tightening the straps until the intake of air is restricted and loud. The smell of rubber should dominate the Slave's senses.",
-        "Rope": "Execute a complex tie with high tension. The rough hemp fibers should bite into the skin, creating visible ridges and providing the psychological weight of total immobilization.",
-        "Pillow Case": "The fabric should be heavy and opaque. Fold it twice before draping it over the head, cinching it at the throat to create a private, lightless world.",
-        "Ice": "The shock of the freezing texture should be moved slowly over sensitive areas, leaving a trail of numbing cold that heightens the reaction to the next touch.",
-        "Ball Gag": "The silicone should be forced deep, filling the mouth and stretching the jaw. Tighten the strap until the Slave is unable to swallow, leaving them drooling and silenced.",
-        "Vibrator": "Apply the buzzing motor directly against the most sensitive nerves. Do not let it rest; move it rhythmically to build an unbearable internal hum.",
-        "Leather Cuffs": "The cool, stiff leather should be cinched until there is no room for escape. The weight of the metal rings should remind the Slave of their master's tether.",
-        "Zip Ties": "The plastic should be zipped tight until the pulse can be felt beneath. The clinical, sharp edge of the plastic is a reminder of absolute constraint.",
-        "Whip": "The tail should sting across the skin, creating a blooming heat. Master must vary the tempo to keep the Slave guessing the next point of impact.",
-        "Clamps": "The pressure should be applied to sensitive peaks, creating a sharp, constant throb that pulses with every heartbeat the Slave makes.",
-        "Pallet Wrap": "Wrap the clear plastic tightly around the designated area, layering it until the skin is compressed and the Slave's movements are restricted by the squeaking, airtight bond.",
-        "Cane": "The thin wood should whistle through the air before making a sharp, localized 'crack' against the skin, leaving a stinging line of heat that lasts long after the strike.",
-        "Sleep Mask": "The soft, padded fabric should be positioned perfectly, plunging the Slave into a velvet darkness that forces them to rely entirely on sound and touch.",
-        "Panties": "The fabric is to be stuffed firmly into the mouth as a soft gag, then secured with a secondary tie to ensure the Slave is silenced by the Master's scent."
+        "Tape": "Apply cold adhesive directly to the skin, pressing firmly. For gags, ensure multiple layers cover the lips entirely.",
+        "Gas Mask": "Seal the rubber against the face, tightening straps until the intake of air is restricted and loud.",
+        "Rope": "Execute a complex tie with high tension. Rough fibers should bite into the skin, providing visible ridges.",
+        "Pillow Case": "Fold it twice before draping it over the head, cinching it at the throat to create a lightless world.",
+        "Ice": "Move the freezing texture slowly over sensitive areas, leaving a trail of numbing cold.",
+        "Ball Gag": "Force the silicone deep, filling the mouth and stretching the jaw until the Slave is unable to swallow.",
+        "Vibrator": "Apply the motor directly against the most sensitive nerves. Move rhythmically to build an unbearable hum.",
+        "Leather Cuffs": "Cinch the cool, stiff leather until there is no room for escape.",
+        "Zip Ties": "Zip tight until the pulse is felt beneath. The sharp edge is a reminder of absolute constraint.",
+        "Whip": "The tail should sting across the skin, creating a blooming heat. Vary the tempo to keep the Slave guessing.",
+        "Clamps": "Pressure should be applied to sensitive peaks, creating a sharp, constant throb.",
+        "Pallet Wrap": "Wrap tightly until the skin is compressed and movements are restricted by the airtight bond.",
+        "Cane": "The thin wood should whistle through the air before making a sharp 'crack' against the skin.",
+        "Sleep Mask": "Position perfectly, plunging the Slave into a velvet darkness to heighten sound and touch.",
+        "Panties": "Stuff firmly into the mouth as a soft gag, secured with a tie to force the Slave to inhale the scent."
     };
 
     let activeInv = { 
@@ -152,12 +160,12 @@
     };
 
     let taskPool = {
-        shibari_floor: { label: "Shibari Floor Play", time: 600, text: "Master will force the Slave into a submissive floor posture. Using <b>[REST]</b>, Master will bind the limbs together—ensure the binding is [REST_DET]. Once pinned, Master will use <b>[SENS]</b> to trace every curve of the Slave's [BODY], focusing on the [SENS_DET]." },
-        shibari_suspension: { label: "Suspension", time: 900, text: "Master will construct a suspension-grade harness using <b>[REST]</b>. The Slave's [BODY] must be hoisted until their weight is supported by the rope. While they hang, Master will apply <b>[VIS]</b> ([VIS_DET]) and use <b>[SENS]</b> to exploit their total vulnerability." },
-        escape: { label: "The Bind & Break", time: 480, text: "Master must use <b>[REST]</b> to bind the Slave's wrists and ankles with maximum tension ([REST_DET]). Then, apply <b>[VIS]</b> to plunge them into darkness ([VIS_DET]). The Slave has the duration of the timer to struggle free or face a penalty." },
-        sensory_overload: { label: "Sensory Overload", time: 400, text: "Master will apply <b>[GAG]</b> ([GAG_DET]) and <b>[VIS]</b>. With the Slave blinded and silenced, Master will use <b>[SENS]</b> in a relentless, rhythmic pattern, ensuring the [SENS_DET]." },
-        truth: { label: "The Confession", time: 180, text: "Master will apply <b>[VIS]</b> ([VIS_DET]) and <b>[GAG]</b>. Slave must be placed in a stressed position. In this state of deprivation, Master will whisper questions; Slave must confess their deepest secrets through the muffle of the gag." },
-        edging: { label: "Merciless Edging", time: 360, text: "Using <b>[REST]</b> ([REST_DET]) to hold them fast, Master will apply <b>[SENS]</b> to the Slave's [BODY]. Master must bring the Slave to the absolute peak of climax 3 times, pulling back only at the last second. [SENS_DET]" }
+        shibari_floor: { label: "Floor Play", time: 600, text: "Master forces Slave into a floor posture. Using <b>[REST]</b>, Master will bind the limbs together—[REST_DET]. Once pinned, Master will use <b>[SENS]</b> on the Slave's [BODY], focusing on the [SENS_DET]." },
+        suspension: { label: "Suspension", time: 900, text: "Master constructs a suspension-grade harness using <b>[REST]</b>. The Slave's [BODY] must be hoisted. While hanging, Master will apply <b>[VIS]</b> ([VIS_DET]) and <b>[SENS]</b> ([SENS_DET])." },
+        escape: { label: "The Bind & Break", time: 480, text: "Master uses <b>[REST]</b> to bind wrists and ankles with maximum tension ([REST_DET]). Apply <b>[VIS]</b> ([VIS_DET]). Slave has the timer to struggle free or face penalty." },
+        overload: { label: "Sensory Overload", time: 400, text: "Master applies <b>[GAG]</b> ([GAG_DET]) and <b>[VIS]</b>. With the Slave deprived, Master will use <b>[SENS]</b> in a relentless pattern: [SENS_DET]." },
+        truth: { label: "The Confession", time: 180, text: "Master applies <b>[VIS]</b> ([VIS_DET]) and <b>[GAG]</b>. Slave in a stress position must confess their deepest secrets through the muffle of the gag." },
+        edging: { label: "Merciless Edging", time: 360, text: "Using <b>[REST]</b> ([REST_DET]) to hold them fast, Master will apply <b>[SENS]</b> to the Slave's [BODY]. Peak the Slave 3 times without release. [SENS_DET]" }
     };
 
     function renderInv() {
@@ -166,39 +174,46 @@
         for (let c in activeInv) {
             let div = document.createElement('div');
             div.className = 'category-block';
-            div.innerHTML = `<span class="label">${c}</span><div class="tag-row" id="tags-${c}"></div>`;
+            div.innerHTML = `
+                <span class="label">${c}</span>
+                <div class="add-row">
+                    <input type="text" id="add-${c}" placeholder="Add new ${c}...">
+                    <button class="add-btn" onclick="addNewItem('${c}')">+</button>
+                </div>
+                <div class="tag-row" id="tags-${c}"></div>
+            `;
             cont.appendChild(div);
             let tagRow = div.querySelector(`#tags-${c}`);
             activeInv[c].forEach((item, i) => {
                 let t = document.createElement('div');
                 t.className = `tag ${item.on ? 'on' : ''}`;
                 t.innerText = item.n;
-                t.onclick = () => { 
-                    activeInv[c][i].on = !activeInv[c][i].on; 
-                    renderInv(); 
-                };
+                t.onclick = () => { activeInv[c][i].on = !activeInv[c][i].on; renderInv(); };
                 tagRow.appendChild(t);
             });
+        }
+    }
+
+    function addNewItem(cat) {
+        let val = document.getElementById(`add-${cat}`).value;
+        if(val) {
+            activeInv[cat].push({n: val, on: true});
+            renderInv();
+            document.getElementById(`add-${cat}`).value = "";
         }
     }
 
     function goToStep(n) {
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step'+n).classList.add('active');
-        
         if(n === 2) { 
             players = [
                 {n: document.getElementById('p1_name').value || "P1", g: document.getElementById('p1_gender').value, score: 0},
                 {n: document.getElementById('p2_name').value || "P2", g: document.getElementById('p2_gender').value, score: 0}
-            ]; 
-            renderInv(); // FORCED RENDER HERE
+            ];
+            renderInv(); 
         }
-        if(n === 3) { 
-            masterIdx = Math.floor(Math.random()*2); 
-            slaveIdx = masterIdx === 0 ? 1 : 0; 
-            cardHolderIdx = Math.floor(Math.random()*2); 
-            updateUI(); 
-        }
+        if(n === 3) { masterIdx = Math.floor(Math.random()*2); slaveIdx = masterIdx === 0 ? 1 : 0; cardHolderIdx = Math.floor(Math.random()*2); updateUI(); }
     }
 
     function updateUI() {
@@ -230,7 +245,7 @@
         const pick = (cat) => { 
             let items = activeInv[cat].filter(i=>i.on); 
             let itemN = items.length ? items[Math.floor(Math.random()*items.length)].n : "standard gear";
-            return { n: itemN, d: detailMap[itemN] || `Apply the ${itemN} with firm intent and focus.` };
+            return { n: itemN, d: detailMap[itemN] || `Apply the ${itemN} with firm precision, focusing on total containment.` };
         };
         let v = pick('Blindfolds'), g = pick('Gags'), r = pick('Restraints'), s = pick('Sensation');
         let txt = t.text.replace('[VIS]', `<b>${v.n}</b>`).replace('[VIS_DET]', v.d)
@@ -245,10 +260,10 @@
     }
 
     function backToChoice() { document.getElementById('choice-area').style.display = 'block'; document.getElementById('display-area').style.display = 'none'; }
-    function useVeto() { delete taskPool[currentTaskKey]; alert("Category Deleted."); backToChoice(); updateUI(); }
+    function useVeto() { delete taskPool[currentTaskKey]; alert("Category Expunged."); backToChoice(); updateUI(); }
     function startTimer() { document.getElementById('pre-round').style.display = 'none'; document.getElementById('active-round').style.display = 'block'; timer = setInterval(() => { timeLeft--; let m = Math.floor(timeLeft/60), s = timeLeft%60; document.getElementById('clock').innerText = `${m}:${s < 10 ? '0' + s : s}`; if(timeLeft <= 0) resolve(false); }, 1000); }
-    function useRed() { clearInterval(timer); cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Red Card: Skip. Card Transferred."); next(); }
-    function useYellow() { let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m; cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Yellow Card: Role Swap. Card Transferred."); updateUI(); }
+    function useRed() { clearInterval(timer); cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Red Card used. Round Ends."); next(); }
+    function useYellow() { let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m; cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Yellow Card used. Roles Swapped."); updateUI(); }
     function useSafeWord() { clearInterval(timer); players[slaveIdx].score = Math.max(0, players[slaveIdx].score - 5); alert("Safe Word. Penalty Applied."); next(); }
     function resolve(s) { clearInterval(timer); if(s) { players[slaveIdx].score += 1; let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m; } next(); }
 
@@ -256,11 +271,8 @@
         currentRound++;
         if(currentRound > parseInt(document.getElementById('maxRounds').value)) triggerFinale();
         else { 
-            updateUI(); 
-            document.getElementById('active-round').style.display = 'none'; 
-            document.getElementById('pre-round').style.display = 'block';
-            document.getElementById('choice-area').style.display = 'block'; 
-            document.getElementById('display-area').style.display = 'none';
+            updateUI(); document.getElementById('active-round').style.display = 'none'; document.getElementById('pre-round').style.display = 'block';
+            document.getElementById('choice-area').style.display = 'block'; document.getElementById('display-area').style.display = 'none';
         }
     }
 
@@ -272,11 +284,11 @@
             <strong>MASTER OF SOVEREIGNTY: ${winner.n} (${winner.score} pts)</strong><br>
             <strong>THE SUBJECT: ${loser.n} (${loser.score} pts)</strong><hr>
             <strong>PHASE I: The Heavy Shibari Gauntlet (120 mins)</strong><br>
-            ${loser.n} must be stripped and bound in a high-tension suspension harness. Every limb must be restricted with <b>Rope</b> fibers biting into the skin. ${winner.n} will use this time to perform a "Sensation Map" using impact, wax, and ice, ensuring no inch of the Slave's [BODY] is left untouched.<br><br>
+            ${loser.n} must be stripped and bound in a high-tension suspension harness. Every limb must be restricted with <b>Rope</b>. ${winner.n} will use this time to perform a "Sensation Map" using impact and ice.<br><br>
             <strong>PHASE II: Total Sensory Erasure (60 mins)</strong><br>
-            A <b>Gas Mask</b> must be sealed onto ${loser.n} with intake restricted. Blindfold them with <b>Tape</b>. In this lightless, air-restricted void, ${winner.n} will use <b>Vibrators</b> and <b>Clamps</b> to keep the Slave in a state of perpetual, agonizing arousal without allowing a climax.<br><br>
+            Blindfold with <b>Tape</b>. In this lightless void, ${winner.n} will use <b>Vibrators</b> and <b>Clamps</b> to keep the Slave in perpetual arousal without climax.<br><br>
             <strong>PHASE III: The Sovereign's Gratification (90 mins)</strong><br>
-            The Slave is now a living tool. ${winner.n} shall utilize them for any and all sexual fetishes desired. This phase requires the Slave to perform until ${winner.n} has reached total satisfaction. Only then may the Slave be "milked" or denied release based on the Sovereign's final whim.
+            The Slave is now a living tool. ${winner.n} shall utilize them for any fetishes desired until total satisfaction is reached.
         `;
     }
 </script>
