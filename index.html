@@ -3,55 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mastery & Merit: Sovereignty</title>
+    <title>Down to get dirty</title>
     <style>
         :root { 
             --accent: #c5a059; --soft-bg: #fdfaf5; --card-bg: #ffffff;
-            --text: #2c2c2c; --crimson: #7b1a1a; --safe-green: #2e7d32; --veto-bg: #4a4a4a;
-            --gold: #f1c40f; --red-card: #e74c3c;
+            --text: #2c2c2c; --crimson: #7b1a1a; --safe-green: #2e7d32; 
+            --gold: #f1c40f; --red-card: #e74c3c; --veto-grey: #4a4a4a;
         }
         
         body { background: var(--soft-bg); color: var(--text); font-family: 'Georgia', serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 18px; }
-        .container { max-width: 700px; width: 100%; background: var(--card-bg); padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); margin-top: 20px; }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 6px; margin-bottom: 5px; font-size: 1.6rem; }
+        .container { max-width: 750px; width: 100%; background: var(--card-bg); padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); margin-top: 20px; }
+        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 5px; font-size: 1.8rem; font-style: italic; }
         .subtitle { text-align: center; font-size: 0.8rem; color: #a18e8e; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 4px; font-weight: bold; }
 
         .step { display: none; }
         .active { display: block !important; }
 
-        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 25px; border-radius: 25px; line-height: 1.8; position: relative; }
-        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1.5px; }
+        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 20px; margin-bottom: 20px; border-radius: 25px; line-height: 1.6; position: relative; }
+        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 5px; letter-spacing: 1.5px; }
 
-        .identity-card { background: #ffffff; border: 1px solid #eee; padding: 20px; border-radius: 20px; margin-bottom: 15px; }
-        input[type="text"], select, input[type="number"] { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 12px; margin-top: 8px; font-size: 1rem; font-family: inherit; box-sizing: border-box; display: block; background: #fff; }
+        .identity-card { background: #ffffff; border: 1px solid #eee; padding: 15px; border-radius: 20px; margin-bottom: 10px; }
+        input[type="text"], select, input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; margin-top: 5px; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
         
         /* INVENTORY */
-        .category-block { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #e2d1b3; }
+        .category-block { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #e2d1b3; }
         .add-row { display: flex; gap: 8px; margin-bottom: 10px; }
-        .add-row input { margin-top: 0; flex-grow: 1; padding: 8px; border: 1px solid var(--accent); }
+        .add-row input { flex-grow: 1; margin-top: 0; }
         .add-btn { background: var(--accent); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
         .tag { background: #f9f4eb; padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; }
-        .tag.on { background: var(--crimson); color: white; }
+        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
 
-        /* CARDS & CONTROLS */
-        .card-dock { display: flex; justify-content: space-around; margin: 20px 0; gap: 10px; }
-        .game-card { flex: 1; padding: 15px 5px; border-radius: 12px; text-align: center; font-size: 0.7rem; font-weight: bold; cursor: pointer; color: white; text-transform: uppercase; transition: 0.3s; border: none; }
-        .c-red { background: var(--red-card); }
-        .c-yellow { background: var(--gold); color: #000; }
-        .c-safe { background: #000; }
-        .c-veto { background: var(--veto-bg); }
-        .disabled { opacity: 0.2; cursor: not-allowed; }
+        /* CARDS */
+        .card-dock { display: flex; justify-content: space-around; margin: 15px 0; gap: 8px; }
+        .tactical-card { flex: 1; padding: 12px 5px; border-radius: 10px; text-align: center; font-size: 0.65rem; font-weight: 900; cursor: pointer; color: white; text-transform: uppercase; border: none; transition: 0.2s; }
+        .t-red { background: var(--red-card); }
+        .t-yellow { background: var(--gold); color: black; }
+        .t-safe { background: black; }
+        .t-veto { background: var(--veto-grey); width: 100%; margin-top: 10px; }
 
-        .score-box { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px; font-size: 0.9rem; color: var(--crimson); }
-        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; margin-bottom: 10px; }
-        .timer-display { font-size: 4rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 10px 0; }
+        .score-row { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; font-size: 0.85rem; color: var(--crimson); }
+        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; margin-bottom: 10px; }
+        .timer-display { font-size: 3.5rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 10px 0; }
+        
+        b { color: var(--crimson); }
+        .finale-text { font-size: 0.95rem; text-align: left; background: #000; color: #fff; padding: 25px; border-radius: 20px; line-height: 1.8; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Mastery & Merit</h1>
+    <h1>Down to get dirty</h1>
     <div class="subtitle">Sovereignty Edition</div>
 
     <div id="step1" class="step active">
@@ -82,205 +84,244 @@
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Arsenal Management</span>
+            <span class="label">Custom Inventory</span>
             <div id="inv-container"></div>
         </div>
-        <button class="btn" onclick="goToStep(3)">Commence Ceremony</button>
+        <button class="btn" onclick="goToStep(3)">Commence Game</button>
     </div>
 
     <div id="step3" class="step">
-        <div class="score-box">
-            <div id="p1-score-display">---</div>
-            <div id="p2-score-display">---</div>
+        <div class="score-row">
+            <div id="p1-score">---</div>
+            <div id="p2-score">---</div>
         </div>
 
         <div id="pre-round">
-            <div id="round-header" class="label" style="text-align:center; font-size: 1rem;">---</div>
-            <div class="box" style="text-align:left;">
-                <div id="badge-container"></div>
-                <div id="task-text">Press to manifest...</div>
+            <div id="round-header" class="label" style="text-align:center;">---</div>
+            <div class="box">
+                <div id="task-text" style="font-style: italic;">Awaiting manifestation...</div>
+                <button id="veto-btn" class="tactical-card t-veto" style="display:none;" onclick="useVeto()">Veto (Delete Task)</button>
             </div>
-            
             <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
-            
-            <div id="pre-start-controls" style="display:none;">
-                <button class="btn" style="background: var(--safe-green);" onclick="startT()">Execute</button>
-                <button class="game-card c-veto" style="width:100%; margin-bottom:10px;" onclick="useVeto()">Veto (Delete Task)</button>
-            </div>
+            <button class="btn" id="start-btn" style="background:var(--safe-green); display:none;" onclick="startTimer()">Begin Execution</button>
         </div>
 
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
             
             <div class="card-dock">
-                <button id="red-card-btn" class="game-card c-red" onclick="useRed()">Red Card (Pass)</button>
-                <button id="yellow-card-btn" class="game-card c-yellow" onclick="useYellow()">Yellow Card (Swap)</button>
-                <button id="safe-btn" class="game-card c-safe" onclick="useSafeWord()">Safe Word (-5 pts)</button>
+                <button class="tactical-card t-red" onclick="useRed()">Red Card</button>
+                <button class="tactical-card t-yellow" onclick="useYellow()">Yellow Card</button>
+                <button class="tactical-card t-safe" onclick="useSafeWord()">Safe Word</button>
             </div>
 
-            <button class="btn" onclick="resolveTurn(true)">Success (Swap Roles)</button>
-            <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Failure (Keep Roles)</button>
+            <button class="btn" onclick="resolve(true)">Merit Achieved</button>
+            <button class="btn" style="background:#888;" onclick="resolve(false)">Task Failed</button>
         </div>
+    </div>
+
+    <div id="stepFinale" class="step">
+        <h1 style="color: gold;">THE ULTIMATE DECREE</h1>
+        <div class="finale-text" id="finale-content"></div>
+        <button class="btn" style="margin-top:20px; background: gold; color: black;" onclick="location.reload()">End Session</button>
     </div>
 </div>
 
 <script>
-    const initialGear = {
-        "Blindfolds": ["Pillow Case", "Gas Mask", "Bandage", "Tape", "Silk Scarf"],
-        "Gags": ["Tape", "Pallet Wrap", "Cloth", "Panties", "Ball Gag"],
-        "Restraints": ["Leather Cuffs", "Tape", "Pallet Wrap", "Rope", "Handcuffs"],
-        "Sensation": ["Anal Hook", "E-stim Machine", "Paddle", "Vibrator", "Cane", "Clamps"]
+    let players = [];
+    let currentRound = 1, masterIdx, slaveIdx, cardHolderIdx, timer, timeLeft;
+    let currentTaskKey = "";
+    
+    let taskPool = {
+        truth: { label: "Truth", time: 120, text: "Master shall apply [VIS] and [GAG]. Slave must confess a secret." },
+        dare: { label: "Dare", time: 300, text: "Master must apply [REST] and [VIS]. Then use [SENS] on the Slave's [BODY]." },
+        escape: { label: "Escape", time: 480, text: "Master must apply [REST] with maximum tension and [VIS]. Slave must struggle free." },
+        shibari_floor: { label: "Shibari Floor Play", time: 600, text: "Master will execute a complex floor harness using <b>Rope</b>. Once immobilized, Master will use [SENS] to explore the Slave's [BODY] while they are pinned." },
+        shibari_suspension: { label: "Suspension", time: 900, text: "Master will apply a suspension-ready harness. Slave's [BODY] will be partially or fully lifted. While suspended, Master will use [VIS] and [SENS] for 10 minutes of uninterrupted focus." },
+        edging: { label: "Edging", time: 360, text: "Master will apply [REST] and use [SENS] to bring Slave's [BODY] to the brink 3 times." }
+    };
+
+    let gear = {
+        "Blindfolds": ["Tape", "Gas Mask", "Pillow Case", "Sleep Mask"],
+        "Gags": ["Tape", "Ball Gag", "Pallet Wrap", "Panties"],
+        "Restraints": ["Rope", "Leather Cuffs", "Tape", "Zip Ties"],
+        "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane"]
     };
 
     let activeInv = {};
-    let players = [], currentRound = 1, masterIdx, slaveIdx, timer, timeLeft;
-    let cardOwnerIdx = 0; // The player currently holding the tactical cards
-    let currentTaskKey = "";
-
-    // INITIALIZE INVENTORY
-    for (let cat in initialGear) {
-        activeInv[cat] = initialGear[cat].map(i => ({ n: i, on: true }));
-    }
+    for (let c in gear) activeInv[c] = gear[c].map(i => ({ n: i, on: true }));
 
     function renderInv() {
-        const container = document.getElementById('inv-container');
-        container.innerHTML = ''; 
-        for (let cat in activeInv) {
-            let catBlock = document.createElement('div');
-            catBlock.className = 'category-block';
-            catBlock.innerHTML = `<span class="label">${cat}</span><div class="add-row"><input type="text" id="input-${cat}" placeholder="Add custom ${cat.toLowerCase()}..."><button class="add-btn" onclick="addNewItem('${cat}')">Add</button></div><div class="tag-row" id="tags-${cat}"></div>`;
-            container.appendChild(catBlock);
-            activeInv[cat].forEach((item, index) => {
-                let tag = document.createElement('div');
-                tag.className = `tag ${item.on ? 'on' : ''}`;
-                tag.innerText = item.n;
-                tag.onclick = () => { activeInv[cat][index].on = !activeInv[cat][index].on; renderInv(); };
-                catBlock.querySelector(`#tags-${cat}`).appendChild(tag);
+        const cont = document.getElementById('inv-container');
+        cont.innerHTML = '';
+        for (let c in activeInv) {
+            let div = document.createElement('div');
+            div.className = 'category-block';
+            div.innerHTML = `<span class="label">${c}</span><div class="add-row"><input type="text" id="in-${c}" placeholder="Add..."><button class="add-btn" onclick="add('${c}')">+</button></div><div class="tag-row" id="tags-${c}"></div>`;
+            cont.appendChild(div);
+            activeInv[c].forEach((item, i) => {
+                let t = document.createElement('div');
+                t.className = `tag ${item.on ? 'on' : ''}`;
+                t.innerText = item.n;
+                t.onclick = () => { activeInv[c][i].on = !activeInv[c][i].on; renderInv(); };
+                div.querySelector(`#tags-${cat}`).appendChild(t); // Fix here: tags-${c}
             });
         }
     }
 
-    function addNewItem(cat) {
-        let val = document.getElementById(`input-${cat}`).value.trim();
-        if (val) { activeInv[cat].push({ n: val, on: true }); renderInv(); }
+    // Fixed rendering loop logic
+    function renderInv() {
+        const cont = document.getElementById('inv-container');
+        cont.innerHTML = '';
+        for (let c in activeInv) {
+            let div = document.createElement('div');
+            div.className = 'category-block';
+            div.innerHTML = `<span class="label">${c}</span><div class="add-row"><input type="text" id="in-${c}" placeholder="Add..."><button class="add-btn" onclick="add('${c}')">+</button></div><div class="tag-row" id="tags-${c}"></div>`;
+            cont.appendChild(div);
+            let tagRow = div.querySelector(`#tags-${c}`);
+            activeInv[c].forEach((item, i) => {
+                let t = document.createElement('div');
+                t.className = `tag ${item.on ? 'on' : ''}`;
+                t.innerText = item.n;
+                t.onclick = () => { activeInv[c][i].on = !activeInv[c][i].on; renderInv(); };
+                tagRow.appendChild(t);
+            });
+        }
+    }
+
+    function add(c) {
+        let v = document.getElementById(`in-${c}`).value;
+        if(v) { activeInv[c].push({n:v, on:true}); renderInv(); }
     }
 
     function goToStep(n) {
-        if (n === 2) {
+        if(n === 2) {
             players = [
                 {n: document.getElementById('p1_name').value || "Player 1", g: document.getElementById('p1_gender').value, score: 0},
                 {n: document.getElementById('p2_name').value || "Player 2", g: document.getElementById('p2_gender').value, score: 0}
             ];
             renderInv();
         }
-        if (n === 3) {
-            masterIdx = Math.floor(Math.random() * 2);
+        if(n === 3) {
+            masterIdx = Math.floor(Math.random()*2);
             slaveIdx = masterIdx === 0 ? 1 : 0;
-            cardOwnerIdx = Math.floor(Math.random() * 2); // Randomly assign tactical cards to one player
+            cardHolderIdx = Math.floor(Math.random()*2);
             updateUI();
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById('step' + n).classList.add('active');
+        document.getElementById('step'+n).classList.add('active');
     }
 
     function updateUI() {
-        document.getElementById('p1-score-display').innerText = `${players[0].n}: ${players[0].score}`;
-        document.getElementById('p2-score-display').innerText = `${players[1].n}: ${players[1].score}`;
-        document.getElementById('round-header').innerHTML = `ROUND ${currentRound} <br> <b>Master: ${players[masterIdx].n}</b> | Slave: ${players[slaveIdx].n}<br><small>Card Holder: ${players[cardOwnerIdx].n}</small>`;
+        document.getElementById('p1-score').innerText = `${players[0].n}: ${players[0].score}`;
+        document.getElementById('p2-score').innerText = `${players[1].n}: ${players[1].score}`;
+        document.getElementById('round-header').innerHTML = `ROUND ${currentRound} | Master: <b>${players[masterIdx].n}</b><br><small>Cards: ${players[cardHolderIdx].n}</small>`;
     }
 
-    let tasks = {
-        truth: { label: "Truth", time: 120, text: "Master shall apply [VIS] and [GAG]. Slave must confess a secret." },
-        dare: { label: "Dare", time: 300, text: "Master must apply [REST] and [VIS]. Then use [SENS] on the Slave's [BODY]." },
-        escape: { label: "Escape", time: 480, text: "Master must apply [REST] with maximum tension and [VIS]. Slave must struggle free." },
-        edging: { label: "Edging", time: 360, text: "Master will apply [REST] and use [SENS] to bring the Slave's [BODY] to the brink 3 times." }
-    };
-
     function generate() {
-        let keys = Object.keys(tasks);
-        if (keys.length === 0) { alert("All tasks vetoed!"); return; }
+        let keys = Object.keys(taskPool);
+        if(!keys.length) return alert("All tasks vetoed!");
         currentTaskKey = keys[Math.floor(Math.random()*keys.length)];
-        let task = tasks[currentTaskKey];
-        
-        const pick = (c) => {
-            let p = activeInv[c].filter(i=>i.on);
-            return p.length ? p[Math.floor(Math.random()*p.length)].n : "the gear";
+        let t = taskPool[currentTaskKey];
+        const p = (c) => {
+            let items = activeInv[c].filter(i=>i.on);
+            return items.length ? items[Math.floor(Math.random()*items.length)].n : "gear";
         };
-
-        let res = task.text.replace('[VIS]', `<b>${pick('Blindfolds')}</b>`).replace('[GAG]', `<b>${pick('Gags')}</b>`).replace('[REST]', `<b>${pick('Restraints')}</b>`).replace('[SENS]', `<b>${pick('Sensation')}</b>`).replace('[BODY]', players[slaveIdx].g);
-
-        document.getElementById('badge-container').innerHTML = `<span class="badge b-truth">${task.label}</span>`;
-        document.getElementById('task-text').innerHTML = res;
-        timeLeft = task.time;
+        let txt = t.text.replace('[VIS]', `<b>${p('Blindfolds')}</b>`).replace('[GAG]', `<b>${p('Gags')}</b>`).replace('[REST]', `<b>${p('Restraints')}</b>`).replace('[SENS]', `<b>${p('Sensation')}</b>`).replace('[BODY]', players[slaveIdx].g);
+        document.getElementById('task-text').innerHTML = `[${t.label}]<br>${txt}`;
+        timeLeft = t.time;
         document.getElementById('gen-btn').style.display = 'none';
-        document.getElementById('pre-start-controls').style.display = 'block';
+        document.getElementById('start-btn').style.display = 'block';
+        document.getElementById('veto-btn').style.display = 'block';
     }
 
     function useVeto() {
-        delete tasks[currentTaskKey]; // Permanently remove task from database
-        alert(`Activity "${currentTaskKey}" has been permanently removed.`);
-        document.getElementById('pre-start-controls').style.display = 'none';
+        delete taskPool[currentTaskKey];
+        alert("Task deleted permanently.");
+        document.getElementById('start-btn').style.display = 'none';
+        document.getElementById('veto-btn').style.display = 'none';
         document.getElementById('gen-btn').style.display = 'block';
         generate();
     }
 
-    function startT() {
+    function startTimer() {
         document.getElementById('pre-round').style.display = 'none';
         document.getElementById('active-round').style.display = 'block';
         timer = setInterval(() => {
             timeLeft--;
             let m = Math.floor(timeLeft/60), s = timeLeft%60;
             document.getElementById('clock').innerText = `${m}:${s < 10 ? '0' + s : s}`;
-            if (timeLeft <= 0) { clearInterval(timer); resolveTurn(false); }
+            if(timeLeft <= 0) { clearInterval(timer); resolve(false); }
         }, 1000);
     }
 
     function useRed() {
         clearInterval(timer);
-        alert(`${players[cardOwnerIdx].n} used a Red Card! Task passed. Roles stay.`);
-        cardOwnerIdx = cardOwnerIdx === 0 ? 1 : 0; // Pass cards
-        nextRound();
+        alert("Red Card! Task skipped.");
+        cardHolderIdx = cardHolderIdx === 0 ? 1 : 0;
+        next();
     }
 
     function useYellow() {
-        alert(`${players[cardOwnerIdx].n} used a Yellow Card! Task continues, but roles are now reversed.`);
-        let temp = masterIdx; masterIdx = slaveIdx; slaveIdx = temp;
-        cardOwnerIdx = cardOwnerIdx === 0 ? 1 : 0; // Pass cards
+        alert("Yellow Card! Roles swapped.");
+        let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m;
+        cardHolderIdx = cardHolderIdx === 0 ? 1 : 0;
         updateUI();
     }
 
     function useSafeWord() {
         clearInterval(timer);
         players[slaveIdx].score = Math.max(0, players[slaveIdx].score - 5);
-        alert(`Safe Word! ${players[slaveIdx].n} loses 5 points. Authority stays.`);
-        nextRound();
+        alert("Safe Word! Penalty applied.");
+        next();
     }
 
-    function resolveTurn(success) {
+    function resolve(success) {
         clearInterval(timer);
-        if (success) {
+        if(success) {
             players[slaveIdx].score += 5;
-            let temp = masterIdx; masterIdx = slaveIdx; slaveIdx = temp;
-            alert("Success! Points awarded and roles swapped.");
+            let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m;
         } else {
             players[masterIdx].score += 2;
-            alert("Trial Failed. Master gains 2 points.");
         }
-        nextRound();
+        next();
     }
 
-    function nextRound() {
+    function next() {
         currentRound++;
-        if (currentRound > parseInt(document.getElementById('maxRounds').value)) {
-            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Ascension Complete</h1><button class="btn" onclick="location.reload()">Reset</button></div>`;
+        if(currentRound > parseInt(document.getElementById('maxRounds').value)) {
+            triggerFinale();
         } else {
             updateUI();
             document.getElementById('active-round').style.display = 'none';
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('gen-btn').style.display = 'block';
-            document.getElementById('pre-start-controls').style.display = 'none';
-            document.getElementById('task-text').innerHTML = "The cycle continues...";
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('veto-btn').style.display = 'none';
+            document.getElementById('task-text').innerText = "Awaiting the next decree...";
         }
+    }
+
+    function triggerFinale() {
+        document.getElementById('step3').classList.remove('active');
+        document.getElementById('stepFinale').classList.add('active');
+        
+        let winner = players[0].score > players[1].score ? players[0] : players[1];
+        let loser = players[0].score > players[1].score ? players[1] : players[0];
+        
+        document.getElementById('finale-content').innerHTML = `
+            <strong>The Sovereign: ${winner.n} (${winner.score} pts)</strong><br>
+            <strong>The Subject: ${loser.n} (${loser.score} pts)</strong><br><hr>
+            The game has concluded. ${winner.n} now holds total sovereignty. The following "Reward and Punishment" contract must be executed immediately and may take 3-5 hours.<br><br>
+            <strong>Phase I: The Total Binding (60 mins)</strong><br>
+            ${loser.n} is to be placed in a full-body Shibari suit, including a crotch-harness and suspension lines. They must be blindfolded and gagged. ${winner.n} will spend this hour marking ${loser.n}'s body with wax, impact, or sensation play.<br><br>
+            <strong>Phase II: The Sensory Deprivation Challenge (45 mins)</strong><br>
+            While suspended or pinned, ${loser.n} must remain perfectly still. For every movement or sound, ${winner.n} shall apply a punishment of their choice. ${winner.n} may use vibrators or estim to keep ${loser.n} on the constant edge of climax without allowing them to release.<br><br>
+            <strong>Phase III: The Sexual Rite (90 mins)</strong><br>
+            ${winner.n} will now utilize ${loser.n} for their total sexual gratification. This must include multiple heavy-BDSM kinks (e.g., impact, breath play, or forced positions). ${winner.n} is entitled to as many climaxes as they desire.<br><br>
+            <strong>Phase IV: The Final Release</strong><br>
+            Only when ${winner.n} is satisfied, ${loser.n} may be granted a "Ruined Orgasm" or a "Mandatory Climax" at the Sovereign's discretion. ${loser.n} must then clean the Sovereign and remain in a position of service until dismissed.
+        `;
     }
 </script>
 </body>
