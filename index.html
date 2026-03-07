@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,7 +23,6 @@
         .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 20px; border-radius: 25px; line-height: 1.8; position: relative; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 5px; letter-spacing: 1.5px; }
 
-        /* TACTICAL STATUS TRACKER */
         .tactical-status { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; padding: 10px; background: #fff; border-radius: 15px; border: 1px solid #eee; }
         .holder-badge { font-size: 0.7rem; padding: 8px 15px; border-radius: 20px; font-weight: bold; text-transform: uppercase; color: #ccc; border: 1px solid #eee; transition: 0.3s; }
         .has-cards { border-color: var(--crimson); background: var(--crimson); color: white; box-shadow: 0 4px 10px rgba(123, 26, 26, 0.3); }
@@ -30,21 +30,18 @@
         .identity-card { background: #ffffff; border: 1px solid #eee; padding: 15px; border-radius: 20px; margin-bottom: 10px; }
         input[type="text"], select, input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; margin-top: 5px; font-size: 1rem; font-family: inherit; box-sizing: border-box; }
         
-        /* INVENTORY */
         .category-block { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #e2d1b3; }
         .add-row { display: flex; gap: 8px; margin-bottom: 10px; }
         .add-row input { flex-grow: 1; margin-top: 0; }
         .add-btn { background: var(--accent); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
         .tag { background: #f9f4eb; padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; }
-        .tag.on { background: var(--crimson); color: white; }
+        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
 
-        /* CHOICE BUTTONS */
         .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .choice-btn { background: #fff; border: 2px solid var(--accent); color: var(--accent); padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; transition: 0.2s; }
+        .choice-btn { background: #fff; border: 2px solid var(--accent); color: var(--accent); padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
         .choice-btn:hover { background: var(--accent); color: white; }
 
-        /* CARDS */
         .card-dock { display: flex; justify-content: space-around; margin: 15px 0; gap: 8px; }
         .tactical-card { flex: 1; padding: 12px 5px; border-radius: 10px; text-align: center; font-size: 0.65rem; font-weight: 900; cursor: pointer; color: white; text-transform: uppercase; border: none; }
         .t-red { background: var(--red-card); box-shadow: 0 4px 0 #922b21; }
@@ -82,7 +79,7 @@
     </div>
 
     <div id="step3" class="step">
-        <div class="tactical-status" id="tactical-tracker">
+        <div class="tactical-status">
             <div id="status-p1" class="holder-badge">P1</div>
             <div id="status-p2" class="holder-badge">P2</div>
         </div>
@@ -90,19 +87,17 @@
 
         <div id="pre-round">
             <div id="round-header" class="label" style="text-align:center;">---</div>
-            
             <div id="choice-area">
                 <div class="box" style="text-align: center; font-style: italic;">Master, select the nature of this round's trial...</div>
                 <div class="choice-grid" id="master-choices"></div>
             </div>
-
             <div id="display-area" style="display:none;">
                 <div class="box">
                     <div id="task-text">Awaiting the Decree...</div>
-                    <button id="veto-btn" class="tactical-card t-veto" onclick="useVeto()">Veto (Delete Permanently)</button>
+                    <button id="veto-btn" class="tactical-card t-veto" onclick="useVeto()">Veto (Delete Category)</button>
                 </div>
                 <button class="btn" style="background:var(--safe-green);" onclick="startTimer()">Accept & Begin</button>
-                <button class="btn" style="background:#888;" onclick="backToChoice()">Change Category</button>
+                <button class="btn" style="background:#888;" onclick="backToChoice()">Back to Choices</button>
             </div>
         </div>
 
@@ -129,9 +124,9 @@
     let players = [], currentRound = 1, masterIdx, slaveIdx, cardHolderIdx, timer, timeLeft, currentTaskKey = "";
 
     const detailMap = {
-        "Tape": "Apply the cold adhesive directly to the skin, pressing firmly to ensure it grips the fine hairs. For gags, ensure multiple layers cover the lips entirely, forcing muzzled silence.",
+        "Tape": "Apply the adhesive directly to the skin, pressing firmly to ensure it grips the fine hairs. For gags, ensure multiple layers cover the lips entirely, forcing muzzled silence.",
         "Gas Mask": "Seal the rubber against the face, tightening the straps until the intake of air is restricted and loud. The smell of rubber should dominate the Slave's senses.",
-        "Rope": "Execute a complex tie with high tension. The rough hemp fibers should bite into the skin, creating visible ridges and providing the psychological weight of total immobilization.",
+        "Rope": "Execute a complex tie with high tension. The rough fibers should bite into the skin, creating visible ridges and providing the psychological weight of total immobilization.",
         "Pillow Case": "The fabric should be heavy and opaque. Fold it twice before draping it over the head, cinching it at the throat to create a private, lightless world.",
         "Ice": "The shock of the freezing texture should be moved slowly over sensitive areas, leaving a trail of numbing cold that heightens the reaction to the next touch.",
         "Ball Gag": "The silicone should be forced deep, filling the mouth and stretching the jaw. Tighten the strap until the Slave is unable to swallow, leaving them drooling and silenced.",
@@ -162,15 +157,16 @@
             div.className = 'category-block';
             div.innerHTML = `<span class="label">${c}</span><div class="add-row"><input type="text" id="in-${c}" placeholder="Add..."><button class="add-btn" onclick="add('${c}')">+</button></div><div class="tag-row" id="tags-${c}"></div>`;
             cont.appendChild(div);
+            let tagRow = div.querySelector(`#tags-${c}`);
             activeInv[c].forEach((item, i) => {
                 let t = document.createElement('div'); t.className = `tag ${item.on ? 'on' : ''}`; t.innerText = item.n;
                 t.onclick = () => { activeInv[c][i].on = !activeInv[c][i].on; renderInv(); };
-                div.querySelector(`#tags-${c}`).appendChild(t);
+                tagRow.appendChild(t);
             });
         }
     }
 
-    function add(c) { let v = document.getElementById(`in-${c}`).value; if(v) { activeInv[c].push({n:v, on:true}); renderInv(); } }
+    function add(c) { let v = document.getElementById(`in-${c}`).value; if(v) { activeInv[c].push({n:v, on:true}); renderInv(); document.getElementById(`in-${c}`).value = ""; } }
 
     function goToStep(n) {
         if(n === 2) { players = [{n: document.getElementById('p1_name').value || "Player 1", g: document.getElementById('p1_gender').value, score: 0}, {n: document.getElementById('p2_name').value || "Player 2", g: document.getElementById('p2_gender').value, score: 0}]; renderInv(); }
@@ -192,21 +188,18 @@
     function renderChoices() {
         const grid = document.getElementById('master-choices'); grid.innerHTML = '';
         Object.keys(taskPool).forEach(key => {
-            let btn = document.createElement('button');
-            btn.className = 'choice-btn';
-            btn.innerText = taskPool[key].label;
-            btn.onclick = () => generateTask(key);
-            grid.appendChild(btn);
+            let btn = document.createElement('button'); btn.className = 'choice-btn'; btn.innerText = taskPool[key].label;
+            btn.onclick = () => generateTask(key); grid.appendChild(btn);
         });
     }
 
     function generateTask(key) {
         currentTaskKey = key;
         let t = taskPool[key];
-        const pick = (c) => { 
-            let items = activeInv[c].filter(i=>i.on); 
-            let item = items.length ? items[Math.floor(Math.random()*items.length)].n : "the gear";
-            return { n: item, d: detailMap[item] || `Apply the ${item} with clinical precision, focusing on the texture against the Slave's skin.` };
+        const pick = (cat) => { 
+            let items = activeInv[cat].filter(i=>i.on); 
+            let itemN = items.length ? items[Math.floor(Math.random()*items.length)].n : "standard gear";
+            return { n: itemN, d: detailMap[itemN] || `Apply the ${itemN} with firm intent, focusing on how the texture interacts with the skin.` };
         };
         let v = pick('Blindfolds'), g = pick('Gags'), r = pick('Restraints'), s = pick('Sensation');
         let txt = t.text.replace('[VIS]', `<b>${v.n}</b>`).replace('[VIS_DET]', v.d)
@@ -214,34 +207,24 @@
                         .replace('[REST]', `<b>${r.n}</b>`).replace('[REST_DET]', r.d)
                         .replace('[SENS]', `<b>${s.n}</b>`).replace('[SENS_DET]', s.d)
                         .replace('[BODY]', players[slaveIdx].g);
-        
         document.getElementById('task-text').innerHTML = `<strong style="color:var(--crimson)">${t.label}</strong><br><br>${txt}`;
-        timeLeft = t.time;
-        document.getElementById('choice-area').style.display = 'none';
-        document.getElementById('display-area').style.display = 'block';
+        timeLeft = t.time; document.getElementById('choice-area').style.display = 'none'; document.getElementById('display-area').style.display = 'block';
     }
 
-    function backToChoice() {
-        document.getElementById('choice-area').style.display = 'block';
-        document.getElementById('display-area').style.display = 'none';
-    }
-
-    function useVeto() { delete taskPool[currentTaskKey]; alert("Activity expunged."); backToChoice(); renderChoices(); }
+    function backToChoice() { document.getElementById('choice-area').style.display = 'block'; document.getElementById('display-area').style.display = 'none'; }
+    function useVeto() { delete taskPool[currentTaskKey]; alert("Category Deleted."); backToChoice(); updateUI(); }
     function startTimer() { document.getElementById('pre-round').style.display = 'none'; document.getElementById('active-round').style.display = 'block'; timer = setInterval(() => { timeLeft--; let m = Math.floor(timeLeft/60), s = timeLeft%60; document.getElementById('clock').innerText = `${m}:${s < 10 ? '0' + s : s}`; if(timeLeft <= 0) resolve(false); }, 1000); }
-    function useRed() { clearInterval(timer); cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Red Card: Pass. Card Transferred."); next(); }
-    function useYellow() { let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m; cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Yellow Card: Role Swap. Card Transferred."); updateUI(); }
-    function useSafeWord() { clearInterval(timer); players[slaveIdx].score = Math.max(0, players[slaveIdx].score - 5); alert("Safe Word. Penalty -5."); next(); }
+    function useRed() { clearInterval(timer); cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Red Card used. Round Ends."); next(); }
+    function useYellow() { let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m; cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Yellow Card used. Roles Swapped."); updateUI(); }
+    function useSafeWord() { clearInterval(timer); players[slaveIdx].score = Math.max(0, players[slaveIdx].score - 5); alert("Safe Word. Penalty Applied."); next(); }
     function resolve(s) { clearInterval(timer); if(s) { players[slaveIdx].score += 1; let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m; } next(); }
 
     function next() {
         currentRound++;
         if(currentRound > parseInt(document.getElementById('maxRounds').value)) triggerFinale();
         else { 
-            updateUI(); 
-            document.getElementById('active-round').style.display = 'none'; 
-            document.getElementById('pre-round').style.display = 'block';
-            document.getElementById('choice-area').style.display = 'block';
-            document.getElementById('display-area').style.display = 'none';
+            updateUI(); document.getElementById('active-round').style.display = 'none'; document.getElementById('pre-round').style.display = 'block';
+            document.getElementById('choice-area').style.display = 'block'; document.getElementById('display-area').style.display = 'none';
         }
     }
 
