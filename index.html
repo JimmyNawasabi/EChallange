@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,9 +21,9 @@
         .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 25px; border-radius: 25px; line-height: 1.8; position: relative; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1.5px; }
 
-        /* ENSURING INPUT STABILITY */
-        .input-group { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 15px; border: 1px solid #eee; }
-        input[type="text"], select, input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; margin-top: 5px; font-size: 1rem; font-family: inherit; display: block; box-sizing: border-box; }
+        /* FIXED IDENTITY CARDS */
+        .identity-card { background: #ffffff; border: 1px solid #eee; padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        input[type="text"], select, input[type="number"] { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 12px; margin-top: 8px; font-size: 1rem; font-family: inherit; box-sizing: border-box; display: block; background: #fff; }
         
         .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
         .tag { background: #f9f4eb; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; transition: 0.2s; }
@@ -49,34 +48,35 @@
 
     <div id="step1" class="step active">
         <div class="box">
-            <span class="label">Rounds to Ascension</span>
-            <input type="number" id="maxRounds" value="6">
+            <span class="label">Session Parameters</span>
+            <input type="number" id="maxRounds" value="6" placeholder="Rounds">
             
-            <div class="input-group">
-                <span class="label">Primary Authority (Player 1)</span>
-                <input type="text" id="p1_name" placeholder="Name (Starts as Master)">
+            <div class="identity-card">
+                <span class="label">Participant One</span>
+                <input type="text" id="p1_name" placeholder="Enter Name...">
                 <select id="p1_gender">
+                    <option value="" disabled selected>Select Body Type</option>
                     <option value="male body">Male Body</option>
                     <option value="female body">Female Body</option>
                 </select>
             </div>
 
-            <div class="input-group">
-                <span class="label">The Subject (Player 2)</span>
-                <input type="text" id="p2_name" placeholder="Name (Starts as Slave)">
+            <div class="identity-card">
+                <span class="label">Participant Two</span>
+                <input type="text" id="p2_name" placeholder="Enter Name...">
                 <select id="p2_gender">
+                    <option value="" disabled selected>Select Body Type</option>
                     <option value="male body">Male Body</option>
                     <option value="female body">Female Body</option>
                 </select>
             </div>
         </div>
-        <button class="btn" onclick="goToStep(2)">Curate Arsenal ></button>
+        <button class="btn" onclick="goToStep(2)">Configure Arsenal ></button>
     </div>
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Active Inventory</span>
-            <p style="font-size: 0.7rem; color: #888; margin-top: -5px;">Select gear available for this session.</p>
+            <span class="label">Curate Inventory</span>
             <div id="inv-container"></div>
         </div>
         <button class="btn" onclick="goToStep(3)">Commence Ceremony</button>
@@ -84,23 +84,23 @@
 
     <div id="step3" class="step">
         <div id="pre-round">
-            <div id="round-header" class="label" style="text-align:center; font-size: 0.9rem;">---</div>
-            <div class="box" style="text-align:left; min-height: 150px;">
+            <div id="round-header" class="label" style="text-align:center; font-size: 1rem;">---</div>
+            <div class="box" style="text-align:left;">
                 <div id="intensity-display" class="intensity-pill">---</div>
                 <div id="badge-container"></div>
-                <div id="task-text">Press the button below to manifest a decree.</div>
+                <div id="task-text">Consulting the fates...</div>
             </div>
             <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
             <div id="pre-start-controls" style="display:none;">
                 <button class="btn" style="background: var(--safe-green);" onclick="startT()">Begin Execution</button>
-                <button class="btn" style="background: var(--veto); font-size:0.8rem;" onclick="generate()">Reroll Decree</button>
+                <button class="btn" style="background: var(--veto); font-size:0.8rem;" onclick="generate()">Veto (Reroll)</button>
             </div>
         </div>
 
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
             <button class="btn" onclick="resolveTurn(true)">Merit Achieved (Swap Roles)</button>
-            <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Task Failed (Maintain Roles)</button>
+            <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Task Failed (Stay)</button>
         </div>
     </div>
 </div>
@@ -116,8 +116,7 @@
     let activeInv = {};
     let players = []; 
     let currentRound = 1;
-    let masterIdx = 0; // Player 1 starts as Master
-    let slaveIdx = 1;  // Player 2 starts as Slave
+    let masterIdx, slaveIdx;
     let timer, timeLeft;
 
     function initGear() {
@@ -126,18 +125,6 @@
         }
     }
     initGear();
-
-    function getMethod(item, intensity) {
-        item = item.toLowerCase();
-        if (item === "pillow case") return "Drape the fabric entirely over the Slave's head. Secure it loosely at the neck to ensure total darkness and muffled sensory input.";
-        if (item === "gas mask") return "Seal the mask against the Slave's face, tightening the head straps until the seal is firm and breathing is audible through the filter.";
-        if (item === "tape") return `Apply horizontally across the ${item.includes('gag') ? 'lips' : 'eyes'}, pressing the edges deep into the skin to prevent any ${item.includes('gag') ? 'sound' : 'light'} escaping.`;
-        if (item === "pallet wrap") return "Circle the head three times, binding the mouth closed and ensuring the plastic clings tightly to the jawline.";
-        if (item.includes("hook")) return `Apply sterile lubricant. Slowly slide the curve into the ${item.includes('anal') ? 'rectum' : 'genitals'} until the base is flush with the skin, allowing the weight to hang.`;
-        if (item === "rope" || item === "string") return `Loop the material twice around the wrists. Knot it with a ${intensity === 'tight' ? 'binding double-knot' : 'secure but soft square-knot'}.`;
-        if (item === "leather cuffs") return `Lock the hardware around the limbs, cinching it to the ${intensity === 'tight' ? 'tightest comfortable notch' : 'middle notch'}.`;
-        return `Apply the ${item} with ${intensity} focus, ensuring the Slave feels the full weight and texture of the object.`;
-    }
 
     function renderInv() {
         const container = document.getElementById('inv-container');
@@ -158,26 +145,45 @@
 
     function goToStep(n) {
         if (n === 2) {
-            players = [
-                {n: document.getElementById('p1_name').value || "Player 1", g: document.getElementById('p1_gender').value},
-                {n: document.getElementById('p2_name').value || "Player 2", g: document.getElementById('p2_gender').value}
-            ];
+            let p1Name = document.getElementById('p1_name').value || "Player 1";
+            let p1Gen = document.getElementById('p1_gender').value || "male body";
+            let p2Name = document.getElementById('p2_name').value || "Player 2";
+            let p2Gen = document.getElementById('p2_gender').value || "female body";
+            
+            players = [{n: p1Name, g: p1Gen}, {n: p2Name, g: p2Gen}];
             renderInv();
+        }
+        if (n === 3) {
+            // RANDOMIZE STARTING ROLES
+            masterIdx = Math.floor(Math.random() * 2);
+            slaveIdx = masterIdx === 0 ? 1 : 0;
+            updateHeader();
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + n).classList.add('active');
-        if (n === 3) updateHeader();
     }
 
     function updateHeader() {
         document.getElementById('round-header').innerHTML = `ROUND ${currentRound} <br> <b>Master: ${players[masterIdx].n}</b> | Slave: ${players[slaveIdx].n}`;
     }
 
+    // DESCRIPTION ENGINE
+    function getMethod(item, intensity) {
+        item = item.toLowerCase();
+        if (item === "pillow case") return "Drape the heavy fabric over the head, cinching it loosely at the neck to ensure total darkness and muffled sensory input.";
+        if (item === "gas mask") return "Seal the mask against the face, tightening the rubber straps until the seal is firm and breathing is loud through the filter.";
+        if (item === "tape") return "Apply horizontal strips across the skin, pressing the edges down firmly to ensure zero light or sound leakage.";
+        if (item === "pallet wrap") return "Circle the head three times, binding the mouth closed so the plastic clings tightly to the jawline.";
+        if (item.includes("hook")) return `Apply lubricant and slowly slide the metal into the ${item.includes('anal') ? 'rectum' : 'genitals'} until the base is flush, letting the weight hang taut.`;
+        if (item === "rope" || item === "string") return `Execute a figure-eight wrap around the wrists and knot it with a ${intensity === 'tight' ? 'binding double-knot' : 'secure square-knot'}.`;
+        return `Apply the ${item} with ${intensity} focus, ensuring the weight and texture are fully felt.`;
+    }
+
     const tasks = {
         truth: { label: "Truth", time: 120, templates: ["Master shall [DESC-VIS]. In this darkness, Master will [DESC-GAG]. Slave must attempt to confess a secret through the binding."] },
         dare: { label: "Dare", time: 300, templates: ["Master must [DESC-REST] and then [DESC-VIS]. Once blind and bound, Master will [DESC-SENS] on the Slave's [BODY]."] },
         escape: { label: "Escape", time: 480, templates: ["Master must [DESC-REST] with maximum tension and [DESC-VIS]. Slave has until the clock ends to struggle free."] },
-        edging: { label: "Edging", time: 360, templates: ["Master will [DESC-REST] and then use [DESC-SENS] to tease the Slave's [BODY] to the absolute brink of climax 3 times."] }
+        edging: { label: "Edging", time: 360, templates: ["Master will [DESC-REST] and then use [DESC-SENS] to tease the Slave's [BODY] to the brink of climax 3 times."] }
     };
 
     function generate() {
@@ -220,24 +226,23 @@
     function resolveTurn(success) {
         clearInterval(timer);
         if (success) {
-            // Swap Indices
             let temp = masterIdx;
             masterIdx = slaveIdx;
             slaveIdx = temp;
-            alert("Merit Recognized. Roles have been swapped.");
+            alert("Success. Role Swap!");
         } else {
-            alert("The Slave has failed. Authority remains unchanged.");
+            alert("Failure. Master remains in control.");
         }
         currentRound++;
         if (currentRound > parseInt(document.getElementById('maxRounds').value)) {
-            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Session Complete</h1><button class="btn" onclick="location.reload()">Reset</button></div>`;
+            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Ascension Complete</h1><button class="btn" onclick="location.reload()">Reset Session</button></div>`;
         } else {
             updateHeader();
             document.getElementById('active-round').style.display = 'none';
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('gen-btn').style.display = 'block';
             document.getElementById('pre-start-controls').style.display = 'none';
-            document.getElementById('task-text').innerHTML = "The air settles... Prepare for the next decree.";
+            document.getElementById('task-text').innerHTML = "Ready for the next decree...";
         }
     }
 </script>
