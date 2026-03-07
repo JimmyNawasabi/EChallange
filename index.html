@@ -36,7 +36,6 @@
             margin-bottom: 15px;
         }
 
-        /* GENDER BUTTONS */
         .gender-select { display: flex; gap: 10px; margin-bottom: 5px; }
         .g-btn { 
             flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #444; 
@@ -45,7 +44,6 @@
         }
         .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
-        /* TOGGLE GRID */
         .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
         .t-btn { 
             padding: 12px; border-radius: 12px; border: 1px solid #333; background: #111; 
@@ -57,7 +55,6 @@
         
         .master-all { grid-column: span 2; background: #222; color: var(--accent); border: 1px dashed var(--accent); margin-bottom: 5px; }
 
-        /* BUTTONS */
         .btn { 
             background: var(--crimson); color: white; border: none; padding: 20px; 
             width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; 
@@ -70,9 +67,17 @@
         
         .step { display: none; }
         .active { display: block !important; }
-        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag { background: #000; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; cursor: pointer; border: 1px solid #333; color: #999; }
+
+        /* ARSENAL TOOLS */
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+        .tag { background: #000; padding: 8px 12px; border-radius: 10px; font-size: 0.9rem; cursor: pointer; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 8px; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
+        .del-x { color: rgba(255,255,255,0.3); font-weight: bold; padding-left: 5px; }
+        .del-x:hover { color: white; }
+        
+        .add-row { display: flex; gap: 5px; margin-top: 5px; margin-bottom: 15px; }
+        .add-row input { margin-bottom: 0; padding: 10px; font-size: 0.9rem; }
+        .add-btn { background: #333; color: var(--accent); border: none; padding: 0 15px; border-radius: 10px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -193,15 +198,34 @@
             v.innerHTML += `<span class="label" style="color:#555; margin-top:10px;">${c}</span>`;
             const cloud = document.createElement('div');
             cloud.className = 'tag-cloud';
-            vault[c].forEach(i => {
+            vault[c].forEach((i, idx) => {
                 const t = document.createElement('div');
                 t.className = `tag ${i.on ? 'on' : ''}`;
-                t.innerText = i.n;
+                t.innerHTML = `${i.n} <span class="del-x" onclick="event.stopPropagation(); deleteItem('${c}', ${idx})">✕</span>`;
                 t.onclick = () => { i.on = !i.on; renderVault(); };
                 cloud.appendChild(t);
             });
             v.appendChild(cloud);
+            
+            const addRow = document.createElement('div');
+            addRow.className = 'add-row';
+            addRow.innerHTML = `<input type="text" id="add-${c}" placeholder="Add New ${c}...">
+                                <button class="add-btn" onclick="addItem('${c}')">+</button>`;
+            v.appendChild(addRow);
         }
+    }
+
+    function addItem(cat) {
+        const inp = document.getElementById(`add-${cat}`);
+        if(inp.value.trim()) {
+            vault[cat].push({n: inp.value.trim(), on: true});
+            renderVault();
+        }
+    }
+
+    function deleteItem(cat, idx) {
+        vault[cat].splice(idx, 1);
+        renderVault();
     }
 
     function renderCommand() {
