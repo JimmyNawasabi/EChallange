@@ -39,6 +39,11 @@
         .tag { background: #f9f4eb; padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; }
         .tag.on { background: var(--crimson); color: white; }
 
+        /* CHOICE BUTTONS */
+        .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .choice-btn { background: #fff; border: 2px solid var(--accent); color: var(--accent); padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; transition: 0.2s; }
+        .choice-btn:hover { background: var(--accent); color: white; }
+
         /* CARDS */
         .card-dock { display: flex; justify-content: space-around; margin: 15px 0; gap: 8px; }
         .tactical-card { flex: 1; padding: 12px 5px; border-radius: 10px; text-align: center; font-size: 0.65rem; font-weight: 900; cursor: pointer; color: white; text-transform: uppercase; border: none; }
@@ -72,8 +77,8 @@
     </div>
 
     <div id="step2" class="step">
-        <div class="box"><span class="label">Inventory</span><div id="inv-container"></div></div>
-        <button class="btn" onclick="goToStep(3)">Commence</button>
+        <div class="box"><span class="label">Inventory Management</span><div id="inv-container"></div></div>
+        <button class="btn" onclick="goToStep(3)">Commence Ceremony</button>
     </div>
 
     <div id="step3" class="step">
@@ -85,12 +90,20 @@
 
         <div id="pre-round">
             <div id="round-header" class="label" style="text-align:center;">---</div>
-            <div class="box">
-                <div id="task-text">Awaiting the Decree...</div>
-                <button id="veto-btn" class="tactical-card t-veto" style="display:none;" onclick="useVeto()">Veto (Delete Permanently)</button>
+            
+            <div id="choice-area">
+                <div class="box" style="text-align: center; font-style: italic;">Master, select the nature of this round's trial...</div>
+                <div class="choice-grid" id="master-choices"></div>
             </div>
-            <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
-            <button class="btn" id="start-btn" style="background:var(--safe-green); display:none;" onclick="startTimer()">Begin Execution</button>
+
+            <div id="display-area" style="display:none;">
+                <div class="box">
+                    <div id="task-text">Awaiting the Decree...</div>
+                    <button id="veto-btn" class="tactical-card t-veto" onclick="useVeto()">Veto (Delete Permanently)</button>
+                </div>
+                <button class="btn" style="background:var(--safe-green);" onclick="startTimer()">Accept & Begin</button>
+                <button class="btn" style="background:#888;" onclick="backToChoice()">Change Category</button>
+            </div>
         </div>
 
         <div id="active-round" style="display:none;">
@@ -100,8 +113,8 @@
                 <button class="tactical-card t-yellow" onclick="useYellow()">Yellow Card</button>
                 <button class="tactical-card t-safe" onclick="useSafeWord()">Safe Word</button>
             </div>
-            <button class="btn" onclick="resolve(true)">Success (Swap)</button>
-            <button class="btn" style="background:#888;" onclick="resolve(false)">Failure (Stay)</button>
+            <button class="btn" onclick="resolve(true)">Success (+1 Pt)</button>
+            <button class="btn" style="background:#888;" onclick="resolve(false)">Failure (+0 Pt)</button>
         </div>
     </div>
 
@@ -116,14 +129,17 @@
     let players = [], currentRound = 1, masterIdx, slaveIdx, cardHolderIdx, timer, timeLeft, currentTaskKey = "";
 
     const detailMap = {
-        "Tape": "Apply the adhesive directly to the skin, pressing firmly to ensure it grips the fine hairs. For gags, ensure multiple layers cover the lips entirely, forcing muzzled silence.",
+        "Tape": "Apply the cold adhesive directly to the skin, pressing firmly to ensure it grips the fine hairs. For gags, ensure multiple layers cover the lips entirely, forcing muzzled silence.",
         "Gas Mask": "Seal the rubber against the face, tightening the straps until the intake of air is restricted and loud. The smell of rubber should dominate the Slave's senses.",
-        "Rope": "Execute a complex tie with high tension. The rough fibers should bite into the skin, creating visible ridges and providing the psychological weight of total immobilization.",
-        "Pillow Case": "The fabric should be heavy and opaque. Fold it twice before draping it over the head, cinching it at the throat to create a private, lightless world for the Slave.",
+        "Rope": "Execute a complex tie with high tension. The rough hemp fibers should bite into the skin, creating visible ridges and providing the psychological weight of total immobilization.",
+        "Pillow Case": "The fabric should be heavy and opaque. Fold it twice before draping it over the head, cinching it at the throat to create a private, lightless world.",
         "Ice": "The shock of the freezing texture should be moved slowly over sensitive areas, leaving a trail of numbing cold that heightens the reaction to the next touch.",
         "Ball Gag": "The silicone should be forced deep, filling the mouth and stretching the jaw. Tighten the strap until the Slave is unable to swallow, leaving them drooling and silenced.",
         "Vibrator": "Apply the buzzing motor directly against the most sensitive nerves. Do not let it rest; move it rhythmically to build an unbearable internal hum.",
-        "Leather Cuffs": "The cool, stiff leather should be cinched until there is no room for escape. The weight of the metal rings should remind the Slave of their master's tether."
+        "Leather Cuffs": "The cool, stiff leather should be cinched until there is no room for escape. The weight of the metal rings should remind the Slave of their master's tether.",
+        "Zip Ties": "The plastic should be zipped tight until the pulse can be felt beneath. The clinical, sharp edge of the plastic is a reminder of absolute constraint.",
+        "Whip": "The tail should sting across the skin, creating a blooming heat. Master must vary the tempo to keep the Slave guessing the next point of impact.",
+        "Clamps": "The pressure should be applied to sensitive peaks, creating a sharp, constant throb that pulses with every heartbeat the Slave makes."
     };
 
     let taskPool = {
@@ -131,7 +147,8 @@
         shibari_suspension: { label: "Suspension", time: 900, text: "Master will construct a suspension-grade harness using <b>[REST]</b>. The Slave's [BODY] must be hoisted until their weight is supported by the rope. While they hang, Master will apply <b>[VIS]</b> ([VIS_DET]) and use <b>[SENS]</b> to exploit their total vulnerability." },
         escape: { label: "The Bind & Break", time: 480, text: "Master must use <b>[REST]</b> to bind the Slave's wrists and ankles with maximum tension ([REST_DET]). Then, apply <b>[VIS]</b> to plunge them into darkness ([VIS_DET]). The Slave has the duration of the timer to struggle free or face a penalty." },
         sensory_overload: { label: "Sensory Overload", time: 400, text: "Master will apply <b>[GAG]</b> ([GAG_DET]) and <b>[VIS]</b>. With the Slave blinded and silenced, Master will use <b>[SENS]</b> in a relentless, rhythmic pattern, ensuring the [SENS_DET]." },
-        truth: { label: "The Confession", time: 180, text: "Master will apply <b>[VIS]</b> ([VIS_DET]) and <b>[GAG]</b>. Slave must be placed in a stressed position. In this state of deprivation, Master will whisper questions; Slave must confess their deepest secrets through the muffle of the gag." }
+        truth: { label: "The Confession", time: 180, text: "Master will apply <b>[VIS]</b> ([VIS_DET]) and <b>[GAG]</b>. Slave must be placed in a stressed position. In this state of deprivation, Master will whisper questions; Slave must confess their deepest secrets through the muffle of the gag." },
+        edging: { label: "Merciless Edging", time: 360, text: "Using <b>[REST]</b> ([REST_DET]) to hold them fast, Master will apply <b>[SENS]</b> to the Slave's [BODY]. Master must bring the Slave to the absolute peak of climax 3 times, pulling back only at the last second. [SENS_DET]" }
     };
 
     let gear = { "Blindfolds": ["Tape", "Gas Mask", "Pillow Case"], "Gags": ["Tape", "Ball Gag", "Pallet Wrap"], "Restraints": ["Rope", "Leather Cuffs", "Zip Ties"], "Sensation": ["Whip", "Ice", "Vibrator", "Clamps"] };
@@ -169,12 +186,23 @@
         document.getElementById('status-p2').className = `holder-badge ${cardHolderIdx === 1 ? 'has-cards' : ''}`;
         document.getElementById('status-p1').innerText = players[0].n + (cardHolderIdx === 0 ? " (CARDS)" : "");
         document.getElementById('status-p2').innerText = players[1].n + (cardHolderIdx === 1 ? " (CARDS)" : "");
+        renderChoices();
     }
 
-    function generate() {
-        let keys = Object.keys(taskPool);
-        currentTaskKey = keys[Math.floor(Math.random()*keys.length)];
-        let t = taskPool[currentTaskKey];
+    function renderChoices() {
+        const grid = document.getElementById('master-choices'); grid.innerHTML = '';
+        Object.keys(taskPool).forEach(key => {
+            let btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.innerText = taskPool[key].label;
+            btn.onclick = () => generateTask(key);
+            grid.appendChild(btn);
+        });
+    }
+
+    function generateTask(key) {
+        currentTaskKey = key;
+        let t = taskPool[key];
         const pick = (c) => { 
             let items = activeInv[c].filter(i=>i.on); 
             let item = items.length ? items[Math.floor(Math.random()*items.length)].n : "the gear";
@@ -186,21 +214,35 @@
                         .replace('[REST]', `<b>${r.n}</b>`).replace('[REST_DET]', r.d)
                         .replace('[SENS]', `<b>${s.n}</b>`).replace('[SENS_DET]', s.d)
                         .replace('[BODY]', players[slaveIdx].g);
+        
         document.getElementById('task-text').innerHTML = `<strong style="color:var(--crimson)">${t.label}</strong><br><br>${txt}`;
-        timeLeft = t.time; document.getElementById('gen-btn').style.display = 'none'; document.getElementById('start-btn').style.display = 'block'; document.getElementById('veto-btn').style.display = 'block';
+        timeLeft = t.time;
+        document.getElementById('choice-area').style.display = 'none';
+        document.getElementById('display-area').style.display = 'block';
     }
 
-    function useVeto() { delete taskPool[currentTaskKey]; alert("Activity expunged."); document.getElementById('gen-btn').style.display = 'block'; generate(); }
+    function backToChoice() {
+        document.getElementById('choice-area').style.display = 'block';
+        document.getElementById('display-area').style.display = 'none';
+    }
+
+    function useVeto() { delete taskPool[currentTaskKey]; alert("Activity expunged."); backToChoice(); renderChoices(); }
     function startTimer() { document.getElementById('pre-round').style.display = 'none'; document.getElementById('active-round').style.display = 'block'; timer = setInterval(() => { timeLeft--; let m = Math.floor(timeLeft/60), s = timeLeft%60; document.getElementById('clock').innerText = `${m}:${s < 10 ? '0' + s : s}`; if(timeLeft <= 0) resolve(false); }, 1000); }
     function useRed() { clearInterval(timer); cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Red Card: Pass. Card Transferred."); next(); }
     function useYellow() { let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m; cardHolderIdx = (cardHolderIdx === 0) ? 1 : 0; alert("Yellow Card: Role Swap. Card Transferred."); updateUI(); }
     function useSafeWord() { clearInterval(timer); players[slaveIdx].score = Math.max(0, players[slaveIdx].score - 5); alert("Safe Word. Penalty -5."); next(); }
-    function resolve(s) { clearInterval(timer); if(s) { players[slaveIdx].score += 5; let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m; } else players[masterIdx].score += 2; next(); }
+    function resolve(s) { clearInterval(timer); if(s) { players[slaveIdx].score += 1; let m = masterIdx; masterIdx = slaveIdx; slaveIdx = m; } next(); }
 
     function next() {
         currentRound++;
         if(currentRound > parseInt(document.getElementById('maxRounds').value)) triggerFinale();
-        else { updateUI(); document.getElementById('active-round').style.display = 'none'; document.getElementById('pre-round').style.display = 'block'; document.getElementById('gen-btn').style.display = 'block'; document.getElementById('start-btn').style.display = 'none'; document.getElementById('veto-btn').style.display = 'none'; }
+        else { 
+            updateUI(); 
+            document.getElementById('active-round').style.display = 'none'; 
+            document.getElementById('pre-round').style.display = 'block';
+            document.getElementById('choice-area').style.display = 'block';
+            document.getElementById('display-area').style.display = 'none';
+        }
     }
 
     function triggerFinale() {
