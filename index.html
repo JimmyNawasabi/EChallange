@@ -24,13 +24,18 @@
         .identity-card { background: #ffffff; border: 1px solid #eee; padding: 20px; border-radius: 20px; margin-bottom: 15px; }
         input[type="text"], select, input[type="number"] { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 12px; margin-top: 8px; font-size: 1rem; font-family: inherit; box-sizing: border-box; display: block; background: #fff; }
         
-        .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+        /* INVENTORY STYLING */
+        .add-row { display: flex; gap: 8px; margin-top: 10px; margin-bottom: 20px; }
+        .add-row input { margin-top: 0; flex-grow: 1; padding: 8px 12px; }
+        .add-btn { background: var(--accent); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; text-transform: uppercase; font-weight: bold; }
+
+        .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
         .tag { background: #f9f4eb; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; transition: 0.2s; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
         
         .badge { display: inline-block; padding: 6px 18px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; color: white; }
         .b-truth { background: #5d6d7e; } .b-dare { background: #af601a; } .b-escape { background: #c0392b; }
-        .b-edging { background: #884ea0; } .b-physical { background: #1e8449; }
+        .b-edging { background: #884ea0; }
         
         .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; font-size: 1rem; margin-bottom: 10px; transition: 0.3s; }
         .timer-display { font-size: 5rem; text-align: center; color: var(--crimson); font-weight: 100; margin: 20px 0; font-family: monospace; }
@@ -73,7 +78,8 @@
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Active Inventory</span>
+            <span class="label">Manage Arsenal</span>
+            <p style="font-size: 0.7rem; color: #888; margin-bottom: 15px;">Toggle items or add your own to the collection.</p>
             <div id="inv-container"></div>
         </div>
         <button class="btn" onclick="goToStep(3)">Commence Ceremony</button>
@@ -85,7 +91,7 @@
             <div class="box" style="text-align:left;">
                 <div id="intensity-display" class="intensity-pill">---</div>
                 <div id="badge-container"></div>
-                <div id="task-text">Randomizing initial authority...</div>
+                <div id="task-text">Determining authority...</div>
             </div>
             <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
             <div id="pre-start-controls" style="display:none;">
@@ -107,12 +113,11 @@
         "Blindfolds": ["Pillow Case", "Gas Mask", "Bandage", "Tape", "Cloth", "Sleep Mask", "Silk Scarf", "Hood"],
         "Gags": ["Gas Mask", "Tape", "Pallet Wrap", "Cloth", "Panties", "Bandage", "Rope", "Ring Gag", "Ball Gag", "Hood"],
         "Restraints": ["Leather Cuffs", "Tape", "Pallet Wrap", "String", "Belt", "Ribbon", "Rope", "Handcuffs"],
-        "Sensation": ["Anal Hook", "Pussy Hook", "E-stim Machine", "Anal Dildo", "Insertable", "Dildo", "Butt Plug", "Paddle", "Vibrator", "Cane", "Needle", "Sharpies", "Tape", "Candle", "Clamps"]
+        "Sensation": ["Anal Hook", "Pussy Hook", "E-stim Machine", "Anal Dildo", "Dildo", "Butt Plug", "Paddle", "Vibrator", "Cane", "Needle", "Sharpies", "Candle", "Clamps"]
     };
 
     let activeInv = {};
-    let players = []; 
-    let currentRound = 1, masterIdx, slaveIdx, timer, timeLeft;
+    let players = [], currentRound = 1, masterIdx, slaveIdx, timer, timeLeft;
 
     function initGear() {
         for (let cat in gearPool) {
@@ -121,15 +126,13 @@
     }
     initGear();
 
-    function getMethod(item, intensity) {
-        item = item.toLowerCase();
-        if (item === "pillow case") return "Drape the heavy fabric over the head, ensuring multiple folds cover the eyes. Secure it at the neck with a soft tie for total darkness.";
-        if (item === "gas mask") return "Seal the mask against the face, tightening the rubber straps until the seal is airtight and breathing is loud through the filter.";
-        if (item === "tape") return `Apply horizontal strips across the ${item.includes('gag') ? 'lips' : 'eyes'}, pressing the adhesive deep into the skin.`;
-        if (item === "pallet wrap") return "Circle the head three times, binding the mouth closed and ensuring the plastic clings tightly to the jawline.";
-        if (item.includes("hook")) return `Apply lubricant. Slowly slide the metal into the ${item.includes('anal') ? 'rectum' : 'genitals'} until flush with the skin.`;
-        if (item === "rope" || item === "string") return `Execute a tight figure-eight wrap around the wrists and knot it with a ${intensity === 'tight' ? 'binding double-knot' : 'secure square-knot'}.`;
-        return `Apply the ${item} with ${intensity} focus, ensuring the Slave feels the full weight and texture.`;
+    function addItem(cat) {
+        const input = document.getElementById(`add-${cat}`);
+        if (input.value.trim() !== "") {
+            activeInv[cat].push({ n: input.value.trim(), on: true });
+            input.value = "";
+            renderInv();
+        }
     }
 
     function renderInv() {
@@ -137,7 +140,14 @@
         container.innerHTML = '';
         for (let cat in activeInv) {
             let section = document.createElement('div');
-            section.innerHTML = `<span class="label">${cat}</span><div class="tag-row" id="tags-${cat}"></div>`;
+            section.innerHTML = `
+                <span class="label">${cat}</span>
+                <div class="add-row">
+                    <input type="text" id="add-${cat}" placeholder="Add new ${cat.toLowerCase()}...">
+                    <button class="add-btn" onclick="addItem('${cat}')">Add</button>
+                </div>
+                <div class="tag-row" id="tags-${cat}"></div>
+            `;
             container.appendChild(section);
             activeInv[cat].forEach(item => {
                 let tag = document.createElement('div');
@@ -149,6 +159,18 @@
         }
     }
 
+    function getMethod(item, intensity) {
+        item = item.toLowerCase();
+        // High-Detail Logic for Built-ins
+        if (item === "pillow case") return "Drape the heavy fabric over the head, folding it to ensure triple-layer thickness over the eyes. Secure it at the neck for total darkness.";
+        if (item === "gas mask") return "Seal the mask against the face, tightening the rubber straps until the seal is airtight and breathing is loud and heavy through the filter.";
+        if (item === "tape") return "Apply horizontal strips across the skin, pressing the adhesive deep into the grain of the skin to prevent any light or sound leakage.";
+        if (item === "rope" || item === "string") return `Execute a tight figure-eight wrap around the wrists and knot it with a ${intensity === 'tight' ? 'binding double-knot' : 'secure square-knot'}.`;
+        
+        // Dynamic Logic for custom items
+        return `Apply the ${item} with ${intensity} focus and absolute precision, ensuring the Slave is forced to acknowledge its weight, texture, and the Master's control.`;
+    }
+
     function goToStep(n) {
         if (n === 2) {
             players = [
@@ -158,7 +180,6 @@
             renderInv();
         }
         if (n === 3) {
-            // RANDOMIZE STARTING ROLES
             masterIdx = Math.floor(Math.random() * 2);
             slaveIdx = masterIdx === 0 ? 1 : 0;
             updateHeader();
@@ -216,10 +237,10 @@
         if (success) {
             let temp = masterIdx; masterIdx = slaveIdx; slaveIdx = temp;
             alert("Role Swap!");
-        } else { alert("Master maintains authority."); }
+        } else { alert("Authority maintained."); }
         currentRound++;
         if (currentRound > parseInt(document.getElementById('maxRounds').value)) {
-            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Ascension Complete</h1><button class="btn" onclick="location.reload()">Reset Session</button></div>`;
+            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Session Finished</h1><button class="btn" onclick="location.reload()">Reset Session</button></div>`;
         } else {
             updateHeader();
             document.getElementById('active-round').style.display = 'none';
