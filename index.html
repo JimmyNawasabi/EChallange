@@ -12,55 +12,68 @@
 
         body { 
             background: var(--bg); color: var(--text); 
-            font-family: 'Segoe UI', sans-serif; 
-            margin: 0; padding: 15px; display: flex; justify-content: center;
+            font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; 
+            display: flex; justify-content: center;
         }
 
         .container { 
             max-width: 500px; width: 100%; background: var(--card); 
             padding: 30px; border-radius: 30px; border: 2px solid #333; 
-            box-shadow: 0 50px 100px rgba(0,0,0,0.9);
         }
         
-        h1 { font-weight: bold; text-align: center; text-transform: uppercase; letter-spacing: 8px; color: var(--accent); margin-bottom: 5px; font-size: 1.8rem; }
+        h1 { text-align: center; text-transform: uppercase; letter-spacing: 8px; color: var(--accent); margin-bottom: 5px; }
         .subtitle { text-align: center; font-size: 0.7rem; color: #666; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; }
         
-        .box { background: #1f1f1f; padding: 20px; margin-bottom: 20px; border-radius: 20px; border: 1px solid #333; }
-        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 2px; }
+        /* IDENTITY CARDS */
+        .id-card { 
+            background: #1f1f1f; padding: 20px; margin-bottom: 20px; 
+            border-radius: 20px; border: 1px solid #333; 
+        }
+        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 15px; }
 
-        .setup-group { margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-        .setup-group:last-child { border: none; }
-        .setup-group label { display: block; color: #888; font-size: 0.8rem; margin-bottom: 8px; text-transform: uppercase; }
-        
-        input[type="text"], input[type="number"], select { 
-            width: 100%; padding: 16px; border: 1px solid #444; border-radius: 12px; 
+        input[type="text"], input[type="number"] { 
+            width: 100%; padding: 15px; border: 1px solid #444; border-radius: 12px; 
             background: #000; color: white; font-size: 1.1rem; box-sizing: border-box;
-            margin-bottom: 10px; appearance: none;
+            margin-bottom: 15px;
         }
 
-        .gender-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .g-btn { background: #111; border: 1px solid #444; color: #666; padding: 10px; border-radius: 10px; cursor: pointer; text-align: center; font-size: 0.8rem; font-weight: bold; }
+        /* GENDER BUTTONS */
+        .gender-select { display: flex; gap: 10px; margin-bottom: 5px; }
+        .g-btn { 
+            flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #444; 
+            background: #111; color: #666; cursor: pointer; text-align: center; 
+            font-weight: bold; text-transform: uppercase; font-size: 0.8rem;
+        }
         .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
-        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag { background: #000; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; cursor: pointer; border: 1px solid #333; color: #999; }
-        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-
-        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px; }
-        .btn-sec { background: var(--off); margin-top: 10px; color: #aaa; }
-
+        /* TOGGLE GRID */
         .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .t-btn { padding: 12px; border-radius: 12px; border: 1px solid #333; background: #111; color: #666; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; text-align: center; height: 50px; display: flex; align-items: center; justify-content: center;}
+        .t-btn { 
+            padding: 12px; border-radius: 12px; border: 1px solid #333; background: #111; 
+            color: #666; cursor: pointer; font-weight: bold; text-transform: uppercase; 
+            font-size: 0.7rem; text-align: center; min-height: 50px;
+        }
         .t-btn.on { background: var(--accent); color: #000; border-color: var(--accent); }
         .t-btn.gear-on { background: var(--crimson); color: white; border-color: var(--crimson); }
         
-        .master-all { grid-column: span 2; background: #222; color: var(--accent); border: 1px dashed var(--accent); margin-bottom: 5px; font-size: 0.8rem;}
+        .master-all { grid-column: span 2; background: #222; color: var(--accent); border: 1px dashed var(--accent); margin-bottom: 5px; }
 
-        .timer-big { font-size: 4rem; text-align: center; color: #fff; font-weight: bold; margin: 10px 0; }
+        /* BUTTONS */
+        .btn { 
+            background: var(--crimson); color: white; border: none; padding: 20px; 
+            width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; 
+            border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px;
+        }
+        .btn-sec { background: var(--off); margin-top: 10px; color: #aaa; }
+
+        .timer-big { font-size: 4rem; text-align: center; font-weight: bold; margin: 10px 0; }
         .instruction-highlight { color: var(--accent); font-weight: bold; }
         
         .step { display: none; }
         .active { display: block !important; }
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { background: #000; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; cursor: pointer; border: 1px solid #333; color: #999; }
+        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
     </style>
 </head>
 <body>
@@ -70,59 +83,60 @@
     <div class="subtitle">The Command Protocol</div>
 
     <div id="step1" class="step active">
-        <div class="box">
-            <div class="setup-group">
-                <label>First Participant (Master)</label>
-                <input type="text" id="p1_n" placeholder="Name">
-                <div class="gender-row">
-                    <div class="g-btn active" id="p1-m" onclick="setGender(1, 'M')">Male</div>
-                    <div class="g-btn" id="p1-f" onclick="setGender(1, 'F')">Female</div>
-                    <div class="g-btn" id="p1-nb" onclick="setGender(1, 'NB')">NB</div>
-                </div>
-            </div>
-            <div class="setup-group">
-                <label>Second Participant (Subject)</label>
-                <input type="text" id="p2_n" placeholder="Name">
-                <div class="gender-row">
-                    <div class="g-btn" id="p2-m" onclick="setGender(2, 'M')">Male</div>
-                    <div class="g-btn active" id="p2-f" onclick="setGender(2, 'F')">Female</div>
-                    <div class="g-btn" id="p2-nb" onclick="setGender(2, 'NB')">NB</div>
-                </div>
-            </div>
-            <div class="setup-group">
-                <label>Session Rounds</label>
-                <input type="number" id="max_r" value="10">
+        <div class="id-card">
+            <span class="label">Primary Participant (Master)</span>
+            <input type="text" id="p1_n" placeholder="Enter Name">
+            <div class="gender-select">
+                <div class="g-btn active" id="p1m" onclick="setGender(1,'M')">Male</div>
+                <div class="g-btn" id="p1f" onclick="setGender(1,'F')">Female</div>
+                <div class="g-btn" id="p1n" onclick="setGender(1,'NB')">NB</div>
             </div>
         </div>
+
+        <div class="id-card">
+            <span class="label">Secondary Participant (Subject)</span>
+            <input type="text" id="p2_n" placeholder="Enter Name">
+            <div class="gender-select">
+                <div class="g-btn" id="p2m" onclick="setGender(2,'M')">Male</div>
+                <div class="g-btn active" id="p2f" onclick="setGender(2,'F')">Female</div>
+                <div class="g-btn" id="p2n" onclick="setGender(2,'NB')">NB</div>
+            </div>
+        </div>
+
+        <div class="id-card">
+            <span class="label">Session Parameters</span>
+            <input type="number" id="max_r" value="10" placeholder="Rounds">
+        </div>
+
         <button class="btn" onclick="nav(2)">Access the Arsenal</button>
     </div>
 
     <div id="step2" class="step">
-        <div class="box" id="vault-inject"></div>
-        <button class="btn" onclick="nav(3)">Confirm & Proceed</button>
+        <div class="id-card" id="vault-inject"></div>
+        <button class="btn" onclick="nav(3)">Lock & Proceed</button>
     </div>
 
     <div id="step3" class="step">
         <div id="pre-round">
             <div id="round-header" class="label" style="text-align:center;">ROUND 1</div>
-            <div class="box">
+            <div class="id-card">
                 <span class="label">Categories</span>
                 <div class="toggle-grid" id="trial-toggles"></div>
             </div>
-            <div class="box">
-                <span class="label">Active Gear</span>
+            <div class="id-card">
+                <span class="label">Enabled Gear</span>
                 <div class="toggle-grid" id="gear-toggles"></div>
             </div>
             <button class="btn" onclick="generateDecree()">Generate Decree</button>
         </div>
 
         <div id="active-round" style="display:none;">
-            <div class="box" style="font-size: 1.1rem; line-height:1.6; min-height: 180px; display: flex; align-items: center; justify-content: center;">
+            <div class="id-card" style="min-height: 180px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; line-height: 1.6;">
                 <div id="active-trial-text" style="text-align:center;"></div>
             </div>
             <div class="timer-big" id="clock">00:00</div>
-            <button class="btn" style="background:var(--success);" onclick="finish(true)">Objective Complete</button>
-            <button class="btn btn-sec" onclick="finish(false)">Fail / Skip</button>
+            <button class="btn" style="background:var(--success);" onclick="finish(true)">Complete</button>
+            <button class="btn btn-sec" onclick="finish(false)">Fail</button>
         </div>
     </div>
 </div>
@@ -132,18 +146,17 @@
     
     function setGender(p, g) {
         players[p-1].g = g;
-        document.querySelectorAll(`#step1 .setup-group:nth-child(${p}) .g-btn`).forEach(b => b.classList.remove('active'));
-        if(g==='M') document.getElementById(`p${p}-m`).classList.add('active');
-        if(g==='F') document.getElementById(`p${p}-f`).classList.add('active');
-        if(g==='NB') document.getElementById(`p${p}-nb`).classList.add('active');
+        const group = (p === 1) ? ['p1m','p1f','p1n'] : ['p2m','p2f','p2n'];
+        group.forEach(id => document.getElementById(id).classList.remove('active'));
+        document.getElementById(`p${p}${g.toLowerCase()}`).classList.add('active');
     }
 
     const trials = [
         { n: "The Solitary Bind", t: 450, on: true, d: ["Secure [REST] around your ankles and wrists. Apply [VIS].", "Bind your dominant arm behind your back with [REST]. Use [GAG]."] },
         { n: "Naked Confessions", t: 300, on: true, d: ["Confess a secret fantasy while Master uses [SENS].", "Detail your arousal level. Master applies [REST] to your wrists."] },
-        { n: "Reckless Abandon", t: 300, on: true, d: ["I dare you to apply [SENS] to your inner thigh until Master stops you.", "Let Master apply [GAG] and [VIS] for the duration of the round."] },
+        { n: "Reckless Abandon", t: 300, on: true, d: ["Apply [SENS] to your inner thigh until Master stops you.", "Let Master apply [GAG] and [VIS] for the round."] },
         { n: "Desperate Liberation", t: 600, on: true, d: ["Master binds you with [REST]. Escape before the clock hits zero.", "Wiggle out of a tight [REST] harness while blindfolded with [VIS]."] },
-        { n: "The Crucible of Flesh", t: 600, on: true, d: ["Hold a wall-sit while Master traces your skin with [SENS].", "Maintain a plank. Master places [REST] on your back; don't let it fall."] },
+        { n: "The Crucible of Flesh", t: 600, on: true, d: ["Hold a wall-sit while Master traces your skin with [SENS].", "Maintain a plank. Master places [REST] on your back."] },
         { n: "The Edge of Ruin", t: 600, on: true, d: ["Master teases you to the edge with [SENS], then denies you.", "Edge yourself. Stop immediately when Master applies [GAG]."] },
         { n: "Silken Geometry", t: 900, on: true, d: ["Master ties a decorative chest harness with [REST].", "Master creates a decorative leg tie with [REST]. Apply [VIS]."] },
         { n: "Velvet Surrender", t: 450, on: true, d: ["Master traces your lips with [SENS]. Surrender to the touch.", "Receive a gentle massage while bound loosely with [REST]."] }
@@ -176,9 +189,9 @@
 
     function renderVault() {
         const v = document.getElementById('vault-inject');
-        v.innerHTML = '<span class="label">Arsenal Configuration</span>';
+        v.innerHTML = '<span class="label">The Arsenal</span>';
         for (let c in vault) {
-            v.innerHTML += `<span class="label" style="color:#555; margin-top:10px; font-size:0.65rem;">${c}</span>`;
+            v.innerHTML += `<span class="label" style="color:#555; margin-top:10px;">${c}</span>`;
             const cloud = document.createElement('div');
             cloud.className = 'tag-cloud';
             vault[c].forEach(i => {
@@ -195,7 +208,7 @@
     function renderCommand() {
         document.getElementById('round-header').innerText = `ROUND ${curR} | MASTER: ${players[masterIdx].n}`;
         const tg = document.getElementById('trial-toggles');
-        tg.innerHTML = '<button class="t-btn master-all" onclick="toggleAll()">Toggle All Categories</button>';
+        tg.innerHTML = '<button class="t-btn master-all" onclick="toggleAll()">All Categories</button>';
         trials.forEach(t => {
             const b = document.createElement('button');
             b.className = `t-btn ${t.on ? 'on' : ''}`;
@@ -250,7 +263,7 @@
     function finish(win) {
         clearInterval(timer);
         curR++; masterIdx = (masterIdx === 0 ? 1 : 0);
-        if(curR > maxR) { alert("Session Terminated."); location.reload(); }
+        if(curR > maxR) { alert("Session Complete."); location.reload(); }
         else {
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('active-round').style.display = 'none';
