@@ -3,106 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Down to get dirty: Sovereignty</title>
+    <title>Sovereignty: Manual Control</title>
     <style>
         :root { 
             --accent: #c5a059; --soft-bg: #fdfaf5; --card-bg: #ffffff;
             --text: #2c2c2c; --crimson: #7b1a1a; --safe-green: #2e7d32; 
-            --gold: #f1c40f; --red-card: #e74c3c; --veto-grey: #4a4a4a;
         }
-        body { background: var(--soft-bg); color: var(--text); font-family: 'Georgia', serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 18px; }
-        .container { max-width: 750px; width: 100%; background: var(--card-bg); padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); margin-top: 20px; }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 5px; font-size: 1.8rem; font-style: italic; }
-        .subtitle { text-align: center; font-size: 0.8rem; color: #a18e8e; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 4px; font-weight: bold; }
+        body { background: var(--soft-bg); color: var(--text); font-family: 'Georgia', serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .container { max-width: 700px; width: 100%; background: var(--card-bg); padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); margin-top: 20px; }
+        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; font-style: italic; margin-bottom: 0; }
+        .subtitle { text-align: center; font-size: 0.7rem; color: #a18e8e; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; }
+        
         .step { display: none; }
         .active { display: block !important; }
-        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 20px; border-radius: 25px; line-height: 1.8; position: relative; }
-        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 5px; letter-spacing: 1.5px; }
-        
-        /* VAULT SYSTEM */
+
+        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 20px; border-radius: 25px; }
+        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1.5px; }
+
+        /* PLAYER ENTRY FIX */
+        .player-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .player-row input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 12px; font-family: inherit; }
+
+        /* VAULT & ADD SYSTEM */
         .category-block { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 20px; border: 1px solid #eee; }
         .add-row { display: flex; gap: 8px; margin-bottom: 12px; }
-        .add-row input { flex-grow: 1; padding: 10px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit; }
+        .add-row input { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #ddd; }
         .add-btn { background: var(--crimson); color: white; border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
         .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag { background: #f9f4eb; padding: 8px 15px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; display: flex; align-items: center; gap: 5px; }
+        .tag { background: #f9f4eb; padding: 8px 15px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; border: 1px solid #e2d1b3; display: flex; align-items: center; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        .del-x { font-weight: bold; opacity: 0.5; margin-left: 5px; }
+        .del-x { margin-left: 8px; font-weight: bold; opacity: 0.5; }
 
-        /* TACTICAL UI */
-        .tactical-status { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; padding: 10px; background: #fff; border-radius: 15px; border: 1px solid #eee; }
-        .holder-badge { font-size: 0.7rem; padding: 8px 15px; border-radius: 20px; font-weight: bold; text-transform: uppercase; color: #ccc; border: 1px solid #eee; }
-        .has-cards { border-color: var(--crimson); background: var(--crimson); color: white; box-shadow: 0 4px 10px rgba(123, 26, 26, 0.3); }
-        .card-dock { display: flex; justify-content: space-around; margin: 15px 0; gap: 8px; }
-        .t-card { flex: 1; padding: 12px 5px; border-radius: 10px; text-align: center; font-size: 0.65rem; font-weight: 900; cursor: pointer; color: white; text-transform: uppercase; border: none; }
-        .t-red { background: var(--red-card); box-shadow: 0 4px 0 #922b21; }
-        .t-yellow { background: var(--gold); color: black; box-shadow: 0 4px 0 #b7950b; }
+        /* COMMAND CONSOLE */
+        .console-header { text-align: center; font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .item-picker { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .timer-display { font-size: 4rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 15px 0; }
         
-        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; margin-bottom: 10px; }
-        .timer-display { font-size: 3.5rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 10px 0; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; }
-        .finale-text { font-size: 0.95rem; background: #000; color: #fff; padding: 30px; border-radius: 20px; line-height: 2; overflow-y: auto; max-height: 500px; text-align: left; }
+        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; margin-bottom: 10px; font-size: 1rem; }
+        .btn-sec { background: #888; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Down to get dirty</h1>
-    <div class="subtitle">Sovereignty Edition</div>
+    <h1>Sovereignty</h1>
+    <div class="subtitle">Scratch Manual Build</div>
 
     <div id="step1" class="step active">
         <div class="box">
-            <span class="label">Session Parameters</span>
-            <input type="number" id="maxRounds" value="15">
-            <input type="text" id="p1_name" placeholder="Player 1 Name" style="margin-top:10px;">
-            <input type="text" id="p2_name" placeholder="Player 2 Name" style="margin-top:10px;">
+            <span class="label">Initiate Participants</span>
+            <div class="player-row">
+                <input type="text" id="p1_name" placeholder="Player 1 (The Master)">
+            </div>
+            <div class="player-row">
+                <input type="text" id="p2_name" placeholder="Player 2 (The Subject)">
+            </div>
+            <span class="label">Session Length</span>
+            <input type="number" id="rounds" value="10" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd;">
         </div>
-        <button class="btn" onclick="goToStep(2)">Manage Permanent Arsenal ></button>
+        <button class="btn" onclick="toStep(2)">Configure Arsenal ></button>
     </div>
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">The Master's Vault (Saved Automatically)</span>
-            <div id="inv-container"></div>
+            <span class="label">Your Permanent Vault (Auto-Saves)</span>
+            <div id="vault-container"></div>
         </div>
-        <button class="btn" onclick="goToStep(3)">Commence Ceremony</button>
-        <button class="btn" style="background:#888;" onclick="resetVault()">Factory Reset Inventory</button>
+        <button class="btn" onclick="toStep(3)">Begin Command Console</button>
+        <button class="btn btn-sec" onclick="resetVault()">Reset to Defaults</button>
     </div>
 
     <div id="step3" class="step">
-        <div class="tactical-status">
-            <div id="status-p1" class="holder-badge">P1</div>
-            <div id="status-p2" class="holder-badge">P2</div>
-        </div>
-        <div id="pre-round">
-            <div id="round-header" class="label" style="text-align:center; color:var(--crimson);">---</div>
-            <div id="choice-area" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;"></div>
-            <div id="display-area" style="display:none; margin-top:20px;">
-                <div class="box" id="task-text"></div>
-                <button class="btn" style="background:var(--safe-green);" onclick="startTimer()">Accept Decree</button>
-                <button class="btn" style="background:#888;" onclick="backToChoices()">Change Choice</button>
+        <div class="box">
+            <div class="console-header" id="round-info">ROUND 1</div>
+            
+            <div id="setup-view">
+                <span class="label">Master, Select Your Instruments:</span>
+                <div class="item-picker" id="active-picks">
+                    </div>
+                <span class="label">Set Duration (Seconds)</span>
+                <input type="number" id="timer-input" value="300" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #ddd; margin-bottom: 20px;">
+                <button class="btn" style="background:var(--safe-green);" onclick="startCommand()">Execute Command</button>
             </div>
-        </div>
-        <div id="active-round" style="display:none;">
-            <div class="timer-display" id="clock">00:00</div>
-            <div class="card-dock">
-                <button class="t-card t-red" onclick="useRed()">Red Card</button>
-                <button class="t-card t-yellow" onclick="useYellow()">Yellow Card</button>
-            </div>
-            <button class="btn" onclick="resolve(true)">Success (+1)</button>
-            <button class="btn" style="background:#888;" onclick="resolve(false)">Failure (+0)</button>
-        </div>
-    </div>
 
-    <div id="stepFinale" class="step">
-        <h1 style="color: gold;">ULTIMATE SOVEREIGNTY</h1>
-        <div class="finale-text" id="finale-content"></div>
-        <button class="btn" style="margin-top:20px; background: gold; color: black;" onclick="location.reload()">End Session</button>
+            <div id="timer-view" style="display:none;">
+                <div class="timer-display" id="clock">00:00</div>
+                <button class="btn" onclick="resolve(true)">Command Successful (+1)</button>
+                <button class="btn btn-sec" onclick="resolve(false)">Command Failed (+0)</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    let players = [], curRound = 1, masterIdx = 0, slaveIdx = 1, cardHolderIdx = 0, timer, timeLeft;
+    let players = [], curRound = 1, maxRounds = 10, masterIdx = 0, timer, timeLeft;
 
     const defaultItems = {
         "Blindfolds": ["Tape", "Gas Mask", "Pillow Case", "Sleep Mask", "Hood"],
@@ -111,18 +105,18 @@
         "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane", "Hot Wax"]
     };
 
-    let vault = JSON.parse(localStorage.getItem('dirty_v4_vault')) || null;
+    let vault = JSON.parse(localStorage.getItem('sov_manual_vault')) || null;
     if(!vault) {
         vault = {};
         for(let c in defaultItems) vault[c] = defaultItems[c].map(n => ({n, on: true}));
-        save();
+        localStorage.setItem('sov_manual_vault', JSON.stringify(vault));
     }
 
-    function save() { localStorage.setItem('dirty_v4_vault', JSON.stringify(vault)); }
-    function resetVault() { localStorage.removeItem('dirty_v4_vault'); location.reload(); }
+    function save() { localStorage.setItem('sov_manual_vault', JSON.stringify(vault)); }
+    function resetVault() { localStorage.removeItem('sov_manual_vault'); location.reload(); }
 
-    function renderInv() {
-        const cont = document.getElementById('inv-container');
+    function renderVault() {
+        const cont = document.getElementById('vault-container');
         cont.innerHTML = '';
         for (let c in vault) {
             let div = document.createElement('div');
@@ -144,86 +138,73 @@
             });
         }
     }
+    // Alias for consistent naming
+    function renderInv() { renderVault(); }
 
     function addItem(cat) {
         let v = document.getElementById(`add-${cat}`).value.trim();
-        if(v) { vault[cat].push({n: v, on: true}); save(); renderInv(); document.getElementById(`add-${cat}`).value = ""; }
+        if(v) { vault[cat].push({n: v, on: true}); save(); renderVault(); document.getElementById(`add-${cat}`).value = ""; }
     }
-    function removeItem(cat, idx) { vault[cat].splice(idx, 1); save(); renderInv(); }
+    function removeItem(cat, idx) { vault[cat].splice(idx, 1); save(); renderVault(); }
 
-    function goToStep(n) {
+    function toStep(n) {
+        if(n === 2) {
+            players = [
+                {n: document.getElementById('p1_name').value || "Master", score: 0},
+                {n: document.getElementById('p2_name').value || "Subject", score: 0}
+            ];
+            maxRounds = document.getElementById('rounds').value;
+            renderVault();
+        }
+        if(n === 3) prepConsole();
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step'+n).classList.add('active');
-        if(n === 2) renderInv();
-        if(n === 3) {
-            players = [
-                {n: document.getElementById('p1_name').value || "P1", score: 0},
-                {n: document.getElementById('p2_name').value || "P2", score: 0}
-            ];
-            cardHolderIdx = Math.floor(Math.random()*2);
-            updateUI();
+    }
+
+    function prepConsole() {
+        document.getElementById('round-info').innerText = `ROUND ${curRound} | Master: ${players[masterIdx].n}`;
+        const picker = document.getElementById('active-picks');
+        picker.innerHTML = '';
+        for(let c in vault) {
+            let sel = document.createElement('select');
+            sel.style.padding = "10px";
+            sel.style.borderRadius = "10px";
+            sel.innerHTML = `<option value="">-- No ${c} --</option>`;
+            vault[c].filter(i => i.on).forEach(item => {
+                sel.innerHTML += `<option value="${item.n}">${item.n}</option>`;
+            });
+            picker.appendChild(sel);
         }
     }
 
-    const trials = {
-        shibari: { n: "Binding Trial", t: 600, d: "Master uses <b>[REST]</b> to restrict the Subject. Once secured, use <b>[SENS]</b> to test their stillness." },
-        void: { n: "Sensory Void", t: 400, d: "Seal the <b>[VIS]</b> and <b>[GAG]</b>. In the dark, Master uses <b>[SENS]</b> in a slow, torturous rhythm." },
-        escape: { n: "Escape Act", t: 300, d: "Bind the Subject with <b>[REST]</b> and <b>[VIS]</b>. They must be free before the clock stops." },
-        peak: { n: "Peak & Hold", t: 480, d: "Using <b>[SENS]</b>, Master brings the Subject to the brink 3 times. Release is forbidden." }
-    };
-
-    function updateUI() {
-        document.getElementById('round-header').innerText = `ROUND ${curRound} | Master: ${players[masterIdx].n}`;
-        document.getElementById('status-p1').className = `holder-badge ${cardHolderIdx === 0 ? 'has-cards' : ''}`;
-        document.getElementById('status-p2').className = `holder-badge ${cardHolderIdx === 1 ? 'has-cards' : ''}`;
-        document.getElementById('status-p1').innerText = players[0].n + (cardHolderIdx === 0 ? " (CARDS)" : "");
-        document.getElementById('status-p2').innerText = players[1].n + (cardHolderIdx === 1 ? " (CARDS)" : "");
-        
-        let grid = document.getElementById('choice-area'); grid.innerHTML = '';
-        for(let k in trials) {
-            let b = document.createElement('button'); b.className = 'btn'; b.style.marginTop = '0'; b.innerText = trials[k].n;
-            b.onclick = () => {
-                let t = trials[k];
-                const pick = (cat) => { let p = vault[cat].filter(i=>i.on); return p.length ? p[Math.floor(Math.random()*p.length)].n : "Basic Gear"; };
-                document.getElementById('task-text').innerHTML = `<strong>${t.n}</strong><br><br>` + t.d.replace('[REST]', pick('Restraints')).replace('[SENS]', pick('Sensation')).replace('[VIS]', pick('Blindfolds')).replace('[GAG]', pick('Gags'));
-                timeLeft = t.t; document.getElementById('choice-area').style.display = 'none'; document.getElementById('display-area').style.display = 'block';
-            };
-            grid.appendChild(b);
-        }
-    }
-
-    function backToChoices() { document.getElementById('choice-area').style.display = 'grid'; document.getElementById('display-area').style.display = 'none'; }
-    function startTimer() {
-        document.getElementById('pre-round').style.display = 'none'; document.getElementById('active-round').style.display = 'block';
+    function startCommand() {
+        timeLeft = document.getElementById('timer-input').value;
+        document.getElementById('setup-view').style.display = 'none';
+        document.getElementById('timer-view').style.display = 'block';
         timer = setInterval(() => {
-            timeLeft--; let m = Math.floor(timeLeft/60), s = timeLeft%60;
+            timeLeft--;
+            let m = Math.floor(timeLeft/60), s = timeLeft%60;
             document.getElementById('clock').innerText = `${m}:${s < 10 ? '0'+s : s}`;
             if(timeLeft <= 0) resolve(false);
         }, 1000);
     }
 
-    function useRed() { clearInterval(timer); cardHolderIdx = cardHolderIdx === 0 ? 1 : 0; alert("Red Card: Skip. Card Swapped."); resolve(false, true); }
-    function useYellow() { [masterIdx, slaveIdx] = [slaveIdx, masterIdx]; cardHolderIdx = cardHolderIdx === 0 ? 1 : 0; alert("Yellow Card: Roles Swapped. Card Swapped."); updateUI(); }
-
-    function resolve(win, skip=false) {
+    function resolve(win) {
         clearInterval(timer);
-        if(win) { players[slaveIdx].score++; [masterIdx, slaveIdx] = [slaveIdx, masterIdx]; }
-        curRound++;
-        if(curRound > document.getElementById('maxRounds').value) triggerFinale();
-        else {
-            document.getElementById('active-round').style.display = 'none'; document.getElementById('pre-round').style.display = 'block';
-            backToChoices(); updateUI();
+        if(win) { 
+            let subIdx = masterIdx === 0 ? 1 : 0;
+            players[subIdx].score++;
+            masterIdx = subIdx; // Role Swap
         }
-    }
-
-    function triggerFinale() {
-        document.getElementById('step3').classList.remove('active'); document.getElementById('stepFinale').classList.add('active');
-        let w = players[0].score > players[1].score ? players[0] : players[1];
-        let l = players[0].score > players[1].score ? players[1] : players[0];
-        document.getElementById('finale-content').innerHTML = `<strong>Winner: ${w.n} (${w.score} pts)</strong><hr>
-        <strong>Phase I:</strong> ${l.n} is to be fully bound with <b>Rope</b> and <b>Pallet Wrap</b>.<br>
-        <strong>Phase II:</strong> Apply <b>Gas Mask</b> and <b>Tape</b> over the eyes. ${w.n} shall use <b>Cane</b> and <b>Ice</b> for 30 minutes.<br>
-        <strong>Phase III:</strong> Total sexual release for ${w.n}; denial for the Subject until the Master permits.`;
+        curRound++;
+        if(curRound > maxRounds) {
+            alert(`Session Complete! Final: ${players[0].n} ${players[0].score} - ${players[1].n} ${players[1].score}`);
+            location.reload();
+        } else {
+            document.getElementById('setup-view').style.display = 'block';
+            document.getElementById('timer-view').style.display = 'none';
+            prepConsole();
+        }
     }
 </script>
 </body>
