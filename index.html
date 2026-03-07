@@ -7,13 +7,14 @@
     <style>
         :root { 
             --accent: #c5a059; --soft-bg: #fdfaf5; --card-bg: #ffffff;
-            --text: #2c2c2c; --crimson: #7b1a1a; --safe-green: #2e7d32; --veto: #4a4a4a;
+            --text: #2c2c2c; --crimson: #7b1a1a; --safe-green: #2e7d32; --veto-bg: #4a4a4a;
+            --gold: #f1c40f; --red-card: #e74c3c;
         }
         
         body { background: var(--soft-bg); color: var(--text); font-family: 'Georgia', serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 18px; }
         .container { max-width: 700px; width: 100%; background: var(--card-bg); padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); margin-top: 20px; }
         h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 6px; margin-bottom: 5px; font-size: 1.6rem; }
-        .subtitle { text-align: center; font-size: 0.8rem; color: #a18e8e; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; font-weight: bold; }
+        .subtitle { text-align: center; font-size: 0.8rem; color: #a18e8e; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 4px; font-weight: bold; }
 
         .step { display: none; }
         .active { display: block !important; }
@@ -24,25 +25,27 @@
         .identity-card { background: #ffffff; border: 1px solid #eee; padding: 20px; border-radius: 20px; margin-bottom: 15px; }
         input[type="text"], select, input[type="number"] { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 12px; margin-top: 8px; font-size: 1rem; font-family: inherit; box-sizing: border-box; display: block; background: #fff; }
         
-        /* IMPROVED DYNAMIC INVENTORY */
-        .category-block { margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px dashed #e2d1b3; }
-        .add-row { display: flex; gap: 8px; margin-bottom: 15px; }
-        .add-row input { margin-top: 0; flex-grow: 1; padding: 10px; border: 1px solid var(--accent); }
-        .add-btn { background: var(--accent); color: white; border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-
+        /* INVENTORY */
+        .category-block { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px dashed #e2d1b3; }
+        .add-row { display: flex; gap: 8px; margin-bottom: 10px; }
+        .add-row input { margin-top: 0; flex-grow: 1; padding: 8px; border: 1px solid var(--accent); }
+        .add-btn { background: var(--accent); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag { background: #f9f4eb; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; transition: 0.2s; }
-        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        
-        .badge { display: inline-block; padding: 6px 18px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; color: white; }
-        .b-truth { background: #5d6d7e; } .b-dare { background: #af601a; } .b-escape { background: #c0392b; }
-        .b-edging { background: #884ea0; }
-        
-        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; font-size: 1rem; margin-bottom: 10px; transition: 0.3s; }
-        .timer-display { font-size: 5rem; text-align: center; color: var(--crimson); font-weight: 100; margin: 20px 0; font-family: monospace; }
-        .intensity-pill { position: absolute; top: 15px; right: 15px; font-size: 0.6rem; padding: 4px 10px; border-radius: 50px; border: 1px solid var(--accent); color: var(--accent); text-transform: uppercase; font-weight: 800; }
-        
-        b { color: var(--crimson); text-decoration: underline; }
+        .tag { background: #f9f4eb; padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; }
+        .tag.on { background: var(--crimson); color: white; }
+
+        /* CARDS & CONTROLS */
+        .card-dock { display: flex; justify-content: space-around; margin: 20px 0; gap: 10px; }
+        .game-card { flex: 1; padding: 15px 5px; border-radius: 12px; text-align: center; font-size: 0.7rem; font-weight: bold; cursor: pointer; color: white; text-transform: uppercase; transition: 0.3s; border: none; }
+        .c-red { background: var(--red-card); }
+        .c-yellow { background: var(--gold); color: #000; }
+        .c-safe { background: #000; }
+        .c-veto { background: var(--veto-bg); }
+        .disabled { opacity: 0.2; cursor: not-allowed; }
+
+        .score-box { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 20px; font-size: 0.9rem; color: var(--crimson); }
+        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; margin-bottom: 10px; }
+        .timer-display { font-size: 4rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -53,12 +56,12 @@
 
     <div id="step1" class="step active">
         <div class="box">
-            <span class="label">Session Duration (Rounds)</span>
+            <span class="label">Total Rounds</span>
             <input type="number" id="maxRounds" value="20">
             
             <div class="identity-card">
                 <span class="label">Player 1</span>
-                <input type="text" id="p1_name" placeholder="Enter Name">
+                <input type="text" id="p1_name" placeholder="Name">
                 <select id="p1_gender">
                     <option value="male body">Male Body</option>
                     <option value="female body">Female Body</option>
@@ -67,7 +70,7 @@
 
             <div class="identity-card">
                 <span class="label">Player 2</span>
-                <input type="text" id="p2_name" placeholder="Enter Name">
+                <input type="text" id="p2_name" placeholder="Name">
                 <select id="p2_gender">
                     <option value="female body">Female Body</option>
                     <option value="male body">Male Body</option>
@@ -79,30 +82,42 @@
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Customize Inventory</span>
-            <div id="inv-container">
-                </div>
+            <span class="label">Arsenal Management</span>
+            <div id="inv-container"></div>
         </div>
         <button class="btn" onclick="goToStep(3)">Commence Ceremony</button>
     </div>
 
     <div id="step3" class="step">
+        <div class="score-box">
+            <div id="p1-score-display">---</div>
+            <div id="p2-score-display">---</div>
+        </div>
+
         <div id="pre-round">
             <div id="round-header" class="label" style="text-align:center; font-size: 1rem;">---</div>
             <div class="box" style="text-align:left;">
-                <div id="intensity-display" class="intensity-pill">---</div>
                 <div id="badge-container"></div>
-                <div id="task-text">Consulting the fates...</div>
+                <div id="task-text">Press to manifest...</div>
             </div>
+            
             <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
+            
             <div id="pre-start-controls" style="display:none;">
                 <button class="btn" style="background: var(--safe-green);" onclick="startT()">Execute</button>
-                <button class="btn" style="background: var(--veto); font-size:0.8rem;" onclick="generate()">Reroll</button>
+                <button class="game-card c-veto" style="width:100%; margin-bottom:10px;" onclick="useVeto()">Veto (Delete Task)</button>
             </div>
         </div>
 
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
+            
+            <div class="card-dock">
+                <button id="red-card-btn" class="game-card c-red" onclick="useRed()">Red Card (Pass)</button>
+                <button id="yellow-card-btn" class="game-card c-yellow" onclick="useYellow()">Yellow Card (Swap)</button>
+                <button id="safe-btn" class="game-card c-safe" onclick="useSafeWord()">Safe Word (-5 pts)</button>
+            </div>
+
             <button class="btn" onclick="resolveTurn(true)">Success (Swap Roles)</button>
             <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Failure (Keep Roles)</button>
         </div>
@@ -119,8 +134,10 @@
 
     let activeInv = {};
     let players = [], currentRound = 1, masterIdx, slaveIdx, timer, timeLeft;
+    let cardOwnerIdx = 0; // The player currently holding the tactical cards
+    let currentTaskKey = "";
 
-    // Load initial gear into working state
+    // INITIALIZE INVENTORY
     for (let cat in initialGear) {
         activeInv[cat] = initialGear[cat].map(i => ({ n: i, on: true }));
     }
@@ -128,100 +145,83 @@
     function renderInv() {
         const container = document.getElementById('inv-container');
         container.innerHTML = ''; 
-
         for (let cat in activeInv) {
             let catBlock = document.createElement('div');
             catBlock.className = 'category-block';
-            
-            catBlock.innerHTML = `
-                <span class="label">${cat}</span>
-                <div class="add-row">
-                    <input type="text" id="input-${cat}" placeholder="Add custom ${cat.toLowerCase()}...">
-                    <button class="add-btn" onclick="addNewItem('${cat}')">Add</button>
-                </div>
-                <div class="tag-row" id="tags-${cat}"></div>
-            `;
+            catBlock.innerHTML = `<span class="label">${cat}</span><div class="add-row"><input type="text" id="input-${cat}" placeholder="Add custom ${cat.toLowerCase()}..."><button class="add-btn" onclick="addNewItem('${cat}')">Add</button></div><div class="tag-row" id="tags-${cat}"></div>`;
             container.appendChild(catBlock);
-
-            let tagRow = catBlock.querySelector(`#tags-${cat}`);
             activeInv[cat].forEach((item, index) => {
                 let tag = document.createElement('div');
                 tag.className = `tag ${item.on ? 'on' : ''}`;
                 tag.innerText = item.n;
-                tag.onclick = () => {
-                    activeInv[cat][index].on = !activeInv[cat][index].on;
-                    renderInv();
-                };
-                tagRow.appendChild(tag);
+                tag.onclick = () => { activeInv[cat][index].on = !activeInv[cat][index].on; renderInv(); };
+                catBlock.querySelector(`#tags-${cat}`).appendChild(tag);
             });
         }
     }
 
     function addNewItem(cat) {
         let val = document.getElementById(`input-${cat}`).value.trim();
-        if (val) {
-            activeInv[cat].push({ n: val, on: true });
-            renderInv();
-        }
-    }
-
-    function getMethod(item, intensity) {
-        item = item.toLowerCase();
-        if (item === "pillow case") return "Drape the heavy fabric over the head, folding it to ensure triple-layer thickness over the eyes. Secure it at the neck for total darkness.";
-        if (item === "gas mask") return "Seal the mask against the face, tightening the rubber straps until the seal is airtight and breathing is loud and heavy through the filter.";
-        if (item === "tape") return "Apply horizontal strips across the skin, pressing the adhesive deep into the skin to prevent light or sound leakage.";
-        if (item === "rope") return `Execute a tight figure-eight wrap around the wrists and knot it with a ${intensity === 'tight' ? 'binding double-knot' : 'secure square-knot'}.`;
-        return `Apply the ${item} with ${intensity} focus, ensuring the Slave feels the full weight and texture of the object.`;
+        if (val) { activeInv[cat].push({ n: val, on: true }); renderInv(); }
     }
 
     function goToStep(n) {
         if (n === 2) {
             players = [
-                {n: document.getElementById('p1_name').value || "Player 1", g: document.getElementById('p1_gender').value},
-                {n: document.getElementById('p2_name').value || "Player 2", g: document.getElementById('p2_gender').value}
+                {n: document.getElementById('p1_name').value || "Player 1", g: document.getElementById('p1_gender').value, score: 0},
+                {n: document.getElementById('p2_name').value || "Player 2", g: document.getElementById('p2_gender').value, score: 0}
             ];
             renderInv();
         }
         if (n === 3) {
             masterIdx = Math.floor(Math.random() * 2);
             slaveIdx = masterIdx === 0 ? 1 : 0;
-            updateHeader();
+            cardOwnerIdx = Math.floor(Math.random() * 2); // Randomly assign tactical cards to one player
+            updateUI();
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + n).classList.add('active');
     }
 
-    function updateHeader() {
-        document.getElementById('round-header').innerHTML = `ROUND ${currentRound} <br> <b>Master: ${players[masterIdx].n}</b> | Slave: ${players[slaveIdx].n}`;
+    function updateUI() {
+        document.getElementById('p1-score-display').innerText = `${players[0].n}: ${players[0].score}`;
+        document.getElementById('p2-score-display').innerText = `${players[1].n}: ${players[1].score}`;
+        document.getElementById('round-header').innerHTML = `ROUND ${currentRound} <br> <b>Master: ${players[masterIdx].n}</b> | Slave: ${players[slaveIdx].n}<br><small>Card Holder: ${players[cardOwnerIdx].n}</small>`;
     }
 
-    const tasks = {
-        truth: { label: "Truth", time: 120, templates: ["Master shall [DESC-VIS]. In this darkness, Master will [DESC-GAG]. Slave must confess a secret through the binding."] },
-        dare: { label: "Dare", time: 300, templates: ["Master must [DESC-REST] and [DESC-VIS]. Once bound, Master will [DESC-SENS] on the Slave's [BODY]."] },
-        escape: { label: "Escape", time: 480, templates: ["Master must [DESC-REST] with maximum tension and [DESC-VIS]. Slave must struggle free before the clock stops."] },
-        edging: { label: "Edging", time: 360, templates: ["Master will [DESC-REST] and use [DESC-SENS] to bring the Slave's [BODY] to the brink 3 times."] }
+    let tasks = {
+        truth: { label: "Truth", time: 120, text: "Master shall apply [VIS] and [GAG]. Slave must confess a secret." },
+        dare: { label: "Dare", time: 300, text: "Master must apply [REST] and [VIS]. Then use [SENS] on the Slave's [BODY]." },
+        escape: { label: "Escape", time: 480, text: "Master must apply [REST] with maximum tension and [VIS]. Slave must struggle free." },
+        edging: { label: "Edging", time: 360, text: "Master will apply [REST] and use [SENS] to bring the Slave's [BODY] to the brink 3 times." }
     };
 
     function generate() {
-        let k = Object.keys(tasks)[Math.floor(Math.random()*Object.keys(tasks).length)];
-        let intensity = ["soft", "firm", "tight"][Math.floor(Math.random()*3)];
-        let template = tasks[k].templates[0];
+        let keys = Object.keys(tasks);
+        if (keys.length === 0) { alert("All tasks vetoed!"); return; }
+        currentTaskKey = keys[Math.floor(Math.random()*keys.length)];
+        let task = tasks[currentTaskKey];
+        
         const pick = (c) => {
             let p = activeInv[c].filter(i=>i.on);
-            return p.length ? p[Math.floor(Math.random()*p.length)].n : "the item";
+            return p.length ? p[Math.floor(Math.random()*p.length)].n : "the gear";
         };
-        let v = pick('Blindfolds'), g = pick('Gags'), r = pick('Restraints'), s = pick('Sensation');
-        let res = template.replace(/\[DESC-VIS\]/g, `apply <b>${v}</b>: ${getMethod(v, intensity)}`)
-                          .replace(/\[DESC-GAG\]/g, `apply <b>${g}</b>: ${getMethod(g, intensity)}`)
-                          .replace(/\[DESC-REST\]/g, `apply <b>${r}</b>: ${getMethod(r, intensity)}`)
-                          .replace(/\[DESC-SENS\]/g, `apply <b>${s}</b>: ${getMethod(s, intensity)}`)
-                          .replace(/\[BODY\]/g, players[slaveIdx].g);
-        document.getElementById('intensity-display').innerText = `Intensity: ${intensity}`;
-        document.getElementById('badge-container').innerHTML = `<span class="badge b-${k}">${tasks[k].label}</span>`;
+
+        let res = task.text.replace('[VIS]', `<b>${pick('Blindfolds')}</b>`).replace('[GAG]', `<b>${pick('Gags')}</b>`).replace('[REST]', `<b>${pick('Restraints')}</b>`).replace('[SENS]', `<b>${pick('Sensation')}</b>`).replace('[BODY]', players[slaveIdx].g);
+
+        document.getElementById('badge-container').innerHTML = `<span class="badge b-truth">${task.label}</span>`;
         document.getElementById('task-text').innerHTML = res;
-        timeLeft = tasks[k].time;
+        timeLeft = task.time;
         document.getElementById('gen-btn').style.display = 'none';
         document.getElementById('pre-start-controls').style.display = 'block';
+    }
+
+    function useVeto() {
+        delete tasks[currentTaskKey]; // Permanently remove task from database
+        alert(`Activity "${currentTaskKey}" has been permanently removed.`);
+        document.getElementById('pre-start-controls').style.display = 'none';
+        document.getElementById('gen-btn').style.display = 'block';
+        generate();
     }
 
     function startT() {
@@ -235,22 +235,51 @@
         }, 1000);
     }
 
+    function useRed() {
+        clearInterval(timer);
+        alert(`${players[cardOwnerIdx].n} used a Red Card! Task passed. Roles stay.`);
+        cardOwnerIdx = cardOwnerIdx === 0 ? 1 : 0; // Pass cards
+        nextRound();
+    }
+
+    function useYellow() {
+        alert(`${players[cardOwnerIdx].n} used a Yellow Card! Task continues, but roles are now reversed.`);
+        let temp = masterIdx; masterIdx = slaveIdx; slaveIdx = temp;
+        cardOwnerIdx = cardOwnerIdx === 0 ? 1 : 0; // Pass cards
+        updateUI();
+    }
+
+    function useSafeWord() {
+        clearInterval(timer);
+        players[slaveIdx].score = Math.max(0, players[slaveIdx].score - 5);
+        alert(`Safe Word! ${players[slaveIdx].n} loses 5 points. Authority stays.`);
+        nextRound();
+    }
+
     function resolveTurn(success) {
         clearInterval(timer);
         if (success) {
+            players[slaveIdx].score += 5;
             let temp = masterIdx; masterIdx = slaveIdx; slaveIdx = temp;
-            alert("Success! Role Swap.");
-        } else { alert("Failure. Master keeps control."); }
+            alert("Success! Points awarded and roles swapped.");
+        } else {
+            players[masterIdx].score += 2;
+            alert("Trial Failed. Master gains 2 points.");
+        }
+        nextRound();
+    }
+
+    function nextRound() {
         currentRound++;
         if (currentRound > parseInt(document.getElementById('maxRounds').value)) {
-            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Session Over</h1><button class="btn" onclick="location.reload()">Start New Session</button></div>`;
+            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Ascension Complete</h1><button class="btn" onclick="location.reload()">Reset</button></div>`;
         } else {
-            updateHeader();
+            updateUI();
             document.getElementById('active-round').style.display = 'none';
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('gen-btn').style.display = 'block';
             document.getElementById('pre-start-controls').style.display = 'none';
-            document.getElementById('task-text').innerHTML = "Ready for the next decree...";
+            document.getElementById('task-text').innerHTML = "The cycle continues...";
         }
     }
 </script>
