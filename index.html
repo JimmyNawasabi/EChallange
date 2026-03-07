@@ -3,231 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sovereignty: The Full Arsenal</title>
+    <title>Down to get dirty: Sovereignty</title>
     <style>
-        :root { --crimson: #7b1a1a; --gold: #c5a059; --bg: #fdfaf5; --card: #ffffff; }
-        body { background: var(--bg); font-family: 'Georgia', serif; margin: 0; padding: 20px; display: flex; justify-content: center; color: #2c2c2c; }
-        .container { max-width: 800px; width: 100%; background: var(--card); padding: 30px; border-radius: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); border: 1px solid var(--gold); }
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 3px; font-style: italic; }
+        :root { 
+            --accent: #c5a059; --soft-bg: #fdfaf5; --card-bg: #ffffff;
+            --text: #2c2c2c; --crimson: #7b1a1a; --safe-green: #2e7d32; 
+            --gold: #f1c40f; --red-card: #e74c3c; --veto-grey: #4a4a4a;
+        }
+        body { background: var(--soft-bg); color: var(--text); font-family: 'Georgia', serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 18px; }
+        .container { max-width: 750px; width: 100%; background: var(--card-bg); padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); margin-top: 20px; }
+        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 4px; margin-bottom: 5px; font-size: 1.8rem; font-style: italic; }
+        .subtitle { text-align: center; font-size: 0.8rem; color: #a18e8e; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 4px; font-weight: bold; }
         .step { display: none; }
-        .active { display: block; }
-        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 20px; border-radius: 20px; margin-bottom: 20px; }
-        .label { font-size: 0.75rem; font-weight: bold; color: var(--gold); text-transform: uppercase; display: block; margin-bottom: 10px; border-bottom: 1px solid #eee; }
+        .active { display: block !important; }
+        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 20px; border-radius: 25px; line-height: 1.8; position: relative; }
+        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 5px; letter-spacing: 1.5px; }
         
-        /* INVENTORY SYSTEM */
-        .add-area { display: flex; gap: 10px; margin-bottom: 15px; }
-        .add-area input { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #ddd; }
-        .add-btn { background: var(--crimson); color: white; border: none; padding: 0 15px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag { background: #fff; border: 1px solid #ddd; padding: 10px 15px; border-radius: 12px; font-size: 0.9rem; cursor: pointer; position: relative; display: flex; align-items: center; gap: 8px; }
-        .tag.selected { background: var(--crimson); color: white; border-color: var(--crimson); }
-        .delete-x { color: #999; font-weight: bold; font-size: 1.2rem; cursor: pointer; }
-        .tag.selected .delete-x { color: #ffcccc; }
+        /* VAULT SYSTEM */
+        .category-block { margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 20px; border: 1px solid #eee; }
+        .add-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        .add-row input { flex-grow: 1; padding: 10px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit; }
+        .add-btn { background: var(--crimson); color: white; border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { background: #f9f4eb; padding: 8px 15px; border-radius: 10px; font-size: 0.8rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; display: flex; align-items: center; gap: 5px; }
+        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
+        .del-x { font-weight: bold; opacity: 0.5; margin-left: 5px; }
 
-        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; margin-top: 10px; font-size: 1rem; }
-        .timer { font-size: 4rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 20px 0; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        /* TACTICAL UI */
+        .tactical-status { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; padding: 10px; background: #fff; border-radius: 15px; border: 1px solid #eee; }
+        .holder-badge { font-size: 0.7rem; padding: 8px 15px; border-radius: 20px; font-weight: bold; text-transform: uppercase; color: #ccc; border: 1px solid #eee; }
+        .has-cards { border-color: var(--crimson); background: var(--crimson); color: white; box-shadow: 0 4px 10px rgba(123, 26, 26, 0.3); }
+        .card-dock { display: flex; justify-content: space-around; margin: 15px 0; gap: 8px; }
+        .t-card { flex: 1; padding: 12px 5px; border-radius: 10px; text-align: center; font-size: 0.65rem; font-weight: 900; cursor: pointer; color: white; text-transform: uppercase; border: none; }
+        .t-red { background: var(--red-card); box-shadow: 0 4px 0 #922b21; }
+        .t-yellow { background: var(--gold); color: black; box-shadow: 0 4px 0 #b7950b; }
+        
+        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; margin-bottom: 10px; }
+        .timer-display { font-size: 3.5rem; text-align: center; color: var(--crimson); font-family: monospace; margin: 10px 0; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; }
+        .finale-text { font-size: 0.95rem; background: #000; color: #fff; padding: 30px; border-radius: 20px; line-height: 2; overflow-y: auto; max-height: 500px; text-align: left; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Down to get dirty</h1>
+    <div class="subtitle">Sovereignty Edition</div>
 
     <div id="step1" class="step active">
         <div class="box">
             <span class="label">Session Parameters</span>
-            <input type="number" id="rounds" value="10" placeholder="Rounds">
-            <input type="text" id="p1" placeholder="Master Name" style="margin-top:10px;">
-            <input type="text" id="p2" placeholder="Subject Name" style="margin-top:10px;">
+            <input type="number" id="maxRounds" value="15">
+            <input type="text" id="p1_name" placeholder="Player 1 Name" style="margin-top:10px;">
+            <input type="text" id="p2_name" placeholder="Player 2 Name" style="margin-top:10px;">
         </div>
-        <button class="btn" onclick="toStep(2)">Manage Permanent Arsenal ></button>
+        <button class="btn" onclick="goToStep(2)">Manage Permanent Arsenal ></button>
     </div>
 
     <div id="step2" class="step">
-        <div class="box" id="vault-content">
-            </div>
-        <button class="btn" onclick="toStep(3)">Commence Ceremony</button>
-        <button class="btn" style="background:#888; margin-top:10px;" onclick="clearVault()">Factory Reset Arsenal</button>
+        <div class="box">
+            <span class="label">The Master's Vault (Saved Automatically)</span>
+            <div id="inv-container"></div>
+        </div>
+        <button class="btn" onclick="goToStep(3)">Commence Ceremony</button>
+        <button class="btn" style="background:#888;" onclick="resetVault()">Factory Reset Inventory</button>
     </div>
 
     <div id="step3" class="step">
-        <div id="game-ui">
-            <div id="round-header" style="text-align:center; font-weight:bold; color:var(--crimson);"></div>
-            <div id="choice-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;"></div>
-            
-            <div id="task-view" style="display:none; margin-top:20px;">
+        <div class="tactical-status">
+            <div id="status-p1" class="holder-badge">P1</div>
+            <div id="status-p2" class="holder-badge">P2</div>
+        </div>
+        <div id="pre-round">
+            <div id="round-header" class="label" style="text-align:center; color:var(--crimson);">---</div>
+            <div id="choice-area" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;"></div>
+            <div id="display-area" style="display:none; margin-top:20px;">
                 <div class="box" id="task-text"></div>
-                <button class="btn" style="background:#2e7d32;" onclick="startClock()">Start Timer</button>
-                <button class="btn" style="background:#888;" onclick="backToChoices()">Choose Different Trial</button>
+                <button class="btn" style="background:var(--safe-green);" onclick="startTimer()">Accept Decree</button>
+                <button class="btn" style="background:#888;" onclick="backToChoices()">Change Choice</button>
             </div>
         </div>
-
-        <div id="timer-ui" style="display:none;">
-            <div class="timer" id="countdown">00:00</div>
-            <button class="btn" onclick="finishRound(true)">Task Successful (+1)</button>
-            <button class="btn" style="background:#888;" onclick="finishRound(false)">Task Failed (+0)</button>
+        <div id="active-round" style="display:none;">
+            <div class="timer-display" id="clock">00:00</div>
+            <div class="card-dock">
+                <button class="t-card t-red" onclick="useRed()">Red Card</button>
+                <button class="t-card t-yellow" onclick="useYellow()">Yellow Card</button>
+            </div>
+            <button class="btn" onclick="resolve(true)">Success (+1)</button>
+            <button class="btn" style="background:#888;" onclick="resolve(false)">Failure (+0)</button>
         </div>
+    </div>
+
+    <div id="stepFinale" class="step">
+        <h1 style="color: gold;">ULTIMATE SOVEREIGNTY</h1>
+        <div class="finale-text" id="finale-content"></div>
+        <button class="btn" style="margin-top:20px; background: gold; color: black;" onclick="location.reload()">End Session</button>
     </div>
 </div>
 
 <script>
-    // THE FULL ITEM DATABASE
-    const defaultArsenal = {
-        "Blindfolds": ["Tape", "Gas Mask", "Pillow Case", "Sleep Mask", "Hood", "Black Silk Tie"],
-        "Gags": ["Tape", "Ball Gag", "Pallet Wrap", "Panties", "Sock Gag", "Bit Gag", "Cleave Gag"],
-        "Restraints": ["Rope", "Leather Cuffs", "Zip Ties", "Pallet Wrap", "Duct Tape", "Chain", "Spreader Bar"],
-        "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane", "Hot Wax", "Feather", "Crops"]
+    let players = [], curRound = 1, masterIdx = 0, slaveIdx = 1, cardHolderIdx = 0, timer, timeLeft;
+
+    const defaultItems = {
+        "Blindfolds": ["Tape", "Gas Mask", "Pillow Case", "Sleep Mask", "Hood"],
+        "Gags": ["Tape", "Ball Gag", "Pallet Wrap", "Panties", "Sock Gag"],
+        "Restraints": ["Rope", "Leather Cuffs", "Zip Ties", "Pallet Wrap", "Duct Tape"],
+        "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane", "Hot Wax"]
     };
 
-    // LOAD FROM STORAGE OR USE DEFAULTS
-    let vault = JSON.parse(localStorage.getItem('dirty_sovereign_vault')) || defaultArsenal;
-    let selectedItems = JSON.parse(localStorage.getItem('dirty_sovereign_selected')) || JSON.parse(JSON.stringify(vault));
-
-    let gameState = { players: [], curRound: 1, totalRounds: 10, masterIdx: 0, timer: null, time: 0 };
-
-    function save() {
-        localStorage.setItem('dirty_sovereign_vault', JSON.stringify(vault));
-        localStorage.setItem('dirty_sovereign_selected', JSON.stringify(selectedItems));
+    let vault = JSON.parse(localStorage.getItem('dirty_v4_vault')) || null;
+    if(!vault) {
+        vault = {};
+        for(let c in defaultItems) vault[c] = defaultItems[c].map(n => ({n, on: true}));
+        save();
     }
 
-    function clearVault() { localStorage.clear(); location.reload(); }
+    function save() { localStorage.setItem('dirty_v4_vault', JSON.stringify(vault)); }
+    function resetVault() { localStorage.removeItem('dirty_v4_vault'); location.reload(); }
 
-    function renderVault() {
-        const container = document.getElementById('vault-content');
-        container.innerHTML = '<span class="label" style="text-align:center; font-size:1rem;">Master Arsenal (Saved Automatically)</span>';
-        
-        for (let cat in vault) {
+    function renderInv() {
+        const cont = document.getElementById('inv-container');
+        cont.innerHTML = '';
+        for (let c in vault) {
             let div = document.createElement('div');
-            div.style.marginBottom = "25px";
-            div.innerHTML = `
-                <span class="label">${cat}</span>
-                <div class="add-area">
-                    <input type="text" id="input-${cat}" placeholder="Add new ${cat} item...">
-                    <button class="add-btn" onclick="addItem('${cat}')">ADD</button>
+            div.className = 'category-block';
+            div.innerHTML = `<span class="label">${c}</span>
+                <div class="add-row">
+                    <input type="text" id="add-${c}" placeholder="Add permanent ${c}...">
+                    <button class="add-btn" onclick="addItem('${c}')">+</button>
                 </div>
-                <div class="tag-cloud" id="tags-${cat}"></div>
-            `;
-            container.appendChild(div);
-
-            let cloud = div.querySelector('.tag-cloud');
-            vault[cat].forEach(item => {
-                let isSel = selectedItems[cat].includes(item);
-                let tag = document.createElement('div');
-                tag.className = `tag ${isSel ? 'selected' : ''}`;
-                tag.innerHTML = `${item} <span class="delete-x" onclick="deleteItem('${cat}', '${item}'); event.stopPropagation();">×</span>`;
-                tag.onclick = () => toggleItem(cat, item);
-                cloud.appendChild(tag);
+                <div class="tag-row"></div>`;
+            cont.appendChild(div);
+            let tagRow = div.querySelector('.tag-row');
+            vault[c].forEach((item, i) => {
+                let t = document.createElement('div');
+                t.className = `tag ${item.on ? 'on' : ''}`;
+                t.innerHTML = `${item.n} <span class="del-x" onclick="removeItem('${c}', ${i}); event.stopPropagation();">×</span>`;
+                t.onclick = () => { vault[c][i].on = !vault[c][i].on; save(); renderInv(); };
+                tagRow.appendChild(t);
             });
         }
     }
 
     function addItem(cat) {
-        let val = document.getElementById('input-' + cat).value.trim();
-        if(val) {
-            if(!vault[cat].includes(val)) vault[cat].push(val);
-            if(!selectedItems[cat].includes(val)) selectedItems[cat].push(val);
-            save(); renderVault();
-        }
+        let v = document.getElementById(`add-${cat}`).value.trim();
+        if(v) { vault[cat].push({n: v, on: true}); save(); renderInv(); document.getElementById(`add-${cat}`).value = ""; }
     }
+    function removeItem(cat, idx) { vault[cat].splice(idx, 1); save(); renderInv(); }
 
-    function toggleItem(cat, item) {
-        let idx = selectedItems[cat].indexOf(item);
-        if(idx > -1) selectedItems[cat].splice(idx, 1);
-        else selectedItems[cat].push(item);
-        save(); renderVault();
-    }
-
-    function deleteItem(cat, item) {
-        vault[cat] = vault[cat].filter(i => i !== item);
-        selectedItems[cat] = selectedItems[cat].filter(i => i !== item);
-        save(); renderVault();
-    }
-
-    function toStep(n) {
-        if(n === 2) {
-            gameState.totalRounds = document.getElementById('rounds').value;
-            gameState.players = [
-                {name: document.getElementById('p1').value || "Master", score: 0},
-                {name: document.getElementById('p2').value || "Subject", score: 0}
-            ];
-            renderVault();
-        }
-        if(n === 3) startSession();
+    function goToStep(n) {
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step'+n).classList.add('active');
-    }
-
-    const trials = [
-        { n: "The Bound Statue", t: 600, d: "Master uses <b>[REST]</b> to secure the Subject. Apply <b>[SENS]</b> to their body while they remain motionless." },
-        { n: "Void Deprivation", t: 400, d: "Seal the <b>[VIS]</b> and <b>[GAG]</b>. Master will use <b>[SENS]</b> in a slow, unpredictable rhythm." },
-        { n: "Escape Trial", t: 300, d: "Bind the Subject with <b>[REST]</b>. They must struggle free before the timer expires or face a penalty." },
-        { n: "Peak & Hold", t: 480, d: "Using <b>[SENS]</b>, Master brings the Subject to the brink of climax 3 times. Release is forbidden." }
-    ];
-
-    function startSession() {
-        document.getElementById('round-header').innerText = `ROUND ${gameState.curRound} | Master: ${gameState.players[gameState.masterIdx].name}`;
-        let grid = document.getElementById('choice-grid');
-        grid.innerHTML = '';
-        trials.forEach((trial, i) => {
-            let b = document.createElement('button');
-            b.className = 'btn'; b.style.marginTop = '0';
-            b.innerText = trial.n;
-            b.onclick = () => showTrial(i);
-            grid.appendChild(b);
-        });
-    }
-
-    function showTrial(idx) {
-        let trial = trials[idx];
-        const pick = (c) => {
-            let p = selectedItems[c];
-            return p.length ? p[Math.floor(Math.random()*p.length)] : "Basic Item";
+        if(n === 2) renderInv();
+        if(n === 3) {
+            players = [
+                {n: document.getElementById('p1_name').value || "P1", score: 0},
+                {n: document.getElementById('p2_name').value || "P2", score: 0}
+            ];
+            cardHolderIdx = Math.floor(Math.random()*2);
+            updateUI();
         }
-        let text = trial.d.replace('[REST]', pick('Restraints'))
-                         .replace('[SENS]', pick('Sensation'))
-                         .replace('[VIS]', pick('Blindfolds'))
-                         .replace('[GAG]', pick('Gags'));
+    }
+
+    const trials = {
+        shibari: { n: "Binding Trial", t: 600, d: "Master uses <b>[REST]</b> to restrict the Subject. Once secured, use <b>[SENS]</b> to test their stillness." },
+        void: { n: "Sensory Void", t: 400, d: "Seal the <b>[VIS]</b> and <b>[GAG]</b>. In the dark, Master uses <b>[SENS]</b> in a slow, torturous rhythm." },
+        escape: { n: "Escape Act", t: 300, d: "Bind the Subject with <b>[REST]</b> and <b>[VIS]</b>. They must be free before the clock stops." },
+        peak: { n: "Peak & Hold", t: 480, d: "Using <b>[SENS]</b>, Master brings the Subject to the brink 3 times. Release is forbidden." }
+    };
+
+    function updateUI() {
+        document.getElementById('round-header').innerText = `ROUND ${curRound} | Master: ${players[masterIdx].n}`;
+        document.getElementById('status-p1').className = `holder-badge ${cardHolderIdx === 0 ? 'has-cards' : ''}`;
+        document.getElementById('status-p2').className = `holder-badge ${cardHolderIdx === 1 ? 'has-cards' : ''}`;
+        document.getElementById('status-p1').innerText = players[0].n + (cardHolderIdx === 0 ? " (CARDS)" : "");
+        document.getElementById('status-p2').innerText = players[1].n + (cardHolderIdx === 1 ? " (CARDS)" : "");
         
-        document.getElementById('task-text').innerHTML = `<strong>${trial.n}</strong><br><br>${text}`;
-        gameState.time = trial.t;
-        document.getElementById('choice-grid').style.display = 'none';
-        document.getElementById('task-view').style.display = 'block';
+        let grid = document.getElementById('choice-area'); grid.innerHTML = '';
+        for(let k in trials) {
+            let b = document.createElement('button'); b.className = 'btn'; b.style.marginTop = '0'; b.innerText = trials[k].n;
+            b.onclick = () => {
+                let t = trials[k];
+                const pick = (cat) => { let p = vault[cat].filter(i=>i.on); return p.length ? p[Math.floor(Math.random()*p.length)].n : "Basic Gear"; };
+                document.getElementById('task-text').innerHTML = `<strong>${t.n}</strong><br><br>` + t.d.replace('[REST]', pick('Restraints')).replace('[SENS]', pick('Sensation')).replace('[VIS]', pick('Blindfolds')).replace('[GAG]', pick('Gags'));
+                timeLeft = t.t; document.getElementById('choice-area').style.display = 'none'; document.getElementById('display-area').style.display = 'block';
+            };
+            grid.appendChild(b);
+        }
     }
 
-    function backToChoices() {
-        document.getElementById('choice-grid').style.display = 'grid';
-        document.getElementById('task-view').style.display = 'none';
-    }
-
-    function startClock() {
-        document.getElementById('game-ui').style.display = 'none';
-        document.getElementById('timer-ui').style.display = 'block';
-        gameState.timer = setInterval(() => {
-            gameState.time--;
-            let m = Math.floor(gameState.time / 60), s = gameState.time % 60;
-            document.getElementById('countdown').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-            if(gameState.time <= 0) finishRound(false);
+    function backToChoices() { document.getElementById('choice-area').style.display = 'grid'; document.getElementById('display-area').style.display = 'none'; }
+    function startTimer() {
+        document.getElementById('pre-round').style.display = 'none'; document.getElementById('active-round').style.display = 'block';
+        timer = setInterval(() => {
+            timeLeft--; let m = Math.floor(timeLeft/60), s = timeLeft%60;
+            document.getElementById('clock').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+            if(timeLeft <= 0) resolve(false);
         }, 1000);
     }
 
-    function finishRound(win) {
-        clearInterval(gameState.timer);
-        if(win) {
-            let subIdx = gameState.masterIdx === 0 ? 1 : 0;
-            gameState.players[subIdx].score++;
-            gameState.masterIdx = subIdx; // Swap roles
+    function useRed() { clearInterval(timer); cardHolderIdx = cardHolderIdx === 0 ? 1 : 0; alert("Red Card: Skip. Card Swapped."); resolve(false, true); }
+    function useYellow() { [masterIdx, slaveIdx] = [slaveIdx, masterIdx]; cardHolderIdx = cardHolderIdx === 0 ? 1 : 0; alert("Yellow Card: Roles Swapped. Card Swapped."); updateUI(); }
+
+    function resolve(win, skip=false) {
+        clearInterval(timer);
+        if(win) { players[slaveIdx].score++; [masterIdx, slaveIdx] = [slaveIdx, masterIdx]; }
+        curRound++;
+        if(curRound > document.getElementById('maxRounds').value) triggerFinale();
+        else {
+            document.getElementById('active-round').style.display = 'none'; document.getElementById('pre-round').style.display = 'block';
+            backToChoices(); updateUI();
         }
-        gameState.curRound++;
-        if(gameState.curRound > gameState.totalRounds) {
-            alert("Game Over! Final Scores: " + gameState.players[0].name + ": " + gameState.players[0].score + " | " + gameState.players[1].name + ": " + gameState.players[1].score);
-            location.reload();
-        } else {
-            document.getElementById('game-ui').style.display = 'block';
-            document.getElementById('timer-ui').style.display = 'none';
-            backToChoices();
-            startSession();
-        }
+    }
+
+    function triggerFinale() {
+        document.getElementById('step3').classList.remove('active'); document.getElementById('stepFinale').classList.add('active');
+        let w = players[0].score > players[1].score ? players[0] : players[1];
+        let l = players[0].score > players[1].score ? players[1] : players[0];
+        document.getElementById('finale-content').innerHTML = `<strong>Winner: ${w.n} (${w.score} pts)</strong><hr>
+        <strong>Phase I:</strong> ${l.n} is to be fully bound with <b>Rope</b> and <b>Pallet Wrap</b>.<br>
+        <strong>Phase II:</strong> Apply <b>Gas Mask</b> and <b>Tape</b> over the eyes. ${w.n} shall use <b>Cane</b> and <b>Ice</b> for 30 minutes.<br>
+        <strong>Phase III:</strong> Total sexual release for ${w.n}; denial for the Subject until the Master permits.`;
     }
 </script>
 </body>
