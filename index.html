@@ -3,105 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sovereignty: Immersive Decree</title>
+    <title>Sovereignty: Obsidian</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --accent: #c5a059; --bg: #fdfaf5; --card: #ffffff;
-            --text: #2c2c2c; --crimson: #7b1a1a; --gold: #f1c40f; --off: #e0e0e0;
+            --accent: #d4af37; /* Gold */
+            --bg: #0f0f0f; 
+            --card: #1a1a1a;
+            --text: #e0e0e0; 
+            --crimson: #a31d1d; 
+            --success: #2d5a27;
+            --off: #333333;
         }
-        body { background: var(--bg); color: var(--text); font-family: 'Georgia', serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .container { max-width: 750px; width: 100%; background: var(--card); padding: 35px; box-shadow: 0 25px 70px rgba(0,0,0,0.15); border-radius: 45px; border: 1px solid rgba(197, 160, 89, 0.3); margin-top: 20px; }
         
-        h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 5px; font-style: italic; margin-bottom: 5px; }
-        .subtitle { text-align: center; font-size: 0.75rem; color: #a18e8e; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; font-weight: bold; }
-        
-        .step { display: none; }
-        .active { display: block !important; }
-
-        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 25px; margin-bottom: 25px; border-radius: 30px; line-height: 1.7; }
-        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 12px; letter-spacing: 2px; }
-
-        .identity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        input[type="text"], input[type="number"], select { 
-            width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 15px; 
-            font-family: inherit; font-size: 0.95rem; box-sizing: border-box; background: white;
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Inter', Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            justify-content: center;
+            letter-spacing: -0.02em;
         }
 
-        .vault-section { margin-bottom: 25px; padding: 15px; background: white; border-radius: 20px; border: 1px solid #eee; }
-        .add-bar { display: flex; gap: 10px; margin-bottom: 15px; }
-        .add-btn { background: var(--crimson); color: white; border: none; padding: 0 20px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.2rem; }
-        
-        .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; }
-        .tag { background: var(--off); color: #777; padding: 10px 18px; border-radius: 12px; font-size: 0.85rem; cursor: pointer; border: 1px solid #ccc; transition: 0.3s; display: flex; align-items: center; }
-        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        .del-icon { margin-left: 10px; font-weight: bold; padding: 2px 6px; border-radius: 50%; background: rgba(0,0,0,0.1); font-size: 0.7rem; }
+        .container { 
+            max-width: 600px; 
+            width: 100%; 
+            background: var(--card); 
+            padding: 40px; 
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8); 
+            border-radius: 40px; 
+            border: 1px solid #2a2a2a;
+        }
 
-        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .t-btn { padding: 12px; border-radius: 12px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 0.75rem; font-weight: bold; text-align: center; text-transform: uppercase; }
-        .t-btn.on { background: var(--accent); color: white; border-color: var(--accent); }
+        h1 { 
+            font-weight: 900; 
+            text-align: center; 
+            text-transform: uppercase; 
+            letter-spacing: 8px; 
+            color: var(--accent);
+            margin-bottom: 0;
+            font-size: 2.2rem;
+        }
+
+        .subtitle { 
+            text-align: center; 
+            font-size: 0.8rem; 
+            color: #666; 
+            margin-bottom: 40px; 
+            text-transform: uppercase; 
+            letter-spacing: 5px; 
+        }
+
+        .box { 
+            background: #222; 
+            padding: 30px; 
+            margin-bottom: 30px; 
+            border-radius: 25px; 
+            line-height: 1.6;
+            border: 1px solid #2d2d2d;
+            font-size: 1.1rem;
+        }
+
+        .label { 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            font-weight: 800; 
+            color: var(--accent); 
+            display: block; 
+            margin-bottom: 15px; 
+            letter-spacing: 2px;
+            opacity: 0.8;
+        }
+
+        input, select { 
+            width: 100%; 
+            padding: 18px; 
+            border: 2px solid #333; 
+            border-radius: 15px; 
+            background: #111; 
+            color: white; 
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            transition: 0.3s;
+        }
+
+        input:focus { border-color: var(--accent); outline: none; }
+
+        .btn { 
+            background: var(--crimson); 
+            color: white; 
+            border: none; 
+            padding: 24px; 
+            width: 100%; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            font-weight: 900; 
+            border-radius: 20px; 
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 20px rgba(163, 29, 29, 0.3);
+        }
+
+        .btn:active { transform: scale(0.97); opacity: 0.8; }
+
+        .btn-sec { background: var(--off); box-shadow: none; margin-top: 10px; }
+
+        .tag { 
+            background: var(--off); 
+            padding: 12px 20px; 
+            border-radius: 15px; 
+            font-size: 0.9rem; 
+            cursor: pointer; 
+            border: 1px solid #444;
+            display: flex;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .tag.on { background: var(--crimson); border-color: var(--crimson); color: white; font-weight: bold; }
+
+        .t-btn { 
+            padding: 20px; 
+            border-radius: 18px; 
+            border: 2px solid #333; 
+            background: #1a1a1a; 
+            color: #888;
+            cursor: pointer; 
+            font-weight: 700; 
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .t-btn.on { background: var(--accent); color: black; border-color: var(--accent); }
         .t-btn.gear-on { background: var(--crimson); color: white; border-color: var(--crimson); }
 
-        .timer-big { font-size: 5rem; text-align: center; color: var(--crimson); font-family: monospace; font-weight: bold; margin: 15px 0; }
-        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 18px; margin-bottom: 12px; letter-spacing: 2px; }
-        .btn-sec { background: #888; }
+        .timer-big { 
+            font-size: 6rem; 
+            text-align: center; 
+            color: white; 
+            font-weight: 900; 
+            margin: 20px 0;
+            font-feature-settings: "tnum";
+        }
+
+        .instruction-highlight { color: var(--accent); font-weight: 900; text-transform: uppercase; font-size: 1.2rem; }
         
-        .instruction-highlight { color: var(--crimson); font-weight: bold; text-decoration: underline; }
+        .step { display: none; }
+        .active { display: block !important; animation: fadeIn 0.5s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Sovereignty</h1>
-    <div class="subtitle">Immersive Decree</div>
+    <h1>SOVEREIGNTY</h1>
+    <div class="subtitle">The Obsidian Vault</div>
+
+    <audio id="snd-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+    <audio id="snd-alarm" src="https://assets.mixkit.co/active_storage/sfx/951/951-preview.mp3"></audio>
+    <audio id="snd-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
 
     <div id="step1" class="step active">
         <div class="box">
-            <span class="label">Participant 1</span>
-            <div class="identity-row">
-                <input type="text" id="p1_n" placeholder="Name">
-                <select id="p1_g"><option>Male Body</option><option>Female Body</option><option>Neutral</option></select>
-            </div>
-            <span class="label">Participant 2</span>
-            <div class="identity-row">
-                <input type="text" id="p2_n" placeholder="Name">
-                <select id="p2_g"><option>Female Body</option><option>Male Body</option><option>Neutral</option></select>
-            </div>
-            <span class="label">Session Duration (Rounds)</span>
+            <span class="label">Session Parameters</span>
+            <input type="text" id="p1_n" placeholder="Master Name">
+            <input type="text" id="p2_n" placeholder="Subject Name">
+            <span class="label" style="margin-top:20px;">Protocol Rounds</span>
             <input type="number" id="max_r" value="10">
         </div>
-        <button class="btn" onclick="nav(2)">Access The Arsenal ></button>
+        <button class="btn" onclick="playSnd('click'); nav(2);">Access The Arsenal</button>
     </div>
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">The Eternal Vault</span>
+            <span class="label">The Permanent Arsenal</span>
             <div id="vault-inject"></div>
         </div>
-        <button class="btn" onclick="nav(3)">Enter Command Center</button>
+        <button class="btn" onclick="playSnd('click'); nav(3);">Confirm Protocol</button>
     </div>
 
     <div id="step3" class="step">
         <div id="pre-round">
-            <div id="round-header" class="label" style="text-align:center; color:var(--crimson); font-size: 1rem;">ROUND 1</div>
+            <div id="round-header" class="label" style="text-align:center; color:var(--accent); font-size: 1.2rem;">ROUND 1</div>
             
             <div class="box">
-                <span class="label">1. Select Active Trial Types</span>
-                <div class="toggle-grid" id="trial-toggles"></div>
+                <span class="label">Active Trials</span>
+                <div class="toggle-grid" id="trial-toggles" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
             </div>
 
             <div class="box">
-                <span class="label">2. Select Allowed Gear Categories</span>
-                <div class="toggle-grid" id="gear-toggles"></div>
+                <span class="label">Allowed Gear</span>
+                <div class="toggle-grid" id="gear-toggles" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
             </div>
 
-            <button class="btn" onclick="generateDecree()">Generate Random Decree</button>
+            <button class="btn" onclick="playSnd('click'); generateDecree();">Issue Random Decree</button>
         </div>
 
         <div id="active-round" style="display:none;">
-            <div class="box"><div id="active-trial-text" style="font-size: 1.05rem;"></div></div>
+            <div class="box"><div id="active-trial-text" style="font-size: 1.2rem; text-align:center;"></div></div>
             <div class="timer-big" id="clock">00:00</div>
-            <button class="btn" onclick="finish(true)">Success (+1)</button>
-            <button class="btn btn-sec" onclick="finish(false)">Failure (+0)</button>
+            <button class="btn" style="background:var(--success);" onclick="playSnd('success'); finish(true);">Success (+1)</button>
+            <button class="btn btn-sec" onclick="finish(false);">Failure (+0)</button>
         </div>
     </div>
 </div>
@@ -112,135 +218,82 @@
     const defaultVault = {
         "Blindfolds": ["Tape", "Gas Mask", "Sleep Mask", "Hood"],
         "Gags": ["Tape", "Ball Gag", "Pallet Wrap", "Panties", "Sock Gag"],
-        "Restraints": ["Rope", "Leather Cuffs", "Zip Ties", "Pallet Wrap", "Duct Tape"],
-        "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Cane", "Hot Wax"]
+        "Restraints": ["Rope", "Cuffs", "Zip Ties", "Duct Tape"],
+        "Sensation": ["Whip", "Ice", "Vibrator", "Clamps", "Hot Wax"]
     };
 
-    // IMPROVED DESCRIPTIVE ACTIVITIES
     let trials = [
-        { 
-            n: "The Solitary Constraint", 
-            t: 600, 
-            d: "The Subject must take up the <b>[REST]</b> and secure their own limbs as the Master directs, ensuring the fit is tight and inescapable. Once bound, the Master will further diminish their senses by applying the <b>[VIS]</b> and a <b>[GAG]</b>, leaving the Subject in total, helpless silence." 
-        },
-        { 
-            n: "The Inquisitor's Gambit", 
-            t: 450, 
-            d: "The Master will ask three probing personal questions. If the Subject hesitates or refuses to answer, the Master will immediately apply the <b>[SENS]</b> to a sensitive area of the Subject's body for 30 seconds. To ensure focus, the Subject must remain fitted with the <b>[GAG]</b> and <b>[VIS]</b> between questions." 
-        },
-        { 
-            n: "The Bound Statue", 
-            t: 600, 
-            d: "The Master will use the <b>[REST]</b> to fix the Subject into a rigid, vulnerable position. The Subject’s goal is to remain perfectly motionless while the Master explores their skin using the <b>[SENS]</b>. Any flinch, sound, or movement results in an immediate fail." 
-        },
-        { 
-            n: "Void Deprivation", 
-            t: 400, 
-            d: "The Master will completely remove the Subject's ability to see and speak using the <b>[VIS]</b> and <b>[GAG]</b>. In this darkness, the Master will alternate between long periods of stillness and sudden, sharp applications of the <b>[SENS]</b>. The Subject must endure the anticipation without struggling against their <b>[REST]</b>." 
-        },
-        {
-            n: "The Sensory Gauntlet",
-            t: 300,
-            d: "The Subject is to be placed in the <b>[REST]</b>. The Master will then set a rhythm using the <b>[SENS]</b>, striking or applying it to different parts of the body. The Subject must count the repetitions out loud; however, if the <b>[GAG]</b> is applied, they must hum the count instead. Accuracy is the only way to end the trial."
-        }
+        { n: "The Solitary Constraint", t: 600, d: "The Subject must secure their own limbs using <b>[REST]</b>. Once bound, the Master will silence them with <b>[VIS]</b> and <b>[GAG]</b>.", on: true },
+        { n: "The Inquisitor's Gambit", t: 450, d: "Master asks 3 deep truths. Failure to answer results in 30 seconds of <b>[SENS]</b> while bound in <b>[VIS]</b>.", on: true },
+        { n: "The Bound Statue", t: 600, d: "Secure the Subject in <b>[REST]</b>. They must not move or make a sound while the Master applies <b>[SENS]</b>.", on: true },
+        { n: "Void Deprivation", t: 400, d: "Apply <b>[VIS]</b> and <b>[GAG]</b>. Master uses <b>[SENS]</b> at random intervals in total darkness.", on: true }
     ];
 
     let gearCats = { "Blindfolds": true, "Gags": true, "Restraints": true, "Sensation": true };
+    let vault = JSON.parse(localStorage.getItem('sov_obsidian_vault')) || null;
 
-    let vault = JSON.parse(localStorage.getItem('sov_rollback_vault')) || null;
     if(!vault) {
         vault = {};
         for(let c in defaultVault) vault[c] = defaultVault[c].map(n => ({n, on: true}));
-        save();
     }
 
-    function save() { localStorage.setItem('sov_rollback_vault', JSON.stringify(vault)); }
+    function playSnd(id) { document.getElementById('snd-'+id).play(); }
 
     function nav(n) {
         if(n === 2) {
-            players = [{n: document.getElementById('p1_n').value || "P1", score: 0}, {n: document.getElementById('p2_n').value || "P2", score: 0}];
+            players = [{n: document.getElementById('p1_n').value || "Master", score: 0}, {n: document.getElementById('p2_n').value || "Subject", score: 0}];
             maxR = parseInt(document.getElementById('max_r').value);
             renderVault();
         }
-        if(n === 3) {
-            trials.forEach(t => t.on = true);
-            renderCommandCenter();
-        }
+        if(n === 3) renderCommandCenter();
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step'+n).classList.add('active');
     }
 
     function renderVault() {
-        const cont = document.getElementById('vault-inject');
-        cont.innerHTML = '';
+        const cont = document.getElementById('vault-inject'); cont.innerHTML = '';
         for(let c in vault) {
             let div = document.createElement('div');
             div.className = 'vault-section';
-            div.innerHTML = `<span class="label">${c}</span>
-                <div class="add-bar"><input type="text" id="add-${c}" placeholder="Add..."><button class="add-btn" onclick="addItem('${c}')">+</button></div>
-                <div class="tag-cloud"></div>`;
+            div.innerHTML = `<span class="label">${c}</span><div class="tag-cloud" style="display:flex; flex-wrap:wrap; gap:10px;"></div>`;
             cont.appendChild(div);
             vault[c].forEach((item, i) => {
                 let t = document.createElement('div');
                 t.className = `tag ${item.on ? 'on' : ''}`;
-                t.innerHTML = `<span>${item.n}</span><span class="del-icon" onclick="confirmDelete('${c}', ${i}); event.stopPropagation();">×</span>`;
-                t.onclick = () => { vault[c][i].on = !vault[c][i].on; save(); renderVault(); };
+                t.innerHTML = `<span>${item.n}</span>`;
+                t.onclick = () => { item.on = !item.on; localStorage.setItem('sov_obsidian_vault', JSON.stringify(vault)); renderVault(); };
                 div.querySelector('.tag-cloud').appendChild(t);
             });
         }
     }
 
-    function addItem(c) {
-        let v = document.getElementById(`add-${c}`).value;
-        if(v) { vault[c].push({n:v, on:true}); save(); renderVault(); }
-    }
-
-    function confirmDelete(c, i) {
-        if(confirm(`Delete "${vault[c][i].n}"?`)) { vault[c].splice(i, 1); save(); renderVault(); }
-    }
-
     function renderCommandCenter() {
         document.getElementById('round-header').innerText = `ROUND ${curR} | Master: ${players[masterIdx].n}`;
-        const tGrid = document.getElementById('trial-toggles');
-        tGrid.innerHTML = '';
+        const tGrid = document.getElementById('trial-toggles'); tGrid.innerHTML = '';
         trials.forEach((t, i) => {
-            let b = document.createElement('button');
-            b.className = `t-btn ${t.on ? 'on' : ''}`;
-            b.innerText = t.n;
-            b.onclick = () => { trials[i].on = !trials[i].on; b.classList.toggle('on'); };
+            let b = document.createElement('button'); b.className = `t-btn ${t.on ? 'on' : ''}`;
+            b.innerText = t.n; b.onclick = () => { t.on = !t.on; b.classList.toggle('on'); };
             tGrid.appendChild(b);
         });
 
-        const gGrid = document.getElementById('gear-toggles');
-        gGrid.innerHTML = '';
+        const gGrid = document.getElementById('gear-toggles'); gGrid.innerHTML = '';
         for(let c in gearCats) {
-            let b = document.createElement('button');
-            b.className = `t-btn ${gearCats[c] ? 'gear-on' : ''}`;
-            b.innerText = c;
-            b.onclick = () => { gearCats[c] = !gearCats[c]; b.classList.toggle('gear-on'); };
+            let b = document.createElement('button'); b.className = `t-btn ${gearCats[c] ? 'gear-on' : ''}`;
+            b.innerText = c; b.onclick = () => { gearCats[c] = !gearCats[c]; b.classList.toggle('gear-on'); };
             gGrid.appendChild(b);
         }
     }
 
     function generateDecree() {
         let activeTrials = trials.filter(t => t.on);
-        if(activeTrials.length === 0) return alert("Select at least one Activity.");
-
+        if(activeTrials.length === 0) return alert("Select a Trial.");
         let t = activeTrials[Math.floor(Math.random() * activeTrials.length)];
-        
-        const pick = (c, key) => { 
-            if(!gearCats[c]) return `<span style="color:#888;">[Condition Skipped]</span>`;
+        const pick = (c) => { 
+            if(!gearCats[c]) return `<span style="opacity:0.3;">(Skip ${c})</span>`;
             let p = vault[c].filter(i=>i.on); 
-            return p.length ? `<span class="instruction-highlight">${p[Math.floor(Math.random()*p.length)].n}</span>` : `(Any ${c})`; 
+            return `<span class="instruction-highlight">${p.length ? p[Math.floor(Math.random()*p.length)].n : c}</span>`; 
         };
-
-        let text = t.d.replace('[REST]', pick('Restraints'))
-                      .replace('[SENS]', pick('Sensation'))
-                      .replace('[VIS]', pick('Blindfolds'))
-                      .replace('[GAG]', pick('Gags'))
-                      .replace('[GAG]', pick('Gags'))
-                      .replace('[VIS]', pick('Blindfolds')); // Handles double replacements
-        
+        let text = t.d.replace('[REST]', pick('Restraints')).replace('[SENS]', pick('Sensation')).replace('[VIS]', pick('Blindfolds')).replace('[GAG]', pick('Gags'));
         document.getElementById('active-trial-text').innerHTML = `<strong>${t.n}</strong><br><br>${text}`;
         timeLeft = t.t;
         document.getElementById('pre-round').style.display = 'none';
@@ -253,15 +306,16 @@
             timeLeft--;
             let m = Math.floor(timeLeft/60), s = timeLeft%60;
             document.getElementById('clock').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+            if(timeLeft === 10) playSnd('alarm');
             if(timeLeft <= 0) finish(false);
         }, 1000);
     }
 
     function finish(win) {
         clearInterval(timer);
-        if(win) { let si = (masterIdx === 0 ? 1 : 0); players[si].score++; masterIdx = si; }
+        if(win) players[masterIdx].score++;
         curR++;
-        if(curR > maxR) { alert("Session Complete."); location.reload(); }
+        if(curR > maxR) { alert("Protocol Concluded."); location.reload(); }
         else {
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('active-round').style.display = 'none';
