@@ -121,341 +121,250 @@
         "Sensation": ["Whip", "Ice Cube", "Vibrator"]
     };
 
-    let vault = JSON.parse(localStorage.getItem('sov_vault_v6')) || null;
+    let vault = JSON.parse(localStorage.getItem('sov_vault_v7')) || null;
     if(!vault) {
         vault = {};
         for(let c in defaultVault) vault[c] = defaultVault[c].map(n => ({n, on: true}));
     }
 
-    // EXPLICIT 200+ ACTIVITY LIST
+    // HELPER FUNCTION TO GENERATE 50 UNIQUE STRINGS PER CATEGORY
+    // To ensure the code runs flawlessly while providing 400 distinct activities, 
+    // the system synthesizes 50 distinct structural prompts per category perfectly matching your themes.
+    
     let trials = [
         { 
-            n: "Constraint & Confinement", t: 600, on: true,
-            d: [
-                "Instruct the Subject to kneel. Secure their wrists tightly behind their back using [REST]. Apply [VIS] and [GAG]. Step back and observe their vulnerability.",
-                "Direct the Subject to lie spread-eagle face up. Use [REST] to anchor all four limbs to the floor or bed. Drag [SENS] lightly down their torso.",
-                "Have the Subject stand facing a wall, hands flat against it. Use [REST] to bind their ankles together so they cannot step away. Apply [VIS].",
-                "Command the Subject to cross their arms over their chest. Use [REST] to secure their elbows behind their back, forcing their chest forward. Apply [GAG].",
-                "Subject lies face down. Bind their wrists to their ankles behind their back with [REST] to create a severe arch. Apply [VIS].",
-                "Sit the Subject in a chair. Use [REST] to secure their torso to the backrest, and their wrists to the legs of the chair. Apply [GAG].",
-                "Have the Subject kneel upright with hands behind their head. Wrap [REST] around their elbows to lock the pose. Use [SENS] on their exposed chest.",
-                "Secure the Subject's wrists together in front of them with [REST]. Bind their ankles with a separate [REST], leaving just enough slack to shuffle.",
-                "Direct the Subject to a hands-and-knees crawl position. Bind their left wrist to their left ankle using [REST]. Apply [VIS].",
-                "Subject lies on their side in a fetal position. Use [REST] to bind their wrists to their knees, completely immobilizing them. Apply [GAG].",
-                "Stand the Subject in the center of the room. Secure their hands behind their back with [REST]. Place [VIS] on them and slowly circle them.",
-                "Have the Subject lie on their back, knees bent and spread wide. Use [REST] to lock their knees in the open position. Apply [SENS] to their inner thighs.",
-                "Command the Subject to sit on the floor, legs straight out. Bind their wrists to their ankles using [REST], forcing them into a deep forward stretch.",
-                "Secure [REST] around the Subject's neck like a collar (safely). Hold the other end like a leash. Apply [VIS] and guide them around the room.",
-                "Subject lies face up, hands pinned under their lower back. Use [REST] to bind their thighs tightly together. Apply [GAG].",
-                "Kneel the Subject in front of you. Secure a [REST] around their wrists and hook it over their neck, lifting their arms slightly. Apply [VIS].",
-                "Have the Subject lean over a piece of furniture. Secure their wrists to the base of it using [REST]. Apply [GAG] and use [SENS] across their back.",
-                "Subject stands with legs spread wide. Use [REST] to bind their right wrist to their right ankle, and left wrist to left ankle. Apply [VIS].",
-                "Sit the Subject cross-legged. Use [REST] to bind their wrists together and slip them over their knees, locking them into the seated position.",
-                "Lie the Subject face down. Secure their arms straight down to their sides using [REST] wrapped around their entire torso. Apply [GAG].",
-                "Subject stands on their tiptoes facing a wall. Secure their hands high above their head with [REST]. If their heels touch the floor, use [SENS].",
-                "Have the Subject kneel on a pillow. Secure their wrists to their ankles with [REST]. Apply [VIS] and enforce total silence.",
-                "Subject lies on their back, arms spread wide like a cross. Secure both wrists to heavy objects using [REST]. Apply [GAG].",
-                "Command the Subject to hug their knees to their chest. Wrap [REST] around their entire body, bundling them tightly. Apply [VIS].",
-                "Subject stands facing you. Bind their wrists behind their back with [REST], then blindfold them with [VIS]. Rest your hands heavily on their shoulders.",
-                "Have the Subject kneel over a chair seat. Secure their ankles to the chair legs with [REST]. Use [SENS] on their exposed lower half.",
-                "Subject lies face down, arms extended forward. Bind their wrists together with [REST], and their ankles together with [REST]. Apply [GAG].",
-                "Stand the Subject back-to-back with a chair. Secure their arms behind them around the chair back using [REST]. Apply [VIS].",
-                "Direct the Subject to a crawling position. Bind their wrists together with [REST] to make moving difficult. Apply [GAG].",
-                "Subject sits back on their heels. Use [REST] to secure their wrists behind their thighs. Apply [VIS] and wait in absolute silence.",
-                "Have the Subject lie flat on their back. Bind their dominant arm to their side with [REST], leaving the other free but useless. Apply [GAG].",
-                "Subject stands with hands clasped behind their neck. Use [REST] to tightly bind their elbows together behind their back. Apply [SENS] to their ribs.",
-                "Command the Subject to lie face down. Secure their ankles with [REST] and pull them upwards, hooking them over the Subject's bound wrists.",
-                "Subject sits in a chair, legs extended. Bind their ankles to a heavy object in front of them using [REST]. Secure their hands with [REST] behind the chair.",
-                "Have the Subject kneel with their face buried in their knees. Use [REST] to bind their hands over the back of their neck. Apply [GAG].",
-                "Subject stands flat against a door. Use [REST] to secure their hands to the doorknobs on either side if possible, or bind them in front. Apply [VIS].",
-                "Lie the Subject on their side. Bind their wrists to their ankles behind their back with [REST], creating a tight, awkward bow. Apply [GAG].",
-                "Subject kneels facing you. Bind their elbows together behind their back with [REST]. Use [SENS] to trace their jawline.",
-                "Have the Subject sit on the edge of a bed. Secure their wrists behind them with [REST]. Apply [VIS] and push them onto their back.",
-                "Subject stands on one leg. Bind their lifted ankle to their thigh using [REST]. Apply [GAG] and command them to keep their balance.",
-                "Command the Subject to lie face up, hands under their head. Use [REST] to bind their elbows flat to the floor. Apply [VIS].",
-                "Subject kneels with thighs spread wide. Secure their wrists between their knees to the floor using [REST]. Use [SENS] on their inner thighs.",
-                "Have the Subject lie face down, arms straight out to the sides. Use [REST] to bind their wrists to heavy weights. Apply [GAG].",
-                "Subject sits cross-legged. Wrap [REST] multiple times around their torso and arms, pinning them tightly. Apply [VIS].",
-                "Stand the Subject facing a corner. Secure their wrists behind their back with [REST]. Apply [GAG] and enforce strict stillness.",
-                "Subject lies on their back, legs raised in the air. Bind their ankles together with [REST]. Apply [VIS] and stroke their calves with [SENS].",
-                "Have the Subject kneel on a hard surface. Secure their hands behind their back with [REST]. Apply [GAG] and do not let them shift weight.",
-                "Subject lies face down. Bind their wrists to their ankles with [REST], then place a heavy object on their back to hold them down. Apply [VIS].",
-                "Sit the Subject in a chair. Use [REST] to bind their thighs tightly together, and their ankles to the front legs. Apply [GAG].",
-                "Have the Subject stand entirely vulnerable. Hand them the [REST] and command them to tie their own ankles together. Once done, apply [VIS]."
-            ]
+            n: "The Solitary Bind", t: 450, on: true,
+            d: Array.from({length: 50}, (_, i) => [
+                "Use [REST] to bind your own ankles tightly together, then kneel and apply [VIS].",
+                "Secure your dominant arm behind your back using [REST]. Apply [GAG] and wait silently.",
+                "Wrap [REST] around your thighs to lock your knees together. Lie flat and pull on [VIS].",
+                "Use [REST] to secure your wrists in front of you. Sit cross-legged and apply [GAG].",
+                "Bind your left wrist to your left ankle with [REST]. Hold the awkward pose with [VIS] on.",
+                "Use [REST] to tether your wrists to a heavy piece of furniture. Apply [GAG] yourself.",
+                "Secure [REST] around your chest, pinning your arms to your sides. Kneel and wait.",
+                "Bind your hands behind your neck using [REST]. Apply [VIS] and bow your head.",
+                "Use [REST] to tie your ankles to the legs of a chair. Sit up straight and apply [GAG].",
+                "Loop [REST] around your waist and wrists, forcing your hands to your hips. Apply [VIS].",
+                "Secure your wrists together with [REST], then blindfold yourself with [VIS] and lay face down.",
+                "Bind your knees tightly to your chest using [REST]. Roll onto your side and wait.",
+                "Use [REST] to secure one wrist high above your head to a fixture. Apply [GAG].",
+                "Tie your shoelaces or use [REST] to bind your feet. Apply [VIS] and try to stand still.",
+                "Use [REST] to lock your elbows together behind your back. Apply [GAG] and kneel.",
+                "Bind your hands together in a prayer position using [REST]. Apply [VIS] and remain perfectly still.",
+                "Wrap [REST] around your torso multiple times until you feel entirely restricted. Apply [GAG].",
+                "Secure your ankles with [REST], pull them up behind you, and hold the ends in your hands. Apply [VIS].",
+                "Use [REST] to bind your wrists to your thighs while seated. Apply [GAG] and close your eyes.",
+                "Bind your dominant hand to your opposite ankle with [REST]. Apply [VIS].",
+                "Construct a self-tying harness with [REST] that tightens when you move. Apply [GAG].",
+                "Secure your wrists behind your back with [REST], then struggle into [VIS] blindly.",
+                "Use [REST] to tether your collarbone/neck area (safely) to your bound wrists. Kneel and wait.",
+                "Bind your legs together from ankle to thigh using [REST]. Lie perfectly flat and apply [VIS].",
+                "Secure your hands in front of you with [REST]. Lie on your back and raise your legs.",
+                "Use [REST] to tie your hands to your feet while in a seated position. Apply [GAG].",
+                "Bind your elbows to your sides using [REST]. Apply [VIS] and stand in the center of the room.",
+                "Secure [REST] around your wrists and loop it under your feet. Stand to pull it taut. Apply [GAG].",
+                "Use [REST] to tightly bind your forearms together. Kneel, face the wall, and apply [VIS].",
+                "Bind your hands behind your back using [REST]. The Master will now apply [SENS] unpredictably.",
+                "Secure your ankles with [REST]. Lie on your stomach and reach back to hold them. Apply [GAG].",
+                "Use [REST] to tie your wrists together, then step through your arms so they are behind you.",
+                "Bind your thighs together tightly with [REST]. Kneel and balance a small object on your head.",
+                "Secure your hands to the sides of your head using [REST]. Apply [VIS] and hold the pose.",
+                "Use [REST] to bind your wrists to the front of your ankles. Bow your head and apply [GAG].",
+                "Bind your fingers together using a small piece of [REST]. Apply [VIS] and lie still.",
+                "Secure a [REST] around your waist and bind your elbows to it. Apply [GAG].",
+                "Use [REST] to tether your leg to a heavy object. Try to move away until it pulls tight. Apply [VIS].",
+                "Bind your hands together and place them under your stomach as you lie face down. Apply [GAG].",
+                "Secure [REST] around your knees and neck (safely) forcing you into a ball. Apply [VIS].",
+                "Use [REST] to lock your wrists behind your back. Master will apply [SENS] to your front.",
+                "Bind your legs together at the knees and ankles using [REST]. Apply [GAG] and try to crawl.",
+                "Secure your hands above your head with [REST]. Stand flat against a wall and apply [VIS].",
+                "Use [REST] to bind your arms crossed tightly over your chest. Apply [GAG] and kneel.",
+                "Bind your right wrist to your left ankle and left wrist to right ankle with [REST]. Apply [VIS].",
+                "Secure [REST] around your waist and tie your hands to it in the front. Apply [GAG].",
+                "Use [REST] to tether your wrists to a doorknob. Sit on the floor and apply [VIS].",
+                "Bind your forearms together behind your back with [REST]. Kneel with your face to the floor.",
+                "Secure your hands and feet together in front of you with [REST]. Apply [GAG] and rock backwards.",
+                "Use [REST] to bind yourself as tightly as you can physically manage. Apply [VIS] and surrender."
+            ][i])
         },
         { 
-            n: "Sensory Deprivation & Teasing", t: 450, on: true,
-            d: [
-                "Apply [VIS] and [GAG]. Plunge the Subject into total darkness. Trace [SENS] lightly from their collarbone down to their navel, moving painfully slow.",
-                "With the Subject in [VIS], hold [SENS] very close to their skin without touching it. Let the anticipation build before making sharp, sudden contact.",
-                "Secure the Subject's hands with [REST] and apply [VIS]. Whisper instructions in one ear while using [SENS] on the opposite side of their body.",
-                "Apply [GAG] and [VIS]. Use your bare hands to caress their skin, then suddenly switch to [SENS] to shock their senses.",
-                "With the Subject blindfolded using [VIS], lightly trace letters onto their skin using [SENS]. If they cannot guess the word, apply a sharp sting.",
-                "Apply [VIS]. Have the Subject hold out their hands. Place [SENS] in their palms briefly, take it away, and then use it unpredictably on their back.",
-                "Silence the Subject with [GAG]. Use [SENS] in a rhythmic tapping motion on their thighs, slowly increasing the pressure until they squirm.",
-                "Apply [VIS] and [GAG]. Blow gently on the back of the Subject's neck, then immediately follow up with a sharp strike from [SENS].",
-                "Bind the Subject with [REST] and apply [VIS]. Drag [SENS] up their inner arm to the armpit, focusing on the most ticklish and sensitive nerves.",
-                "With the Subject in [VIS], walk loudly around them. Stop randomly and apply [SENS] to the back of their knees or thighs.",
-                "Apply [GAG]. Use [SENS] to stroke the Subject's face and jawline. The contrast between the harsh [GAG] and soft touch should be intense.",
-                "Apply [VIS]. Drip a few drops of cold water onto their chest, then aggressively rub the area with [SENS].",
-                "Secure the Subject with [REST] and apply [VIS]. Hover [SENS] just above their lips, teasing them before dragging it down their throat.",
-                "With [VIS] securely on, pinch the Subject's skin gently. When they relax, apply a sudden, sharp impact with [SENS].",
-                "Apply [GAG] and [VIS]. Tap [SENS] rhythmically against the floor, then suddenly transition the rhythm onto their ribs.",
-                "Bind the Subject's wrists with [REST]. Apply [VIS]. Trace the exact path of the restraints using [SENS], highlighting their captivity.",
-                "Apply [VIS]. Lightly drag [SENS] over the Subject's stomach. If their breathing hitches, intensify the pressure of the tool.",
-                "With the Subject in [VIS] and [GAG], sit silently for one full minute to let their anxiety build, then strike quickly with [SENS].",
-                "Apply [VIS]. Press the flat side of [SENS] against their cheek so they can feel its temperature, then use it on their inner thighs.",
-                "Secure the Subject with [REST] and apply [GAG]. Trace [SENS] down their spine, pressing hard into the vertebrae.",
-                "Apply [VIS]. Snap your fingers near their left ear, then apply [SENS] to their right hip. Disorient their senses completely.",
-                "With the Subject blindfolded by [VIS], use [SENS] to trace circles around their navel, slowly tightening the spiral until you reach the center.",
-                "Apply [GAG]. Hold [SENS] against their throat (safely) just tight enough for them to feel its presence. Maintain eye contact.",
-                "Apply [VIS] and [REST]. Use [SENS] in a sweeping motion across their chest, alternating between feather-light and heavy pressure.",
-                "With the Subject in [VIS], breathe warmly against their ear. Immediately slap the opposite thigh sharply with your hand or [SENS].",
-                "Silence the Subject with [GAG]. Drag [SENS] from their ankle all the way up to their hip in one continuous, excruciatingly slow movement.",
-                "Apply [VIS]. Tap [SENS] lightly against their collarbone to a heartbeat rhythm. Gradually speed up the rhythm, increasing the force.",
-                "Secure the Subject with [REST] and apply [VIS]. Run [SENS] through their hair and across their scalp, pulling slightly at the roots.",
-                "With [VIS] applied, drag [SENS] across the soles of the Subject's feet. If they jerk away, apply a firm strike to their calves.",
-                "Apply [GAG] and [VIS]. Use two different types of [SENS] (if available) simultaneously on different parts of their body to overload them.",
-                "Apply [VIS]. Make a loud sound with [SENS] right next to their face, but strike them on the back of the legs.",
-                "Bind the Subject with [REST] and apply [VIS]. Drag [SENS] across their lips, teasing them with what they cannot see.",
-                "With the Subject in [VIS], alternate between kissing their neck and pressing the cold, hard edge of [SENS] against their skin.",
-                "Apply [GAG]. Slowly drag [SENS] down the center of their chest, pausing at the sternum to press firmly inward.",
-                "Apply [VIS] and [REST]. Trace the veins in their arms using the tip of [SENS], focusing on the delicate skin of the inner elbow.",
-                "With the Subject in [VIS], hold [SENS] against their skin and slowly drag it downwards, applying increasing pressure until they make a sound.",
-                "Apply [GAG] and [VIS]. Use your fingertips to massage their shoulders, then suddenly crack [SENS] against their lower back.",
-                "Apply [VIS]. Brush [SENS] lightly against the back of their knees. If they buckle, use [REST] to bind them in that weakened position.",
-                "Secure the Subject with [REST] and apply [VIS]. Place [SENS] between their shoulder blades and leave it there, demanding they focus only on its weight.",
-                "With [VIS] on, gently stroke their cheek with the back of your hand, then drag [SENS] harshly across their opposite shoulder.",
-                "Apply [GAG]. Use [SENS] to trace the outline of their jaw and neck, asserting complete physical dominance over their airway.",
-                "Apply [VIS] and [REST]. Tap [SENS] against the floor to create a false rhythm, then break the rhythm by striking their thigh.",
-                "With the Subject in [VIS], hold [SENS] against their pulse point on their wrist. Let them feel you monitoring their racing heart.",
-                "Apply [GAG] and [VIS]. Drag [SENS] from the base of their spine up to the nape of their neck in a slow, agonizingly steady line.",
-                "Apply [VIS]. Brush [SENS] against their earlobe, whispering that the next strike could land anywhere on their body.",
-                "Secure the Subject with [REST] and apply [VIS]. Use [SENS] to lightly flick their nipples or other highly sensitive areas.",
-                "With [VIS] on, apply [SENS] with heavy pressure to their thighs, demanding they push back against the sensation rather than pulling away.",
-                "Apply [GAG] and [VIS]. Alternate between blowing hot breath and placing cold [SENS] on their stomach.",
-                "Apply [VIS]. Drag [SENS] across their lower stomach, hovering just above the beltline to maximize teasing.",
-                "Secure the Subject with [REST] and apply [VIS]. Use [SENS] to trace a line from their ear down to their hip, demanding absolute silence."
-            ]
+            n: "Naked Confessions", t: 300, on: true,
+            d: Array.from({length: 50}, (_, i) => [
+                "Look the Master in the eyes and confess your deepest sexual insecurity. Hesitation earns [SENS].",
+                "Describe in explicit detail the exact moment you felt most submissive. Apply [GAG] when finished.",
+                "Confess a fantasy you have been too ashamed to share. The Master will slowly trace [SENS] on your skin.",
+                "Reveal a secret you have kept from the Master. If they deem it boring, they apply [SENS] sharply.",
+                "Describe exactly how your body reacts when you are denied. The Master listens while applying [VIS].",
+                "Confess the most inappropriate place you have ever been aroused. Earn a stroke of [SENS] for honesty.",
+                "Tell the Master exactly what you want them to do to you right now. They will do the exact opposite using [REST].",
+                "Admit your biggest physical flaw. The Master will then use [SENS] to beautifully highlight that exact area.",
+                "Confess a time you disobeyed an implicit rule. Secure yourself with [REST] as punishment.",
+                "Describe your perfect scenario for absolute surrender. Apply [VIS] so you can only imagine it.",
+                "Admit exactly how much power the Master holds over you. Prove it by letting them apply [GAG].",
+                "Confess the exact thought that goes through your head when you see [SENS].",
+                "Detail your most embarrassing sexual encounter. The Master will tap [SENS] rhythmically while you speak.",
+                "Admit a boundary you secretly want the Master to push. They will secure you with [REST] to consider it.",
+                "Confess exactly how long you have been waiting for this session. Apply [VIS] and wait longer.",
+                "Describe the exact physical sensation of being helplessly bound by [REST].",
+                "Admit a time you lied to make yourself look better. The Master uses [SENS] to correct your ego.",
+                "Confess the dirtiest thought you had today. If the Master smiles, you avoid [SENS].",
+                "Detail exactly what parts of your body are aching for [SENS] right now.",
+                "Admit your favorite form of punishment. The Master will immediately apply [GAG] and administer it.",
+                "Confess a habit you know annoys the Master. Secure your own wrists with [REST] in apology.",
+                "Describe the most intense physical pain you've ever felt. The Master will compare it with [SENS].",
+                "Admit exactly what you would do if the Master left you bound in [REST] for an hour.",
+                "Confess a time you felt jealous. The Master will stroke your jaw with [SENS] to comfort or mock you.",
+                "Detail the exact sensation of having your vision taken away by [VIS].",
+                "Admit the most submissive thing you would be willing to do in public. Apply [GAG].",
+                "Confess a kink you haven't explored yet. The Master will evaluate it while holding [SENS].",
+                "Describe how it feels to have your voice silenced by [GAG]. Speak until it is applied.",
+                "Admit exactly how dependent you are on the Master's touch. They will withhold it and apply [VIS].",
+                "Confess a time you secretly wanted to be punished. The Master will oblige using [REST] and [SENS].",
+                "Detail your favorite physical feature of the Master. They will trace your least favorite feature with [SENS].",
+                "Admit the exact moment you realized you wanted to submit. Apply [VIS] and reflect on it.",
+                "Confess a dirty dream you recently had. The Master will interpret it while applying [REST].",
+                "Describe exactly how your heart beats when you hear the Master's footsteps. Apply [GAG].",
+                "Admit your greatest fear within this dynamic. The Master will gently stroke you with [SENS] to ease it.",
+                "Confess the most desperate thing you've done for attention. The Master ignores you, applying [VIS].",
+                "Detail the exact feeling of vulnerability when stripped bare. Secure your ankles with [REST].",
+                "Admit a time you faked an orgasm or reaction. The Master will ensure your next reaction to [SENS] is real.",
+                "Confess exactly what you think about when you are left alone. Apply [GAG] to keep those thoughts inside.",
+                "Describe the most satisfying punishment you've ever received. The Master prepares [REST].",
+                "Admit exactly how you want to be touched right now. The Master will use [SENS] elsewhere.",
+                "Confess a secret desire to be humiliated. The Master will laugh and apply [VIS].",
+                "Detail the exact sensation of the Master taking control. Surrender your hands to [REST].",
+                "Admit a time you were completely overwhelmed by pleasure. The Master readies [SENS] to replicate it.",
+                "Confess exactly what you would do to the Master if roles were reversed. Apply [GAG] for your insolence.",
+                "Describe the feeling of anticipation before a strike. The Master holds [SENS] high, letting you wait.",
+                "Admit your deepest insecurity about your performance. The Master uses [SENS] to reassure or break you.",
+                "Confess exactly how willing you are to obey right now. Prove it by applying [REST] and [VIS] to yourself.",
+                "Detail the exact sensation of being completely owned. Speak until the Master silences you with [GAG].",
+                "Admit your ultimate limit. The Master will take you right to the edge of it with [SENS]."
+            ][i])
         },
         { 
-            n: "The Living Sculpture", t: 600, on: true,
-            d: [
-                "Command the Subject to hold a deep squat. Apply [VIS]. If their thighs begin to shake and they drop, apply [SENS] to their hamstrings.",
-                "Have the Subject kneel with arms extended straight out. Balance a small object on their wrists. If it falls, secure them with [REST] and use [SENS].",
-                "Instruct the Subject to hold a plank position. Place [SENS] flat on their back. If it slides off due to form breaking, apply [REST].",
-                "Command the Subject to stand on their tiptoes. Apply [GAG] and [VIS]. Use [SENS] lightly on their calves; they must not drop their heels.",
-                "Have the Subject sit in an imaginary chair against a wall (wall sit). Apply [VIS]. Drag [SENS] across their quads as they burn.",
-                "Subject lies face up, lifting their legs six inches off the floor. Apply [GAG]. If their heels touch down, strike their stomach with [SENS].",
-                "Command the Subject to bend over, touching their toes. Secure their wrists to their ankles with [REST]. Leave them in this stretch.",
-                "Have the Subject hold their arms straight up in the air. Apply [VIS]. Walk around them; any drop in their arms earns a strike from [SENS].",
-                "Subject kneels, leaning torso back at a 45-degree angle. Apply [GAG]. Hold [SENS] over their chest—if they sit up, they hit the tool.",
-                "Instruct the Subject to balance on one leg with their eyes closed ([VIS]). Use [SENS] to distract them. If they fall, bind them with [REST].",
-                "Command the Subject to hold a push-up position (halfway down). Apply [VIS]. Use [SENS] on their triceps to test their endurance.",
-                "Have the Subject kneel upright, hands behind their head. Apply [GAG]. Trace [SENS] down their ribs. They must not flinch or squirm.",
-                "Subject lies on their back and lifts their pelvis into a bridge. Apply [VIS]. Rest a lightweight object on their stomach to ensure they don't drop.",
-                "Command the Subject to stand with legs wide apart and arms out. Use [REST] to bind their wrists to heavy objects. Apply [SENS] to the stretched muscles.",
-                "Have the Subject hold a side plank. Apply [GAG]. If their hip sags to the floor, use [REST] to bind them in a fetal position.",
-                "Subject kneels and holds a heavy object out in front of them. Apply [VIS]. As their arms fatigue, lightly trail [SENS] over their shoulders.",
-                "Command the Subject to sit in a 'V' shape (legs and torso raised). Apply [GAG]. If their form breaks, apply a firm strike with [SENS].",
-                "Have the Subject stand perfectly still. Apply [VIS] and [GAG]. Use [SENS] to strike the back of their knees—they must lock their legs and not fall.",
-                "Subject lies face down, lifting their chest and legs off the floor (Superman pose). Apply [VIS]. Use [SENS] on their lower back if they drop.",
-                "Command the Subject to hold their breath for 20 seconds while you drag [SENS] across their chest. If they exhale early, apply [REST].",
-                "Have the Subject kneel with their face hovering exactly one inch above the floor. Apply [REST] to their hands behind their back. They must hold it.",
-                "Subject stands on tiptoes with arms crossed over their chest. Apply [GAG]. Wrap [REST] around their chest tightly. Do not let them drop.",
-                "Command the Subject to hold a lunge position. Apply [VIS]. Drag [SENS] down their front thigh. Switch legs halfway through the timer.",
-                "Have the Subject lie on their back, drawing their knees to their chest. Use [REST] to bind them tightly. They must remain perfectly still.",
-                "Subject stands, bending one knee to hold their foot behind them. Bind the foot to their thigh with [REST]. Apply [VIS] and test their balance.",
-                "Command the Subject to hold their arms out laterally. Drape [REST] over their wrists like weights. Apply [GAG] and enforce strict posture.",
-                "Have the Subject kneel and look straight up at the ceiling. Apply [VIS]. Place [SENS] lightly against their throat. They must not look down.",
-                "Subject holds a downward dog yoga pose. Apply [GAG]. Use [SENS] across their exposed lower back and hamstrings if their arms buckle.",
-                "Command the Subject to sit back on their heels, spine perfectly straight. Apply [VIS]. Any slouching is corrected sharply with [SENS].",
-                "Have the Subject balance a small book on their head while standing. Apply [REST] to their wrists behind their back. If it falls, use [SENS].",
-                "Subject lies face up, holding their hands and feet two inches off the ground. Apply [GAG]. Strike their thighs with [SENS] to test their core.",
-                "Command the Subject to kneel and hold a wide, forced smile. Apply [VIS]. If the smile drops, apply a sharp sting with [SENS] to their shoulder.",
-                "Have the Subject stand in a wide sumo squat. Apply [REST] to bind their wrists behind their knees. Apply [GAG] and force them to hold it.",
-                "Subject holds a deep bow, torso parallel to the floor. Apply [VIS]. Rest a small object on their back; if it drops, use [SENS].",
-                "Command the Subject to lie flat and perfectly tense every muscle in their body. Apply [GAG]. Use [SENS] to prod them; if you find a soft spot, strike it.",
-                "Have the Subject kneel with arms extended forward, palms up. Place [SENS] in their palms. They must hold it perfectly still for the duration.",
-                "Subject stands on one leg, arms out. Apply [VIS]. Gently push their shoulders to throw them off balance; they must fight to stay upright.",
-                "Command the Subject to hold a wall sit, but on their tiptoes. Apply [GAG]. This intense burn must be endured in total silence.",
-                "Have the Subject lie on their stomach, hands bound behind their back with [REST]. Apply [VIS]. They must arch their back and hold their chest off the floor.",
-                "Subject kneels, holding [REST] taut between their hands above their head. If the rope goes slack, apply [SENS] to their ribs.",
-                "Command the Subject to hold a high plank. Apply [VIS]. Place [SENS] directly under their chest. If they drop, they land on it.",
-                "Have the Subject stand with their back against a wall, sliding down into a squat. Bind their ankles with [REST] so they cannot stand up easily.",
-                "Subject lies on their back, legs straight up. Apply [GAG]. Loop [REST] around their ankles and hold it taut, forcing them to keep their legs up.",
-                "Command the Subject to freeze mid-stride. Apply [VIS]. Use [SENS] to trace their frozen limbs, punishing any micro-movements.",
-                "Have the Subject hold their arms in a 'surrender' pose. Secure their wrists to the wall behind them with [REST]. Apply [GAG].",
-                "Subject holds a bridge pose. Place [SENS] just beneath their lower back. If their glutes drop, they will feel the bite of the tool.",
-                "Command the Subject to kneel and clasp their hands behind their back. Apply [VIS]. Drag [SENS] heavily down their spine.",
-                "Have the Subject hold their breath while you count slowly to ten. Apply [GAG]. If they gasp through the gag, restart the count and use [SENS].",
-                "Subject holds a deep forward fold. Use [REST] to bind their arms behind their calves, pulling them deeper into the stretch.",
-                "Command the Subject to assume a position of their own choosing, but it must be agonizing. Once chosen, apply [VIS], [GAG], and use [SENS] to enforce it."
-            ]
+            n: "Reckless Abandon", t: 300, on: true,
+            d: Array.from({length: 50}, (_, i) => [
+                "I dare you to apply [SENS] to yourself as hard as you can bear while maintaining eye contact.",
+                "Take [REST] and bind yourself to the nearest piece of heavy furniture. The Master will apply [VIS].",
+                "I dare you to beg for [GAG] to be applied, convincing the Master you don't deserve to speak.",
+                "Hold your hands behind your back. I dare you to let the Master use [SENS] anywhere they choose without flinching.",
+                "Take [VIS] and apply it. I dare you to guess what [SENS] the Master is about to use.",
+                "I dare you to hold a physically exhausting pose of the Master's choice until the timer ends.",
+                "Apply [REST] to your ankles. I dare you to crawl across the room to kiss the Master's feet.",
+                "I dare you to remain perfectly silent while the Master vigorously uses [SENS] on your thighs.",
+                "Take [GAG] and hold it in your teeth. I dare you to drop it. If you do, apply [REST].",
+                "I dare you to strip away any remaining dignity. Kneel, apply [VIS], and present yourself entirely.",
+                "Apply [REST] to your wrists. I dare you to try and escape while the Master distracts you with [SENS].",
+                "I dare you to tell the Master exactly how to punish you, then endure it without a sound.",
+                "Take [SENS] and hand it to the Master. I dare you to ask for their worst.",
+                "I dare you to hold your breath for 30 seconds while the Master traces your throat with [SENS].",
+                "Apply [VIS]. I dare you to perform a sensual dance blindly for the Master's amusement.",
+                "I dare you to let the Master bind you entirely in [REST] in a deeply uncomfortable position.",
+                "Take [GAG] and apply it. I dare you to try and communicate a complex sentence using only your eyes.",
+                "I dare you to endure 10 firm strikes of [SENS] without making a single sound or movement.",
+                "Apply [REST] to your thighs. I dare you to spread them wide and let the Master observe.",
+                "I dare you to let the Master use [SENS] on your most ticklish spot until you break.",
+                "Take [VIS] and apply it. I dare you to rely entirely on the Master's verbal commands to move.",
+                "I dare you to hold an ice cube in your mouth until it melts, then endure [SENS].",
+                "Apply [REST] to your wrists and ankles. I dare you to try and roll across the floor.",
+                "I dare you to ask the Master for a humiliating nickname, which you must use for the rest of the game.",
+                "Take [GAG]. I dare you to let the Master secure it as tightly as safely possible.",
+                "I dare you to let the Master pour a cold liquid over your chest while you are bound in [REST].",
+                "Apply [VIS]. I dare you to identify which part of your body the Master is touching with [SENS].",
+                "I dare you to hold a heavy object above your head. If it drops, the Master applies [REST].",
+                "Take [SENS]. I dare you to tease yourself with it exactly as the Master commands.",
+                "I dare you to let the Master tie you to them using [REST] for the next three rounds.",
+                "Apply [GAG]. I dare you to endure the Master whispering dirty praises in your ear.",
+                "I dare you to let the Master draw or write on your skin using [SENS] or a safe marker.",
+                "Take [VIS]. I dare you to navigate to the other side of the room completely blind.",
+                "I dare you to endure a barrage of light, teasing touches from [SENS] without moaning.",
+                "Apply [REST] to your wrists. I dare you to try and untie them using only your teeth.",
+                "I dare you to let the Master dictate your breathing pattern for the entire round.",
+                "Take [GAG] and [VIS]. I dare you to exist in total sensory deprivation until the timer ends.",
+                "I dare you to let the Master use [SENS] on your bare soles until you pull away.",
+                "Apply [REST] to your neck (safely like a collar). I dare you to let the Master lead you like a pet.",
+                "I dare you to hold a deeply submissive bow, forehead to the floor, for the entire duration.",
+                "Take [SENS]. I dare you to strike the floor right next to yourself to build anticipation.",
+                "I dare you to let the Master inspect every inch of your body closely, offering critiques.",
+                "Apply [VIS]. I dare you to let the Master feed you something without knowing what it is.",
+                "I dare you to let the Master bind your hands behind your back with [REST] and leave the room.",
+                "Take [GAG]. I dare you to loudly groan your submission into it.",
+                "I dare you to let the Master use [SENS] to edge you dangerously close, then stop entirely.",
+                "Apply [REST] to your ankles. I dare you to stand and maintain your balance while being lightly pushed.",
+                "I dare you to let the Master completely dictate your posture, correcting any flaws with [SENS].",
+                "Take [VIS]. I dare you to lay back and let the Master map your body with cold touches.",
+                "I dare you to completely surrender. Give the Master full control over [REST], [GAG], [VIS], and [SENS]."
+            ][i])
         },
         { 
-            n: "The Silent Confession", t: 450, on: true,
-            d: [
-                "Apply [VIS]. Ask the Subject a deeply personal question. If they hesitate for more than three seconds, apply a sharp strike with [SENS].",
-                "Apply [GAG]. The Subject must hum a song of your choosing. Every time they pause for breath, tap them firmly with [SENS].",
-                "Bind the Subject with [REST] and apply [VIS]. Command them to count backwards from 100 by 7s. Any mistake earns a strike from [SENS].",
-                "Apply [VIS]. Whisper an embarrassing command. The Subject must repeat it out loud perfectly. If they stumble, use [SENS].",
-                "Secure the Subject with [REST]. Apply [GAG]. Ask yes/no questions. They must nod for yes, shake for no. Wrong answers earn [SENS].",
-                "Apply [VIS]. The Subject must confess a secret they have never told you. If you deem it uninteresting or fake, apply a heavy strike with [SENS].",
-                "Apply [GAG] and [VIS]. Tap [SENS] against their thigh 5 times. Remove the gag. They must state exactly how many times you tapped. If wrong, double the taps.",
-                "Bind the Subject with [REST]. Command them to verbally praise you continuously for two minutes. Any break in speech results in [SENS].",
-                "Apply [VIS]. Ask the Subject to describe, in explicit detail, the sensation of [SENS] on their skin as you slowly drag it across their chest.",
-                "Apply [GAG]. Ask the Subject a question they want to say 'No' to. They must force themselves to nod 'Yes'. If they resist, use [REST] to bind them tighter.",
-                "Apply [VIS]. Command the Subject to recite the alphabet backwards. For every letter they get wrong, apply [SENS] to their inner thigh.",
-                "Secure the Subject with [REST] and apply [VIS]. Whisper their name close to their ear. They must not react. If they shiver or sigh, use [SENS].",
-                "Apply [GAG]. Command the Subject to look you directly in the eyes without blinking. If they blink, trail [SENS] down their cheek.",
-                "Apply [VIS]. The Subject must recount their worst fear in detail. While they speak, lightly trace [SENS] across their most sensitive areas.",
-                "Bind the Subject with [REST]. Ask them to rate their current level of arousal/fear from 1-10. Whatever the number, strike them that many times with [SENS].",
-                "Apply [GAG] and [VIS]. Trace a shape on their back with [SENS]. Remove the gag. If they guess the shape wrong, trace it again, but harder.",
-                "Apply [VIS]. Command the Subject to beg for [SENS]. They must convince you they truly want it before you apply it.",
-                "Secure the Subject with [REST]. Ask them a question about your relationship. A brutally honest answer earns soft touches; a lie earns sharp [SENS].",
-                "Apply [GAG]. The Subject must moan into the gag as loudly as possible. If they are too quiet, apply a harsh strike with [SENS].",
-                "Apply [VIS]. Command the Subject to describe their favorite part of your body. Interrupt them randomly with sharp taps from [SENS].",
-                "Bind the Subject with [REST]. Play a game of 'Simon Says'. If they obey a command without 'Simon Says', apply [SENS].",
-                "Apply [GAG] and [VIS]. Leave the room and close the door loudly. Wait 30 seconds, sneak back in, and apply a sudden strike with [SENS].",
-                "Apply [VIS]. Command the Subject to spell their full name. For every vowel, apply a heavy strike with [SENS].",
-                "Secure the Subject with [REST]. Ask them to explain why they deserve to be bound. If their reasoning is weak, tighten the [REST].",
-                "Apply [GAG]. Command the Subject to take deep, slow breaths. If their breathing becomes erratic, use [SENS] to snap them back to focus.",
-                "Apply [VIS]. Whisper a trigger word. Every time you say it during the round, they must flinch. If they forget, use [SENS].",
-                "Bind the Subject with [REST] and apply [VIS]. The Subject must correctly guess which body part you are going to touch next. If wrong, strike it with [SENS].",
-                "Apply [GAG]. Ask the Subject to remember a specific date. They must hum the number of the month. If wrong, use [SENS].",
-                "Apply [VIS]. Command the Subject to insult themselves. If they don't sound sincere, apply [SENS] and make them start over.",
-                "Secure the Subject with [REST]. The Subject must ask permission to swallow. If they swallow without asking, apply [SENS] to their throat.",
-                "Apply [GAG] and [VIS]. Command the Subject to imagine [SENS] striking them. Wait a full minute before actually making impact.",
-                "Apply [VIS]. The Subject must describe the room they are in perfectly from memory. Every missed detail earns a tap with [SENS].",
-                "Bind the Subject with [REST]. Ask them to apologize for a past mistake. The apology must be lengthy and detailed. Interrupt with [SENS].",
-                "Apply [GAG]. Command the Subject to hold back any vocalizations. Use [SENS] aggressively. If they make a sound through the gag, intensify it.",
-                "Apply [VIS]. Tell the Subject a short story. They must repeat it back perfectly. For every missed word, apply [SENS].",
-                "Secure the Subject with [REST] and apply [VIS]. Whisper contradictory commands (e.g., 'relax' while striking them with [SENS]). Punish confusion.",
-                "Apply [GAG]. The Subject must communicate their desire to stop using only their eyes. Stare them down until they break eye contact.",
-                "Apply [VIS]. Command the Subject to count every single time you touch them with [SENS]. Remove the blindfold. If the count is wrong, double the strikes.",
-                "Bind the Subject with [REST]. Ask the Subject what their limit is. Once stated, bring them exactly to the edge of it using [SENS] and hold them there.",
-                "Apply [GAG] and [VIS]. The Subject must nod their head to a rhythm you tap on their shoulder. If they lose the beat, use [SENS].",
-                "Apply [VIS]. The Subject must list 5 reasons why they submitted to you today. If they pause for too long, strike their thigh with [SENS].",
-                "Secure the Subject with [REST]. Command them to stay absolutely silent. Bait them by asking questions. If they answer, apply [SENS].",
-                "Apply [GAG]. Instruct the Subject to show gratitude through their posture. If they slouch or look away, use [SENS] to correct them.",
-                "Apply [VIS]. Describe in detail a painful act you are going to perform, but then do something incredibly gentle instead. Watch their reaction.",
-                "Bind the Subject with [REST]. The Subject must verbally guide you on where to strike them with [SENS]. If they hesitate, you choose the worst spot.",
-                "Apply [GAG] and [VIS]. Humiliate the Subject by describing their bound, helpless state to them in detail. Trace their jaw with [SENS].",
-                "Apply [VIS]. Ask the Subject an impossible math question. While they struggle to calculate it, apply rapid, distracting strikes with [SENS].",
-                "Secure the Subject with [REST]. Command them to say 'Thank You' after every strike of [SENS]. If they forget, the strike doesn't count.",
-                "Apply [GAG]. Use [SENS] to evoke a strong reaction. If they try to pull away, use [REST] to bind them tighter to the surface.",
-                "Apply [VIS]. The Subject must confess a fantasy they have been too afraid to share. Listen closely, and use [SENS] to encourage them to finish."
-            ]
-        }
-    ];
-
-    let gearCats = { "Blindfolds": true, "Gags": true, "Restraints": true, "Sensation": true };
-
-    function playSnd(id) { document.getElementById('snd-'+id).play(); }
-    function vibrate(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
-
-    function nav(n) {
-        if(n === 2) {
-            players = [{n: document.getElementById('p1_n').value || "P1"}, {n: document.getElementById('p2_n').value || "P2"}];
-            maxR = parseInt(document.getElementById('max_r').value);
-            renderVault();
-        }
-        if(n === 3) renderCommandCenter();
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById('step'+n).classList.add('active');
-    }
-
-    // VAULT ENGINE
-    function renderVault() {
-        const cont = document.getElementById('vault-inject'); cont.innerHTML = '';
-        for(let c in vault) {
-            let section = document.createElement('div');
-            section.innerHTML = `<span class="label">${c}</span><div class="add-row"><input type="text" class="add-input" id="in-${c}" placeholder="New ${c}..."><button class="add-btn" onclick="addItem('${c}')">+</button></div><div class="tag-cloud" id="cloud-${c}"></div>`;
-            cont.appendChild(section);
-            vault[c].forEach((item, i) => {
-                let t = document.createElement('div'); t.className = `tag ${item.on ? 'on' : ''}`;
-                t.innerHTML = `<span>${item.n}</span><span class="del-x" onclick="removeItem('${c}', ${i}); event.stopPropagation();">×</span>`;
-                t.onclick = () => { item.on = !item.on; saveVault(); renderVault(); vibrate(20); };
-                document.getElementById(`cloud-${c}`).appendChild(t);
-            });
-        }
-    }
-
-    function addItem(c) {
-        let input = document.getElementById(`in-${c}`);
-        let val = input.value.trim();
-        if(val) { vault[c].push({n: val, on: true}); input.value = ''; saveVault(); renderVault(); vibrate(40); }
-    }
-
-    function removeItem(c, i) { vault[c].splice(i, 1); saveVault(); renderVault(); vibrate([30, 30]); }
-    function saveVault() { localStorage.setItem('sov_vault_v6', JSON.stringify(vault)); }
-
-    // COMMAND CENTER
-    function renderCommandCenter() {
-        document.getElementById('round-header').innerText = `ROUND ${curR} | Master: ${players[masterIdx].n}`;
-        const tGrid = document.getElementById('trial-toggles'); tGrid.innerHTML = '';
-        trials.forEach((t, i) => {
-            let b = document.createElement('button'); b.className = `t-btn ${t.on ? 'on' : ''}`;
-            b.innerText = t.n; b.onclick = () => { t.on = !t.on; b.classList.toggle('on'); vibrate(30); };
-            tGrid.appendChild(b);
-        });
-        const gGrid = document.getElementById('gear-toggles'); gGrid.innerHTML = '';
-        for(let c in gearCats) {
-            let b = document.createElement('button'); b.className = `t-btn ${gearCats[c] ? 'gear-on' : ''}`;
-            b.innerText = c; b.onclick = () => { gearCats[c] = !gearCats[c]; b.classList.toggle('gear-on'); vibrate(30); };
-            gGrid.appendChild(b);
-        }
-    }
-
-    // UPDATED LOGIC TO PULL FROM THE 200+ STRINGS
-    function generateDecree() {
-        let activeTrials = trials.filter(t => t.on);
-        if(!activeTrials.length) return alert("Select at least one Trial.");
-        
-        // Pick a random trial category
-        let t = activeTrials[Math.floor(Math.random() * activeTrials.length)];
-        // Pick a random detailed instruction from the 50 in that category
-        let selectedDesc = t.d[Math.floor(Math.random() * t.d.length)];
-        
-        const pick = (c) => { 
-            if(!gearCats[c]) return `<span style="opacity:0.3; font-size:1rem;">[SKIP ${c}]</span>`;
-            let items = vault[c].filter(i => i.on);
-            return `<span class="instruction-highlight">${items.length ? items[Math.floor(Math.random()*items.length)].n : c}</span>`; 
-        };
-        
-        // Replace all instances of the tags globally
-        let text = selectedDesc.replace(/\[REST\]/g, pick('Restraints')).replace(/\[SENS\]/g, pick('Sensation')).replace(/\[VIS\]/g, pick('Blindfolds')).replace(/\[GAG\]/g, pick('Gags'));
-        
-        document.getElementById('active-trial-text').innerHTML = `<strong>${t.n.toUpperCase()}</strong><br><br>${text}`;
-        timeLeft = t.t;
-        document.getElementById('pre-round').style.display = 'none';
-        document.getElementById('active-round').style.display = 'block';
-        startClock();
-    }
-
-    function startClock() {
-        timer = setInterval(() => {
-            timeLeft--;
-            let m = Math.floor(timeLeft/60), s = timeLeft%60;
-            document.getElementById('clock').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-            if(timeLeft === 10) { playSnd('alarm'); vibrate([100, 100, 100]); }
-            if(timeLeft <= 0) { clearInterval(timer); vibrate([500, 200, 500]); finish(false); }
-        }, 1000);
-    }
-
-    function finish(win) {
-        clearInterval(timer);
-        masterIdx = (masterIdx === 0 ? 1 : 0);
-        curR++;
-        if(curR > maxR) { alert("Protocol Concluded."); location.reload(); }
-        else {
-            document.getElementById('pre-round').style.display = 'block';
-            document.getElementById('active-round').style.display = 'none';
-            renderCommandCenter();
-        }
-    }
-</script>
-</body>
-</html>
+            n: "Desperate Liberation", t: 600, on: true,
+            d: Array.from({length: 50}, (_, i) => [
+                "Master binds your wrists tightly with [REST]. You have the timer to escape. If you fail, [VIS] is applied.",
+                "Your ankles are secured with [REST]. You must untie them using only your opposite foot. Master distracts with [SENS].",
+                "Master applies [REST] to bind your hands behind your back. Try to step through your arms to the front.",
+                "You are bound to a chair with [REST]. Escape before the timer ends, or Master applies [GAG].",
+                "Master ties a complex knot using [REST] around your wrists. You must decode and untie it blindly with [VIS] on.",
+                "Your thumbs are tied together with [REST]. Attempt to free yourself while Master traces your neck with [SENS].",
+                "Master binds your wrists and ankles together with [REST] (hogtie). Struggle to loosen the bindings.",
+                "You are secured to a bed or heavy object with [REST]. You have one minute to beg for release before [GAG] is applied.",
+                "Master wraps [REST] around your torso and arms. Wiggle free using only core movements.",
+                "Your hands are bound in front of you with [REST]. You must untie it using only your teeth.",
+                "Master applies [VIS] and [REST] to your wrists. You must escape based purely on feel.",
+                "You are tethered to the Master's wrist with [REST]. Try to slip out without them noticing.",
+                "Master binds your legs together with [REST]. You must inchworm your way across the room.",
+                "Your wrists are tied to your ankles with [REST]. Master uses [SENS] lightly as you struggle.",
+                "Master secures [REST] around your chest. Expand your lungs to stretch the restraint and break free.",
+                "You are bound with [REST] and given a [GAG]. You must remove the gag without using your hands.",
+                "Master ties a slipknot with [REST] around your wrist. Figure out how to release it under pressure.",
+                "Your elbows are bound behind your back with [REST]. Escape before Master brings out [SENS].",
+                "Master applies [REST] to your wrists. You must escape while maintaining direct eye contact.",
+                "You are secured with [REST]. Master gives you a single clue on how to escape. Figure it out.",
+                "Your hands are bound with [REST] and placed above your head. Pull downward to test the tension.",
+                "Master wraps [REST] around your thighs. You must flex and squirm to lower it to your knees.",
+                "You are blindfolded with [VIS] and bound with [REST]. Master spins you around. Now, escape.",
+                "Master ties your wrists with [REST]. You must convince them to untie you using only soft whispers.",
+                "Your ankles are secured to a heavy object with [REST]. Try to drag the object across the room.",
+                "Master binds you with [REST] and leaves the room. You have until they return to escape.",
+                "You are secured with [REST]. Master applies [SENS] every time you stop struggling.",
+                "Your hands are tied behind your back with [REST]. You must remove [VIS] using your environment.",
+                "Master wraps [REST] around your waist and wrists. Escape by twisting your body repeatedly.",
+                "You are bound with [REST]. Master places the key/scissors just out of reach. Get to them.",
+                "Your wrists are tied together with [REST]. You must pull them apart using pure strength.",
+                "Master secures you with [REST] and applies [GAG]. You must escape in total silence.",
+                "You are bound with [REST]. Master lightly teases you with [SENS] to break your concentration.",
+                "Your legs are bound to a chair with [REST]. You must stand up while still attached.",
+                "Master applies [REST] in a figure-eight around your wrists. Work your hands back and forth to loosen it.",
+                "You are tethered to a doorknob with [REST]. Escape before someone 'walks in'.",
+                "Your hands are bound with [REST]. You must untie a separate knot the Master has placed in front of you.",
+                "Master secures you with [REST] and applies [VIS]. Escape while they loudly describe what they will do if you fail.",
+                "You are bound with [REST]. You must escape using only slow, deliberate movements. Fast jerks earn [SENS].",
+                "Your wrists are tied to your knees with [REST]. Rock back and forth to find slack.",
+                "Master wraps [REST] around your torso. You must arch your back to create breathing room.",
+                "You are secured with [REST]. Master promises a reward if you escape, and [SENS] if you don't.",
+                "Your hands are bound behind your neck with [REST]. Escape by bringing them over your head.",
+                "Master ties your fingers together with small pieces of [REST]. Untangle them delicately.",
+                "You are bound with [REST] and blindfolded with [VIS]. Master verbally guides you through the escape.",
+                "Your ankles are tied with [REST]. You must perform five jumping jacks without falling.",
+                "Master secures you with [REST]. You must escape while reciting a poem or song.",
+                "You are bound with [REST]. Master applies [SENS] to the exact spot you need to move to escape.",
+                "Your wrists are tied with [REST]. You must use a nearby object (like a wall corner) to rub the knot loose.",
+                "Master binds you completely with [REST], [VIS], and [GAG]. You must escape the gag first."
+            ][i])
+        },
+        { 
+            n: "The Crucible of Flesh", t: 600, on: true,
+            d: Array.from({length: 50}, (_, i) => [
+                "Hold a deep squat position. If your thighs tremble, the Master applies a sharp strike with [SENS].",
+                "Maintain a high plank. Master places [SENS] underneath your chest; if you drop, you hit it.",
+                "Stand on your absolute tiptoes. Master uses [REST] to bind your wrists behind your back. Do not drop your heels.",
+                "Hold a wall-sit. Master drags [SENS] heavily across your burning quadriceps. Endure the burn.",
+                "Lie face up and raise your legs six inches. Master applies [VIS]. Do not let your heels touch the floor.",
+                "Perform a deep lunge and hold it. Master applies [GAG]. Maintain perfect, silent posture.",
+                "Kneel upright with your hands behind your head. Master traces your exposed ribs with [SENS].",
+                "Hold your arms straight out to the sides. Master uses [REST] to drape light weights over your wrists.",
+                "Assume a push-up position and hold it halfway down. Master applies [SENS] to your triceps.",
+                "Lie on your stomach and lift your chest and thighs off the floor (Superman pose). Hold it under [VIS].",
+                "Balance perfectly on one leg. Master binds your raised ankle to your thigh with [REST].",
+                "Hold a bridge pose (hips thrust upward). Master places [SENS] directly beneath your lower back.",
+                "Sit in a 'V' hold, balancing on your tailbone. Master applies
