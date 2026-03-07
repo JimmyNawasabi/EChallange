@@ -52,7 +52,7 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="app">
     <h1>Mastery & Merit</h1>
     <div class="subtitle">Sovereignty Edition</div>
 
@@ -76,7 +76,7 @@
 
     <div id="step2" class="step">
         <div class="box">
-            <p style="font-size: 0.8rem; color: #888; margin-bottom: 20px; text-align: center;">Enable gear for this session.</p>
+            <p style="font-size: 0.8rem; color: #888; margin-bottom: 20px; text-align: center;">Tap items to enable/disable them.</p>
             <div id="inv-container"></div>
         </div>
         <button class="btn" onclick="goToStep(3)">Start Session</button>
@@ -122,7 +122,8 @@
 </div>
 
 <script>
-    const inventoryDefaults = {
+    // HARDCODED UNIFIED LIST
+    const unifiedArsenal = {
         "Blindfolds": ["Bandage", "Tape", "Cloth", "Gas Mask", "Pillow Case", "Blindfold", "Sleep Mask", "Silk Scarf", "Hood"],
         "Gags": ["Tape", "Pallet Wrap", "Cloth", "Panties", "Bandage", "Rope", "Ring Gag", "Gas Mask", "Hood", "Ball Gag", "Cleave Gag", "Muzzle"],
         "Restraints": ["Leather Cuffs", "Tape", "Pallet Wrap", "String", "Belt", "Ribbon", "Rope", "Handcuffs", "Ankle Cuffs", "Leather Straps"],
@@ -133,16 +134,19 @@
     let players = [], currentRound = 1, subIdx = 0, timer, timeLeft;
     let lastTaskString = "";
 
-    function initInventory() {
-        activeInventory = {};
-        for (let cat in inventoryDefaults) {
-            activeInventory[cat] = inventoryDefaults[cat].map(item => ({ n: item, on: true }));
+    // IMMEDIATELY PREPARE DATA ON LOAD
+    function boot() {
+        for (let cat in unifiedArsenal) {
+            activeInventory[cat] = unifiedArsenal[cat].map(item => ({ n: item, on: true }));
         }
     }
+    boot();
 
     function renderInv() {
         const container = document.getElementById('inv-container');
+        if (!container) return;
         container.innerHTML = '';
+        
         for (let cat in activeInventory) {
             let section = document.createElement('div');
             section.innerHTML = `
@@ -152,6 +156,7 @@
                 </div>
                 <div class="tag-row" id="tags-${cat}"></div>`;
             container.appendChild(section);
+            
             const tagRow = section.querySelector(`#tags-${cat}`);
             activeInventory[cat].forEach((item) => {
                 let tag = document.createElement('div');
@@ -171,7 +176,7 @@
 
     function addNewItem(cat) {
         let input = document.getElementById(`add-${cat}`);
-        if (input.value.trim()) { 
+        if (input && input.value.trim()) { 
             activeInventory[cat].push({n: input.value.trim(), on: true}); 
             input.value = ''; 
             renderInv(); 
@@ -184,13 +189,10 @@
                 {n: document.getElementById('p1').value || "Slave", g: document.getElementById('g1').value, wins: 0},
                 {n: document.getElementById('p2').value || "Master", g: document.getElementById('g2').value, wins: 0}
             ];
-            if (Object.keys(activeInventory).length === 0) initInventory();
             renderInv();
         }
         if (n === 3) {
-            if (!activeInventory["Blindfolds"].some(i=>i.on) || !activeInventory["Restraints"].some(i=>i.on)) {
-                return alert("Select items!");
-            }
+            if (!activeInventory["Blindfolds"].some(i=>i.on)) return alert("Enable at least one Blindfold!");
             updateIdentity();
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
