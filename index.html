@@ -32,10 +32,9 @@
         .identity-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         input, select { width: 100%; padding: 20px; border: 1px solid #444; border-radius: 18px; background: #000; color: white; font-size: 1.2rem; box-sizing: border-box; font-family: Arial, sans-serif; }
         
-        /* Arsenal Specific Styling */
         .add-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .add-input { flex: 1; padding: 12px; border-radius: 12px; font-size: 1rem; }
-        .add-btn { background: var(--accent); color: black; border: none; padding: 0 20px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.5rem; }
+        .add-input { flex: 1; padding: 15px; border-radius: 15px; font-size: 1.1rem; border: 1px solid #444; background: #000; color: #fff; }
+        .add-btn { background: var(--accent); color: black; border: none; padding: 0 20px; border-radius: 15px; cursor: pointer; font-weight: bold; font-size: 1.5rem; }
 
         .btn { background: var(--crimson); color: white; border: none; padding: 25px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 25px; font-size: 1.3rem; letter-spacing: 3px; transition: 0.2s; }
         .btn:active { transform: scale(0.95); opacity: 0.9; }
@@ -46,10 +45,11 @@
         .t-btn.on { background: var(--accent); color: #000; border-color: var(--accent); }
         .t-btn.gear-on { background: var(--crimson); color: white; border-color: var(--crimson); }
 
-        .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-        .tag { background: #000; padding: 12px 18px; border-radius: 15px; font-size: 1rem; cursor: pointer; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 8px; }
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; }
+        .tag { background: #000; padding: 12px 18px; border-radius: 15px; font-size: 1.1rem; cursor: pointer; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 10px; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        .del-x { color: rgba(255,255,255,0.3); font-weight: bold; font-size: 1.2rem; padding-left: 5px; }
+        .del-x { color: #f00; font-weight: bold; font-size: 1.2rem; margin-left: 5px; opacity: 0.6; }
+        .del-x:hover { opacity: 1; }
 
         .timer-big { font-size: 6.5rem; text-align: center; color: #fff; font-weight: bold; margin: 20px 0; }
         .instruction-highlight { color: var(--accent); font-weight: bold; font-size: 1.4rem; text-transform: uppercase; }
@@ -92,7 +92,7 @@
 
     <div id="step2" class="step">
         <div class="box">
-            <span class="label">Manage Your Arsenal</span>
+            <span class="label">The Arsenal</span>
             <div id="vault-inject"></div>
         </div>
         <button class="btn" onclick="vibrate(50); playSnd('click'); nav(3);">Confirm Protocol</button>
@@ -117,12 +117,20 @@
 
 <script>
     let players = [], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft;
+    
+    // Core data structure
     const defaultVault = {
-        "Blindfolds": ["Tape", "Sleep Mask", "Hood"],
-        "Gags": ["Ball Gag", "Tape", "Sock Gag"],
+        "Blindfolds": ["Sleep Mask", "Hood", "Tape"],
+        "Gags": ["Ball Gag", "Sock Gag", "Tape"],
         "Restraints": ["Rope", "Zip Ties", "Cuffs"],
-        "Sensation": ["Whip", "Ice", "Vibrator", "Cane"]
+        "Sensation": ["Whip", "Ice", "Vibrator"]
     };
+
+    let vault = JSON.parse(localStorage.getItem('sov_v2_vault')) || null;
+    if(!vault) {
+        vault = {};
+        for(let c in defaultVault) vault[c] = defaultVault[c].map(n => ({n, on: true}));
+    }
 
     let trials = [
         { n: "Solitary Constraint", t: 600, d: "The Subject must use <b>[REST]</b> to bind themselves as the Master commands. Once secured, apply <b>[VIS]</b> and a <b>[GAG]</b>.", on: true },
@@ -132,18 +140,16 @@
     ];
 
     let gearCats = { "Blindfolds": true, "Gags": true, "Restraints": true, "Sensation": true };
-    let vault = JSON.parse(localStorage.getItem('sov_master_vault')) || null;
-    if(!vault) {
-        vault = {};
-        for(let c in defaultVault) vault[c] = defaultVault[c].map(n => ({n, on: true}));
-    }
 
     function playSnd(id) { document.getElementById('snd-'+id).play(); }
     function vibrate(ms) { if (navigator.vibrate) navigator.vibrate(ms); }
 
     function nav(n) {
         if(n === 2) {
-            players = [{n: document.getElementById('p1_n').value || "P1"}, {n: document.getElementById('p2_n').value || "P2"}];
+            players = [
+                {n: document.getElementById('p1_n').value || "P1"},
+                {n: document.getElementById('p2_n').value || "P2"}
+            ];
             maxR = parseInt(document.getElementById('max_r').value);
             renderVault();
         }
@@ -153,18 +159,19 @@
     }
 
     function renderVault() {
-        const cont = document.getElementById('vault-inject'); cont.innerHTML = '';
+        const cont = document.getElementById('vault-inject');
+        cont.innerHTML = '';
         for(let c in vault) {
-            let div = document.createElement('div');
-            div.innerHTML = `
+            let section = document.createElement('div');
+            section.innerHTML = `
                 <span class="label">${c}</span>
                 <div class="add-row">
-                    <input type="text" class="add-input" id="in-${c}" placeholder="Add new ${c}...">
+                    <input type="text" class="add-input" id="in-${c}" placeholder="New ${c}...">
                     <button class="add-btn" onclick="addItem('${c}')">+</button>
                 </div>
                 <div class="tag-cloud" id="cloud-${c}"></div>`;
-            cont.appendChild(div);
-            
+            cont.appendChild(section);
+
             vault[c].forEach((item, i) => {
                 let t = document.createElement('div');
                 t.className = `tag ${item.on ? 'on' : ''}`;
@@ -179,6 +186,7 @@
         let val = document.getElementById(`in-${c}`).value;
         if(val) {
             vault[c].push({n: val, on: true});
+            document.getElementById(`in-${c}`).value = '';
             saveVault(); renderVault();
         }
     }
@@ -188,7 +196,7 @@
         saveVault(); renderVault();
     }
 
-    function saveVault() { localStorage.setItem('sov_master_vault', JSON.stringify(vault)); }
+    function saveVault() { localStorage.setItem('sov_v2_vault', JSON.stringify(vault)); }
 
     function renderCommandCenter() {
         document.getElementById('round-header').innerText = `ROUND ${curR} | Master: ${players[masterIdx].n}`;
@@ -212,8 +220,8 @@
         let t = activeTrials[Math.floor(Math.random() * activeTrials.length)];
         const pick = (c) => { 
             if(!gearCats[c]) return `<span style="opacity:0.3; font-size:1rem;">[SKIP ${c}]</span>`;
-            let p = vault[c].filter(i=>i.on); 
-            return `<span class="instruction-highlight">${p.length ? p[Math.floor(Math.random()*p.length)].n : c}</span>`; 
+            let items = vault[c].filter(i => i.on);
+            return `<span class="instruction-highlight">${items.length ? items[Math.floor(Math.random()*items.length)].n : c}</span>`; 
         };
         let text = t.d.replace('[REST]', pick('Restraints')).replace('[SENS]', pick('Sensation')).replace('[VIS]', pick('Blindfolds')).replace('[GAG]', pick('Gags'));
         document.getElementById('active-trial-text').innerHTML = `<strong>${t.n.toUpperCase()}</strong><br><br>${text}`;
