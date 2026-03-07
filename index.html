@@ -10,39 +10,35 @@
             --text: #2c2c2c; --crimson: #7b1a1a; --safe-green: #2e7d32; --veto: #4a4a4a;
         }
         
-        body { background: var(--soft-bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 18px; }
-        .container { max-width: 650px; width: 100%; background: var(--card-bg); padding: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); margin-top: 20px; }
+        body { background: var(--soft-bg); color: var(--text); font-family: 'Georgia', serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 18px; }
+        .container { max-width: 700px; width: 100%; background: var(--card-bg); padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); border-radius: 40px; border: 1px solid rgba(197, 160, 89, 0.2); margin-top: 20px; }
         h1 { color: var(--crimson); text-align: center; text-transform: uppercase; letter-spacing: 6px; margin-bottom: 5px; font-size: 1.6rem; }
         .subtitle { text-align: center; font-size: 0.8rem; color: #a18e8e; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; font-weight: bold; }
 
         .step { display: none; }
         .active { display: block !important; }
 
-        .box { background: #fffcf9; border: 2px solid #f5f2ed; padding: 25px; margin-bottom: 25px; border-radius: 25px; line-height: 1.6; }
-        .inner-box { background: #ffffff; border: 1px solid #eee; padding: 15px; border-radius: 20px; margin-bottom: 15px; }
+        .box { background: #fffcf9; border: 1px solid #f0e6d2; padding: 30px; margin-bottom: 25px; border-radius: 25px; line-height: 1.8; position: relative; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: 900; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1.5px; }
 
-        input[type="text"], select, input[type="number"] { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; font-size: 1rem; outline: none; font-family: inherit; }
+        input[type="text"], select, input[type="number"] { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 12px; margin-bottom: 15px; font-size: 1rem; font-family: inherit; }
         
-        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .tgl-btn { background: #f0f0f0; padding: 12px 8px; border-radius: 12px; text-align: center; font-size: 0.75rem; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: 0.2s; color: #999; text-transform: uppercase; }
-        .tgl-btn.on { background: var(--crimson); color: white; border-color: var(--accent); }
-
-        .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; }
-        .tag { background: #eee; padding: 5px 12px; border-radius: 50px; font-size: 0.75rem; cursor: pointer; color: #888; border: 1px solid transparent; transition: 0.15s; }
-        .tag.on { background: #fff; border-color: var(--accent); color: var(--text); font-weight: bold; }
+        .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+        .tag { background: #f9f4eb; padding: 6px 14px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; color: #7b6a4a; border: 1px solid #e2d1b3; transition: 0.2s; }
+        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
         
-        .cat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .toggle-all { font-size: 0.6rem; color: var(--accent); cursor: pointer; text-decoration: underline; text-transform: uppercase; font-weight: bold; }
-
-        .badge { display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 0.7rem; font-weight: 1000; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; color: white; }
+        .badge { display: inline-block; padding: 6px 18px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; color: white; }
         .b-truth { background: #5d6d7e; } .b-dare { background: #af601a; } .b-escape { background: #c0392b; }
-        .b-edging { background: #884ea0; } .b-physical { background: #1e8449; } .b-selfbondage { background: #2e4053; }
+        .b-edging { background: #884ea0; } .b-physical { background: #1e8449; }
         
-        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 20px; font-size: 1rem; margin-bottom: 10px; }
-        .timer-display { font-size: 4.5rem; text-align: center; color: var(--crimson); font-weight: bold; margin: 15px 0; }
+        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; font-size: 1rem; margin-bottom: 10px; transition: 0.3s; }
+        .btn:hover { letter-spacing: 2px; background: #5a1212; }
         
-        b { color: var(--crimson); border-bottom: 1px solid #eee; }
+        .timer-display { font-size: 5rem; text-align: center; color: var(--crimson); font-weight: 100; margin: 20px 0; font-family: monospace; }
+        .intensity-pill { position: absolute; top: 15px; right: 15px; font-size: 0.6rem; padding: 4px 10px; border-radius: 50px; border: 1px solid var(--accent); color: var(--accent); text-transform: uppercase; font-weight: 800; }
+        
+        b { color: var(--crimson); text-decoration: underline; }
+        i { color: #666; font-size: 0.95rem; }
     </style>
 </head>
 <body>
@@ -53,98 +49,91 @@
 
     <div id="step1" class="step active">
         <div class="box">
-            <span class="label">Total Rounds</span>
-            <input type="number" id="maxRounds" value="6">
-            <div class="inner-box">
-                <span class="label">Slave</span>
-                <input type="text" id="p1" placeholder="Name">
-                <select id="g1"><option value="male body">Male Body</option><option value="female body">Female Body</option></select>
-            </div>
-            <div class="inner-box">
-                <span class="label">Master</span>
-                <input type="text" id="p2" placeholder="Name">
-                <select id="g2"><option value="male body">Male Body</option><option value="female body">Female Body</option></select>
-            </div>
+            <span class="label">Session Config</span>
+            <input type="number" id="maxRounds" value="6" title="Rounds">
+            <input type="text" id="p1" placeholder="Slave Name">
+            <select id="g1"><option value="male body">Male Body</option><option value="female body">Female Body</option></select>
+            <input type="text" id="p2" placeholder="Master Name">
         </div>
-        <button class="btn" onclick="goToStep(2)">Configure Arsenal ></button>
+        <button class="btn" onclick="goToStep(2)">Curate Arsenal ></button>
     </div>
 
     <div id="step2" class="step">
         <div class="box">
+            <span class="label">Inventory Selection</span>
             <div id="inv-container"></div>
         </div>
-        <button class="btn" onclick="goToStep(3)">Start Session</button>
+        <button class="btn" onclick="goToStep(3)">Commence Ceremony</button>
     </div>
 
     <div id="step3" class="step">
         <div id="pre-round">
-            <div id="round-header" class="label" style="text-align:center; font-size: 1rem;">Round 1</div>
-            <div class="inner-box">
-                <span class="label">Active Categories</span>
-                <div class="toggle-grid">
-                    <div class="tgl-btn on" data-cat="truth">Truth</div>
-                    <div class="tgl-btn on" data-cat="dare">Dare</div>
-                    <div class="tgl-btn on" data-cat="escape">Escape</div>
-                    <div class="tgl-btn on" data-cat="edging">Edging</div>
-                    <div class="tgl-btn on" data-cat="physical">Physical</div>
-                </div>
-            </div>
+            <div id="round-header" class="label" style="text-align:center;">Round 1</div>
             <div class="box" style="text-align:left;">
+                <div id="intensity-display" class="intensity-pill">---</div>
                 <div id="badge-container"></div>
-                <div id="task-text" style="font-size: 1.1rem;">Awaiting command...</div>
+                <div id="task-text">Press the button to receive your decree.</div>
             </div>
             <button class="btn" id="gen-btn" onclick="generate()">Generate Decree</button>
             <div id="pre-start-controls" style="display:none;">
                 <button class="btn" style="background: var(--safe-green);" onclick="startT()">Start Clock</button>
-                <button class="btn" style="background: var(--veto); font-size:0.8rem;" onclick="generate()">Veto</button>
+                <button class="btn" style="background: var(--veto); font-size:0.8rem;" onclick="generate()">Reroll Decree</button>
             </div>
         </div>
 
         <div id="active-round" style="display:none;">
             <div class="timer-display" id="clock">00:00</div>
-            <button class="btn" onclick="resolveTurn(true)">Success (Swap)</button>
-            <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Failure (Keep)</button>
+            <button class="btn" onclick="resolveTurn(true)">Success (Role Swap)</button>
+            <button class="btn" style="background:#888;" onclick="resolveTurn(false)">Failure (No Swap)</button>
         </div>
     </div>
 </div>
 
 <script>
-    // THE FULL UNIFIED LIST
     const gear = {
-        "Blindfolds": ["Bandage", "Tape", "Cloth", "Gas Mask", "Pillow Case", "Blindfold", "Sleep Mask", "Silk Scarf", "Hood"],
-        "Gags": ["Tape", "Pallet Wrap", "Cloth", "Panties", "Bandage", "Rope", "Ring Gag", "Gas Mask", "Hood", "Ball Gag", "Cleave Gag", "Muzzle"],
-        "Restraints": ["Leather Cuffs", "Tape", "Pallet Wrap", "String", "Belt", "Ribbon", "Rope", "Handcuffs", "Ankle Cuffs", "Leather Straps"],
-        "Sensation": ["Insertable", "Dildo", "Anal Hook", "Pussy Hook", "Butt Plug", "Anal Dildo", "E-stim Machine", "Paddle", "Vibrator", "Cane", "Needle", "Sharpies", "Tape", "Candle", "Feather", "Ice Cube", "Clamps", "Flogger"]
+        "Blindfolds": ["Pillow Case", "Gas Mask", "Bandage", "Tape", "Cloth", "Sleep Mask", "Silk Scarf", "Hood"],
+        "Gags": ["Gas Mask", "Tape", "Pallet Wrap", "Cloth", "Panties", "Bandage", "Rope", "Ring Gag", "Ball Gag", "Hood"],
+        "Restraints": ["Leather Cuffs", "Tape", "Pallet Wrap", "String", "Belt", "Ribbon", "Rope", "Handcuffs"],
+        "Sensation": ["Anal Hook", "Pussy Hook", "E-stim Machine", "Anal Dildo", "Insertable", "Dildo", "Butt Plug", "Paddle", "Vibrator", "Cane", "Needle", "Sharpies", "Candle", "Clamps"]
     };
 
     let activeInv = {};
     let players = [], currentRound = 1, subIdx = 0, timer, timeLeft;
 
-    // HIGH-DETAIL VERB ENGINE
-    const getVerb = (item) => {
+    // ELABORATE METHOD ENGINE
+    const getApplicationMethod = (item, intensity) => {
         item = item.toLowerCase();
-        if (item.includes("tape") || item.includes("wrap")) return "tightly wrap and secure";
-        if (item.includes("bandage") || item.includes("scarf") || item.includes("cloth")) return "wrap and knot";
-        if (item.includes("hook") || item.includes("plug") || item.includes("insert") || item.includes("dildo")) return "carefully lubricate and insert";
-        if (item.includes("cuffs") || item.includes("belt") || item.includes("strap")) return "cinch and lock";
-        if (item.includes("rope") || item.includes("string") || item.includes("ribbon")) return "tie securely with multiple knots";
-        if (item.includes("mask") || item.includes("hood") || item.includes("gag")) return "place and fasten";
-        return "apply";
-    };
+        let desc = "";
 
-    const getAction = (item) => {
-        item = item.toLowerCase();
-        if (item.includes("paddle") || item.includes("cane") || item.includes("flogger")) return "deliver rhythmic strikes to the";
-        if (item.includes("needle") || item.includes("sharpie")) return "trace and mark patterns across the";
-        if (item.includes("ice") || item.includes("feather") || item.includes("candle")) return "slowly trail and drip across the";
-        if (item.includes("vibrator") || item.includes("e-stim")) return "place on a high setting against the";
-        if (item.includes("clamps")) return "firmly pinch and attach to the";
-        return "focus the use of the item on the";
+        // VISUAL INHIBITORS
+        if (item === "pillow case") desc = "Drape the fabric entirely over the Slave's head. If possible, secure it loosely around the neck with a soft tie, ensuring the excess fabric hangs heavy to block all light.";
+        else if (item === "gas mask") desc = "Fit the mask over the Slave's face, cinching the rubber straps until the seal is airtight against the skin, creating a claustrophobic sensory vacuum.";
+        else if (item === "tape") desc = "Apply three horizontal strips across the eyes, pressing the edges firmly into the temples to ensure zero light leakage.";
+        else if (item === "bandage" || item === "cloth" || item === "silk scarf") desc = `Fold the material into a thick 3-inch band. Wrap it twice around the head and knot it ${intensity === 'tight' ? 'firmly at the base of the skull' : 'softly over the ears'}.`;
+        
+        // GAGS
+        else if (item === "pallet wrap" || item === "tape") desc = `Force the Slave to open wide, then wrap the ${item} around the circumference of the head three times, covering the mouth entirely to muffle all sound.`;
+        else if (item === "panties" || item === "cloth") desc = "Stuff the fabric deep into the oral cavity until the jaws are stretched, then secure it in place by tying a secondary binding over the lips.";
+        else if (item === "ring gag" || item === "ball gag") desc = "Insert the bit and pull the buckle to the third hole, forcing the Slave's mouth into a permanent, straining 'O' shape.";
+
+        // RESTRAINTS
+        else if (item === "leather cuffs" || item === "handcuffs") desc = `Cinch the hardware around the wrists. ${intensity === 'tight' ? 'Ensure there is no gap between the skin and the lining' : 'Leave exactly one finger-width of space for slight movement'}.`;
+        else if (item === "rope" || item === "string") desc = `Execute a figure-eight wrap around the wrists. Cross the binds four times and finish with a double-knot, ensuring the hands are held ${intensity === 'tight' ? 'crushed together' : 'loosely adjacent'}.`;
+        else if (item === "belt") desc = "Loop the leather around the limbs and pull until the Slave's movement is completely restricted by the weight of the strap.";
+
+        // SENSATION
+        else if (item.includes("hook")) desc = `Lubricate the metal thoroughly. Slowly introduce the curve into the ${item.includes('anal') ? 'rectum' : 'genitals'} until the weight of the hook hangs naturally, pulling the skin taut.`;
+        else if (item === "e-stim machine") desc = "Affix the pads to the sensitive areas of the inner thighs. Start at zero and slowly rotate the dial until the Slave's muscles begin to twitch visibly.";
+        else if (item === "paddle" || item === "cane") desc = `Deliver ${intensity === 'tight' ? 'forceful, stinging' : 'measured, rhythmic'} strikes, aiming for the fleshy parts of the seat, waiting for the skin to flush a deep crimson.`;
+        else if (item === "clamps") desc = "Depress the springs and attach them to the most sensitive points. Once attached, tug the chain gently to remind the Slave of their presence.";
+        
+        else desc = `Apply the ${item} with focus and intent, ensuring the Slave is fully aware of its weight and texture.`;
+
+        return desc;
     };
 
     function boot() {
         for (let cat in gear) { activeInv[cat] = gear[cat].map(i => ({ n: i, on: true })); }
-        document.querySelectorAll('.tgl-btn').forEach(b => b.onclick = () => b.classList.toggle('on'));
     }
     boot();
 
@@ -153,7 +142,7 @@
         container.innerHTML = '';
         for (let cat in activeInv) {
             let section = document.createElement('div');
-            section.innerHTML = `<div class="cat-header"><span class="label">${cat}</span><span class="toggle-all" onclick="toggleAll('${cat}')">All</span></div><div class="tag-row" id="tags-${cat}"></div>`;
+            section.innerHTML = `<span class="label">${cat}</span><div class="tag-row" id="tags-${cat}"></div>`;
             container.appendChild(section);
             activeInv[cat].forEach(item => {
                 let tag = document.createElement('div');
@@ -165,16 +154,10 @@
         }
     }
 
-    function toggleAll(cat) {
-        let allOn = activeInv[cat].every(i => i.on);
-        activeInv[cat].forEach(i => i.on = !allOn);
-        renderInv();
-    }
-
     function goToStep(n) {
         if (n === 2) {
             players = [{n: document.getElementById('p1').value || "Slave", g: document.getElementById('g1').value, wins: 0},
-                       {n: document.getElementById('p2').value || "Master", g: document.getElementById('g2').value, wins: 0}];
+                       {n: document.getElementById('p2').value || "Master", g: document.getElementById('p2').value || "Master", wins: 0}];
             renderInv();
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -184,49 +167,54 @@
 
     const tasks = {
         truth: { label: "Truth", time: 120, templates: [
-            "While Slave is blindfolded with <b>[VIS]</b>, Master must <b>[VERB-GAG] [GAG]</b>. Slave must then confess a secret while the gag is in place.",
-            "Master shall <b>[VERB-REST] [REST]</b> around the Slave's wrists. Slave must answer: 'What is the most shameful thing you enjoy while bound?'"
+            "<b>The Sensory Confession:</b> Master shall first <b>[DESC-VIS]</b>. Once the Slave is in total darkness, Master will <b>[DESC-GAG]</b>. Slave must then attempt to confess their deepest submissive urge through the binding.",
+            "<b>The Exposed Inquiry:</b> Master will <b>[DESC-REST]</b>. While the Slave is unable to move, Master will whisper a question. Slave must answer truthfully or face a round of sensation."
         ]},
-        dare: { label: "Dare", time: 240, templates: [
-            "Master must <b>[VERB-REST] [REST]</b> to bind the Slave's ankles. Once secure, Master will <b>[SENS-ACT] [SENS]</b> on the Slave's <b>[BODY]</b> for 2 minutes.",
-            "Master will <b>[VERB-VIS] [VIS]</b> over the Slave's eyes. Then, Master must <b>[VERB-GAG] [GAG]</b> and command the Slave to perform a submissive task blindly."
+        dare: { label: "Dare", time: 300, templates: [
+            "<b>The Bound Statue:</b> Master must <b>[DESC-REST]</b> and then <b>[DESC-VIS]</b>. Once the Slave is blind and bound, Master will <b>[DESC-SENS]</b>. Slave must remain perfectly still for the duration of the clock.",
+            "<b>The Muffled Service:</b> Master will <b>[DESC-GAG]</b> and <b>[DESC-REST]</b>. Slave must then spend the round performing a menial task (like tidying or posing) exactly as Master commands, without a single sound."
         ]},
         escape: { label: "Escape", time: 480, templates: [
-            "Master must <b>[VERB-REST] [REST]</b> around the Slave's hands and <b>[VERB-VIS] [VIS]</b> over their eyes. Slave has the duration of the clock to struggle free.",
-            "Master will <b>[VERB-REST] [REST]</b> to tether the Slave to a fixed object. Master will then <b>[VERB-GAG] [GAG]</b>. Slave must escape before the timer ends."
+            "<b>The Great Release:</b> Master must <b>[DESC-REST]</b> using maximum tension. Master will then <b>[DESC-VIS]</b>. Slave is given the full duration of the timer to struggle out of the bindings. If they fail, Master wins the round.",
+            "<b>The Weighted Struggle:</b> Master will <b>[DESC-SENS]</b> to provide a distraction, then <b>[DESC-REST]</b>. Slave must escape the restraints while the sensation item remains in place."
         ]},
-        edging: { label: "Edging", time: 360, templates: [
-            "Master must <b>[VERB-REST] [REST]</b> to secure the Slave's limbs. Master will then <b>[SENS-ACT] [SENS]</b> to bring the Slave to the brink of climax 3 times.",
-            "Slave is to be blindfolded with <b>[VIS]</b>. Master will <b>[VERB-SENS] [SENS]</b> and use it to tease the Slave's <b>[BODY]</b> until they beg for mercy."
+        edging: { label: "Edging", time: 400, templates: [
+            "<b>The Brink of Sovereignty:</b> Master will <b>[DESC-REST]</b> the Slave's limbs. Master will then use <b>[DESC-SENS]</b> to bring the Slave to the absolute peak of climax, only to stop and command 'Still' until the feeling subsides. Repeat 3 times.",
+            "<b>Blind Denial:</b> Master shall <b>[DESC-VIS]</b>. Using <b>[DESC-SENS]</b>, Master will tease the Slave's <b>[BODY]</b>. Slave is forbidden from touching themselves or reaching climax."
         ]},
         physical: { label: "Physical", time: 300, templates: [
-            "Master will <b>[VERB-REST] [REST]</b> to bind the Slave's hands behind their back. Slave must hold a deep squat while Master <b>[VERB-VIS] [VIS]</b>.",
-            "Master must <b>[VERB-GAG] [GAG]</b>. Slave must then hold a plank position. If the Slave's body touches the floor, the round is a failure."
+            "<b>The Burden of Mercy:</b> Master will <b>[DESC-REST]</b> the Slave's hands behind their back and <b>[DESC-GAG]</b>. Slave must hold a kneeling 'stress position' (back straight, heels under seat) for the entire round.",
+            "<b>The Blind Balance:</b> Master shall <b>[DESC-VIS]</b> and <b>[DESC-REST]</b> the Slave's ankles together. Slave must balance on one knee without toppling."
         ]}
     };
 
     function updateIdentity() {
-        let mIdx = (subIdx === 0 ? 1 : 0);
-        document.getElementById('round-header').innerText = `Round ${currentRound} (Master: ${players[mIdx].n} | Slave: ${players[subIdx].n})`;
+        let mName = (subIdx === 0 ? players[1].n : players[0].n);
+        document.getElementById('round-header').innerText = `Round ${currentRound} | Master: ${mName} | Slave: ${players[subIdx].n}`;
     }
 
     function generate() {
         let cats = Array.from(document.querySelectorAll('.tgl-btn.on')).map(b => b.getAttribute('data-cat'));
+        if (!cats.length) cats = ["truth", "dare", "escape", "edging", "physical"];
+        
         let k = cats[Math.floor(Math.random()*cats.length)];
+        let intensity = ["soft", "firm", "tight"][Math.floor(Math.random()*3)];
         let template = tasks[k].templates[Math.floor(Math.random()*tasks[k].templates.length)];
         
         const pick = (c) => {
             let p = activeInv[c].filter(i=>i.on);
-            return p.length ? p[Math.floor(Math.random()*p.length)].n : "gear";
+            return p.length ? p[Math.floor(Math.random()*p.length)].n : "the selected item";
         };
 
         let v = pick('Blindfolds'), g = pick('Gags'), r = pick('Restraints'), s = pick('Sensation');
 
-        let res = template.replace(/\[VIS\]/g, v).replace(/\[GAG\]/g, g).replace(/\[REST\]/g, r).replace(/\[SENS\]/g, s)
-                  .replace(/\[VERB-VIS\]/g, getVerb(v)).replace(/\[VERB-GAG\]/g, getVerb(g))
-                  .replace(/\[VERB-REST\]/g, getVerb(r)).replace(/\[VERB-SENS\]/g, getVerb(s))
-                  .replace(/\[SENS-ACT\]/g, getAction(s)).replace(/\[BODY\]/g, players[subIdx].g);
+        let res = template.replace(/\[DESC-VIS\]/g, `apply the <b>${v}</b>: ${getApplicationMethod(v, intensity)}`)
+                          .replace(/\[DESC-GAG\]/g, `apply the <b>${g}</b>: ${getApplicationMethod(g, intensity)}`)
+                          .replace(/\[DESC-REST\]/g, `apply the <b>${r}</b>: ${getApplicationMethod(r, intensity)}`)
+                          .replace(/\[DESC-SENS\]/g, `apply the <b>${s}</b>: ${getApplicationMethod(s, intensity)}`)
+                          .replace(/\[BODY\]/g, players[subIdx].g);
 
+        document.getElementById('intensity-display').innerText = `Intensity: ${intensity}`;
         document.getElementById('badge-container').innerHTML = `<span class="badge b-${k}">${tasks[k].label}</span>`;
         document.getElementById('task-text').innerHTML = res;
         timeLeft = tasks[k].time;
@@ -247,18 +235,17 @@
 
     function resolveTurn(success) {
         clearInterval(timer);
-        if (success) { players[subIdx].wins++; subIdx = (subIdx === 0 ? 1 : 0); }
-        else { players[subIdx === 0 ? 1 : 0].wins++; }
+        if (success) { subIdx = (subIdx === 0 ? 1 : 0); }
         currentRound++;
         if (currentRound > parseInt(document.getElementById('maxRounds').value)) {
-            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Finis</h1><button class="btn" onclick="location.reload()">New Session</button></div>`;
+            document.body.innerHTML = `<div class="container" style="text-align:center;"><h1>Session Concluded</h1><button class="btn" onclick="location.reload()">Return to Foyer</button></div>`;
         } else {
             updateIdentity();
             document.getElementById('active-round').style.display = 'none';
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('gen-btn').style.display = 'block';
             document.getElementById('pre-start-controls').style.display = 'none';
-            document.getElementById('task-text').innerText = "Awaiting command...";
+            document.getElementById('task-text').innerHTML = "<i>The air thickens as the next decree prepares to manifest...</i>";
         }
     }
 </script>
