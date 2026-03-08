@@ -3,43 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Master's Command Build</title>
+    <title>SOVEREIGNTY: High-Contrast Build</title>
     <style>
-        :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto-blue: #004a7c; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .container { max-width: 600px; width: 100%; background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid #333; box-shadow: 0 0 50px #000; }
-        
-        h1 { text-align: center; text-transform: uppercase; letter-spacing: 6px; color: var(--accent); margin-bottom: 25px; font-size: 2.4rem; }
-        .box-section { background: #1f1f1f; padding: 20px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #333; }
-        
-        .label { font-size: 0.85rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1.2px; }
-        input[type="text"], input[type="number"], select { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; margin-bottom: 12px; font-size: 1.2rem; }
-        
-        .gender-grid { display: flex; gap: 10px; margin-bottom: 20px; }
-        .g-btn { flex: 1; padding: 14px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 8px; font-size: 0.85rem; font-weight: bold; }
-        .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        :root { 
+            --accent: #FFD700; /* Bright Gold */
+            --bg: #000000; /* Pure Black */
+            --card: #1a1a1a; /* Dark Gray */
+            --text: #FFFFFF; /* Pure White */
+            --crimson: #FF0000; /* Pure Red */
+            --success: #00FF00; /* Lime Green */
+            --warning: #FFFF00; /* Bright Yellow */
+            --veto-blue: #00BFFF; /* Deep Sky Blue */
+        }
 
-        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 6px; font-size: 1.2rem; }
-        
-        .item-chip { display: inline-flex; align-items: center; background: #333; padding: 8px 15px; border-radius: 25px; margin: 5px; font-size: 1rem; border: 1px solid #444; }
-        .item-chip.off { opacity: 0.3; text-decoration: line-through; background: #111; }
-        .tag { font-size: 0.65rem; font-weight: bold; background: var(--accent); color: black; padding: 2px 6px; border-radius: 4px; margin-left: 8px; }
-        .remove-x { margin-left: 12px; color: var(--crimson); font-weight: bold; cursor: pointer; }
-        
-        .score-row { display: flex; justify-content: space-between; padding: 15px; background: #000; border-radius: 12px; border: 1px solid #222; text-align: center; margin-bottom: 20px; }
-        .p-name { font-weight: bold; font-size: 1.2rem; }
-        .p-score { font-size: 1.8rem; color: var(--accent); }
-        
-        .tog-btn { padding: 15px; font-size: 0.85rem; border-radius: 8px; border: 1px solid #444; background: #111; color: #555; cursor: pointer; text-transform: uppercase; font-weight: bold; transition: 0.2s; }
-        .tog-btn.active { border-color: var(--accent); color: var(--accent); background: #1a1608; box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.1); }
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            margin: 0; padding: 10px; 
+            display: flex; justify-content: center; 
+            font-size: 1.2rem; /* Base size increased */
+        }
 
-        .m-btn { border-radius: 8px; padding: 15px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; cursor: pointer; opacity: 0.3; pointer-events: none; border: 1px solid #333; }
+        .container { 
+            max-width: 650px; width: 100%; 
+            background: var(--card); 
+            padding: 30px; 
+            border-radius: 20px; 
+            border: 3px solid #444; 
+            box-shadow: 0 0 60px #000; 
+        }
+        
+        h1 { 
+            text-align: center; text-transform: uppercase; 
+            letter-spacing: 8px; color: var(--accent); 
+            margin-bottom: 30px; font-size: 2.8rem; /* +20% */
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+        }
+
+        .box-section { 
+            background: #000000; 
+            padding: 25px; 
+            margin-bottom: 20px; 
+            border-radius: 12px; 
+            border: 2px solid #555; 
+        }
+        
+        .label { 
+            font-size: 1.1rem; /* +20% */
+            text-transform: uppercase; font-weight: bold; 
+            color: var(--accent); display: block; 
+            margin-bottom: 12px; letter-spacing: 1.5px; 
+        }
+
+        input[type="text"], input[type="number"], select { 
+            width: 100%; padding: 18px; 
+            border: 2px solid var(--accent); 
+            border-radius: 8px; background: #111; 
+            color: white; box-sizing: border-box; 
+            margin-bottom: 15px; font-size: 1.4rem; /* +20% */
+        }
+        
+        .gender-grid { display: flex; gap: 12px; margin-bottom: 25px; }
+        .g-btn { 
+            flex: 1; padding: 18px; 
+            background: #222; border: 2px solid #666; 
+            color: #AAA; cursor: pointer; 
+            border-radius: 8px; font-size: 1.1rem; 
+            font-weight: bold; text-transform: uppercase;
+        }
+        .g-btn.active { 
+            background: var(--accent); color: #000; 
+            border-color: #FFF; font-weight: 900;
+        }
+
+        .btn { 
+            background: var(--crimson); color: white; 
+            border: 2px solid #FFF; padding: 22px; 
+            width: 100%; cursor: pointer; 
+            text-transform: uppercase; font-weight: bold; 
+            border-radius: 12px; margin-top: 10px; 
+            font-size: 1.4rem; /* +20% */
+        }
+        
+        .item-chip { 
+            display: inline-flex; align-items: center; 
+            background: #222; padding: 10px 18px; 
+            border-radius: 30px; margin: 6px; 
+            font-size: 1.2rem; border: 2px solid #777; 
+        }
+        .item-chip.off { opacity: 0.25; text-decoration: line-through; background: #000; border-color: #333; }
+        .tag { 
+            font-size: 0.8rem; font-weight: 900; 
+            background: var(--accent); color: black; 
+            padding: 3px 8px; border-radius: 4px; margin-left: 10px; 
+        }
+        .remove-x { margin-left: 15px; color: var(--crimson); font-weight: bold; cursor: pointer; font-size: 1.5rem; }
+        
+        .score-row { 
+            display: flex; justify-content: space-between; 
+            padding: 20px; background: #000; 
+            border-radius: 15px; border: 3px solid var(--accent); 
+            text-align: center; margin-bottom: 25px; 
+        }
+        .p-name { font-weight: bold; font-size: 1.4rem; color: #FFF; margin-bottom: 5px; }
+        .p-score { font-size: 2.2rem; color: var(--accent); font-weight: 900; }
+        
+        .tog-btn { 
+            padding: 18px; font-size: 1rem; 
+            border-radius: 10px; border: 2px solid #666; 
+            background: #111; color: #EEE; 
+            cursor: pointer; text-transform: uppercase; 
+            font-weight: bold; transition: 0.2s; 
+        }
+        .tog-btn.active { 
+            border-color: var(--accent); color: #000; 
+            background: var(--accent); box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); 
+        }
+
+        .m-btn { 
+            border-radius: 10px; padding: 18px; 
+            font-size: 1rem; font-weight: bold; 
+            text-transform: uppercase; cursor: pointer; 
+            opacity: 0.2; pointer-events: none; border: 2px solid #FFF; 
+        }
         .m-btn.active-card { opacity: 1; pointer-events: auto; }
         .y-card { background: var(--warning); color: #000; }
         .r-card { background: var(--crimson); color: #fff; }
 
-        #decree-display { line-height: 1.6; color: #ddd; font-size: 1.2rem; }
-        .grand-decree-text { font-size: 1.1rem; line-height: 1.8; color: #eee; background: #000; padding: 20px; border-radius: 10px; border: 1px solid var(--accent); }
+        #decree-display { line-height: 1.6; color: #FFF; font-size: 1.4rem; font-weight: 500; }
+        .grand-decree-text { font-size: 1.3rem; line-height: 1.8; color: #FFF; background: #000; padding: 25px; border-radius: 12px; border: 2px solid var(--accent); }
     </style>
 </head>
 <body>
@@ -71,31 +165,31 @@
 
     <div id="step-2" style="display:none;">
         <div id="inventory-editor"></div>
-        <button class="btn" style="background:var(--success); width:100%" onclick="startSession()">Start Session</button>
+        <button class="btn" style="background:var(--success); color: #000; border-color: #000; width:100%" onclick="startSession()">Start Session</button>
     </div>
 
     <div id="step-3" style="display:none;">
-        <div id="round-ui" style="text-align:center; color:var(--accent); margin-bottom:10px; font-weight:bold; letter-spacing: 2px;"></div>
+        <div id="round-ui" style="text-align:center; color:var(--accent); margin-bottom:15px; font-weight:900; letter-spacing: 3px; font-size: 1.5rem;"></div>
         <div class="score-row">
-            <div class="p-block"><div id="r0" class="role-tag">MASTER</div><div id="n0" class="p-name"></div><div id="s0" class="p-score">0</div><div id="inv0"></div></div>
-            <div class="p-block"><div id="r1" class="role-tag">SLAVE</div><div id="n1" class="p-name"></div><div id="s1" class="p-score">0</div><div id="inv1"></div></div>
+            <div class="p-block"><div id="r0" class="label" style="margin-bottom:5px;">MASTER</div><div id="n0" class="p-name"></div><div id="s0" class="p-score">0</div><div id="inv0" style="font-size: 1.5rem;"></div></div>
+            <div class="p-block"><div id="r1" class="label" style="margin-bottom:5px;">SLAVE</div><div id="n1" class="p-name"></div><div id="s1" class="p-score">0</div><div id="inv1" style="font-size: 1.5rem;"></div></div>
         </div>
         
         <div id="game-controls">
              <div class="box-section">
                  <span class="label" id="master-toggle-label">MASTER'S ARSENAL CONTROL</span>
-                 <div id="proto-mount" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;"></div>
+                 <div id="proto-mount" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;"></div>
              </div>
-             <button class="btn" style="width:100%" onclick="generate()">Command Decree</button>
+             <button class="btn" style="width:100%; background: var(--accent); color: #000;" onclick="generate()">Command Decree</button>
         </div>
 
         <div id="decree-view" style="display:none;">
             <div class="box-section"><div id="decree-display"></div></div>
-            <div style="display:flex; gap:12px;">
+            <div style="display:flex; gap:15px;">
                 <button class="btn" style="background:#333; flex:1;" onclick="resolve('fail')">FAIL</button>
-                <button class="btn" style="background:var(--success); flex:1;" onclick="resolve('success')">SUCCESS</button>
+                <button class="btn" style="background:var(--success); color: #000; flex:1;" onclick="resolve('success')">SUCCESS</button>
             </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:15px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:20px;">
                 <button id="y-btn" class="m-btn y-card" onclick="useYellow()">Yellow Card</button>
                 <button id="r-btn" class="m-btn r-card" onclick="useRed()">Red Card</button>
             </div>
@@ -103,9 +197,9 @@
     </div>
 
     <div id="step-4" style="display:none;">
-        <h2 style="color:var(--accent); text-align:center;">THE GRAND DECREE</h2>
+        <h2 style="color:var(--accent); text-align:center; font-size: 2.2rem;">THE GRAND DECREE</h2>
         <div class="box-section"><div id="grand-decree-display" class="grand-decree-text"></div></div>
-        <button class="btn" style="width:100%; background:var(--success);" onclick="location.reload()">New Session</button>
+        <button class="btn" style="width:100%; background:var(--success); color: #000;" onclick="location.reload()">New Session</button>
     </div>
 </div>
 
@@ -116,7 +210,7 @@
             {n:"", g:"M", role:"Master", score:0, hasYellow:false, hasRed:false},
             {n:"", g:"F", role:"Slave", score:0, hasYellow:false, hasRed:false}
         ],
-        vault: JSON.parse(localStorage.getItem('sov_v6_final')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v7_hc')) || {
             "The Shackles": [{n:"Handcuffs", a:true, t:"U"}],
             "The Silence": [{n:"Ball Gag", a:true, t:"U"}],
             "The Shadows": [{n:"Silk Scarf", a:true, t:"U"}],
@@ -124,21 +218,16 @@
             "The Senses": [{n:"Ice Cube", a:true, t:"U"}],
             "The Pleasure": [{n:"Magic Wand", a:true, t:"F"}]
         },
-        // Track category active status globally
         activeCats: {
             "The Shackles": true, "The Silence": true, "The Shadows": true,
             "The Discipline": true, "The Senses": true, "The Pleasure": true
         }
     };
 
-    // Maps categories to their "Protocol Name" for decree generation
     const protoNames = {
-        "The Shackles": "The Solitary Bind",
-        "The Silence": "The Veiled Confession",
-        "The Shadows": "The Silk Labyrinth",
-        "The Discipline": "The Wicked Gamble",
-        "The Senses": "The Flesh Endurance",
-        "The Pleasure": "The Threshold of Agony"
+        "The Shackles": "The Solitary Bind", "The Silence": "The Veiled Confession",
+        "The Shadows": "The Silk Labyrinth", "The Discipline": "The Wicked Gamble",
+        "The Senses": "The Flesh Endurance", "The Pleasure": "The Threshold of Agony"
     };
 
     function updateGender(pIdx, g, btn) {
@@ -155,7 +244,7 @@
 
     function renderInventory() {
         const container = document.getElementById('inventory-editor');
-        container.innerHTML = '<h3 style="color:var(--accent); text-align:center;">ARSENAL VAULT</h3>';
+        container.innerHTML = '<h2 style="color:var(--accent); text-align:center; font-size: 1.8rem;">ARSENAL VAULT</h2>';
         for (let cat in state.vault) {
             let section = document.createElement('div');
             section.className = 'box-section';
@@ -167,10 +256,10 @@
             section.innerHTML = `
                 <span class="label">${cat}</span>
                 <div>${chips}</div>
-                <div style="display:grid; grid-template-columns: 2fr 1fr 60px; gap:8px; margin-top:12px;">
+                <div style="display:grid; grid-template-columns: 2fr 1fr 80px; gap:12px; margin-top:15px;">
                     <input type="text" id="in-${cat.replace(/\s/g,'')}" placeholder="Add gear...">
                     <select id="tag-${cat.replace(/\s/g,'')}"><option value="U">U</option><option value="M">M</option><option value="F">F</option></select>
-                    <button class="btn" style="padding:0; margin:0;" onclick="addItem('${cat}')">+</button>
+                    <button class="btn" style="padding:0; margin:0;" onclick="addItem('${cat}')">ADD</button>
                 </div>`;
             container.appendChild(section);
         }
@@ -190,13 +279,12 @@
         state.players[1].n = document.getElementById('p1-name').value;
         state.total = parseInt(document.getElementById('round-total').value);
         state.players[0].hasYellow = true; state.players[1].hasRed = true;
-        localStorage.setItem('sov_v6_final', JSON.stringify(state.vault));
+        localStorage.setItem('sov_v7_hc', JSON.stringify(state.vault));
         showStep(3); renderGame();
     }
 
     function renderGame() {
         if(state.curr > state.total) return showStep(4);
-        
         const dom = state.players.find(p => p.role === 'Master');
         document.getElementById('round-ui').innerText = `ROUND ${state.curr} / ${state.total}`;
         document.getElementById('master-toggle-label').innerText = `${dom.n.toUpperCase()}'S ARSENAL CONTROL`;
@@ -204,42 +292,26 @@
         state.players.forEach((p, i) => {
             document.getElementById('n'+i).innerText = p.n;
             document.getElementById('s'+i).innerText = p.score;
-            document.getElementById('r'+i).innerText = p.role;
             document.getElementById('inv'+i).innerHTML = (p.hasYellow ? '🟡 ' : '') + (p.hasRed ? '🔴' : '');
         });
 
-        const pm = document.getElementById('proto-mount'); 
-        pm.innerHTML = '';
+        const pm = document.getElementById('proto-mount'); pm.innerHTML = '';
         Object.keys(state.activeCats).forEach(catName => {
-            pm.innerHTML += `
-                <button class="tog-btn ${state.activeCats[catName]?'active':''}" 
-                        onclick="state.activeCats['${catName}']=!state.activeCats['${catName}']; renderGame()">
-                    ${catName}
-                </button>`;
+            pm.innerHTML += `<button class="tog-btn ${state.activeCats[catName]?'active':''}" onclick="state.activeCats['${catName}']=!state.activeCats['${catName}']; renderGame()">${catName}</button>`;
         });
     }
 
     function generate() {
         const ap = Object.keys(state.activeCats).filter(k => state.activeCats[k]);
         if(ap.length === 0) return alert("Master must enable at least one Category!");
-
         const catChoice = ap[Math.floor(Math.random()*ap.length)];
         const sub = state.players.find(p => p.role === 'Slave');
         const dom = state.players.find(p => p.role === 'Master');
-        
-        // Gender filter + Enabled filter
         const items = state.vault[catChoice].filter(i => i.a && (i.t === 'U' || i.t === sub.g));
-        
-        if(items.length === 0) return alert(`${dom.n}, there are no gear options for a ${sub.g} in ${catChoice}. Enable more items or change the sub's gender.`);
+        if(items.length === 0) return alert(`${dom.n}, no gear for ${sub.g} in ${catChoice}!`);
         
         const item = items[Math.floor(Math.random()*items.length)];
-        const protocol = protoNames[catChoice];
-
-        document.getElementById('decree-display').innerHTML = `
-            <strong>${protocol}</strong><br><br>
-            ${dom.n} shall apply <strong>${item.n}</strong> from <em>${catChoice}</em> to ${sub.n}. 
-            Success results in a role swap.`;
-            
+        document.getElementById('decree-display').innerHTML = `<strong>${protoNames[catChoice]}</strong><br><br>${dom.n} shall apply <strong>${item.n}</strong> to ${sub.n}. Success results in a role swap.`;
         document.getElementById('game-controls').style.display = 'none';
         document.getElementById('decree-view').style.display = 'block';
         document.getElementById('y-btn').classList.toggle('active-card', state.players.some(p => p.hasYellow));
@@ -247,7 +319,7 @@
     }
 
     function useYellow() { if(confirm("Swap roles?")) { state.players.forEach(p => p.role = p.role==='Master'?'Slave':'Master'); renderGame(); generate(); } }
-    function useRed() { if(confirm("Reroll decree?")) { generate(); } }
+    function useRed() { if(confirm("Reroll?")) { generate(); } }
 
     function resolve(res) {
         const s = state.players.find(p => p.role === 'Slave');
