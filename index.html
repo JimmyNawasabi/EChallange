@@ -1,9 +1,9 @@
-=<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Gold Benchmark</title>
+    <title>SOVEREIGNTY: Card Exchange Edition</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto-blue: #004a7c; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -22,6 +22,7 @@
         .role-tag { font-size: 0.6rem; font-weight: bold; color: #444; }
         .master-glow { color: var(--accent) !important; text-shadow: 0 0 5px var(--accent); }
         
+        /* CARD INTERFACE */
         .management-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; }
         .m-btn { border-radius: 8px; padding: 10px; font-size: 0.6rem; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); opacity: 0.3; pointer-events: none; }
         .m-btn.active-card { opacity: 1; pointer-events: auto; }
@@ -138,6 +139,7 @@
         state.total = parseInt(document.getElementById('round-total').value);
         document.getElementById('sw-btn').innerText = "SAFEWORD: " + document.getElementById('safeword-in').value;
         
+        // Randomly assign cards
         state.players[Math.floor(Math.random()*2)].hasYellow = true;
         state.players[Math.floor(Math.random()*2)].hasRed = true;
         
@@ -169,6 +171,12 @@
         document.getElementById('game-controls').style.display = 'none';
         document.getElementById('decree-view').style.display = 'block';
         
+        // Update Card Visibility based on possession
+        document.getElementById('y-btn').className = 'm-btn y-card ' + (state.players.find(p=>p.hasYellow).role === state.players.find(p=>p.role==='Master'?'Master':'Slave').role ? 'active-card' : '');
+        const pWithYellow = state.players.find(p=>p.hasYellow);
+        document.getElementById('y-btn').classList.toggle('active-card', pWithYellow.role === 'Master' || pWithYellow.role === 'Slave');
+        
+        // Set buttons based on current possessor
         document.getElementById('y-btn').classList.toggle('active-card', state.players[0].hasYellow || state.players[1].hasYellow);
         document.getElementById('r-btn').classList.toggle('active-card', state.players[0].hasRed || state.players[1].hasRed);
     }
