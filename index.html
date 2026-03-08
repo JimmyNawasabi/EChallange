@@ -1,8 +1,8 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SOVEREIGNTY: Randomization Engine</title>
+    <title>SOVEREIGNTY: Penalty Logic Update</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
@@ -22,7 +22,6 @@
         .cat-toggle-row { display: flex; align-items: center; justify-content: space-between; background: #080808; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #222; }
         .cat-name { font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
         
-        /* Toggle Switch */
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 20px; }
@@ -31,8 +30,7 @@
         input:checked + .slider:before { transform: translateX(20px); }
 
         .item-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 5px 0 10px 0; }
-        .chip { padding: 4px 10px; border: 1px solid #333; background: #0a0a0a; color: #555; cursor: pointer; border-radius: 4px; font-size: 0.65rem; }
-        .chip.active { border-color: var(--accent); color: white; background: #001a35; }
+        .chip { padding: 4px 10px; border: 1px solid #333; background: #0a0a0a; color: #555; border-radius: 4px; font-size: 0.65rem; }
         
         .btn-main { background: var(--accent); color: white; padding: 20px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; margin-top: 10px; letter-spacing: 2px; }
         .btn-commence { background: var(--gold); color: black; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; margin-bottom: 10px; cursor: pointer; text-transform: uppercase;}
@@ -45,6 +43,7 @@
         #decree-panel { display: none; margin-top: 20px; text-align: center; }
         #decree-text { background: #000; padding: 30px; border-radius: 15px; border: 1px solid #333; font-size: 1.1rem; line-height: 1.8; margin-bottom: 20px; text-align: left; border-left: 5px solid var(--accent); }
         #timer { font-size: 4rem; color: var(--crimson); font-weight: 100; font-family: monospace; letter-spacing: 8px; margin-bottom: 10px;}
+        .score-change { font-size: 0.7rem; display: block; margin-top: 5px; color: #666; }
     </style>
 </head>
 <body>
@@ -65,7 +64,7 @@
         </div>
         
         <div class="arsenal-box">
-            <span class="label">Category Configuration & Inventory</span>
+            <span class="label">Protocol Toggles & Hardware</span>
             <div id="arsenal-list"></div>
         </div>
 
@@ -99,10 +98,10 @@
             <div id="decree-text"></div>
             <div id="completion-controls" style="display:none; flex-direction:column; gap:10px;">
                 <div style="display:flex; gap:10px;">
-                    <button class="btn-main" style="background:#1a1a1a; flex:1;" onclick="endRound(false)">Failure</button>
-                    <button class="btn-main" style="background:var(--success); flex:1;" onclick="endRound(true)">Success</button>
+                    <button class="btn-main" style="background:#1a1a1a; flex:1;" onclick="endRound(false)">Fail <span class="score-change">(-1 Point)</span></button>
+                    <button class="btn-main" style="background:var(--success); flex:1;" onclick="endRound(true)">Success <span class="score-change">(+1 Point)</span></button>
                 </div>
-                <button class="btn-safeword" onclick="triggerSafeword()">SAFEWORD (End Task / -5 Points)</button>
+                <button class="btn-safeword" onclick="triggerSafeword()">SAFEWORD <span class="score-change" style="color:white; opacity:0.8;">(-5 Points & Resets Decree)</span></button>
             </div>
         </div>
     </div>
@@ -118,14 +117,13 @@ const HARDWARE = {
     "Sensory":{"items":["Hot Wax","Ice cubes","Wheel"], "time": 300, "enabled": true}
 };
 
-// Simplified descriptive templates for logic verification
 const TEMPLATES = {
-    "Stillness": ["{dom} is to secure {sub}’s wrists behind the back tightly using {item}. Once bound, anchor to the ankles and pull {sub} into a strict hogtie position."],
-    "Impact": ["{sub} is to bend over fully, exposing the target area. {dom} will deliver 30 measured, rhythmic strikes with {item}. {sub} must count each strike out loud."],
-    "Quietude": ["{dom} will inspect {sub}'s mouth before applying {item} firmly. Straps notched to the tightest setting. {sub} must breathe only through the nose."],
-    "Ache": ["{dom} will prepare {sub} for {item}. {sub} is to accept the internal depth slowly and remain in a deep squat. Climax is forbidden."],
-    "Shadow": ["{dom} will apply {item} ensuring total darkness. {sub} is led to the center and left standing. {dom} circles in total silence."],
-    "Sensory": ["{sub} is blindfolded. {dom} uses {item} to create a path of sensation across the torso. Focus on the transition between comfort and intensity."]
+    "Stillness": ["{dom} is to secure {sub}’s wrists behind the back tightly using {item}. Once bound, anchor to the ankles and pull {sub} into a strict hogtie position. {sub} must remain balanced on their stomach, unable to touch the floor with hands or feet."],
+    "Impact": ["{sub} is to bend over fully, exposing the target area. {dom} will deliver 30 measured, rhythmic strikes with {item}. {sub} must count each strike out loud. Failure to count accurately resets the phase."],
+    "Quietude": ["{dom} will inspect {sub}'s mouth before applying {item} firmly. Straps notched to the tightest setting. {sub} must breathe only through the nose. No verbal sound permitted."],
+    "Ache": ["{dom} will prepare {sub} for {item}. {sub} is to accept the internal depth slowly and remain in a deep kneeling position. {sub} must maintain focus; over-arousal results in immediate forfeit."],
+    "Shadow": ["{dom} will apply {item} ensuring total darkness. {sub} is led to the center and left standing. {dom} circles in total silence, utilizing the psychological weight of the unknown."],
+    "Sensory": ["{sub} is blindfolded. {dom} uses {item} to create a path of sensation across the torso. Focus on the sharp transition between comfort and intense stimulation."]
 };
 
 let game = {
@@ -147,7 +145,7 @@ function init() {
         
         let itemDiv = document.createElement('div');
         itemDiv.className = 'item-grid';
-        itemDiv.innerHTML = game.h[cat].items.map(i => `<div class="chip active">${i}</div>`).join('');
+        itemDiv.innerHTML = game.h[cat].items.map(i => `<div class="chip">${i}</div>`).join('');
         cont.appendChild(itemDiv);
     });
 }
@@ -164,22 +162,20 @@ function startSession() {
 
 function refresh() {
     document.getElementById('round-disp').innerText = `PHASE ${game.currRound}`;
-    game.p.forEach((p, i) => {
-        document.getElementById(`disp-name${i}`).innerText = p.name.toUpperCase();
-        document.getElementById(`score${i}`).innerText = p.score;
-        document.getElementById(`box${i}`).className = `p-box ${i===0?'active-dom':''}`;
-    });
+    document.getElementById('disp-name0').innerText = game.p[0].name.toUpperCase();
+    document.getElementById('score0').innerText = game.p[0].score;
+    document.getElementById('box0').className = `p-box active-dom`; // Dom is always 0 in this logic
+    document.getElementById('disp-name1').innerText = game.p[1].name.toUpperCase();
+    document.getElementById('score1').innerText = game.p[1].score;
+    document.getElementById('box1').className = `p-box`;
 }
 
 function issueDecree() {
-    // 1. Get enabled categories that are NOT the last category used
     let validCats = Object.keys(game.h).filter(c => game.h[c].enabled && c !== game.lastCategory);
-    
-    // Safety: If only one category is enabled, we have to allow it
     if (validCats.length === 0) validCats = Object.keys(game.h).filter(c => game.h[c].enabled);
     
     let chosenCat = validCats[Math.floor(Math.random() * validCats.length)];
-    game.lastCategory = chosenCat; // Store for next round
+    game.lastCategory = chosenCat; 
 
     let pool = game.activePool[chosenCat];
     let templateIdx = Math.floor(Math.random() * pool.length);
@@ -211,7 +207,7 @@ function startCountdown() {
 }
 
 function triggerSafeword() {
-    game.p[1].score = Math.max(0, game.p[1].score - 5);
+    game.p[1].score = Math.max(-50, game.p[1].score - 5);
     clearInterval(game.timer);
     document.getElementById('command-center').style.display = 'block';
     document.getElementById('decree-panel').style.display = 'none';
@@ -219,9 +215,17 @@ function triggerSafeword() {
 }
 
 function endRound(win) {
-    if(win) game.p[1].score++;
+    if(win) {
+        game.p[1].score++;
+    } else {
+        game.p[1].score--; // Fail logic: Submissive loses a point
+    }
     game.currRound++;
-    game.p.reverse(); // Role swap logic preserved
+    // Role swap logic
+    let temp = game.p[0];
+    game.p[0] = game.p[1];
+    game.p[1] = temp;
+    
     clearInterval(game.timer);
     document.getElementById('command-center').style.display = 'block';
     document.getElementById('decree-panel').style.display = 'none';
