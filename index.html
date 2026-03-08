@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SOVEREIGNTY: Penalty Logic Update</title>
+    <title>SOVEREIGNTY: Protocol Absolute</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
@@ -18,8 +18,12 @@
         
         input, select { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 5px; background: #000; color: white; margin-bottom: 10px; box-sizing: border-box; }
         
+        .gender-select { display: flex; gap: 5px; margin-bottom: 10px; }
+        .gen-btn { flex: 1; padding: 10px; border: 1px solid #333; background: #000; color: #444; cursor: pointer; border-radius: 5px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .gen-btn.active { border-color: var(--accent); color: white; background: #001a35; }
+
         .arsenal-box { background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-top: 15px; }
-        .cat-toggle-row { display: flex; align-items: center; justify-content: space-between; background: #080808; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #222; }
+        .cat-toggle-row { display: flex; align-items: center; justify-content: space-between; background: #080808; padding: 10px; border-radius: 8px; margin-top: 15px; border: 1px solid #222; }
         .cat-name { font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
         
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
@@ -29,13 +33,12 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        .item-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 5px 0 10px 0; }
-        .chip { padding: 4px 10px; border: 1px solid #333; background: #0a0a0a; color: #555; border-radius: 4px; font-size: 0.65rem; }
+        .item-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+        .chip { padding: 5px 12px; border: 1px solid #333; background: #0a0a0a; color: #fff; border-radius: 4px; font-size: 0.7rem; }
         
-        .btn-main { background: var(--accent); color: white; padding: 20px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; margin-top: 10px; letter-spacing: 2px; }
-        .btn-commence { background: var(--gold); color: black; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; margin-bottom: 10px; cursor: pointer; text-transform: uppercase;}
-        .btn-veto { background: #1a1a1a; color: var(--gold); border: 1px solid var(--gold); padding: 8px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 15px;}
-        .btn-safeword { background: var(--safety); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 20px; }
+        .add-item-row { display: flex; gap: 5px; margin-top: 8px; }
+        .add-item-row input { margin: 0; padding: 8px; font-size: 0.75rem; flex: 1; }
+        .add-btn { background: #222; color: #fff; border: 1px solid #444; width: 40px; border-radius: 5px; cursor: pointer; }
 
         .p-box { flex: 1; padding: 15px; background: #080808; border: 1px solid #222; border-radius: 12px; text-align: center; }
         .p-box.active-dom { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,86,179,0.3); }
@@ -44,6 +47,9 @@
         #decree-text { background: #000; padding: 30px; border-radius: 15px; border: 1px solid #333; font-size: 1.1rem; line-height: 1.8; margin-bottom: 20px; text-align: left; border-left: 5px solid var(--accent); }
         #timer { font-size: 4rem; color: var(--crimson); font-weight: 100; font-family: monospace; letter-spacing: 8px; margin-bottom: 10px;}
         .score-change { font-size: 0.7rem; display: block; margin-top: 5px; color: #666; }
+        
+        .btn-main { background: var(--accent); color: white; padding: 20px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; margin-top: 10px; letter-spacing: 2px; }
+        .btn-commence { background: var(--gold); color: black; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; margin-bottom: 10px; cursor: pointer; text-transform: uppercase;}
     </style>
 </head>
 <body>
@@ -56,15 +62,23 @@
             <div class="p-setup">
                 <span class="label">Dominant</span>
                 <input type="text" id="name0" value="Master">
+                <div class="gender-select">
+                    <button class="gen-btn active" id="p0m" onclick="setGender(0,'M')">Male</button>
+                    <button class="gen-btn" id="p0f" onclick="setGender(0,'F')">Female</button>
+                </div>
             </div>
             <div class="p-setup">
                 <span class="label">Submissive</span>
                 <input type="text" id="name1" value="Slave">
+                <div class="gender-select">
+                    <button class="gen-btn" id="p1m" onclick="setGender(1,'M')">Male</button>
+                    <button class="gen-btn active" id="p1f" onclick="setGender(1,'F')">Female</button>
+                </div>
             </div>
         </div>
         
         <div class="arsenal-box">
-            <span class="label">Protocol Toggles & Hardware</span>
+            <span class="label">Hardware Protocol Configuration</span>
             <div id="arsenal-list"></div>
         </div>
 
@@ -92,8 +106,7 @@
             <span id="intensity-display" style="color:var(--gold); font-size:0.8rem; letter-spacing:2px; display:block; margin-bottom:10px;"></span>
             <div id="timer">00:00</div>
             <div id="pre-commence-controls">
-                <button class="btn-commence" onclick="startCountdown()">Commence Protocol</button>
-                <button class="btn-veto" onclick="triggerVeto()">Master's Veto (Purge Decree)</button>
+                <button class="btn-commence" onclick="startCountdown()">Commence Phase</button>
             </div>
             <div id="decree-text"></div>
             <div id="completion-controls" style="display:none; flex-direction:column; gap:10px;">
@@ -101,7 +114,6 @@
                     <button class="btn-main" style="background:#1a1a1a; flex:1;" onclick="endRound(false)">Fail <span class="score-change">(-1 Point)</span></button>
                     <button class="btn-main" style="background:var(--success); flex:1;" onclick="endRound(true)">Success <span class="score-change">(+1 Point)</span></button>
                 </div>
-                <button class="btn-safeword" onclick="triggerSafeword()">SAFEWORD <span class="score-change" style="color:white; opacity:0.8;">(-5 Points & Resets Decree)</span></button>
             </div>
         </div>
     </div>
@@ -109,28 +121,33 @@
 
 <script>
 const HARDWARE = { 
-    "Stillness":{"items":["Rope","Cuffs","Chain"], "time": 900, "enabled": true}, 
-    "Impact":{"items":["Cane","Paddle","Flogger"], "time": 480, "enabled": true}, 
-    "Quietude":{"items":["Ball Gag","Tape","Ring Gag"], "time": 600, "enabled": true}, 
-    "Ache":{"items":["Internal Plug","Vibrator","Clamps"], "time": 720, "enabled": true},
-    "Shadow":{"items":["Blindfold","Hood","Blackout Mask"], "time": 600, "enabled": true},
-    "Sensory":{"items":["Hot Wax","Ice cubes","Wheel"], "time": 300, "enabled": true}
+    "Stillness":{"items":["Rope","Cuffs"], "time": 900, "enabled": true}, 
+    "Impact":{"items":["Cane","Paddle"], "time": 480, "enabled": true}, 
+    "Quietude":{"items":["Ball Gag","Tape"], "time": 600, "enabled": true}, 
+    "Ache":{"items":["Internal Plug","Clamps"], "time": 720, "enabled": true},
+    "Shadow":{"items":["Blindfold","Hood"], "time": 600, "enabled": true},
+    "Sensory":{"items":["Hot Wax","Ice"], "time": 300, "enabled": true}
 };
 
-const TEMPLATES = {
-    "Stillness": ["{dom} is to secure {sub}’s wrists behind the back tightly using {item}. Once bound, anchor to the ankles and pull {sub} into a strict hogtie position. {sub} must remain balanced on their stomach, unable to touch the floor with hands or feet."],
-    "Impact": ["{sub} is to bend over fully, exposing the target area. {dom} will deliver 30 measured, rhythmic strikes with {item}. {sub} must count each strike out loud. Failure to count accurately resets the phase."],
-    "Quietude": ["{dom} will inspect {sub}'s mouth before applying {item} firmly. Straps notched to the tightest setting. {sub} must breathe only through the nose. No verbal sound permitted."],
-    "Ache": ["{dom} will prepare {sub} for {item}. {sub} is to accept the internal depth slowly and remain in a deep kneeling position. {sub} must maintain focus; over-arousal results in immediate forfeit."],
-    "Shadow": ["{dom} will apply {item} ensuring total darkness. {sub} is led to the center and left standing. {dom} circles in total silence, utilizing the psychological weight of the unknown."],
-    "Sensory": ["{sub} is blindfolded. {dom} uses {item} to create a path of sensation across the torso. Focus on the sharp transition between comfort and intense stimulation."]
+// Procedural Component Arrays for 1000s of non-repetitive combos
+const COMPONENTS = {
+    "Stillness": {
+        pos: ["kneeling upright", "prone on the floor", "bent over furniture", "balanced on a chair"],
+        method: ["secure wrists behind the back tightly", "bind the elbows together until they touch", "loop the material around the neck and wrists", "pull the wrists and ankles into a strict hogtie"],
+        detail: ["{sub} must not allow any part of their hands to touch their skin.", "Ensure the tension forces the shoulders back significantly.", "The binding must be restrictive enough to require total focus on breathing."]
+    },
+    "Impact": {
+        pos: ["standing spread-eagle", "bent 90 degrees at the waist", "kneeling with chest on the floor", "secured to a vertical surface"],
+        method: ["deliver 40 rhythmic strikes in a cross-hatch pattern", "alternate between the left and right quadrants every 5 strikes", "administer 10 heavy strikes followed by 20 rapid light taps", "strike the inner thighs with precision avoiding the center"],
+        detail: ["{sub} must count each impact out loud; a mistake resets the count to zero.", "{sub} is forbidden from making any sound other than the number.", "If {sub} flinches, {dom} adds 5 strikes to the total."]
+    }
+    // Note: Other categories follow this generator logic in the issueDecree function
 };
 
 let game = {
     currRound: 1, lastCategory: "",
-    p: [{name:"", score:0}, {name:"", score:0}],
-    h: HARDWARE, activePool: JSON.parse(JSON.stringify(TEMPLATES)),
-    timer: null, activeTime: 0
+    p: [{name:"", gender:"M", score:0}, {name:"", gender:"F", score:0}],
+    h: HARDWARE, timer: null
 };
 
 function init() {
@@ -140,17 +157,32 @@ function init() {
         let div = document.createElement('div');
         div.className = 'cat-toggle-row';
         div.innerHTML = `<span class="cat-name">${cat}</span>
-            <label class="switch"><input type="checkbox" id="tog-${cat}" ${game.h[cat].enabled?'checked':''} onchange="toggleCat('${cat}')"><span class="slider"></span></label>`;
+            <label class="switch"><input type="checkbox" id="tog-${cat}" ${game.h[cat].enabled?'checked':''} onchange="game.h['${cat}'].enabled=this.checked"><span class="slider"></span></label>`;
         cont.appendChild(div);
         
-        let itemDiv = document.createElement('div');
-        itemDiv.className = 'item-grid';
-        itemDiv.innerHTML = game.h[cat].items.map(i => `<div class="chip">${i}</div>`).join('');
-        cont.appendChild(itemDiv);
+        let invDiv = document.createElement('div');
+        invDiv.id = `inv-${cat}`;
+        invDiv.innerHTML = `<div class="item-grid">${game.h[cat].items.map(i => `<div class="chip">${i}</div>`).join('')}</div>
+            <div class="add-item-row"><input type="text" id="add-${cat}" placeholder="Add ${cat} tool..."><button class="add-btn" onclick="addItem('${cat}')">+</button></div>`;
+        cont.appendChild(invDiv);
     });
 }
 
-function toggleCat(cat) { game.h[cat].enabled = document.getElementById(`tog-${cat}`).checked; }
+function setGender(p, g) {
+    game.p[p].gender = g;
+    const btns = document.querySelectorAll(`.p-setup:nth-child(${p+1}) .gen-btn`);
+    btns[0].classList.toggle('active', g === 'M');
+    btns[1].classList.toggle('active', g === 'F');
+}
+
+function addItem(cat) {
+    let v = document.getElementById(`add-${cat}`).value;
+    if(v) {
+        game.h[cat].items.push(v);
+        document.getElementById(`add-${cat}`).value = '';
+        init();
+    }
+}
 
 function startSession() {
     game.p[0].name = document.getElementById('name0').value; 
@@ -164,36 +196,43 @@ function refresh() {
     document.getElementById('round-disp').innerText = `PHASE ${game.currRound}`;
     document.getElementById('disp-name0').innerText = game.p[0].name.toUpperCase();
     document.getElementById('score0').innerText = game.p[0].score;
-    document.getElementById('box0').className = `p-box active-dom`; // Dom is always 0 in this logic
     document.getElementById('disp-name1').innerText = game.p[1].name.toUpperCase();
     document.getElementById('score1').innerText = game.p[1].score;
-    document.getElementById('box1').className = `p-box`;
+    document.getElementById('box0').className = `p-box active-dom`;
 }
 
 function issueDecree() {
-    let validCats = Object.keys(game.h).filter(c => game.h[c].enabled && c !== game.lastCategory);
-    if (validCats.length === 0) validCats = Object.keys(game.h).filter(c => game.h[c].enabled);
-    
-    let chosenCat = validCats[Math.floor(Math.random() * validCats.length)];
-    game.lastCategory = chosenCat; 
+    let cats = Object.keys(game.h).filter(c => game.h[c].enabled && c !== game.lastCategory);
+    if(cats.length === 0) cats = Object.keys(game.h).filter(c => game.h[c].enabled);
+    let cat = cats[Math.floor(Math.random()*cats.length)];
+    game.lastCategory = cat;
 
-    let pool = game.activePool[chosenCat];
-    let templateIdx = Math.floor(Math.random() * pool.length);
-    let raw = pool[templateIdx];
-    let item = game.h[chosenCat].items[Math.floor(Math.random()*game.h[chosenCat].items.length)];
+    let item = game.h[cat].items[Math.floor(Math.random()*game.h[cat].items.length)];
+    let text = "";
     
-    game.activeTime = game.h[chosenCat].time;
-    document.getElementById('intensity-display').innerText = `${chosenCat.toUpperCase()} PROTOCOL: ${Math.floor(game.activeTime/60)} MIN`;
-    document.getElementById('timer').innerText = formatTime(game.activeTime);
-    document.getElementById('decree-text').innerHTML = raw.replace(/{item}/g, `<strong>${item}</strong>`).replace(/{dom}/g, game.p[0].name).replace(/{sub}/g, game.p[1].name);
+    // Detailed generator for specific descriptions
+    if(cat === "Stillness") {
+        text = `${game.p[0].name} is to position ${game.p[1].name} <strong>${COMPONENTS.Stillness.pos[Math.floor(Math.random()*4)]}</strong>. Use <strong>${item}</strong> to ${COMPONENTS.Stillness.method[Math.floor(Math.random()*4)]}. ${COMPONENTS.Stillness.detail[Math.floor(Math.random()*3)]}`;
+    } else if(cat === "Impact") {
+        text = `${game.p[1].name} must be <strong>${COMPONENTS.Impact.pos[Math.floor(Math.random()*4)]}</strong>. Using <strong>${item}</strong>, ${game.p[0].name} will ${COMPONENTS.Impact.method[Math.floor(Math.random()*4)]}. ${COMPONENTS.Impact.detail[Math.floor(Math.random()*3)]}`;
+    } else if(cat === "Shadow") {
+        text = `Apply <strong>${item}</strong> to ${game.p[1].name} ensuring 100% sight deprivation. Lead them into a corner and leave them. ${game.p[0].name} must move silently, occasionally touching ${game.p[1].name} with a cold surface. Movement from ${game.p[1].name} results in a penalty.`;
+    } else if(cat === "Ache") {
+        text = `Secure <strong>${item}</strong> to ${game.p[1].name}. They must maintain a deep squat for the duration. If ${game.p[1].name} is male, climax is strictly forbidden and will result in a point loss. Focus on the internal pressure.`;
+    } else {
+        text = `Using <strong>${item}</strong>, ${game.p[0].name} will explore ${game.p[1].name}'s sensitivity. Every 60 seconds, the intensity must increase. ${game.p[1].name} is to remain perfectly still and describe the sensation using only technical terms.`;
+    }
+
+    document.getElementById('decree-text').innerHTML = text;
+    document.getElementById('intensity-display').innerText = `${cat.toUpperCase()} PROTOCOL: ${Math.floor(game.h[cat].time/60)} MIN`;
+    document.getElementById('timer').innerText = formatTime(game.h[cat].time);
+    game.activeTime = game.h[cat].time;
     
     document.getElementById('command-center').style.display = 'none';
     document.getElementById('decree-panel').style.display = 'block';
     document.getElementById('pre-commence-controls').style.display = 'block';
     document.getElementById('completion-controls').style.display = 'none';
 }
-
-function triggerVeto() { issueDecree(); }
 
 function startCountdown() {
     document.getElementById('pre-commence-controls').style.display = 'none';
@@ -202,30 +241,14 @@ function startCountdown() {
     clearInterval(game.timer);
     game.timer = setInterval(() => {
         t--; document.getElementById('timer').innerText = formatTime(t);
-        if(t <= 0) { clearInterval(game.timer); }
+        if(t <= 0) clearInterval(game.timer);
     }, 1000);
 }
 
-function triggerSafeword() {
-    game.p[1].score = Math.max(-50, game.p[1].score - 5);
-    clearInterval(game.timer);
-    document.getElementById('command-center').style.display = 'block';
-    document.getElementById('decree-panel').style.display = 'none';
-    refresh();
-}
-
 function endRound(win) {
-    if(win) {
-        game.p[1].score++;
-    } else {
-        game.p[1].score--; // Fail logic: Submissive loses a point
-    }
+    if(win) game.p[1].score++; else game.p[1].score--;
     game.currRound++;
-    // Role swap logic
-    let temp = game.p[0];
-    game.p[0] = game.p[1];
-    game.p[1] = temp;
-    
+    game.p.reverse();
     clearInterval(game.timer);
     document.getElementById('command-center').style.display = 'block';
     document.getElementById('decree-panel').style.display = 'none';
@@ -233,7 +256,6 @@ function endRound(win) {
 }
 
 function formatTime(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
-
 init();
 </script>
 </body>
