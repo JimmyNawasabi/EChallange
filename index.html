@@ -3,32 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Architect Edition</title>
+    <title>SOVEREIGNTY: Audited Protocol</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
             --text: #FFF; --crimson: #d00000; --success: #008000; --gold: #ffd700;
         }
 
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 0.85rem; }
-        .container { max-width: 900px; width: 100%; background: var(--card); padding: 20px; border-radius: 20px; border: 3px solid var(--accent); box-shadow: 0 0 50px #000; }
+        body { 
+            background: var(--bg); color: var(--text); 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            margin: 0; padding: 10px; display: flex; justify-content: center; 
+            font-size: 0.85rem; 
+        }
+
+        .container { 
+            max-width: 900px; width: 100%; background: var(--card); 
+            padding: 20px; border-radius: 20px; border: 3px solid var(--accent); 
+            box-shadow: 0 0 50px #000; 
+        }
+        
         h1 { text-align: center; text-transform: uppercase; letter-spacing: 12px; font-size: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin: 15px 0;}
+
         .box-section { background: #000; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #333; }
+        
         .label { font-size: 0.8rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 2px; }
-        input, textarea, select { width: 100%; padding: 10px; border: 1px solid var(--accent); border-radius: 4px; background: #000; color: white; font-size: 1rem; box-sizing: border-box; font-family: inherit; }
-        textarea { height: 80px; resize: none; margin-bottom: 10px; border-color: #444; }
+
+        input { width: 100%; padding: 10px; border: 1px solid var(--accent); border-radius: 4px; background: #000; color: white; font-size: 1rem; box-sizing: border-box; }
+        
         .btn { background: var(--accent); color: white; border: 1px solid #FFF; padding: 14px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 8px; font-size: 0.9rem; margin-top: 10px; transition: all 0.3s;}
         .btn:hover { background: #004494; box-shadow: 0 0 15px var(--accent); }
-        .btn-small { padding: 8px; font-size: 0.7rem; background: #222; margin-top: 5px; }
+
         .score-row { display: flex; justify-content: space-between; padding: 15px; background: #0a0a0a; border: 1px solid var(--accent); border-radius: 12px; text-align: center; margin-bottom: 20px; }
         .p-score { font-size: 2.5rem; font-weight: 200; color: var(--accent); }
+
         .tog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .tog-btn { padding: 10px; border: 1px solid #333; background: #000; color: #555; cursor: pointer; border-radius: 4px; font-size: 0.7rem; text-transform: uppercase; font-weight: bold; text-align: center; }
         .tog-btn.active { border-color: var(--accent); color: #FFF; background: #001a35; }
+
         #timer-box { font-size: 3rem; font-weight: 100; color: var(--crimson); text-align: center; margin-bottom: 10px; letter-spacing: 5px; }
         .safe-word { background: transparent !important; border: 1px solid var(--crimson) !important; color: var(--crimson) !important; margin-top: 25px !important; }
+        
         #decree-text { font-size: 1rem; line-height: 1.6; text-align: justify; color: #ccc; }
+        #decree-text strong { color: #fff; }
+
         .grand-display { border: 2px solid var(--gold); padding: 25px; background: linear-gradient(to bottom, #1a1a00, #000); text-align: center; display: none; }
+        .card-zone { display: flex; justify-content: center; gap: 10px; margin-top: 8px; }
+        .card { width: 35px; height: 50px; border-radius: 4px; border: 1px solid #444; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0.2; font-size: 0.7rem; }
+        .card.active { opacity: 1; border-color: #fff; box-shadow: 0 0 8px currentColor; }
+        .card-y { background: var(--gold); color: #000; }
+        .card-r { background: var(--crimson); color: #fff; }
     </style>
 </head>
 <body>
@@ -38,40 +62,39 @@
 
     <div id="setup-view">
         <div class="box-section">
-            <span class="label">Participants</span>
-            <div class="tog-grid">
-                <input type="text" id="p0-name" value="Master">
-                <input type="text" id="p1-name" value="Slave">
+            <span class="label">Primary Authority</span>
+            <input type="text" id="p0-name" value="Master">
+            <div class="tog-grid" style="margin-top:10px;">
+                <button type="button" id="p0-m" class="tog-btn active" onclick="setGender(0,'M')">Male</button>
+                <button type="button" id="p0-f" class="tog-btn" onclick="setGender(0,'F')">Female</button>
             </div>
             <br>
-            <span class="label">Session Rounds: <input type="number" id="max-rounds" value="10" style="width: 60px; display:inline;"></span>
+            <span class="label">Subject Participant</span>
+            <input type="text" id="p1-name" value="Slave">
+            <div class="tog-grid" style="margin-top:10px;">
+                <button type="button" id="p1-m" class="tog-btn" onclick="setGender(1,'M')">Male</button>
+                <button type="button" id="p1-f" class="tog-btn active" onclick="setGender(1,'F')">Female</button>
+            </div>
+            <br>
+            <span class="label">Session Rounds</span>
+            <input type="number" id="max-rounds" value="10">
         </div>
-
         <div class="box-section">
-            <span class="label">Hardware Arsenal</span>
+            <span class="label">Vault Configuration (The Arsenal)</span>
             <div id="inv-setup" class="tog-grid"></div>
         </div>
-
-        <div class="box-section" style="border-color: var(--gold);">
-            <span class="label" style="color: var(--gold);">Custom Protocol Architect</span>
-            <select id="custom-cat"></select>
-            <textarea id="custom-desc" placeholder="Enter highly detailed decree here. Use {sub} and {dom} for names."></textarea>
-            <button class="btn btn-small" onclick="addCustomDecree()">Inject Custom Decree</button>
-            <div id="custom-count" style="font-size: 0.7rem; margin-top: 5px; color: #777;">0 Custom Protocols Injected</div>
-        </div>
-        
         <button class="btn" onclick="beginSession()">Initialize Protocol</button>
     </div>
 
     <div id="game-view" style="display:none;">
-        <div id="round-header" style="text-align:center; color:var(--accent); letter-spacing: 3px; margin-bottom: 10px;"></div>
+        <div id="round-header" style="text-align:center; color:var(--accent); font-size: 0.9rem; margin-bottom: 15px; letter-spacing: 3px;"></div>
         <div class="score-row">
-            <div style="flex:1;"><div class="label">DOMINANT</div><div id="dom-display"></div></div>
-            <div style="flex:1;"><div class="label">SUBMISSIVE</div><div id="sub-display"></div><div id="sub-score" class="p-score">0</div></div>
+            <div style="flex:1;"><div class="label">DOMINANT</div><div id="dom-display" style="font-size:1.1rem"></div><div class="card-zone" id="dom-cards"></div></div>
+            <div style="flex:1;"><div class="label">SUBMISSIVE</div><div id="sub-display" style="font-size:1.1rem"></div><div id="sub-score" class="p-score">0</div><div class="card-zone" id="sub-cards"></div></div>
         </div>
         <div id="action-panel">
             <div class="box-section">
-                <span class="label">Active Protocol Matrix</span>
+                <span class="label">Protocol Filters</span>
                 <div id="decree-grid" class="tog-grid"></div>
             </div>
             <button class="btn" onclick="generateDecree()">Issue Command</button>
@@ -79,9 +102,11 @@
         <div id="decree-active" style="display:none;">
             <div id="timer-box">00:00</div>
             <div class="box-section"><div id="decree-text"></div></div>
-            <button class="btn" style="background:var(--success);" onclick="finalize(true)">SUCCESS</button>
-            <button class="btn" style="background:#1a1a1a;" onclick="finalize(false)">FAIL</button>
-            <button class="btn safe-word" onclick="triggerSafeWord()">FORFEIT: SAFE WORD</button>
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="background:#1a1a1a; flex:1;" onclick="finalize(false)">FAIL</button>
+                <button class="btn" style="background:var(--success); flex:1;" onclick="finalize(true)">SUCCESS</button>
+            </div>
+            <button class="btn safe-word" onclick="triggerSafeWord()">FORFEIT: SAFE WORD (-5)</button>
         </div>
     </div>
 
@@ -94,57 +119,41 @@
 
 <script>
 const state = {
-    round: 1, total: 10, timer: null,
-    players: [{n:"", role:"Master", score:0}, {n:"", role:"Slave", score:0}],
+    round: 1, total: 10, timer: null, timeLeft: 0,
+    players: [{n:"", role:"Master", score:0, g:"M", cards:[]}, {n:"", role:"Slave", score:0, g:"F", cards:[]}],
     hardware: {
-        "The Quietude": ["Ball Gag", "Ring Gag", "Tape"],
-        "The Stillness": ["Hogtie Rope", "Cuffs", "Spreader Bar"],
-        "The Shadows": ["Hood", "Scarf", "Blindfold"],
-        "The Percussion": ["Flogger", "Cane", "Paddle"],
-        "The Intrusion": ["Anal Plug", "Vibrator"],
-        "The Nuance": ["Ice", "Clothespins", "Hot Wax"]
+        "The Quietude": ["Ball Gag", "Ring Gag", "Medical Tape", "Spider Gag"],
+        "The Stillness": ["Hogtie Rope", "Steel Cuffs", "Spreader Bar", "Zip Ties"],
+        "The Shadows": ["Leather Hood", "Silk Scarf", "Sleep Mask"],
+        "The Percussion": ["Heavy Flogger", "Cane", "Glass Paddle", "Riding Crop"],
+        "The Intrusion": ["Weighted Anal Plug", "Vibrator", "Glass Dildo"],
+        "The Nuance": ["Ice Blocks", "Clothespins", "Hot Wax", "Wartenberg Wheel"]
     },
-    // The Database
-    db: {
-        "Self-Bondage": [`{sub} must use <strong>The Stillness</strong> to secure their ankles, then apply <strong>The Quietude</strong>. Kneel and wait for {dom} to secure your wrists behind you.`],
-        "The Infinite Ache": [`Focus: <strong>Strict Denial</strong>. {dom} will use <strong>The Intrusion</strong> to bring {sub} to the absolute edge. At the point of no return, <strong>The Nuance</strong> is applied to shock the senses. <strong>No climax permitted.</strong>`],
-        "Physical Challenge": [`{sub} holds a stress position. {dom} applies 15 strokes of <strong>The Percussion</strong>, alternating with <strong>The Nuance</strong> to keep the skin hypersensitive.`],
-        "Shibari": [`{dom} executes a floor bind. Once immobile, {sub} is masked with <strong>The Shadows</strong> and left in isolation until the timer expires.`],
-        "Truth": [`{sub} is bound. {dom} asks a question. Silence or a lie results in <strong>The Percussion</strong>. Honesty is rewarded with <strong>The Nuance</strong>.`],
-        "Soft & Sexy": [`{dom} uses <strong>The Shadows</strong> to blindfold {sub}. Use <strong>The Nuance</strong> to trace the body before <strong>The Intrusion</strong> is used for prolonged teasing.`],
-        "Escape": [`{dom} binds {sub} with <strong>The Stillness</strong>. You have the timer to escape. Failure is a -1 point penalty.`],
-        "Dare": [`{sub} must endure 2 minutes of <strong>The Intrusion</strong> while {dom} applies <strong>The Nuance</strong> to the neck and chest. Absolute silence required.`]
-    }
+    protocols: ["Self-Bondage", "Truth", "Dare", "Soft & Sexy", "Escape", "Shibari", "Physical Challenge", "The Infinite Ache"]
 };
 
 function init() {
     const inv = document.getElementById('inv-setup');
     Object.keys(state.hardware).forEach(h => {
-        inv.innerHTML += `<div class="tog-btn active" onclick="this.classList.toggle('active')">${h}</div>`;
+        const b = document.createElement('div'); b.className = 'tog-btn active'; b.innerText = h;
+        b.onclick = () => b.classList.toggle('active'); inv.appendChild(b);
     });
     const dec = document.getElementById('decree-grid');
-    const sel = document.getElementById('custom-cat');
-    Object.keys(state.db).forEach(p => {
-        dec.innerHTML += `<div class="tog-btn active" onclick="this.classList.toggle('active')">${p}</div>`;
-        sel.innerHTML += `<option value="${p}">${p}</option>`;
+    state.protocols.forEach(p => {
+        const b = document.createElement('div'); b.className = 'tog-btn active'; b.innerText = p;
+        b.onclick = () => b.classList.toggle('active'); dec.appendChild(b);
     });
 }
 
-function addCustomDecree() {
-    const cat = document.getElementById('custom-cat').value;
-    const desc = document.getElementById('custom-desc').value;
-    if(!desc) return;
-    state.db[cat].push(desc);
-    document.getElementById('custom-desc').value = "";
-    let count = 0; Object.values(state.db).forEach(a => count += a.length);
-    document.getElementById('custom-count').innerText = `${count - 8} Custom Protocols Injected`;
-    alert("Protocol Injected into " + cat);
-}
+function setGender(p, g) { state.players[p].g = g; document.getElementById(`p${p}-m`).classList.toggle('active', g === 'M'); document.getElementById(`p${p}-f`).classList.toggle('active', g === 'F'); }
 
 function beginSession() {
     state.players[0].n = document.getElementById('p0-name').value;
     state.players[1].n = document.getElementById('p1-name').value;
     state.total = parseInt(document.getElementById('max-rounds').value);
+    const roll = Math.random() > 0.5;
+    state.players[0].cards = [roll ? 'Y' : 'R'];
+    state.players[1].cards = [!roll ? 'Y' : 'R'];
     document.getElementById('setup-view').style.display = 'none';
     document.getElementById('game-view').style.display = 'block';
     render();
@@ -157,30 +166,46 @@ function render() {
     document.getElementById('dom-display').innerText = dom.n.toUpperCase();
     document.getElementById('sub-display').innerText = sub.n.toUpperCase();
     document.getElementById('sub-score').innerText = sub.score;
+    renderCards('dom-cards', dom); renderCards('sub-cards', sub);
+}
+
+function renderCards(id, p) {
+    const z = document.getElementById(id); z.innerHTML = '';
+    p.cards.forEach(c => { const d = document.createElement('div'); d.className = `card active card-${c.toLowerCase()}`; d.innerText = c; z.appendChild(d); });
 }
 
 function generateDecree() {
     const activeProtocols = Array.from(document.querySelectorAll('#decree-grid .tog-btn.active')).map(b => b.innerText);
     const cat = activeProtocols[Math.floor(Math.random() * activeProtocols.length)];
+    const getI = (k) => state.hardware[k][Math.floor(Math.random()*state.hardware[k].length)];
     const dom = state.players.find(p => p.role === "Master").n;
     const sub = state.players.find(p => p.role === "Slave").n;
-    
-    let rawText = state.db[cat][Math.floor(Math.random() * state.db[cat].length)];
-    let text = rawText.replace(/{dom}/g, dom).replace(/{sub}/g, sub);
 
-    document.getElementById('decree-text').innerHTML = `<strong>${cat.toUpperCase()}</strong><br><br>${text}`;
+    const db = {
+        "Self-Bondage": `${sub} must use <strong>The Stillness</strong> (${getI('The Stillness')}) to secure their own ankles, then apply <strong>The Quietude</strong> (${getI('The Quietude')}). Kneel and wait for ${dom} to secure your wrists behind you.`,
+        "The Infinite Ache": `This protocol focuses on <strong>Strict Denial</strong>. ${dom} will use <strong>The Intrusion</strong> (${getI('The Intrusion')}) to bring ${sub} to the absolute edge. At the point of no return, <strong>The Nuance</strong> (${getI('The Nuance')}) is applied to shock the senses. <strong>No climax is permitted for either party.</strong>`,
+        "Physical Challenge": `${sub} holds a stress position using <strong>The Stillness</strong>. ${dom} applies 15 strokes of <strong>The Percussion</strong> (${getI('The Percussion')}), alternating with <strong>The Nuance</strong> (${getI('The Nuance')}) to keep the skin hypersensitive.`,
+        "Shibari": `${dom} executes a complex floor bind using <strong>The Stillness</strong>. Once immobile, ${sub} is masked with <strong>The Shadows</strong> (${getI('The Shadows')}) and left in total isolation until the timer expires.`,
+        "Truth": `${sub} is bound. ${dom} asks a question. Silence or a lie results in <strong>The Percussion</strong>. Honesty is rewarded with a brief moment of <strong>The Nuance</strong>.`,
+        "Soft & Sexy": `${dom} uses <strong>The Shadows</strong> to blindfold ${sub}. Use <strong>The Nuance</strong> to trace the body before <strong>The Intrusion</strong> is used for prolonged, low-intensity teasing.`,
+        "Escape": `${dom} binds ${sub} with <strong>The Stillness</strong>. You have the timer to escape. Failure results in a -1 point penalty.`,
+        "Dare": `${sub} must endure 2 minutes of <strong>The Intrusion</strong> while ${dom} applies <strong>The Nuance</strong> to the neck and chest. Absolute silence is required.`
+    };
+
+    document.getElementById('decree-text').innerHTML = `<strong>${cat.toUpperCase()}</strong><br><br>${db[cat]}`;
     document.getElementById('action-panel').style.display = 'none';
     document.getElementById('decree-active').style.display = 'block';
-    startTimer(180);
+    startTimer(cat === "Shibari" ? 300 : 180);
 }
 
 function startTimer(s) {
-    let t = s;
+    state.timeLeft = s;
     clearInterval(state.timer);
     state.timer = setInterval(() => {
-        t--;
-        document.getElementById('timer-box').innerText = `${Math.floor(t/60)}:${(t%60).toString().padStart(2,'0')}`;
-        if(t <= 0) finalize(false);
+        state.timeLeft--;
+        const m = Math.floor(state.timeLeft/60); const sec = state.timeLeft%60;
+        document.getElementById('timer-box').innerText = `${m}:${sec.toString().padStart(2,'0')}`;
+        if(state.timeLeft <= 0) finalize(false);
     }, 1000);
 }
 
@@ -204,11 +229,11 @@ function triggerSafeWord() {
 function showGrand() {
     document.getElementById('game-view').style.display = 'none';
     document.getElementById('grand-view').style.display = 'block';
-    const winner = state.players[0].score >= state.players[1].score ? state.players[0] : state.players[1];
+    const winner = state.players[0].score > state.players[1].score ? state.players[0] : state.players[1];
     document.getElementById('winner-announcement').innerText = `${winner.n.toUpperCase()} HAS ACHIEVED SOVEREIGNTY.`;
     document.getElementById('grand-options').innerHTML = `
-        <div class="box-section"><strong>I. THE RITUAL OF CLIMAX:</strong> The winner chooses roles. Submissive is bound and gagged. 45-min session of extreme impact/internal work. <strong>Master climax permitted only at the end.</strong></div>
-        <div class="box-section"><strong>II. THE TOTAL ECLIPSE:</strong> 60 mins sensory deprivation for loser. Winner uses all assets at whim.</div>
+        <div class="box-section"><strong>I. THE RITUAL OF CLIMAX:</strong> The winner chooses the roles. The submissive is placed in <strong>The Stillness</strong> and <strong>The Quietude</strong>. The session involves 45 minutes of heavy impact and internal work. <strong>The Master may climax only at the end of this ritual.</strong></div>
+        <div class="box-section"><strong>II. THE TOTAL ECLIPSE:</strong> 60 minutes of total sensory deprivation for the loser using <strong>The Shadows</strong> and <strong>The Quietude</strong>, while the winner uses <strong>The Nuance</strong> and <strong>The Percussion</strong> at their whim.</div>
     `;
 }
 init();
