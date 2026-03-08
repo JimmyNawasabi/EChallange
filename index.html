@@ -60,13 +60,12 @@
         .add-row input { margin-bottom: 0; padding: 12px; font-size: 0.9rem; flex-grow: 1; }
         .add-btn { background: var(--accent); color: #000; border: none; padding: 0 20px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.5rem; }
 
-        /* PROTOCOL TOOLS */
-        .status-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .stat-card { background: #000; padding: 10px; border-radius: 10px; border: 1px solid #444; font-size: 0.7rem; text-align: center; }
-        .card-active { border-color: var(--accent); color: var(--accent); }
-        .card-red { background: #400; border-color: red; }
-        .card-yellow { background: #440; border-color: yellow; }
-
+        /* PROTOCOL TOOLS - VISIBILITY FIX */
+        .status-header { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .stat-box { background: #000; padding: 10px; border-radius: 10px; text-align: center; font-size: 0.75rem; border: 1px solid #444; }
+        .stat-box.y { border-color: #ffd700; color: #ffd700; }
+        .stat-box.r { border-color: #ff4444; color: #ff4444; }
+        
         .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
         .t-btn { padding: 12px; border-radius: 12px; border: 1px solid #333; background: #111; color: #666; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; text-align: center; min-height: 50px; display: flex; align-items: center; justify-content: center; }
         .t-btn.on { background: var(--accent); color: #000; border-color: var(--accent); }
@@ -77,6 +76,8 @@
         .instruction-highlight { color: var(--accent); font-weight: bold; }
         .step { display: none; }
         .active { display: block !important; }
+
+        .card-action-btn { font-size: 0.65rem; padding: 10px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff; cursor: pointer; text-transform: uppercase; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -106,7 +107,7 @@
         </div>
         <div class="box-section">
             <span class="label">Safe Word</span>
-            <input type="text" id="safe_word" placeholder="Safe Word" value="RED LIGHT">
+            <input type="text" id="safe_word_input" value="RED LIGHT">
         </div>
         <div class="box-section">
             <span class="label">Rounds</span>
@@ -121,16 +122,15 @@
     </div>
 
     <div id="step3" class="step">
+        <div class="status-header">
+            <div class="stat-box" id="disp-s1">P1: 0</div>
+            <div class="stat-box" id="disp-s2">P2: 0</div>
+            <div class="stat-box y" id="disp-y">Yellow: --</div>
+            <div class="stat-box r" id="disp-r">Red: --</div>
+        </div>
+
         <div id="pre-round">
             <div id="round-header" class="label" style="text-align:center;">ROUND 1</div>
-            
-            <div class="status-bar">
-                <div class="stat-card" id="s1-score">P1: 0 pts</div>
-                <div class="stat-card" id="s2-score">P2: 0 pts</div>
-                <div class="stat-card card-yellow" id="y-hold">Yellow Holder: --</div>
-                <div class="stat-card card-red" id="r-hold">Red Holder: --</div>
-            </div>
-
             <div class="box-section">
                 <span class="label">Categories</span>
                 <div class="toggle-grid" id="trial-toggles"></div>
@@ -149,20 +149,21 @@
             <div class="timer-big" id="clock">00:00</div>
             
             <div class="toggle-grid">
-                <button class="t-btn" id="use-yellow" onclick="passCard('yellow')" style="background:#880; color:white;">Use Yellow</button>
-                <button class="t-btn" id="use-red" onclick="passCard('red')" style="background:#800; color:white;">Use Red</button>
+                <button class="card-action-btn" id="btn-y-use" onclick="passCard('yellow')">Play Yellow Card</button>
+                <button class="card-action-btn" id="btn-r-use" onclick="passCard('red')">Play Red Card</button>
             </div>
 
-            <button class="btn" style="background:#1e4d2b;" onclick="finish(true)">Complete (+1)</button>
+            <button class="btn" style="background:#1e4d2b; margin-top:15px;" onclick="finish(true)">Complete (+1)</button>
             <button class="btn" style="background:#2a2a2a; margin-top:10px; color:#aaa;" onclick="finish(false)">Fail / Skip</button>
-            <button class="btn" style="background:#600; margin-top:10px; font-size:0.7rem;" onclick="safeWordUsed()">SAFE WORD (-5)</button>
+            
+            <button class="btn" style="background:transparent; border: 1px solid #400; color:#600; margin-top:20px; font-size:0.7rem;" onclick="triggerSafeWord()">[ ACTIVATE SAFE WORD ]</button>
         </div>
     </div>
 </div>
 
 <script>
     let players = [{n:"", g:"M", s:0}, {n:"", g:"F", s:0}], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft;
-    let cards = { yellow: 0, red: 1 }, safeWordText = "RED LIGHT";
+    let cards = { yellow: 0, red: 1 }, safeWord = "RED LIGHT";
     
     function setGender(p, g) {
         players[p-1].g = g;
@@ -200,12 +201,9 @@
             players[0].n = document.getElementById('p1_n').value || "Player 1";
             players[1].n = document.getElementById('p2_n').value || "Player 2";
             maxR = parseInt(document.getElementById('max_r').value) || 10;
-            safeWordText = document.getElementById('safe_word').value || "RED LIGHT";
-            
-            // Random Card Assignment
+            safeWord = document.getElementById('safe_word_input').value || "RED LIGHT";
             cards.yellow = Math.floor(Math.random() * 2);
             cards.red = Math.floor(Math.random() * 2);
-            
             renderVault();
         }
         if(n === 3) renderCommand();
@@ -248,13 +246,34 @@
         renderVault();
     }
 
+    function updateStatus() {
+        document.getElementById('disp-s1').innerText = `${players[0].n}: ${players[0].s}`;
+        document.getElementById('disp-s2').innerText = `${players[1].n}: ${players[1].s}`;
+        document.getElementById('disp-y').innerText = `Y: ${players[cards.yellow].n}`;
+        document.getElementById('disp-r').innerText = `R: ${players[cards.red].n}`;
+        
+        // Disable card buttons if current master doesn't hold them
+        document.getElementById('btn-y-use').style.opacity = (cards.yellow === masterIdx) ? "1" : "0.3";
+        document.getElementById('btn-r-use').style.opacity = (cards.red === masterIdx) ? "1" : "0.3";
+    }
+
+    function passCard(type) {
+        if(cards[type] !== masterIdx) { alert("You do not hold this card."); return; }
+        cards[type] = (cards[type] === 0 ? 1 : 0);
+        alert(`${type.toUpperCase()} Card used. Passed to ${players[cards[type]].n}`);
+        updateStatus();
+    }
+
+    function triggerSafeWord() {
+        let p = players[masterIdx === 0 ? 1 : 0]; 
+        if(p.s >= 5) p.s -= 5; else p.s = 0;
+        alert(`SAFE WORD: ${safeWord} ACTIVATED. -5 points deducted from ${p.n}.`);
+        finish(false);
+    }
+
     function renderCommand() {
         document.getElementById('round-header').innerText = `ROUND ${curR} / ${maxR} | MASTER: ${players[masterIdx].n}`;
-        document.getElementById('s1-score').innerText = `${players[0].n}: ${players[0].s} pts`;
-        document.getElementById('s2-score').innerText = `${players[1].n}: ${players[1].s} pts`;
-        document.getElementById('y-hold').innerText = `Yellow: ${players[cards.yellow].n}`;
-        document.getElementById('r-hold').innerText = `Red: ${players[cards.red].n}`;
-        
+        updateStatus();
         const tg = document.getElementById('trial-toggles');
         tg.innerHTML = '<button class="t-btn master-all" onclick="toggleAll()">All Categories</button>';
         trials.forEach(t => {
@@ -281,19 +300,6 @@
         renderCommand();
     }
 
-    function passCard(type) {
-        cards[type] = cards[type] === 0 ? 1 : 0;
-        alert(`${type.toUpperCase()} CARD used and passed to ${players[cards[type]].n}`);
-        renderCommand();
-    }
-
-    function safeWordUsed() {
-        let p = players[masterIdx === 0 ? 1 : 0]; // Subject loses points
-        if(p.s >= 5) p.s -= 5; else p.s = 0;
-        alert(`SAFE WORD: ${safeWordText} ACTIVATED. Round failed.`);
-        finish(false);
-    }
-
     function generateDecree() {
         const act = trials.filter(t => t.on);
         if (!act.length) return;
@@ -308,6 +314,7 @@
         document.getElementById('active-trial-text').innerHTML = `<strong>${tr.n.toUpperCase()}</strong><br><br>${txt}`;
         document.getElementById('pre-round').style.display = 'none';
         document.getElementById('active-round').style.display = 'block';
+        updateStatus();
         timeLeft = tr.t; runClock();
     }
 
@@ -323,10 +330,7 @@
 
     function finish(win) {
         clearInterval(timer);
-        if(win) {
-            // Subject gets the point for completing the Master's decree
-            players[masterIdx === 0 ? 1 : 0].s += 1;
-        }
+        if(win) players[masterIdx === 0 ? 1 : 0].s += 1;
         
         if(curR >= maxR) {
             runFinale();
@@ -341,11 +345,10 @@
     function runFinale() {
         let winner = players[0].s >= players[1].s ? players[0] : players[1];
         let loser = winner === players[0] ? players[1] : players[0];
-        
         document.getElementById('active-round').style.display = 'block';
         document.getElementById('pre-round').style.display = 'none';
         document.getElementById('clock').style.display = 'none';
-        document.querySelectorAll('.t-btn').forEach(b => b.style.display = 'none');
+        document.querySelectorAll('.card-action-btn').forEach(b => b.style.display = 'none');
         
         document.getElementById('active-trial-text').innerHTML = `
             <h2 style="color:var(--accent)">PROTOCOL COMPLETE</h2>
