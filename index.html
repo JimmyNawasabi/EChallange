@@ -60,133 +60,131 @@
     <h1>SOVEREIGNTY</h1>
     <div class="subtitle">The Command Protocol</div>
 
-    <div id="step1" class="step active">
+    <div id="screen-1" class="step active">
         <div class="box-section">
             <span class="label">Primary (Master)</span>
-            <input type="text" id="p1_n" placeholder="Name">
+            <input type="text" id="p1-name-input" placeholder="Name">
             <div class="gender-select">
-                <div class="g-btn active" id="p1m" onclick="setGender(1,'M')">Male</div>
-                <div class="g-btn" id="p1f" onclick="setGender(1,'F')">Female</div>
-                <div class="g-btn" id="p1n" onclick="setGender(1,'NB')">NB</div>
+                <div class="g-btn active" onclick="updateGender(1,'M')">Male</div>
+                <div class="g-btn" onclick="updateGender(1,'F')">Female</div>
+                <div class="g-btn" onclick="updateGender(1,'NB')">NB</div>
             </div>
         </div>
         <div class="box-section">
             <span class="label">Secondary (Subject)</span>
-            <input type="text" id="p2_n" placeholder="Name">
+            <input type="text" id="p2-name-input" placeholder="Name">
             <div class="gender-select">
-                <div class="g-btn" id="p2m" onclick="setGender(2,'M')">Male</div>
-                <div class="g-btn active" id="p2f" onclick="setGender(2,'F')">Female</div>
-                <div class="g-btn" id="p2n" onclick="setGender(2,'NB')">NB</div>
+                <div class="g-btn" onclick="updateGender(2,'M')">Male</div>
+                <div class="g-btn active" onclick="updateGender(2,'F')">Female</div>
+                <div class="g-btn" onclick="updateGender(2,'NB')">NB</div>
             </div>
         </div>
         <div class="box-section">
             <span class="label">Rounds</span>
-            <input type="number" id="max_r" value="30">
+            <input type="number" id="rounds-input" value="30">
         </div>
-        <button class="btn" onclick="nav(2)">Access the Arsenal</button>
+        <button class="btn" onclick="goToStep(2)">Access the Arsenal</button>
     </div>
 
-    <div id="step2" class="step">
-        <div id="vault-inject"></div>
-        <button class="btn" onclick="nav(3)">Lock Arsenal & Begin</button>
+    <div id="screen-2" class="step">
+        <div id="vault-mount"></div>
+        <button class="btn" onclick="goToStep(3)">Lock Arsenal & Begin</button>
     </div>
 
-    <div id="step3" class="step">
+    <div id="screen-3" class="step">
         <div class="status-header">
-            <div class="stat-box" id="disp-round">ROUND: 1</div>
-            <div class="stat-box" id="disp-remain">REMAINING: 29</div>
-            <div class="stat-box" id="disp-yellow" style="color:#ffd700">YELLOW CARD: -</div>
-            <div class="stat-box" id="disp-red" style="color:#ff4444">RED CARD: -</div>
+            <div class="stat-box" id="stat-round">ROUND: 1</div>
+            <div class="stat-box" id="stat-remain">REMAINING: 29</div>
+            <div class="stat-box" id="stat-yellow" style="color:#ffd700">YELLOW: -</div>
+            <div class="stat-box" id="stat-red" style="color:#ff4444">RED: -</div>
         </div>
-        <div id="active-round">
-            <div id="pre-round"><button class="btn" onclick="generateDecree()">Generate Decree</button></div>
-            <div id="round-content" style="display:none;">
-                <div class="box-section" id="active-trial-text" style="min-height: 120px; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; line-height: 1.4;"></div>
-                <div class="timer-big" id="clock">10:00</div>
-                
+        <div id="play-area">
+            <div id="pre-round-ui"><button class="btn" onclick="actionGenerate()">Generate Decree</button></div>
+            <div id="active-round-ui" style="display:none;">
+                <div class="box-section" id="decree-text" style="min-height: 120px; text-align: center; font-weight: bold; display:flex; align-items:center; justify-content:center;"></div>
+                <div class="timer-big" id="timer-display">10:00</div>
                 <div class="card-grid">
-                    <button class="card-btn yellow" onclick="playCard('YELLOW')">Yellow Card</button>
-                    <button class="card-btn red" onclick="playCard('RED')">Red Card</button>
+                    <button class="card-btn yellow" onclick="actionCard('YELLOW')">Yellow Card</button>
+                    <button class="card-btn red" onclick="actionCard('RED')">Red Card</button>
                 </div>
-                
-                <button class="btn" style="background:var(--success);" onclick="finishRound()">Complete Round</button>
+                <button class="btn" style="background:var(--success);" onclick="actionComplete()">Complete Round</button>
             </div>
-            <button class="btn-safeword" onclick="triggerSafeWord()" style="margin-top:20px;">SAFE WORD</button>
+            <button class="btn-safeword" onclick="actionSafeword()" style="margin-top:20px;">SAFE WORD</button>
         </div>
     </div>
 </div>
 
 <script>
-    let players = [{n:"", g:"M"}, {n:"", g:"F"}], curR = 1, maxR = 30, timer, timeLeft;
-    let cardHolders = { yellow: "", red: "" };
-    
-    // REINSTATED ARSENAL CATEGORIES
-    let vault = {
-        "Restraints": ["Rope", "Cuffs", "Tape", "Zipties"],
-        "Blindfolds": ["Silk Scarf", "Sleep Mask", "Hood", "Tape"],
-        "Sensation": ["Ice", "Feather", "Wand", "Paddle", "Whip", "Clamps"]
+    /** THE MODULAR STATE OBJECT **/
+    const state = {
+        players: [{ name: "", gender: "M" }, { name: "", gender: "F" }],
+        rounds: { current: 1, total: 30 },
+        cards: { yellowHolder: "", redHolder: "" },
+        timer: { value: 600, interval: null },
+        vault: {
+            "Restraints": ["Rope", "Cuffs", "Tape"],
+            "Blindfolds": ["Silk Scarf", "Sleep Mask"],
+            "Sensation": ["Ice", "Feather", "Paddle", "Wand"]
+        },
+        activities: [
+            "The Subject must be restrained using {Restraints}. The Master applies {Sensation} for the duration.",
+            "Blindfold the Subject with {Blindfolds}. They must guess which {Sensation} is being applied.",
+            "Absolute stillness. The Master uses {Sensation} to test the Subject's resolve.",
+            "The Master chooses an item from {Sensation}. The Subject must describe the sensation while held by {Restraints}."
+        ]
     };
 
-    // REINSTATED TRIAL ACTIVITIES
-    const activities = [
-        "The Subject must be restrained using {Restraints}. The Master will apply sensation with {Sensation} for the duration.",
-        "The Subject is to be blindfolded with {Blindfolds} and must guess which {Sensation} is being used.",
-        "The Master commands absolute stillness. If the Subject moves, the timer restarts.",
-        "The Subject must describe the feeling of {Sensation} in explicit detail while restrained by {Restraints}.",
-        "The Master chooses an item from {Sensation}. The Subject must endure it while blindfolded by {Blindfolds}.",
-        "A test of endurance: The Master uses {Restraints} and {Sensation} at a rhythm of their choosing.",
-        "The Subject is denied {Blindfolds} and must watch as the Master prepares the {Sensation}."
-    ];
-
-    function setGender(p, g) {
-        players[p-1].g = g;
-        const group = (p === 1) ? ['p1m','p1f', 'p1n'] : ['p2m','p2f', 'p2n'];
-        group.forEach(id => document.getElementById(id).classList.remove('active'));
-        document.getElementById(`p${p}${g.toLowerCase()}`).classList.add('active');
+    /** CORE ACTIONS (LOGIC) **/
+    function updateGender(playerIdx, g) {
+        state.players[playerIdx-1].gender = g;
+        // Update visual selector
+        const buttons = document.querySelectorAll(`#screen-1 .box-section:nth-child(${playerIdx}) .g-btn`);
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
     }
 
-    function nav(n) {
+    function goToStep(n) {
         if (n === 2) renderVault();
         if (n === 3) {
-            players[0].n = document.getElementById('p1_n').value || "Primary";
-            players[1].n = document.getElementById('p2_n').value || "Secondary";
-            maxR = parseInt(document.getElementById('max_r').value) || 30;
+            state.players[0].name = document.getElementById('p1-name-input').value || "Primary";
+            state.players[1].name = document.getElementById('p2-name-input').value || "Secondary";
+            state.rounds.total = parseInt(document.getElementById('rounds-input').value) || 30;
             distributeCards();
-            updateStatus();
+            refreshStatus();
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById('step' + n).classList.add('active');
+        document.getElementById(`screen-${n}`).classList.add('active');
     }
 
     function distributeCards() {
-        cardHolders.yellow = players[Math.floor(Math.random() * 2)].n;
-        cardHolders.red = players[Math.floor(Math.random() * 2)].n;
+        state.cards.yellowHolder = state.players[Math.floor(Math.random() * 2)].name;
+        state.cards.redHolder = state.players[Math.floor(Math.random() * 2)].name;
     }
 
     function renderVault() {
-        const target = document.getElementById('vault-inject');
-        target.innerHTML = '<span class="label">Arsenal Configuration</span>';
-        for (let cat in vault) {
-            let box = document.createElement('div');
-            box.className = 'box-section';
-            let safeId = cat.replace(/\s+/g, '-').toLowerCase();
-            box.innerHTML = `
+        const mount = document.getElementById('vault-mount');
+        mount.innerHTML = '<span class="label">Arsenal Configuration</span>';
+        for (let cat in state.vault) {
+            const safeId = cat.toLowerCase();
+            const section = document.createElement('div');
+            section.className = 'box-section';
+            section.innerHTML = `
                 <span class="label" style="color:#666">${cat}</span>
-                <div class="tag-cloud" id="cloud-${cat}"></div>
+                <div class="tag-cloud" id="tags-${safeId}"></div>
                 <div class="add-row">
-                    <input type="text" id="input-${safeId}" placeholder="Add to ${cat}...">
-                    <button class="add-btn" onclick="addCustom('${cat}', 'input-${safeId}')">+</button>
+                    <input type="text" id="in-${safeId}" placeholder="Custom ${cat}...">
+                    <button class="add-btn" onclick="addVaultItem('${cat}', 'in-${safeId}')">+</button>
                 </div>`;
-            target.appendChild(box);
-            updateCloud(cat);
+            mount.appendChild(section);
+            renderTags(cat);
         }
     }
 
-    function updateCloud(cat) {
-        const cloud = document.getElementById(`cloud-${cat}`);
+    function renderTags(cat) {
+        const cloud = document.getElementById(`tags-${cat.toLowerCase()}`);
         cloud.innerHTML = '';
-        vault[cat].forEach(item => {
-            let tag = document.createElement('div');
+        state.vault[cat].forEach(item => {
+            const tag = document.createElement('div');
             tag.className = 'tag on';
             tag.innerText = item;
             tag.onclick = () => tag.classList.toggle('on');
@@ -194,74 +192,65 @@
         });
     }
 
-    function addCustom(cat, inputId) {
+    function addVaultItem(cat, inputId) {
         const input = document.getElementById(inputId);
-        const val = input.value.trim();
-        if (val) {
-            vault[cat].push(val);
+        if (input.value.trim()) {
+            state.vault[cat].push(input.value.trim());
             input.value = '';
-            updateCloud(cat);
+            renderTags(cat);
         }
     }
 
-    function updateStatus() {
-        document.getElementById('disp-round').innerText = `ROUND: ${curR}`;
-        document.getElementById('disp-remain').innerText = `REMAINING: ${Math.max(0, maxR - curR)}`;
-        document.getElementById('disp-yellow').innerText = `YELLOW CARD: ${cardHolders.yellow}`;
-        document.getElementById('disp-red').innerText = `RED CARD: ${cardHolders.red}`;
+    function refreshStatus() {
+        document.getElementById('stat-round').innerText = `ROUND: ${state.rounds.current}`;
+        document.getElementById('stat-remain').innerText = `REMAINING: ${state.rounds.total - state.rounds.current}`;
+        document.getElementById('stat-yellow').innerText = `YELLOW: ${state.cards.yellowHolder}`;
+        document.getElementById('stat-red').innerText = `RED: ${state.cards.redHolder}`;
     }
 
-    function generateDecree() {
-        let text = activities[Math.floor(Math.random() * activities.length)];
-        
-        // Replace placeholders with active items from vault
+    function actionGenerate() {
+        let text = state.activities[Math.floor(Math.random() * state.activities.length)];
         text = text.replace(/{(\w+)}/g, (match, cat) => {
-            const items = vault[cat] || [];
-            const activeItems = items.filter((_, i) => {
-                const cloud = document.getElementById(`cloud-${cat}`);
-                return cloud ? cloud.children[i].classList.contains('on') : true;
-            });
-            return activeItems.length > 0 ? activeItems[Math.floor(Math.random() * activeItems.length)] : "[Nothing Available]";
+            const items = state.vault[cat] || [];
+            return items.length > 0 ? items[Math.floor(Math.random() * items.length)] : "[Item]";
         });
-
-        document.getElementById('active-trial-text').innerText = text;
-        document.getElementById('pre-round').style.display = 'none';
-        document.getElementById('round-content').style.display = 'block';
-        timeLeft = 600; startTimer();
+        document.getElementById('decree-text').innerText = text;
+        document.getElementById('pre-round-ui').style.display = 'none';
+        document.getElementById('active-round-ui').style.display = 'block';
+        startTimer();
     }
 
     function startTimer() {
-        clearInterval(timer);
-        timer = setInterval(() => {
-            timeLeft--;
-            let m = Math.floor(timeLeft/60), s = timeLeft%60;
-            document.getElementById('clock').innerText = `${m}:${s<10?'0'+s:s}`;
-            if(timeLeft<=0) finishRound();
+        state.timer.value = 600;
+        clearInterval(state.timer.interval);
+        state.timer.interval = setInterval(() => {
+            state.timer.value--;
+            const m = Math.floor(state.timer.value / 60), s = state.timer.value % 60;
+            document.getElementById('timer-display').innerText = `${m}:${s < 10 ? '0' + s : s}`;
+            if (state.timer.value <= 0) actionComplete();
         }, 1000);
     }
 
-    function playCard(type) {
-        if(type === 'YELLOW') { 
-            alert(`YELLOW CARD played by ${cardHolders.yellow}. Roles Swapped.`); 
-            generateDecree(); 
-        } 
-        else { 
-            alert(`RED CARD played by ${cardHolders.red}. Round Terminated.`); 
-            finishRound(); 
+    function actionCard(type) {
+        const holder = type === 'YELLOW' ? state.cards.yellowHolder : state.cards.redHolder;
+        alert(`${type} CARD activated by ${holder}.`);
+        if (type === 'YELLOW') actionGenerate(); else actionComplete();
+    }
+
+    function actionComplete() {
+        clearInterval(state.timer.interval);
+        if (state.rounds.current >= state.rounds.total) {
+            alert("PROTOCOL COMPLETE.");
+            location.reload();
+        } else {
+            state.rounds.current++;
+            refreshStatus();
+            document.getElementById('pre-round-ui').style.display = 'block';
+            document.getElementById('active-round-ui').style.display = 'none';
         }
     }
 
-    function finishRound() {
-        clearInterval(timer);
-        if(curR >= maxR) { alert("PROTOCOL COMPLETE."); location.reload(); }
-        else {
-            curR++; updateStatus();
-            document.getElementById('pre-round').style.display = 'block';
-            document.getElementById('round-content').style.display = 'none';
-        }
-    }
-
-    function triggerSafeWord() { alert("SAFE WORD ACTIVATED."); location.reload(); }
+    function actionSafeword() { alert("SAFEWORD ACTIVATED."); location.reload(); }
 </script>
 </body>
 </html>
