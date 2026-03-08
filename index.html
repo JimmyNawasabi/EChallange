@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Sovereign Default Restored</title>
+    <title>SOVEREIGNTY: Final Stability Patch</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto: #444; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -17,7 +17,7 @@
         .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
         .btn { background: var(--crimson); color: white; border: none; padding: 16px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 5px; transition: 0.2s; }
         .btn:active { transform: scale(0.98); }
-        .tog-btn { padding: 10px; font-size: 0.65rem; border-radius: 6px; border: 1px solid #444; background: #111; color: #555; cursor: pointer; text-transform: uppercase; }
+        .tog-btn { padding: 8px; font-size: 0.65rem; border-radius: 6px; border: 1px solid #444; background: #111; color: #555; cursor: pointer; text-transform: uppercase; }
         .tog-btn.active { border-color: var(--accent); color: var(--accent); background: #1a1608; }
         .item-chip { display: inline-flex; align-items: center; background: #333; padding: 6px 12px; border-radius: 20px; margin: 4px; font-size: 0.8rem; border: 1px solid #444; cursor: pointer; }
         .item-chip.off { opacity: 0.3; text-decoration: line-through; background: #111; }
@@ -39,14 +39,14 @@
     <div id="step-1">
         <div class="box-section">
             <span class="label">Initial Master</span>
-            <input type="text" id="p0-name" placeholder="Name...">
+            <input type="text" id="p0-name" value="Master">
             <div class="gender-grid">
                 <button class="g-btn active" onclick="setG(0,'M',this)">Male</button>
                 <button class="g-btn" onclick="setG(0,'F',this)">Female</button>
                 <button class="g-btn" onclick="setG(0,'NB',this)">NB</button>
             </div>
             <span class="label">Initial Slave</span>
-            <input type="text" id="p1-name" placeholder="Name...">
+            <input type="text" id="p1-name" value="Slave">
             <div class="gender-grid">
                 <button class="g-btn" onclick="setG(1,'M',this)">Male</button>
                 <button class="g-btn active" onclick="setG(1,'F',this)">Female</button>
@@ -57,12 +57,12 @@
             <span class="label">Total Rounds</span>
             <input type="number" id="round-total" value="30">
         </div>
-        <button class="btn" onclick="showStep(2)">Next: Arsenal</button>
+        <button class="btn" style="width:100%" onclick="showStep(2)">Next: Arsenal</button>
     </div>
 
     <div id="step-2" style="display:none;">
         <div id="inventory-editor"></div>
-        <button class="btn" style="background:var(--success);" onclick="startSession()">Begin Protocol</button>
+        <button class="btn" style="background:var(--success); width:100%;" onclick="startSession()">Begin Protocol</button>
     </div>
 
     <div id="step-3" style="display:none;">
@@ -73,7 +73,7 @@
         </div>
         <div id="game-controls">
              <div class="box-section"><span class="label">Active Protocols</span><div id="proto-mount" style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;"></div></div>
-             <button class="btn" onclick="generate()">Command Decree</button>
+             <button class="btn" style="width:100%" onclick="generate()">Command Decree</button>
         </div>
         <div id="decree-view" style="display:none;">
             <div class="box-section"><div id="decree-display" style="line-height:1.6; color:#ddd;"></div></div>
@@ -91,19 +91,16 @@
             <button class="btn" style="background:#333; font-size:0.7rem;" onclick="generateGrandDecree()">Re-Generate Finale</button>
         </div>
         <div class="box-section">
-            <div style="display:flex; gap:10px;">
-                <button class="btn" style="flex:1; background:var(--success);" id="choice-1" onclick="finalize()"></button>
-                <button class="btn" style="flex:1; background:var(--crimson);" id="choice-2" onclick="finalize()"></button>
-            </div>
+            <button class="btn" style="width:100%; background:var(--crimson);" onclick="location.reload()">Reset System</button>
         </div>
     </div>
 </div>
 
 <script>
     const state = {
-        curr: 1, total: 30, lastProtocol: null, lastPromptIdx: null,
+        curr: 1, total: 30, lastProtocol: null,
         players: [{n:"", g:"M", role:"Master", score:0}, {n:"", g:"F", role:"Slave", score:0}],
-        vault: JSON.parse(localStorage.getItem('sov_v31')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v4_stable')) || {
             "Restraints": [{n:"Heavy Rope", a:true}], "Gags": [{n:"Ball Gag", a:true}], "Blindfolds": [{n:"Leather Mask", a:true}], 
             "Sensory": [{n:"Ice Blocks", a:true}], "Toys": [{n:"Vibrator", a:true}], "Impact": [{n:"Heavy Flogger", a:true}]
         },
@@ -117,13 +114,12 @@
             "The Flesh Endurance": ["{S} must hold a stress position while supporting the weight of {T}."],
             "The Great Unshackling": ["{M} secures {S} with {T}. {S} has 2 minutes to struggle free or face a penalty."],
             "The Velvet Command": ["{M} traces {T} slowly across {S}'s skin. {S} must describe every sensation."]
-        }
+        },
+        protoToCat: { "The Solitary Bind":"Restraints", "The Wicked Gamble":"Impact", "The Veiled Confession":"Gags", "The Silk Labyrinth":"Restraints", "The Threshold of Agony":"Toys", "The Flesh Endurance":"Restraints", "The Great Unshackling":"Restraints", "The Velvet Command":"Sensory" }
     };
 
-    const protoToCat = { "The Solitary Bind":"Restraints", "The Wicked Gamble":"Impact", "The Veiled Confession":"Gags", "The Silk Labyrinth":"Restraints", "The Threshold of Agony":"Toys", "The Flesh Endurance":"Restraints", "The Great Unshackling":"Restraints", "The Velvet Command":"Sensory" };
-
     function setG(i, v, b) { state.players[i].g = v; Array.from(b.parentElement.children).forEach(x=>x.classList.remove('active')); b.classList.add('active'); }
-    function showStep(n) { document.querySelectorAll('[id^="step-"]').forEach(s=>s.style.display='none'); document.getElementById('step-'+n).style.display='block'; if(n==2) renderInventory(); }
+    function showStep(n) { document.querySelectorAll('[id^="step-"]').forEach(s=>s.style.display='none'); document.getElementById('step-'+n).style.display='block'; if(n===2) renderInventory(); }
     
     function renderInventory() {
         const m = document.getElementById('inventory-editor'); m.innerHTML = '<h3 style="color:var(--accent);text-align:center;font-size:0.8rem">ARSENAL</h3>';
@@ -144,7 +140,7 @@
         state.players[1].n = document.getElementById('p1-name').value || "Sub";
         state.total = parseInt(document.getElementById('round-total').value) || 30;
         document.getElementById('panic-label').innerText = document.getElementById('safeword-in').value || "RED";
-        localStorage.setItem('sov_v31', JSON.stringify(state.vault));
+        localStorage.setItem('sov_v4_stable', JSON.stringify(state.vault));
         showStep(3); renderGame();
     }
 
@@ -165,18 +161,18 @@
         const ap = Object.keys(state.protocols).filter(k=>state.protocols[k]);
         if(!ap.length) return alert("Select a protocol.");
         const p = ap[Math.floor(Math.random()*ap.length)];
-        const cat = protoToCat[p];
+        const cat = state.protoToCat[p];
         const items = state.vault[cat].filter(i=>i.a);
         if(!items.length) return alert(`Active ${cat} required.`);
         const m = state.players.find(x=>x.role==='Master'), s = state.players.find(x=>x.role==='Slave');
         const pron = s.g==='M'?'his':(s.g==='F'?'her':'their');
-        state.lastProtocol = p; state.lastPromptIdx = 0;
+        state.lastProtocol = p;
         document.getElementById('decree-display').innerHTML = `<strong>${p}</strong><br><br>` + state.prompts[p][0].replace(/{M}/g, m.n).replace(/{S}/g, s.n).replace(/{SP}/g, pron).replace(/{T}/g, `<strong>${items[Math.floor(Math.random()*items.length)].n}</strong>`);
         document.getElementById('game-controls').style.display = 'none';
         document.getElementById('decree-view').style.display = 'block';
     }
 
-    function vetoCurrent() { if(confirm("Purge decree?")) { state.prompts[state.lastProtocol].splice(state.lastPromptIdx,1); generate(); } }
+    function vetoCurrent() { if(confirm("Purge decree?")) { document.getElementById('game-controls').style.display='block'; document.getElementById('decree-view').style.display='none'; } }
     function triggerSafeword() { state.players.find(p=>p.role==='Slave').score -= 5; resolve('fail'); }
 
     function resolve(type) {
@@ -186,13 +182,12 @@
     }
 
     function triggerFinale() {
+        showStep(4);
         const win = state.players[0].score > state.players[1].score ? state.players[0] : state.players[1];
         const los = state.players.find(p=>p!==win);
         state.win = win; state.los = los;
         document.getElementById('winner-banner').innerText = `${win.n} IS VICTORIOUS`;
-        document.getElementById('choice-1').innerText = `${win.n} (FINAL MASTER)`;
-        document.getElementById('choice-2').innerText = `${win.n} (FINAL SLAVE)`;
-        generateGrandDecree(); showStep(4);
+        generateGrandDecree();
     }
 
     function generateGrandDecree() {
@@ -207,8 +202,6 @@
         d += `<strong>CONCLUSION:</strong> {M} achieves climax. {S} is denied.`;
         document.getElementById('grand-decree-display').innerHTML = d;
     }
-
-    function finalize() { alert("Grand Decree Activated."); location.reload(); }
 </script>
 </body>
 </html>
