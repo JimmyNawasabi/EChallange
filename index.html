@@ -1,1 +1,262 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sovereignty: The Command Protocol</title>
+    <style>
+        :root { 
+            --accent: #d4af37; --bg: #0a0a0a; --card: #161616;
+            --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --off: #2a2a2a;
+            --alert: #ff0000;
+        }
+
+        body { 
+            background: var(--bg); color: var(--text); 
+            font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; 
+            display: flex; justify-content: center;
+        }
+
+        .container { 
+            max-width: 500px; width: 100%; background: var(--card); 
+            padding: 30px; border-radius: 30px; border: 2px solid #333; 
+        }
+        
+        h1 { text-align: center; text-transform: uppercase; letter-spacing: 8px; color: var(--accent); margin-bottom: 5px; }
+        .subtitle { text-align: center; font-size: 0.7rem; color: #666; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; }
+        
+        .box-section { 
+            background: #1f1f1f; padding: 20px; margin-bottom: 20px; 
+            border-radius: 20px; border: 1px solid #333; 
+        }
+        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 15px; }
+
+        input[type="text"], input[type="number"] { 
+            width: 100%; padding: 15px; border: 1px solid #444; border-radius: 12px; 
+            background: #000; color: white; font-size: 1.1rem; box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        .gender-select { display: flex; gap: 10px; margin-bottom: 5px; }
+        .g-btn { 
+            flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #444; 
+            background: #111; color: #666; cursor: pointer; text-align: center; 
+            font-weight: bold; text-transform: uppercase; font-size: 0.8rem;
+        }
+        .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+        .btn { 
+            background: var(--crimson); color: white; border: none; padding: 20px; 
+            width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; 
+            border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px;
+        }
+
+        .status-header { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .stat-box { background: #000; padding: 10px; border-radius: 10px; text-align: center; font-size: 0.75rem; border: 1px solid #444; flex: 1; }
+        
+        .timer-big { font-size: 4rem; text-align: center; font-weight: bold; margin: 10px 0; }
+        .instruction-highlight { color: var(--accent); font-weight: bold; }
+        .step { display: none; }
+        .active { display: block !important; }
+
+        .card-action-btn { font-size: 0.65rem; padding: 10px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+        
+        #extend-prompt { background: #d4af37; color: #000; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 0.8rem; display: none; }
+        
+        .veto-btn { background: #444; color: #fff; border: 1px solid #666; font-size: 0.6rem; padding: 5px; border-radius: 5px; cursor: pointer; margin-bottom: 15px; width: 100%; }
+
+        .btn-safeword {
+            background: #ff0000 !important;
+            color: #ffffff !important;
+            padding: 25px;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+            animation: pulse-red 1.5s infinite;
+            border: 4px solid #ffffff;
+            width: 100%;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        @keyframes pulse-red {
+            0% { transform: scale(1); box-shadow: 0 0 0 0px rgba(255, 0, 0, 0.7); }
+            50% { transform: scale(1.02); box-shadow: 0 0 25px 10px rgba(255, 0, 0, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0px rgba(255, 0, 0, 0); }
+        }
+
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+        .tag { background: #000; padding: 8px 12px; border-radius: 10px; font-size: 0.9rem; cursor: pointer; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 8px; }
+        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
+        .add-row { display: flex; gap: 8px; margin-top: 5px; margin-bottom: 20px; }
+        .add-row input { margin-bottom: 0; padding: 12px; font-size: 0.9rem; flex-grow: 1; }
+        .add-btn { background: var(--accent); color: #000; border: none; padding: 0 20px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.5rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>SOVEREIGNTY</h1>
+    <div class="subtitle">The Command Protocol</div>
+
+    <div id="step1" class="step active">
+        <div class="box-section">
+            <span class="label">Primary Participant (Master)</span>
+            <input type="text" id="p1_n" placeholder="Name">
+            <div class="gender-select">
+                <div class="g-btn active" id="p1m" onclick="setGender(1,'M')">Male</div>
+                <div class="g-btn" id="p1f" onclick="setGender(1,'F')">Female</div>
+                <div class="g-btn" id="p1n" onclick="setGender(1,'NB')">NB</div>
+            </div>
+        </div>
+        <div class="box-section">
+            <span class="label">Secondary Participant (Subject)</span>
+            <input type="text" id="p2_n" placeholder="Name">
+            <div class="gender-select">
+                <div class="g-btn" id="p2m" onclick="setGender(2,'M')">Male</div>
+                <div class="g-btn active" id="p2f" onclick="setGender(2,'F')">Female</div>
+                <div class="g-btn" id="p2n" onclick="setGender(2,'NB')">NB</div>
+            </div>
+        </div>
+        <div class="box-section">
+            <span class="label">Rounds</span>
+            <input type="number" id="max_r" value="30">
+        </div>
+        <button class="btn" onclick="nav(2)">Access the Arsenal</button>
+    </div>
+
+    <div id="step2" class="step">
+        <div id="vault-inject"></div>
+        <button class="btn" onclick="nav(3)">Lock Arsenal & Begin</button>
+    </div>
+
+    <div id="step3" class="step">
+        <div class="status-header">
+            <div class="stat-box" id="disp-round">ROUND: 1</div>
+            <div class="stat-box" id="disp-remain">REMAINING: 29</div>
+        </div>
+
+        <div id="extend-prompt">
+            PROTOCOL NEARLY COMPLETE.<br>
+            <button onclick="extendGameCustom()" style="margin-top:10px; padding:8px 15px; cursor:pointer; background:#000; color:#fff; border:1px solid #000; border-radius:10px; font-weight:bold;">EXTEND PROTOCOL</button>
+        </div>
+        
+        <div id="pre-round">
+            <button class="btn" onclick="generateDecree()">Generate Decree</button>
+        </div>
+
+        <div id="active-round" style="display:none;">
+            <button class="veto-btn" onclick="vetoCurrent()">⚠ VETO & REMOVE CHALLENGE FROM ENGINE</button>
+            <div class="box-section" id="active-trial-text" style="min-height: 200px;"></div>
+            <div class="timer-big" id="clock">00:00</div>
+            <div class="toggle-grid">
+                <button class="card-action-btn" id="btn-y-use" onclick="playYellowCard()">Play Yellow Card</button>
+                <button class="card-action-btn" id="btn-r-use" onclick="playRedCard()">Play Red Card</button>
+            </div>
+            <button class="btn" style="background:#1e4d2b; margin-top:15px;" onclick="finish(true)">Complete</button>
+            <button class="btn-safeword" onclick="triggerSafeWord()" style="margin-top:20px;">SAFE WORD</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let players = [{n:"", g:"M", s:0}, {n:"", g:"F", s:0}], curR = 1, maxR = 30, masterIdx = 0, timer, timeLeft;
+    let vault = {
+        "Restraints": [{n:"Rope", on:true}, {n:"Cuffs", on:true}],
+        "Blindfolds": [{n:"Sleep Mask", on:true}, {n:"Silk Scarf", on:true}],
+        "Sensation": [{n:"Feather", on:true}, {n:"Ice", on:true}]
+    };
+
+    function setGender(p, g) {
+        players[p-1].g = g;
+        const group = (p === 1) ? ['p1m','p1f','p1n'] : ['p2m','p2f','p2n'];
+        group.forEach(id => document.getElementById(id).classList.remove('active'));
+        document.getElementById(`p${p}${g.toLowerCase()}`).classList.add('active');
+    }
+
+    function nav(n) {
+        if(n === 2) renderVault();
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + n).classList.add('active');
+        if(n === 3) {
+            maxR = parseInt(document.getElementById('max_r').value) || 30;
+            updateStatus();
+        }
+    }
+
+    function renderVault() {
+        const container = document.getElementById('vault-inject');
+        container.innerHTML = `<span class="label">Arsenal Configuration</span>`;
+        for (let cat in vault) {
+            let section = document.createElement('div');
+            section.className = 'box-section';
+            section.innerHTML = `<span class="label" style="color:#666">${cat}</span><div class="tag-cloud" id="cloud-${cat}"></div>`;
+            container.appendChild(section);
+            updateCloud(cat);
+        }
+    }
+
+    function updateCloud(cat) {
+        const cloud = document.getElementById(`cloud-${cat}`);
+        cloud.innerHTML = '';
+        vault[cat].forEach((item, idx) => {
+            let tag = document.createElement('div');
+            tag.className = `tag ${item.on ? 'on' : ''}`;
+            tag.innerText = item.n;
+            tag.onclick = () => { item.on = !item.on; updateCloud(cat); };
+            cloud.appendChild(tag);
+        });
+    }
+
+    function updateStatus() {
+        document.getElementById('disp-round').innerText = `ROUND: ${curR}`;
+        document.getElementById('disp-remain').innerText = `REMAINING: ${Math.max(0, maxR - curR)}`;
+        document.getElementById('extend-prompt').style.display = (maxR - curR === 1) ? 'block' : 'none';
+    }
+
+    function generateDecree() {
+        document.getElementById('active-trial-text').innerText = "Trial active: Complete the required submission as directed by the Master.";
+        document.getElementById('pre-round').style.display = 'none';
+        document.getElementById('active-round').style.display = 'block';
+        timeLeft = 600; runClock();
+    }
+
+    function runClock() {
+        clearInterval(timer);
+        timer = setInterval(() => {
+            timeLeft--;
+            let m = Math.floor(timeLeft/60), s = timeLeft%60;
+            document.getElementById('clock').innerText = `${m}:${s<10?'0'+s:s}`;
+            if(timeLeft<=0) finish(false);
+        }, 1000);
+    }
+
+    function finish(win) {
+        clearInterval(timer);
+        if(curR >= maxR) alert("Protocol Terminated.");
+        else {
+            curR++; updateStatus();
+            document.getElementById('pre-round').style.display = 'block';
+            document.getElementById('active-round').style.display = 'none';
+        }
+    }
+
+    function extendGameCustom() {
+        let extra = prompt("How many additional rounds?", "5");
+        let num = parseInt(extra);
+        if(!isNaN(num) && num > 0) {
+            maxR += num;
+            updateStatus();
+        }
+    }
+
+    function playRedCard() { alert("RED CARD: Round Skipped."); finish(false); }
+    function playYellowCard() { alert("YELLOW CARD: Swap Roles."); }
+    function triggerSafeWord() { alert("SAFE WORD ACTIVATED."); location.reload(); }
+    function vetoCurrent() { alert("Task Vetoed."); finish(false); }
+</script>
+</body>
+</html>
