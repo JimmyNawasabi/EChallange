@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: The Complete Protocol</title>
+    <title>SOVEREIGNTY: Absolute Protocol</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -25,6 +25,8 @@
         .score-row { display: flex; justify-content: space-between; padding: 12px; background: #000; border-radius: 12px; border: 1px solid #222; text-align: center; margin-bottom: 15px; }
         .role-tag { font-size: 0.6rem; font-weight: bold; color: #444; }
         .master-glow { color: var(--accent) !important; }
+        .decree-text { line-height: 1.8; color: #ddd; font-size: 1.05rem; }
+        .decree-text strong { color: var(--accent); }
     </style>
 </head>
 <body>
@@ -78,7 +80,7 @@
         </div>
 
         <div id="decree-view" style="display:none;">
-            <div class="box-section" id="decree-text" style="line-height:1.6; border-left:4px solid var(--accent); padding-left:15px;"></div>
+            <div class="box-section"><div id="decree-display" class="decree-text"></div></div>
             <div style="display:flex; gap:10px;">
                 <button class="btn" style="background:#333; flex:1;" onclick="resolve(false)">FAIL</button>
                 <button class="btn" style="background:var(--success); flex:1;" onclick="resolve(true)">SUCCESS</button>
@@ -91,7 +93,7 @@
     const state = {
         curr: 1, total: 30,
         players: [{n:"", g:"M", role:"Master", score:0}, {n:"", g:"F", role:"Slave", score:0}],
-        vault: JSON.parse(localStorage.getItem('sov_v17')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v18')) || {
             "Restraints": [ {n:"Rope", a:true}, {n:"Cuffs", a:true} ],
             "Sensory": [ {n:"Blindfold", a:true}, {n:"Hood", a:true} ],
             "Discipline": [ {n:"Flogger", a:true}, {n:"Cane", a:true} ],
@@ -104,14 +106,43 @@
         }
     };
 
-    function setG(i, v, b) { state.players[i].g = v; Array.from(b.parentElement.children).forEach(x=>x.classList.remove('active')); b.classList.add('active'); }
+    const promptLibrary = {
+        "The Solitary Bind": [
+            "{S}, you are to take the {T} and bind your own wrists behind your back until the skin indents. Once secured, you must kneel before {M} and beg for the final knot to be tightened.",
+            "Using the {T}, {S} must bind {SP} ankles to {SP} thighs in a tight hogtie. {S} will remain in this helpless position on the floor while {M} evaluates {SP} struggle."
+        ],
+        "The Wicked Gamble": [
+            "{M} commands {S} to endure 10 heavy strikes from the {T}. If {S} makes a single sound, the count restarts from zero. If {S} remains silent, {M} must provide a rewarding touch.",
+            "{S} must balance the {T} on {SP} tongue for 60 seconds while holding a deep squat. If it falls, {M} will apply a disciplinary penalty of {M}'s choosing."
+        ],
+        "The Veiled Confession": [
+            "{M} will use the {T} to create a heightening sense of discomfort. While bound or stimulated by it, {S} must confess {SP} darkest sexual fantasy that {M} does not yet know.",
+            "Bound tightly by the {T}, {S} must answer: 'What is the one act of submission you fear most, yet secretly desire {M} to force upon you?'"
+        ],
+        "The Silk Labyrinth": [
+            "{M} is to spend the next 5 minutes intricately wrapping the {T} around {S}'s chest and sensitive points. The focus must be on aesthetic beauty and restrictive pressure.",
+            "{S} will stand perfectly still while {M} uses the {T} to bind {SP} limbs into a decorative but agonizingly rigid pose. {S} must describe the growing restriction."
+        ],
+        "The Threshold of Agony": [
+            "{M} will use the {T} to bring {S} to the absolute brink of climax. At the moment of no return, {M} will cease all contact. {S} must remain perfectly still in the ache of denial.",
+            "{S} is to be stimulated by the {T} repeatedly. Every time {S} begs for release, {M} will apply a sharp correction and continue the teasing without mercy."
+        ],
+        "The Flesh Endurance": [
+            "{S} must assume a rigid stress position. {M} will hang the {T} from {S}'s body to add weight. {S} must hold this until {SP} muscles tremble violently.",
+            "{M} commands {S} to hold the {T} between {SP} teeth while maintaining a wall-sit. Any trembling will result in {M} adding further physical pressure."
+        ],
+        "The Great Unshackling": [
+            "{M} will bind {S} with the {T} using maximum complexity. {S} has 120 seconds to struggle and sweat {SP} way out. If {S} fails, {M} leaves {S} bound for the next round.",
+            "Tied securely with the {T}, {S} must attempt to reach a designated object 5 feet away using only {SP} body's undulations. {M} watches the pathetic display."
+        ],
+        "The Velvet Command": [
+            "{M} will slowly and methodically trace the {T} over every inch of {S}'s inner thighs and neck. {S} must maintain eye contact and describe the 'electricity' {M} is creating.",
+            "{S} must lie prone while {M} uses the {T} to rhythmically stroke {SP} most sensitive areas. {S} is forbidden from moving unless {M} commands a change in posture."
+        ]
+    };
 
-    function showStep(n) {
-        document.getElementById('step-1').style.display = n==1?'block':'none';
-        document.getElementById('step-2').style.display = n==2?'block':'none';
-        document.getElementById('step-3').style.display = n==3?'block':'none';
-        if(n==2) renderInventory();
-    }
+    function setG(i, v, b) { state.players[i].g = v; Array.from(b.parentElement.children).forEach(x=>x.classList.remove('active')); b.classList.add('active'); }
+    function showStep(n) { document.getElementById('step-1').style.display = n==1?'block':'none'; document.getElementById('step-2').style.display = n==2?'block':'none'; document.getElementById('step-3').style.display = n==3?'block':'none'; if(n==2) renderInventory(); }
 
     function renderInventory() {
         const mount = document.getElementById('inventory-editor'); mount.innerHTML = '';
@@ -133,7 +164,7 @@
         state.players[0].n = document.getElementById('p0-name').value || "Dom";
         state.players[1].n = document.getElementById('p1-name').value || "Sub";
         state.total = document.getElementById('round-count').value;
-        localStorage.setItem('sov_v17', JSON.stringify(state.vault));
+        localStorage.setItem('sov_v18', JSON.stringify(state.vault));
         showStep(3);
         renderGame();
     }
@@ -165,18 +196,10 @@
         const s = state.players.find(x=>x.role==='Slave');
         const pron = s.g==='M'?'his':(s.g==='F'?'her':'their');
 
-        const prompts = {
-            "The Solitary Bind": "{S} must use the {T} to bind {SP} own wrists behind {SP} back.",
-            "The Wicked Gamble": "{M} dares {S} to endure the {T} for 2 minutes without making a sound.",
-            "The Veiled Confession": "Bound by the {T}, {S} must answer one question from {M} with total honesty.",
-            "The Silk Labyrinth": "{M} uses the {T} to create a decorative harness on {S}.",
-            "The Threshold of Agony": "{M} brings {S} to the edge using the {T}, then commands stillness.",
-            "The Flesh Endurance": "{S} must hold a plank while the {T} is placed on {SP} back. Don't let it fall.",
-            "The Great Unshackling": "{M} ties {S} with {T}. {S} has 90 seconds to escape.",
-            "The Velvet Command": "{M} traces the {T} over {S}'s most sensitive areas slowly."
-        };
+        const lib = promptLibrary[p];
+        const raw = lib[Math.floor(Math.random()*lib.length)];
 
-        document.getElementById('decree-text').innerHTML = `<strong>${p}</strong><br><br>` + prompts[p].replace(/{M}/g, m.n).replace(/{S}/g, s.n).replace(/{SP}/g, pron).replace(/{T}/g, `<strong>${t}</strong>`);
+        document.getElementById('decree-display').innerHTML = `<strong>${p}</strong><br><br>` + raw.replace(/{M}/g, m.n).replace(/{S}/g, s.n).replace(/{SP}/g, pron).replace(/{T}/g, `<strong>${t}</strong>`);
         document.getElementById('game-controls').style.display = 'none';
         document.getElementById('decree-view').style.display = 'block';
     }
