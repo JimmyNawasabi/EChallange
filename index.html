@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Gender-Tool Pairing Edition</title>
+    <title>SOVEREIGNTY: Restored Protocol</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto-blue: #004a7c; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -12,27 +12,33 @@
         .box-section { background: #1f1f1f; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #333; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; letter-spacing: 1px; }
         input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; margin-bottom: 10px; }
+        
+        /* RESTORED GENDER GRID */
         .gender-grid { display: flex; gap: 8px; margin-bottom: 15px; }
         .g-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 8px; font-size: 0.7rem; font-weight: bold; }
         .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        
         .btn { background: var(--crimson); color: white; border: none; padding: 16px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 5px; transition: 0.2s; }
         .btn:active { transform: scale(0.98); }
         .tog-btn { padding: 8px; font-size: 0.65rem; border-radius: 6px; border: 1px solid #444; background: #111; color: #555; cursor: pointer; text-transform: uppercase; }
         .tog-btn.active { border-color: var(--accent); color: var(--accent); background: #1a1608; }
+        
         .item-chip { display: flex; align-items: center; justify-content: space-between; background: #333; padding: 10px; border-radius: 10px; margin: 5px 0; font-size: 0.8rem; border: 1px solid #444; }
         .item-chip.off { opacity: 0.4; }
         .tag-row { display: flex; gap: 5px; }
         .tag-btn { font-size: 0.6rem; padding: 4px 8px; border-radius: 4px; border: 1px solid #555; background: #000; color: #888; cursor: pointer; }
         .tag-btn.active { border-color: var(--accent); color: var(--accent); }
+        
         .score-row { display: flex; justify-content: space-between; padding: 12px; background: #000; border-radius: 12px; border: 1px solid #222; text-align: center; margin-bottom: 15px; }
         .role-tag { font-size: 0.6rem; font-weight: bold; color: #444; }
+        .master-glow { color: var(--accent) !important; text-shadow: 0 0 5px var(--accent); }
+
         .management-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; }
-        .m-btn { border-radius: 8px; padding: 10px; font-size: 0.6rem; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); opacity: 0.3; pointer-events: none; }
-        .m-btn.active-card { opacity: 1; pointer-events: auto; }
+        .m-btn { border-radius: 8px; padding: 10px; font-size: 0.6rem; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
         .y-card { background: var(--warning); color: #000; }
         .r-card { background: var(--crimson); color: #fff; }
-        .v-card { background: var(--veto-blue); color: #fff; opacity: 1; pointer-events: auto; }
-        .s-card { background: #fff; color: #000; border: 2px solid var(--crimson); opacity: 1; pointer-events: auto; }
+        .v-card { background: var(--veto-blue); color: #fff; }
+        .s-card { background: #fff; color: #000; border: 2px solid var(--crimson); }
     </style>
 </head>
 <body>
@@ -45,23 +51,25 @@
             <span class="label">Initial Master</span>
             <input type="text" id="p0-name" value="Dominus">
             <div class="gender-grid">
-                <button class="g-btn active" onclick="setPlayerG(0,'M',this)">M</button>
-                <button class="g-btn" onclick="setPlayerG(0,'F',this)">F</button>
-                <button class="g-btn" onclick="setPlayerG(0,'NB',this)">U</button>
+                <button class="g-btn active" onclick="setPlayerG(0,'M',this)">Male</button>
+                <button class="g-btn" onclick="setPlayerG(0,'F',this)">Female</button>
+                <button class="g-btn" onclick="setPlayerG(0,'NB',this)">NB</button>
             </div>
+            
             <span class="label">Initial Slave</span>
             <input type="text" id="p1-name" value="Subject">
             <div class="gender-grid">
-                <button class="g-btn" onclick="setPlayerG(1,'M',this)">M</button>
-                <button class="g-btn active" onclick="setPlayerG(1,'F',this)">F</button>
-                <button class="g-btn" onclick="setPlayerG(1,'NB',this)">U</button>
+                <button class="g-btn" onclick="setPlayerG(1,'M',this)">Male</button>
+                <button class="g-btn active" onclick="setPlayerG(1,'F',this)">Female</button>
+                <button class="g-btn" onclick="setPlayerG(1,'NB',this)">NB</button>
             </div>
+            
             <span class="label">Safeword</span>
             <input type="text" id="safeword-in" value="RED">
             <span class="label">Total Rounds</span>
             <input type="number" id="round-total" value="30">
         </div>
-        <button class="btn" style="width:100%" onclick="showStep(2)">Configure Arsenal Tags</button>
+        <button class="btn" style="width:100%" onclick="showStep(2)">Configure Arsenal</button>
     </div>
 
     <div id="step-2" style="display:none;">
@@ -72,17 +80,17 @@
     <div id="step-3" style="display:none;">
         <div id="round-ui" style="text-align:center; font-size:0.7rem; color:var(--accent); margin-bottom:10px;"></div>
         <div class="score-row">
-            <div class="p-block" id="block0">
+            <div class="p-block">
                 <div id="r0" class="role-tag">MASTER</div>
                 <div id="n0"></div>
                 <div id="s0" style="font-size:1.5rem;">0</div>
-                <div id="inv0"></div>
+                <div id="inv0" style="font-size:10px;"></div>
             </div>
-            <div class="p-block" id="block1">
+            <div class="p-block">
                 <div id="r1" class="role-tag">SLAVE</div>
                 <div id="n1"></div>
                 <div id="s1" style="font-size:1.5rem;">0</div>
-                <div id="inv1"></div>
+                <div id="inv1" style="font-size:10px;"></div>
             </div>
         </div>
         
@@ -92,7 +100,10 @@
 
         <div id="decree-view" style="display:none;">
             <div class="box-section"><div id="decree-display" style="line-height:1.6; color:#ddd;"></div></div>
-            <div style="display:flex; gap:10px;"><button class="btn" style="background:#333; flex:1;" onclick="resolve('fail')">FAIL</button><button class="btn" style="background:var(--success); flex:1;" onclick="resolve('success')">SUCCESS</button></div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="background:#333; flex:1;" onclick="resolve('fail')">FAIL</button>
+                <button class="btn" style="background:var(--success); flex:1;" onclick="resolve('success')">SUCCESS</button>
+            </div>
             
             <div class="management-grid">
                 <button id="y-btn" class="m-btn y-card" onclick="useYellow()">Yellow Card</button>
@@ -111,18 +122,30 @@
             {n:"", g:"M", role:"Master", score:0, hasYellow:false, hasRed:false},
             {n:"", g:"F", role:"Slave", score:0, hasYellow:false, hasRed:false}
         ],
-        vault: JSON.parse(localStorage.getItem('sov_v12_gender')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v13_final')) || {
             "Restraints": [{n:"Heavy Rope", a:true, t:"U"}, {n:"Silk Cuffs", a:true, t:"F"}],
             "Gags": [{n:"Ball Gag", a:true, t:"U"}],
-            "Impact": [{n:"Flogger", a:true, t:"U"}, {n:"Cane", a:true, t:"M"}]
+            "Impact": [{n:"Flogger", a:true, t:"U"}, {n:"Cane", a:true, t:"M"}],
+            "Toys": [{n:"Vibrator", a:true, t:"F"}, {n:"Prostate Wand", a:true, t:"M"}],
+            "Sensory": [{n:"Blindfold", a:true, t:"U"}]
         }
     };
 
-    function setPlayerG(i, v, b) { state.players[i].g = v; Array.from(b.parentElement.children).forEach(x=>x.classList.remove('active')); b.classList.add('active'); }
-    function showStep(n) { document.querySelectorAll('[id^="step-"]').forEach(s=>s.style.display='none'); document.getElementById('step-'+n).style.display='block'; if(n===2) renderInventory(); }
+    function setPlayerG(i, v, b) { 
+        state.players[i].g = v; 
+        Array.from(b.parentElement.children).forEach(x=>x.classList.remove('active')); 
+        b.classList.add('active'); 
+    }
+
+    function showStep(n) { 
+        document.querySelectorAll('[id^="step-"]').forEach(s=>s.style.display='none'); 
+        document.getElementById('step-'+n).style.display='block'; 
+        if(n===2) renderInventory(); 
+    }
 
     function renderInventory() {
-        const m = document.getElementById('inventory-editor'); m.innerHTML = '<h3 style="color:var(--accent);text-align:center;font-size:0.8rem">ARSENAL GENDER TAGS</h3>';
+        const m = document.getElementById('inventory-editor'); 
+        m.innerHTML = '<h3 style="color:var(--accent);text-align:center;font-size:0.8rem">ARSENAL GENDER TAGGING</h3>';
         for(let c in state.vault) {
             let h = `<div class="box-section"><span class="label">${c}</span>`;
             state.vault[c].forEach((it, i) => {
@@ -151,7 +174,7 @@
         state.players[Math.floor(Math.random()*2)].hasYellow = true;
         state.players[Math.floor(Math.random()*2)].hasRed = true;
         
-        localStorage.setItem('sov_v12_gender', JSON.stringify(state.vault));
+        localStorage.setItem('sov_v13_final', JSON.stringify(state.vault));
         showStep(3); renderGame();
     }
 
@@ -161,6 +184,7 @@
             document.getElementById('n'+i).innerText = p.n;
             document.getElementById('s'+i).innerText = p.score;
             document.getElementById('r'+i).innerText = p.role;
+            document.getElementById('r'+i).className = 'role-tag ' + (p.role==='Master'?'master-glow':'');
             document.getElementById('inv'+i).innerHTML = (p.hasYellow ? '🟡 ' : '') + (p.hasRed ? '🔴' : '');
         });
     }
@@ -168,28 +192,19 @@
     function generate() {
         const s = state.players.find(x=>x.role==='Slave');
         const m = state.players.find(x=>x.role==='Master');
+        const cats = Object.keys(state.vault);
+        const cat = cats[Math.floor(Math.random()*cats.length)];
         
-        // FILTER LOGIC: Match tool gender tag to Slave's gender
-        const validCats = Object.keys(state.vault);
-        const cat = validCats[Math.floor(Math.random()*validCats.length)];
+        // Target submissive's gender specifically
         const pool = state.vault[cat].filter(i => i.a && (i.t === s.g || i.t === 'U' || s.g === 'NB'));
         
-        if (pool.length === 0) return alert("No valid items for Slave's gender in this category!");
+        if (pool.length === 0) return alert(`No ${s.g}-compatible items active in ${cat}!`);
 
         const item = pool[Math.floor(Math.random()*pool.length)];
-        document.getElementById('decree-display').innerHTML = `<strong>${cat} Protocol</strong><br><br>${m.n} shall utilize the <strong>${item.n}</strong> on ${s.n}. The gender compatibility of the tool [${item.t}] has been verified for the subject.`;
+        document.getElementById('decree-display').innerHTML = `<strong>${cat} Protocol</strong><br><br>${m.n} shall utilize <strong>${item.n}</strong> on ${s.n}. <br><br><small>Suitability: Verified for ${s.g} Subject.</small>`;
         
         document.getElementById('game-controls').style.display = 'none';
         document.getElementById('decree-view').style.display = 'block';
-        
-        updateCards();
-    }
-
-    function updateCards() {
-        const yOwner = state.players.find(p=>p.hasYellow);
-        const rOwner = state.players.find(p=>p.hasRed);
-        document.getElementById('y-btn').classList.toggle('active-card', true); 
-        document.getElementById('r-btn').classList.toggle('active-card', true);
     }
 
     function useYellow() {
