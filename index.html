@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOVEREIGNTY: Card Exchange Edition</title>
+    <style>
+        :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto-blue: #004a7c; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .container { max-width: 600px; width: 100%; background: var(--card); padding: 20px; border-radius: 20px; border: 2px solid #333; box-shadow: 0 0 50px #000; }
+        h1 { text-align: center; text-transform: uppercase; letter-spacing: 5px; color: var(--accent); margin-bottom: 20px; }
+        .box-section { background: #1f1f1f; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #333; }
+        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; letter-spacing: 1px; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; margin-bottom: 10px; }
+        .btn { background: var(--crimson); color: white; border: none; padding: 16px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 5px; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        .tog-btn { padding: 8px; font-size: 0.65rem; border-radius: 6px; border: 1px solid #444; background: #111; color: #555; cursor: pointer; text-transform: uppercase; }
+        .tog-btn.active { border-color: var(--accent); color: var(--accent); background: #1a1608; }
+        .item-chip { display: inline-flex; align-items: center; background: #333; padding: 6px 12px; border-radius: 20px; margin: 4px; font-size: 0.8rem; border: 1px solid #444; cursor: pointer; }
+        .item-chip.off { opacity: 0.3; text-decoration: line-through; background: #111; }
+        .score-row { display: flex; justify-content: space-between; padding: 12px; background: #000; border-radius: 12px; border: 1px solid #222; text-align: center; margin-bottom: 15px; }
+        .role-tag { font-size: 0.6rem; font-weight: bold; color: #444; }
+        .master-glow { color: var(--accent) !important; text-shadow: 0 0 5px var(--accent); }
+        
+        /* CARD INTERFACE */
+        .management-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; }
+        .m-btn { border-radius: 8px; padding: 10px; font-size: 0.6rem; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); opacity: 0.3; pointer-events: none; }
+        .m-btn.active-card { opacity: 1; pointer-events: auto; }
+        .y-card { background: var(--warning); color: #000; }
+        .r-card { background: var(--crimson); color: #fff; }
+        .v-card { background: var(--veto-blue); color: #fff; opacity: 1; pointer-events: auto; }
+        .s-card { background: #fff; color: #000; border: 2px solid var(--crimson); opacity: 1; pointer-events: auto; }
+        
+        .grand-decree-text { font-size: 0.9rem; line-height: 1.8; color: #eee; background: #000; padding: 20px; border-radius: 10px; border: 1px solid var(--accent); max-height: 500px; overflow-y: auto; text-align: justify; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>SOVEREIGNTY</h1>
+
+    <div id="step-1">
+        <div class="box-section">
+            <span class="label">Initial Master</span>
+            <input type="text" id="p0-name" value="Dominus">
+            <span class="label">Initial Slave</span>
+            <input type="text" id="p1-name" value="Subject">
+            <span class="label">Safeword</span>
+            <input type="text" id="safeword-in" value="RED">
+            <span class="label">Total Rounds</span>
+            <input type="number" id="round-total" value="30">
+        </div>
+        <button class="btn" style="width:100%" onclick="showStep(2)">Configure Arsenal</button>
+    </div>
+
+    <div id="step-2" style="display:none;">
+        <div id="inventory-editor"></div>
+        <button class="btn" style="background:var(--success); width:100%;" onclick="startSession()">Start Session</button>
+    </div>
+
+    <div id="step-3" style="display:none;">
+        <div id="round-ui" style="text-align:center; font-size:0.7rem; color:var(--accent); margin-bottom:10px;"></div>
+        <div class="score-row">
+            <div class="p-block" id="p-card-0">
+                <div id="r0" class="role-tag">MASTER</div>
+                <div id="n0"></div>
+                <div id="s0" style="font-size:1.5rem;">0</div>
+                <div id="inv0" style="font-size:10px; margin-top:5px;"></div>
+            </div>
+            <div class="p-block" id="p-card-1">
+                <div id="r1" class="role-tag">SLAVE</div>
+                <div id="n1"></div>
+                <div id="s1" style="font-size:1.5rem;">0</div>
+                <div id="inv1" style="font-size:10px; margin-top:5px;"></div>
+            </div>
+        </div>
+        
+        <div id="game-controls">
+             <div class="box-section"><span class="label">Active Protocols</span><div id="proto-mount" style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;"></div></div>
+             <button class="btn" style="width:100%" onclick="generate()">Command Decree</button>
+        </div>
+
+        <div id="decree-view" style="display:none;">
+            <div class="box-section"><div id="decree-display" style="line-height:1.6; color:#ddd;"></div></div>
+            <div style="display:flex; gap:10px;"><button class="btn" style="background:#333; flex:1;" onclick="resolve('fail')">FAIL</button><button class="btn" style="background:var(--success); flex:1;" onclick="resolve('success')">SUCCESS</button></div>
+            
+            <div class="management-grid">
+                <button id="y-btn" class="m-btn y-card" onclick="useYellow()">Yellow Card (Swap)</button>
+                <button id="r-btn" class="m-btn r-card" onclick="useRed()">Red Card (Restart)</button>
+                <button class="m-btn v-card" onclick="veto()">Veto Decree</button>
+                <button class="m-btn s-card" id="sw-btn" onclick="safeword()"></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="step-4" style="display:none;">
+        <h2 style="color:var(--accent); text-align:center; letter-spacing:3px;">THE GRAND DECREE</h2>
+        <div class="box-section"><div id="grand-decree-display" class="grand-decree-text"></div></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <button class="btn" style="background:#222; font-size:0.7rem;" onclick="generateGrandDecree()">Reshape Fate</button>
+            <button class="btn" style="background:var(--success); font-size:0.7rem;" onclick="finalizeRoles()">Finalize Winner Role</button>
+        </div>
+        <div id="final-role-selector" style="display:none; margin-top:15px;" class="box-section">
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="flex:1; background:var(--accent); color:black;" id="win-as-dom" onclick="endGame('Master')"></button>
+                <button class="btn" style="flex:1; background:#444;" id="win-as-sub" onclick="endGame('Slave')"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const state = {
+        curr: 1, total: 30, winner: null,
+        players: [{n:"", role:"Master", score:0, hasYellow:false, hasRed:false}, {n:"", role:"Slave", score:0, hasYellow:false, hasRed:false}],
+        vault: JSON.parse(localStorage.getItem('sov_v11')) || {
+            "Restraints": [{n:"Heavy Rope", a:true}], "Gags": [{n:"Ball Gag", a:true}], "Blindfolds": [{n:"Leather Mask", a:true}], 
+            "Sensory": [{n:"Ice Blocks", a:true}], "Toys": [{n:"Vibrator", a:true}], "Impact": [{n:"Heavy Flogger", a:true}]
+        },
+        protocols: { "The Solitary Bind": true, "The Wicked Gamble": true, "The Veiled Confession": true, "The Silk Labyrinth": true, "The Threshold of Agony": true, "The Flesh Endurance": true, "The Great Unshackling": true, "The Velvet Command": true }
+    };
+
+    function showStep(n) { document.querySelectorAll('[id^="step-"]').forEach(s=>s.style.display='none'); document.getElementById('step-'+n).style.display='block'; if(n===2) renderInventory(); }
+    
+    function renderInventory() {
+        const m = document.getElementById('inventory-editor'); m.innerHTML = '<h3 style="color:var(--accent);text-align:center;font-size:0.8rem">ARSENAL</h3>';
+        for(let c in state.vault) {
+            let h = `<div class="box-section"><span class="label">${c}</span><div>`;
+            state.vault[c].forEach((it, i) => { h += `<span class="item-chip ${it.a?'':'off'}" onclick="toggleItem('${c}',${i})">${it.n}</span>`; });
+            h += `</div></div>`; m.innerHTML += h;
+        }
+    }
+
+    function toggleItem(c, i) { state.vault[c][i].a = !state.vault[c][i].a; renderInventory(); }
+
+    function startSession() {
+        state.players[0].n = document.getElementById('p0-name').value;
+        state.players[1].n = document.getElementById('p1-name').value;
+        state.total = parseInt(document.getElementById('round-total').value);
+        document.getElementById('sw-btn').innerText = "SAFEWORD: " + document.getElementById('safeword-in').value;
+        
+        // Randomly assign cards
+        state.players[Math.floor(Math.random()*2)].hasYellow = true;
+        state.players[Math.floor(Math.random()*2)].hasRed = true;
+        
+        showStep(3); renderGame();
+    }
+
+    function renderGame() {
+        if(state.curr > state.total) return triggerFinale();
+        document.getElementById('round-ui').innerText = `ROUND ${state.curr} / ${state.total}`;
+        state.players.forEach((p, i) => {
+            document.getElementById('n'+i).innerText = p.n;
+            document.getElementById('s'+i).innerText = p.score;
+            document.getElementById('r'+i).innerText = p.role;
+            document.getElementById('r'+i).className = 'role-tag ' + (p.role==='Master'?'master-glow':'');
+            document.getElementById('inv'+i).innerHTML = (p.hasYellow ? '🟡 ' : '') + (p.hasRed ? '🔴' : '');
+        });
+        const pm = document.getElementById('proto-mount'); pm.innerHTML = '';
+        for(let k in state.protocols) { pm.innerHTML += `<button class="tog-btn ${state.protocols[k]?'active':''}" onclick="state.protocols['${k}']=!state.protocols['${k}']; renderGame()">${k}</button>`; }
+    }
+
+    function generate() {
+        const ap = Object.keys(state.protocols).filter(k=>state.protocols[k]);
+        const p = ap[Math.floor(Math.random()*ap.length)];
+        const cats = { "The Solitary Bind":"Restraints", "The Wicked Gamble":"Impact", "The Veiled Confession":"Gags", "The Silk Labyrinth":"Restraints", "The Threshold of Agony":"Toys", "The Flesh Endurance":"Restraints", "The Great Unshackling":"Restraints", "The Velvet Command":"Sensory" };
+        const items = state.vault[cats[p]].filter(i=>i.a);
+        const m = state.players.find(x=>x.role==='Master'), s = state.players.find(x=>x.role==='Slave');
+        
+        document.getElementById('decree-display').innerHTML = `<strong>${p}</strong><br><br>${p} Protocol initiated between ${m.n} and ${s.n} using <strong>${items[0].n}</strong>.`;
+        document.getElementById('game-controls').style.display = 'none';
+        document.getElementById('decree-view').style.display = 'block';
+        
+        // Update Card Visibility based on possession
+        document.getElementById('y-btn').className = 'm-btn y-card ' + (state.players.find(p=>p.hasYellow).role === state.players.find(p=>p.role==='Master'?'Master':'Slave').role ? 'active-card' : '');
+        const pWithYellow = state.players.find(p=>p.hasYellow);
+        document.getElementById('y-btn').classList.toggle('active-card', pWithYellow.role === 'Master' || pWithYellow.role === 'Slave');
+        
+        // Set buttons based on current possessor
+        document.getElementById('y-btn').classList.toggle('active-card', state.players[0].hasYellow || state.players[1].hasYellow);
+        document.getElementById('r-btn').classList.toggle('active-card', state.players[0].hasRed || state.players[1].hasRed);
+    }
+
+    function useYellow() {
+        if(confirm("Use Yellow Card? Roles will swap and card will transfer.")) {
+            state.players.forEach(p => p.role = p.role === 'Master' ? 'Slave' : 'Master');
+            const owner = state.players.find(p=>p.hasYellow);
+            const receiver = state.players.find(p=>!p.hasYellow);
+            owner.hasYellow = false; receiver.hasYellow = true;
+            renderGame(); generate(); 
+        }
+    }
+
+    function useRed() {
+        if(confirm("Use Red Card? Decree stops, round restarts, card transfers.")) {
+            const owner = state.players.find(p=>p.hasRed);
+            const receiver = state.players.find(p=>!p.hasRed);
+            owner.hasRed = false; receiver.hasRed = true;
+            generate();
+        }
+    }
+
+    function veto() { if(confirm("Veto: Skip and delete this decree from session?")) { document.getElementById('game-controls').style.display='block'; document.getElementById('decree-view').style.display='none'; } }
+
+    function safeword() {
+        const loss = Math.floor(Math.random() * 5) + 1;
+        if(confirm(`Safeword? Slave forfeits and loses ${loss} points.`)) {
+            state.players.find(p=>p.role==='Slave').score -= loss;
+            resolve('fail');
+        }
+    }
+
+    function resolve(type) {
+        if(type==='success') { state.players.find(p=>p.role==='Slave').score++; state.players.forEach(p=>p.role=p.role==='Master'?'Slave':'Master'); }
+        else state.players.find(p=>p.role==='Master').score++;
+        state.curr++; document.getElementById('game-controls').style.display='block'; document.getElementById('decree-view').style.display='none'; renderGame();
+    }
+
+    function triggerFinale() { state.winner = state.players[0].score > state.players[1].score ? state.players[0] : state.players[1]; showStep(4); generateGrandDecree(); }
+
+    function generateGrandDecree() {
+        const scenarios = [`The Victor claims absolute dominion...`, `Bound and silenced, the Conquered submits...` ];
+        document.getElementById('grand-decree-display').innerHTML = scenarios[Math.floor(Math.random()*scenarios.length)];
+    }
+
+    function finalizeRoles() {
+        document.getElementById('final-role-selector').style.display = 'block';
+        document.getElementById('win-as-dom').innerText = `${state.winner.n} (MASTER)`;
+        document.getElementById('win-as-sub').innerText = `${state.winner.n} (SLAVE)`;
+    }
+
+    function endGame(role) { alert(`Finality reached. ${state.winner.n} is the ${role}.`); location.reload(); }
+</script>
+</body>
+</html>
