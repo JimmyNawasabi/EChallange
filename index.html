@@ -60,12 +60,19 @@
         .add-row input { margin-bottom: 0; padding: 12px; font-size: 0.9rem; flex-grow: 1; }
         .add-btn { background: var(--accent); color: #000; border: none; padding: 0 20px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.5rem; }
 
-        /* COMMAND PAGE STYLES */
+        /* PROTOCOL TOOLS */
+        .status-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-card { background: #000; padding: 10px; border-radius: 10px; border: 1px solid #444; font-size: 0.7rem; text-align: center; }
+        .card-active { border-color: var(--accent); color: var(--accent); }
+        .card-red { background: #400; border-color: red; }
+        .card-yellow { background: #440; border-color: yellow; }
+
         .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
         .t-btn { padding: 12px; border-radius: 12px; border: 1px solid #333; background: #111; color: #666; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; text-align: center; min-height: 50px; display: flex; align-items: center; justify-content: center; }
         .t-btn.on { background: var(--accent); color: #000; border-color: var(--accent); }
         .t-btn.gear-on { background: var(--crimson); color: white; border-color: var(--crimson); }
         .master-all { grid-column: span 2; background: #222; color: var(--accent); border: 1px dashed var(--accent); margin-bottom: 5px; }
+        
         .timer-big { font-size: 4rem; text-align: center; font-weight: bold; margin: 10px 0; }
         .instruction-highlight { color: var(--accent); font-weight: bold; }
         .step { display: none; }
@@ -98,6 +105,10 @@
             </div>
         </div>
         <div class="box-section">
+            <span class="label">Safe Word</span>
+            <input type="text" id="safe_word" placeholder="Safe Word" value="RED LIGHT">
+        </div>
+        <div class="box-section">
             <span class="label">Rounds</span>
             <input type="number" id="max_r" value="10">
         </div>
@@ -112,6 +123,14 @@
     <div id="step3" class="step">
         <div id="pre-round">
             <div id="round-header" class="label" style="text-align:center;">ROUND 1</div>
+            
+            <div class="status-bar">
+                <div class="stat-card" id="s1-score">P1: 0 pts</div>
+                <div class="stat-card" id="s2-score">P2: 0 pts</div>
+                <div class="stat-card card-yellow" id="y-hold">Yellow Holder: --</div>
+                <div class="stat-card card-red" id="r-hold">Red Holder: --</div>
+            </div>
+
             <div class="box-section">
                 <span class="label">Categories</span>
                 <div class="toggle-grid" id="trial-toggles"></div>
@@ -122,19 +141,28 @@
             </div>
             <button class="btn" onclick="generateDecree()">Generate Decree</button>
         </div>
+
         <div id="active-round" style="display:none;">
             <div class="box-section" style="min-height: 180px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; line-height: 1.6;">
                 <div id="active-trial-text" style="text-align:center;"></div>
             </div>
             <div class="timer-big" id="clock">00:00</div>
-            <button class="btn" style="background:#1e4d2b;" onclick="finish(true)">Complete</button>
-            <button class="btn" style="background:#2a2a2a; margin-top:10px; color:#aaa;" onclick="finish(false)">Fail</button>
+            
+            <div class="toggle-grid">
+                <button class="t-btn" id="use-yellow" onclick="passCard('yellow')" style="background:#880; color:white;">Use Yellow</button>
+                <button class="t-btn" id="use-red" onclick="passCard('red')" style="background:#800; color:white;">Use Red</button>
+            </div>
+
+            <button class="btn" style="background:#1e4d2b;" onclick="finish(true)">Complete (+1)</button>
+            <button class="btn" style="background:#2a2a2a; margin-top:10px; color:#aaa;" onclick="finish(false)">Fail / Skip</button>
+            <button class="btn" style="background:#600; margin-top:10px; font-size:0.7rem;" onclick="safeWordUsed()">SAFE WORD (-5)</button>
         </div>
     </div>
 </div>
 
 <script>
-    let players = [{n:"", g:"M"}, {n:"", g:"F"}], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft;
+    let players = [{n:"", g:"M", s:0}, {n:"", g:"F", s:0}], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft;
+    let cards = { yellow: 0, red: 1 }, safeWordText = "RED LIGHT";
     
     function setGender(p, g) {
         players[p-1].g = g;
@@ -169,9 +197,15 @@
 
     function nav(n) {
         if(n === 2) {
-            players[0].n = document.getElementById('p1_n').value || "Master";
-            players[1].n = document.getElementById('p2_n').value || "Subject";
+            players[0].n = document.getElementById('p1_n').value || "Player 1";
+            players[1].n = document.getElementById('p2_n').value || "Player 2";
             maxR = parseInt(document.getElementById('max_r').value) || 10;
+            safeWordText = document.getElementById('safe_word').value || "RED LIGHT";
+            
+            // Random Card Assignment
+            cards.yellow = Math.floor(Math.random() * 2);
+            cards.red = Math.floor(Math.random() * 2);
+            
             renderVault();
         }
         if(n === 3) renderCommand();
@@ -182,14 +216,11 @@
     function renderVault() {
         const v = document.getElementById('vault-inject');
         v.innerHTML = '<span class="label">Inventory & Arsenal</span>';
-        
         for (let c in vault) {
             const section = document.createElement('div');
             section.innerHTML = `<span class="label" style="color:#666; margin-top:10px;">${c}</span>`;
-            
             const cloud = document.createElement('div');
             cloud.className = 'tag-cloud';
-            
             vault[c].forEach((item, idx) => {
                 const tag = document.createElement('div');
                 tag.className = `tag ${item.on ? 'on' : ''}`;
@@ -197,15 +228,10 @@
                 tag.onclick = () => { item.on = !item.on; renderVault(); };
                 cloud.appendChild(tag);
             });
-            
             section.appendChild(cloud);
-            
             const addRow = document.createElement('div');
             addRow.className = 'add-row';
-            addRow.innerHTML = `
-                <input type="text" id="in-${c}" placeholder="New ${c}..." onkeydown="if(event.key==='Enter') addItem('${c}')">
-                <button class="add-btn" onclick="addItem('${c}')">+</button>
-            `;
+            addRow.innerHTML = `<input type="text" id="in-${c}" placeholder="New ${c}..." onkeydown="if(event.key==='Enter') addItem('${c}')"><button class="add-btn" onclick="addItem('${c}')">+</button>`;
             section.appendChild(addRow);
             v.appendChild(section);
         }
@@ -214,10 +240,7 @@
     function addItem(cat) {
         const input = document.getElementById(`in-${cat}`);
         const val = input.value.trim();
-        if(val) {
-            vault[cat].push({n: val, on: true});
-            renderVault();
-        }
+        if(val) { vault[cat].push({n: val, on: true}); renderVault(); }
     }
 
     function deleteItem(cat, idx) {
@@ -226,7 +249,12 @@
     }
 
     function renderCommand() {
-        document.getElementById('round-header').innerText = `ROUND ${curR} | MASTER: ${players[masterIdx].n}`;
+        document.getElementById('round-header').innerText = `ROUND ${curR} / ${maxR} | MASTER: ${players[masterIdx].n}`;
+        document.getElementById('s1-score').innerText = `${players[0].n}: ${players[0].s} pts`;
+        document.getElementById('s2-score').innerText = `${players[1].n}: ${players[1].s} pts`;
+        document.getElementById('y-hold').innerText = `Yellow: ${players[cards.yellow].n}`;
+        document.getElementById('r-hold').innerText = `Red: ${players[cards.red].n}`;
+        
         const tg = document.getElementById('trial-toggles');
         tg.innerHTML = '<button class="t-btn master-all" onclick="toggleAll()">All Categories</button>';
         trials.forEach(t => {
@@ -251,6 +279,19 @@
         const anyOn = trials.some(t => t.on);
         trials.forEach(t => t.on = !anyOn);
         renderCommand();
+    }
+
+    function passCard(type) {
+        cards[type] = cards[type] === 0 ? 1 : 0;
+        alert(`${type.toUpperCase()} CARD used and passed to ${players[cards[type]].n}`);
+        renderCommand();
+    }
+
+    function safeWordUsed() {
+        let p = players[masterIdx === 0 ? 1 : 0]; // Subject loses points
+        if(p.s >= 5) p.s -= 5; else p.s = 0;
+        alert(`SAFE WORD: ${safeWordText} ACTIVATED. Round failed.`);
+        finish(false);
     }
 
     function generateDecree() {
@@ -282,13 +323,37 @@
 
     function finish(win) {
         clearInterval(timer);
-        curR++; masterIdx = (masterIdx === 0 ? 1 : 0);
-        if(curR > maxR) { alert("Session Complete."); location.reload(); }
-        else {
+        if(win) {
+            // Subject gets the point for completing the Master's decree
+            players[masterIdx === 0 ? 1 : 0].s += 1;
+        }
+        
+        if(curR >= maxR) {
+            runFinale();
+        } else {
+            curR++; masterIdx = (masterIdx === 0 ? 1 : 0);
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('active-round').style.display = 'none';
             renderCommand();
         }
+    }
+
+    function runFinale() {
+        let winner = players[0].s >= players[1].s ? players[0] : players[1];
+        let loser = winner === players[0] ? players[1] : players[0];
+        
+        document.getElementById('active-round').style.display = 'block';
+        document.getElementById('pre-round').style.display = 'none';
+        document.getElementById('clock').style.display = 'none';
+        document.querySelectorAll('.t-btn').forEach(b => b.style.display = 'none');
+        
+        document.getElementById('active-trial-text').innerHTML = `
+            <h2 style="color:var(--accent)">PROTOCOL COMPLETE</h2>
+            <p>WINNER: ${winner.n} (${winner.s} pts)</p>
+            <p class="instruction-highlight">ULTIMATE DECREE FOR ${loser.n}:</p>
+            <p style="font-size: 0.9rem;">Submit fully to ${winner.n}. They will now apply [REST], [GAG], and [VIS]. ${winner.n} is commanded to use all available [SENS] tools to bring ${loser.n} to the brink repeatedly. This task ends ONLY upon the sexual climax of ${winner.n}.</p>
+            <button class="btn" onclick="location.reload()">Terminate Session</button>
+        `;
     }
 </script>
 </body>
