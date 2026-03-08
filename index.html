@@ -50,7 +50,6 @@
             border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px;
         }
 
-        /* ARSENAL TOOLS */
         .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
         .tag { background: #000; padding: 8px 12px; border-radius: 10px; font-size: 0.9rem; cursor: pointer; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 8px; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
@@ -60,7 +59,6 @@
         .add-row input { margin-bottom: 0; padding: 12px; font-size: 0.9rem; flex-grow: 1; }
         .add-btn { background: var(--accent); color: #000; border: none; padding: 0 20px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.5rem; }
 
-        /* PROTOCOL TOOLS */
         .status-header { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
         .stat-box { background: #000; padding: 10px; border-radius: 10px; text-align: center; font-size: 0.75rem; border: 1px solid #444; flex: 1; }
         
@@ -78,6 +76,8 @@
         .card-action-btn { font-size: 0.65rem; padding: 10px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff; cursor: pointer; text-transform: uppercase; font-weight: bold; }
         
         #extend-prompt { background: #d4af37; color: #000; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 0.8rem; display: none; }
+        
+        .veto-btn { background: #444; color: #fff; border: 1px solid #666; font-size: 0.6rem; padding: 5px; border-radius: 5px; cursor: pointer; margin-bottom: 15px; width: 100%; }
     </style>
 </head>
 <body>
@@ -146,6 +146,7 @@
         </div>
 
         <div id="active-round" style="display:none;">
+            <button class="veto-btn" onclick="vetoCurrent()">⚠ VETO & REMOVE CHALLENGE FROM ENGINE</button>
             <div class="box-section" style="min-height: 250px; display: flex; align-items: center; justify-content: center; font-size: 1rem; line-height: 1.5; padding: 25px;">
                 <div id="active-trial-text" style="text-align:left;"></div>
             </div>
@@ -158,7 +159,6 @@
 
             <button class="btn" style="background:#1e4d2b; margin-top:15px;" onclick="finish(true)">Complete</button>
             <button class="btn" style="background:#2a2a2a; margin-top:10px; color:#aaa;" onclick="finish(false)">Fail / Skip</button>
-            
             <button class="btn" style="background:transparent; border: 1px solid #400; color:#600; margin-top:20px; font-size:0.7rem;" onclick="triggerSafeWord()">[ ACTIVATE SAFE WORD ]</button>
         </div>
     </div>
@@ -167,6 +167,7 @@
 <script>
     let players = [{n:"", g:"M", s:0}, {n:"", g:"F", s:0}], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft;
     let cards = { yellow: 0, red: 1 }, safeWord = "RED LIGHT";
+    let currentCategoryRef = null, currentDecreeIdx = -1;
     
     function setGender(p, g) {
         players[p-1].g = g;
@@ -209,12 +210,6 @@
             "Apply a soft [GAG]. Master will use [SENS] to trace the subject's lips and jawline. Subject must follow Master's movements blindly, showing total submission to the touch without moving their limbs."
         ] }
     ];
-
-    // Auto-filler for variations
-    trials.forEach(t => {
-        const base = [...t.d];
-        while(t.d.length < 10) t.d.push(base[Math.floor(Math.random()*base.length)] + " (Variation " + (t.d.length+1) + ")");
-    });
 
     let gearCats = { "Blindfolds": true, "Gags": true, "Restraints": true, "Sensation": true };
     let vault = {
@@ -274,23 +269,23 @@
     function updateStatus() {
         document.getElementById('disp-round').innerText = `ROUND: ${curR}`;
         document.getElementById('disp-remain').innerText = `REMAINING: ${maxR - curR}`;
-        
-        // Show extension prompt when 2 rounds left
-        if (maxR - curR === 1) {
-            document.getElementById('extend-prompt').style.display = 'block';
-        } else {
-            document.getElementById('extend-prompt').style.display = 'none';
-        }
-
+        document.getElementById('extend-prompt').style.display = (maxR - curR === 1) ? 'block' : 'none';
         document.getElementById('btn-y-use').style.opacity = (cards.yellow === masterIdx) ? "1" : "0.3";
         document.getElementById('btn-r-use').style.opacity = (cards.red === masterIdx) ? "1" : "0.3";
     }
 
     function extendGame() {
         maxR += 5;
-        document.getElementById('extend-prompt').style.display = 'none';
         updateStatus();
         alert("PROTOCOL EXTENDED BY 5 ROUNDS.");
+    }
+
+    function vetoCurrent() {
+        if(currentCategoryRef && currentDecreeIdx !== -1) {
+            currentCategoryRef.d.splice(currentDecreeIdx, 1);
+            alert("CHALLENGE VETOED AND PERMANENTLY REMOVED FROM ENGINE.");
+            generateDecree();
+        }
     }
 
     function passCard(type) {
@@ -337,21 +332,24 @@
     }
 
     function generateDecree() {
-        const act = trials.filter(t => t.on);
-        if (!act.length) return;
-        const tr = act[Math.floor(Math.random() * act.length)];
-        let txt = tr.d[Math.floor(Math.random() * tr.d.length)];
+        const act = trials.filter(t => t.on && t.d.length > 0);
+        if (!act.length) { alert("No valid challenges left in engine."); return; }
+        
+        currentCategoryRef = act[Math.floor(Math.random() * act.length)];
+        currentDecreeIdx = Math.floor(Math.random() * currentCategoryRef.d.length);
+        
+        let txt = currentCategoryRef.d[currentDecreeIdx];
         const repl = (cat) => {
             const items = vault[cat].filter(i => i.on);
             const val = items.length ? items[Math.floor(Math.random() * items.length)].n : cat;
             return gearCats[cat] ? `<span class="instruction-highlight">${val}</span>` : `[${cat} Off]`;
         };
         txt = txt.replace(/\[REST\]/g, repl('Restraints')).replace(/\[SENS\]/g, repl('Sensation')).replace(/\[VIS\]/g, repl('Blindfolds')).replace(/\[GAG\]/g, repl('Gags'));
-        document.getElementById('active-trial-text').innerHTML = `<strong>${tr.n.toUpperCase()}</strong><br><br>${txt}`;
+        document.getElementById('active-trial-text').innerHTML = `<strong>${currentCategoryRef.n.toUpperCase()}</strong><br><br>${txt}`;
         document.getElementById('pre-round').style.display = 'none';
         document.getElementById('active-round').style.display = 'block';
         updateStatus();
-        timeLeft = tr.t; runClock();
+        timeLeft = currentCategoryRef.t; runClock();
     }
 
     function runClock() {
@@ -367,10 +365,7 @@
     function finish(win) {
         clearInterval(timer);
         if(win) players[masterIdx === 0 ? 1 : 0].s += 1;
-        
-        if(curR >= maxR) {
-            runFinale();
-        } else {
+        if(curR >= maxR) { runFinale(); } else {
             curR++; masterIdx = (masterIdx === 0 ? 1 : 0);
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('active-round').style.display = 'none';
@@ -385,6 +380,7 @@
         document.getElementById('pre-round').style.display = 'none';
         document.getElementById('clock').style.display = 'none';
         document.getElementById('extend-prompt').style.display = 'none';
+        document.querySelector('.veto-btn').style.display = 'none';
         document.querySelectorAll('.card-action-btn').forEach(b => b.style.display = 'none');
         
         document.getElementById('active-trial-text').innerHTML = `
