@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SOVEREIGNTY: Hard Swap</title>
+    <title>SOVEREIGNTY: v29.0</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
@@ -13,13 +13,16 @@
         h1 { text-align: center; text-transform: uppercase; letter-spacing: 12px; font-size: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin: 10px 0; }
         
         .p-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .p-box { background: #080808; padding: 20px; border-radius: 10px; border: 2px solid #333; text-align: center; position: relative; }
-        .active-dom { border-color: var(--gold) !important; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
-        .active-sub { border-color: var(--accent) !important; box-shadow: 0 0 20px rgba(0, 86, 179, 0.3); }
+        .p-box { background: #080808; padding: 20px; border-radius: 10px; border: 2px solid #333; text-align: center; transition: 0.3s; }
+        .active-dom { border-color: var(--gold) !important; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); }
+        .active-sub { border-color: var(--accent) !important; box-shadow: 0 0 20px rgba(0, 86, 179, 0.2); }
         
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 5px; letter-spacing: 2px; }
-        .role-tag { font-size: 1.2rem; font-weight: 900; margin-bottom: 10px; display: block; }
         
+        .gen-toggle { display: flex; gap: 5px; margin-top: 10px; justify-content: center; }
+        .gen-btn { flex: 1; padding: 8px; border: 1px solid #333; background: #000; color: #555; cursor: pointer; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        .gen-btn.active { border-color: var(--accent); color: white; background: #001a35; }
+
         #inventory-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
         .inv-section { background: #050505; padding: 10px; border: 1px solid #333; border-radius: 8px; border-left: 3px solid var(--accent); }
 
@@ -27,10 +30,13 @@
         .theme-btn { padding: 10px; background: #111; border: 1px solid #333; border-radius: 4px; font-size: 0.65rem; text-align: center; cursor: pointer; color: #555; font-weight: bold; text-transform: uppercase; }
         .theme-btn.active { border-color: var(--gold); color: var(--gold); background: #1a1500; }
 
-        #decree-text { background: #050505; padding: 30px; border-radius: 10px; border-left: 5px solid var(--gold); font-size: 1.2rem; line-height: 1.8; margin: 20px 0; color: #eee; }
-        #timer { font-size: 6rem; color: var(--crimson); font-family: monospace; text-align: center; margin: 10px 0; }
+        #decree-text { background: #050505; padding: 30px; border-radius: 10px; border-left: 5px solid var(--gold); font-size: 1.1rem; line-height: 1.8; margin: 20px 0; color: #eee; }
+        #timer { font-size: 5rem; color: var(--crimson); font-family: monospace; text-align: center; margin: 10px 0; }
         .btn-main { background: var(--accent); color: white; padding: 18px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
         
+        #history-log { margin-top: 30px; border-top: 1px solid #222; padding-top: 15px; font-size: 0.8rem; color: #666; }
+        .history-entry { margin-bottom: 5px; display: flex; justify-content: space-between; border-bottom: 1px solid #111; padding: 3px 0; }
+
         .safety-bar { display: flex; gap: 10px; margin-top: 15px; }
         .card { flex: 1; padding: 15px; border-radius: 5px; cursor: pointer; text-align: center; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; border: none; }
         .card-yellow { background: var(--warning); color: #000; }
@@ -48,12 +54,20 @@
     <div id="setup-screen">
         <div class="p-grid">
             <div class="p-box">
-                <span class="label">Initiator (Start as Dom)</span>
+                <span class="label">Player One</span>
                 <input type="text" id="p1-name" value="Master">
+                <div class="gen-toggle">
+                    <button class="gen-btn active" id="p1-m" onclick="toggleSetupGen(1,'M')">MALE</button>
+                    <button class="gen-btn" id="p1-f" onclick="toggleSetupGen(1,'F')">FEMALE</button>
+                </div>
             </div>
             <div class="p-box">
-                <span class="label">Subject (Start as Sub)</span>
+                <span class="label">Player Two</span>
                 <input type="text" id="p2-name" value="Slave">
+                <div class="gen-toggle">
+                    <button class="gen-btn" id="p2-m" onclick="toggleSetupGen(2,'M')">MALE</button>
+                    <button class="gen-btn active" id="p2-f" onclick="toggleSetupGen(2,'F')">FEMALE</button>
+                </div>
             </div>
         </div>
         <div id="inventory-list"></div>
@@ -61,42 +75,37 @@
     </div>
 
     <div id="play-screen" style="display:none;">
-        <div id="phase-label" style="text-align:center; color:var(--accent); letter-spacing: 3px; margin-bottom: 15px;">PHASE 1</div>
-        
+        <div id="phase-label" style="text-align:center; color:var(--accent); letter-spacing: 3px; margin-bottom: 15px; font-weight:bold;">PHASE 1</div>
         <div class="p-grid">
             <div id="dom-card" class="p-box active-dom">
-                <span class="role-tag" style="color:var(--gold)">DOMINANT</span>
-                <div id="dom-name" style="font-size: 1.5rem; font-weight: bold;"></div>
-                <div id="dom-score" style="color: #666; font-size: 0.8rem;">Points: 0</div>
+                <span class="label" style="color:var(--gold)">DOMINANT</span>
+                <div id="dom-display" style="font-size: 1.4rem; font-weight: bold;"></div>
+                <div id="dom-score" style="color: #666; font-size: 0.8rem; margin-top:5px;">Points: 0</div>
             </div>
             <div id="sub-card" class="p-box active-sub">
-                <span class="role-tag" style="color:var(--accent)">SUBMISSIVE</span>
-                <div id="sub-name" style="font-size: 1.5rem; font-weight: bold;"></div>
-                <div id="sub-score" style="color: #666; font-size: 0.8rem;">Points: 0</div>
+                <span class="label" style="color:var(--accent)">SUBMISSIVE</span>
+                <div id="sub-display" style="font-size: 1.4rem; font-weight: bold;"></div>
+                <div id="sub-score" style="color: #666; font-size: 0.8rem; margin-top:5px;">Points: 0</div>
             </div>
         </div>
-
         <div id="control-area">
-            <span class="label" style="text-align:center;">Include/Exclude Categories</span>
             <div class="theme-selector" id="theme-selector"></div>
             <button class="btn-main" onclick="generateDecree()">GENERATE DECREE</button>
         </div>
-
         <div id="decree-area" style="display:none;">
             <div id="timer">00:00</div>
             <button class="btn-main" id="commence-btn" style="background:var(--gold); color:black;" onclick="runTimer()">COMMENCE PHASE</button>
             <div id="decree-text"></div>
-            
             <div class="safety-bar">
                 <button class="card card-yellow" onclick="alert('YELLOW: Reduce intensity.')">YELLOW</button>
-                <button class="card card-red" onclick="resetUI()">RED (RESET)</button>
+                <button class="card card-red" onclick="location.reload()">RED (EXIT)</button>
             </div>
-
             <div id="resolution-buttons" style="display:none; gap:10px; margin-top:15px;">
-                <button class="btn-main" style="background:#1a1a1a; flex:1;" onclick="resolveRound(false)">FAILURE (-1 PT)</button>
-                <button class="btn-main" style="background:var(--success); flex:1;" onclick="resolveRound(true)">SUCCESS (+1 PT & SWAP)</button>
+                <button class="btn-main" style="background:#1a1a1a; flex:1;" onclick="resolve(false)">FAILURE (-1 PT)</button>
+                <button class="btn-main" style="background:var(--success); flex:1;" onclick="resolve(true)">SUCCESS (+1 PT & SWAP)</button>
             </div>
         </div>
+        <div id="history-log"><strong>HISTORY LOG:</strong><div id="history-inner"></div></div>
     </div>
 </div>
 
@@ -106,44 +115,37 @@ const THEMES = ["Self Bondage", "Truth", "Dare", "Soft and Sexy", "Escape", "Shi
 
 let session = {
     round: 1,
-    dom: { name: "", score: 0 },
-    sub: { name: "", score: 0 },
-    inv: JSON.parse(localStorage.getItem('sov_v27_inv')) || {
-        "Restraints":["Rope"], "Impact":["Paddle"], "Gags":["Ball Gag"], "Shadow":["Blindfold"],
-        "Sensory":["Wax"], "Ache":["Clamps"], "Stillness":["Collar"], "Quietude":["Muzzle"]
+    dom: { name: "", gender: "M", score: 0 },
+    sub: { name: "", gender: "F", score: 0 },
+    inv: JSON.parse(localStorage.getItem('sov_v29_inv')) || {
+        "Restraints":["Rope"], "Impact":["Paddle"], "Gags":["Ball Gag"], 
+        "Shadow":["Blindfold", "Hood"], "Sensory":["Wax"], "Ache":["Clamps"], 
+        "Stillness":["Collar"], "Quietude":["Muzzle"]
     },
     activeThemes: [...THEMES],
-    history: [], timer: null
+    timer: null, history: []
 };
 
-// Hard-fix for Shadow
+// Force Shadow
 CATS.forEach(c => { if(!session.inv[c]) session.inv[c] = ["Standard " + c]; });
 
+function toggleSetupGen(p, g) {
+    if(p === 1) session.dom.gender = g; else session.sub.gender = g;
+    const btns = event.target.parentNode.querySelectorAll('.gen-btn');
+    btns.forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
 function renderInv() {
-    const list = document.getElementById('inventory-list');
-    list.innerHTML = CATS.map(c => `
-        <div class="inv-section">
-            <span class="label">${c}</span>
-            <div id="items-${c}">${session.inv[c].map((it, i) => `<span class="chip">${it} <span onclick="removeItem('${c}',${i})" style="color:red;cursor:pointer">×</span></span>`).join('')}</div>
-            <input type="text" placeholder="+" onkeydown="if(event.key==='Enter'){addItem('${c}',this.value);this.value=''}">
-        </div>
+    document.getElementById('inventory-list').innerHTML = CATS.map(c => `
+        <div class="inv-section"><span class="label">${c}</span>
+        <div id="items-${c}">${session.inv[c].map((it, i) => `<span class="chip">${it} <span onclick="removeItem('${c}',${i})" style="color:red;cursor:pointer">×</span></span>`).join('')}</div>
+        <input type="text" placeholder="+" onkeydown="if(event.key==='Enter'){addItem('${c}',this.value);this.value=''}"></div>
     `).join('');
 }
-
-function addItem(c, v) { if(v){session.inv[c].push(v); save(); renderInv();}}
-function removeItem(c, i) { session.inv[c].splice(i,1); save(); renderInv();}
-function save() { localStorage.setItem('sov_v27_inv', JSON.stringify(session.inv)); }
-
-function renderThemes() {
-    document.getElementById('theme-selector').innerHTML = THEMES.map(t => `
-        <div class="theme-btn ${session.activeThemes.includes(t)?'active':''}" onclick="toggleTheme('${t}')">${t}</div>
-    `).join('');
-}
-function toggleTheme(t) {
-    if(session.activeThemes.includes(t)) session.activeThemes = session.activeThemes.filter(x => x!==t);
-    else session.activeThemes.push(t);
-    renderThemes();
-}
+function addItem(c,v){ if(v){session.inv[c].push(v); save(); renderInv();}}
+function removeItem(c,i){ session.inv[c].splice(i,1); save(); renderInv();}
+function save(){ localStorage.setItem('sov_v29_inv', JSON.stringify(session.inv)); }
 
 function startSession() {
     session.dom.name = document.getElementById('p1-name').value;
@@ -154,35 +156,59 @@ function startSession() {
     updateUI();
 }
 
+function renderThemes() {
+    document.getElementById('theme-selector').innerHTML = THEMES.map(t => `
+        <div class="theme-btn ${session.activeThemes.includes(t)?'active':''}" onclick="toggleTheme('${t}')">${t}</div>
+    `).join('');
+}
+function toggleTheme(t){
+    if(session.activeThemes.includes(t)) session.activeThemes = session.activeThemes.filter(x=>x!==t);
+    else session.activeThemes.push(t);
+    renderThemes();
+}
+
 function updateUI() {
     document.getElementById('phase-label').innerText = `PHASE ${session.round}`;
-    document.getElementById('dom-name').innerText = session.dom.name;
+    document.getElementById('dom-display').innerText = `${session.dom.name} (${session.dom.gender})`;
     document.getElementById('dom-score').innerText = `Points: ${session.dom.score}`;
-    document.getElementById('sub-name').innerText = session.sub.name;
+    document.getElementById('sub-display').innerText = `${session.sub.name} (${session.sub.gender})`;
     document.getElementById('sub-score').innerText = `Points: ${session.sub.score}`;
+    
+    let histHtml = session.history.map(h => `<div class="history-entry"><span>Phase ${h.r}: ${h.d} > ${h.s}</span><span>[${h.res}]</span></div>`).join('');
+    document.getElementById('history-inner').innerHTML = histHtml;
 }
 
 function generateDecree() {
-    if(!session.activeThemes.length) return;
     const theme = session.activeThemes[Math.floor(Math.random()*session.activeThemes.length)];
     const r = (arr) => arr[Math.floor(Math.random()*arr.length)];
-    const tool = (c) => (session.inv[c] && session.inv[c].length) ? r(session.inv[c]) : `[${c}]`;
+    const tool = (c) => r(session.inv[c]);
     
     const d = session.dom.name; const s = session.sub.name;
+    const isM = session.sub.gender === 'M';
+    const subObj = isM ? 'him' : 'her';
+    const subPoss = isM ? 'his' : 'her';
+    const subSelf = isM ? 'himself' : 'herself';
+
     let text = ""; let time = 600;
 
     switch(theme) {
         case "Self Bondage":
-            text = `${s}, apply the **${tool('Shadow')}** now. In total darkness, use the **${tool('Restraints')}** to bind your ankles tightly together. Reach behind your back and secure your wrists. Using a secondary line, cinch your wrists to your ankles into a **strict, arched hogtie**. You must remain in this arch, blind and bound, for the duration.`;
+            text = `${s}, apply the **${tool('Shadow')}** now. Bind ${subPoss} ankles with **${tool('Restraints')}**. Reach back and secure ${subPoss} wrists, cinching ${subObj} into a strict hogtie. ${d} will inspect the tension and ensure ${s} cannot move.`;
             time = 900; break;
         case "Tease and Denial":
-            text = `${s} is blindfolded with the **${tool('Shadow')}**. ${d} will use the **${tool('Ache')}** on ${s}'s genitals while simultaneously tracing the **${tool('Sensory')}** across their chest. ${s} is forbidden from making any sound or reaching climax. For every gasp, ${d} will deliver 15 heavy strikes with the **${tool('Impact')}**.`;
+            text = `${s} is blindfolded with the **${tool('Shadow')}**. ${d} will use **${tool('Ache')}** and **${tool('Sensory')}**. If ${s} moans, ${d} strikes ${subObj} with the **${tool('Impact')}**. ${s} must thank ${d} for every strike.`;
             time = 1200; break;
+        case "Truth":
+            text = `${s} is to be blindfolded with the **${tool('Shadow')}** and forced to kneel. ${d} will ask 5 questions. For every hesitation, ${d} will apply the **${tool('Ache')}** to ${subPoss} most sensitive areas. ${s} must remain perfectly still.`;
+            time = 600; break;
+        case "Physical Challenge":
+            text = `${s}, wearing the **${tool('Shadow')}**, must maintain a deep squat. ${d} will deliver random strikes with the **${tool('Impact')}** to ${subPoss} buttocks. If ${s} flinches or breaks form, the timer resets.`;
+            time = 720; break;
         case "Escape":
-            text = `${s} is fully sensory-deprived with the **${tool('Shadow')}** and the **${tool('Gags')}**. ${d} will bind ${s}'s wrists to their ankles with **${tool('Restraints')}**. Struggle free before the timer ends. If the blindfold is displaced before release, it is a Failure.`;
+            text = `${s} is to be blindfolded with the **${tool('Shadow')}**, gagged with the **${tool('Gags')}**, and bound with **${tool('Restraints')}**. ${s} must attempt to free ${subSelf} before the timer ends. If the blindfold is displaced, ${s} fails.`;
             time = 1200; break;
         default:
-            text = `${s}, ${d} demands submission. Use the **${tool('Shadow')}** and the **${tool('Restraints')}**. Remain perfectly still while ${d} uses the **${tool('Impact')}**.`;
+            text = `${s}, ${d} demands total silence. Apply the **${tool('Shadow')}**. Use the **${tool('Restraints')}** on ${subObj}. Wait for the **${tool('Impact')}**.`;
             time = 600;
     }
 
@@ -206,30 +232,23 @@ function runTimer() {
     }, 1000);
 }
 
-function resolveRound(success) {
+function resolve(success) {
     clearInterval(session.timer);
+    session.history.unshift({ r: session.round, d: session.dom.name, s: session.sub.name, res: success ? "SUCCESS" : "FAIL" });
+    
     if(success) {
         session.sub.score += 1;
-        // THE SWAP: Create a temp copy of the sub and swap with dom
-        let oldSub = {...session.sub};
-        let oldDom = {...session.dom};
-        session.dom = oldSub;
-        session.sub = oldDom;
-        alert("SUCCESS: Point awarded. Roles have been SWAPPED.");
+        let temp = {...session.dom};
+        session.dom = {...session.sub};
+        session.sub = temp;
     } else {
         session.sub.score -= 1;
-        alert("FAILURE: Point deducted. Roles remain the same.");
     }
+    
     session.round++;
     document.getElementById('control-area').style.display = 'block';
     document.getElementById('decree-area').style.display = 'none';
     updateUI();
-}
-
-function resetUI() {
-    clearInterval(session.timer);
-    document.getElementById('control-area').style.display = 'block';
-    document.getElementById('decree-area').style.display = 'none';
 }
 
 function formatT(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
