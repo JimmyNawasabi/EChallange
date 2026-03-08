@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Protocol Absolute</title>
+    <title>SOVEREIGNTY: Absolute Audit v2.0</title>
     <style>
         :root { 
             --accent: #d4af37; --bg: #0a0a0a; --card: #161616;
@@ -16,16 +16,16 @@
         .box-section { background: #1f1f1f; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #333; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; letter-spacing: 1px; }
         
-        /* PAGE 1 INPUTS */
+        /* INPUTS */
         input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; margin-bottom: 10px; }
         .gender-grid { display: flex; gap: 8px; margin-bottom: 15px; }
         .g-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 8px; font-size: 0.75rem; font-weight: bold; }
         .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
         
-        /* BUTTONS */
-        .btn { background: var(--crimson); color: white; border: none; padding: 16px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 5px; letter-spacing: 1px; }
-        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
-        .tog-btn { padding: 10px 5px; font-size: 0.65rem; border-radius: 6px; border: 1px solid #333; background: #111; color: #555; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+        /* CONTROL GRIDS */
+        .btn { background: var(--crimson); color: white; border: none; padding: 16px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 5px; }
+        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 15px; }
+        .tog-btn { padding: 12px 5px; font-size: 0.65rem; border-radius: 6px; border: 1px solid #333; background: #111; color: #555; cursor: pointer; text-transform: uppercase; font-weight: bold; transition: 0.2s; }
         .tog-btn.active { border-color: var(--accent); color: var(--accent); background: #1a1608; }
         
         /* HUD */
@@ -38,14 +38,15 @@
         #vault-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; display: none; padding: 20px; box-sizing: border-box; overflow-y: auto; }
         .tag-pill { background: #333; color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 8px; margin: 3px; border: 1px solid #444; }
         .tag-x { color: #ff4500; cursor: pointer; font-weight: bold; }
+        .add-row { display: flex; gap: 5px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div id="vault-overlay">
-    <h2 style="color:var(--accent); text-align:center;">VAULT INVENTORY</h2>
+    <h2 style="color:var(--accent); text-align:center;">VAULT: ARSENAL MANAGEMENT</h2>
     <div id="vault-editor-content"></div>
-    <button class="btn" style="background: var(--success);" onclick="closeVault()">Save & Close</button>
+    <button class="btn" style="background: var(--success);" onclick="closeVault()">Save & Close Vault</button>
 </div>
 
 <div class="container">
@@ -53,7 +54,7 @@
 
     <div id="screen-setup" style="display:block;">
         <div class="box-section">
-            <span class="label">Primary Identity (Master)</span>
+            <span class="label">Initial Master (Identity 1)</span>
             <input type="text" id="p0-name-in" placeholder="Enter Name...">
             <div class="gender-grid">
                 <button class="g-btn active" onclick="setG(0,'M',this)">Male</button>
@@ -61,7 +62,7 @@
                 <button class="g-btn" onclick="setG(0,'NB',this)">NB</button>
             </div>
 
-            <span class="label">Secondary Identity (Slave)</span>
+            <span class="label">Initial Slave (Identity 2)</span>
             <input type="text" id="p1-name-in" placeholder="Enter Name...">
             <div class="gender-grid">
                 <button class="g-btn" onclick="setG(1,'M',this)">Male</button>
@@ -71,14 +72,14 @@
         </div>
 
         <div class="box-section">
-            <span class="label">Session Duration (Rounds)</span>
+            <span class="label">Total Rounds (Default 30)</span>
             <input type="number" id="rounds-in" value="30">
         </div>
         <button class="btn" onclick="startSession()">Initialize Protocol</button>
     </div>
 
     <div id="screen-game" style="display:none;">
-        <div id="round-counter" style="text-align:center; font-size:0.7rem; color:#666; margin-bottom:5px;">ROUND 1 / 30</div>
+        <div id="round-counter" style="text-align:center; font-size:0.7rem; color:#666; margin-bottom:5px; text-transform:uppercase;"></div>
         
         <div class="score-row">
             <div class="p-block"><div id="p0-role" class="role-tag">MASTER</div><div id="p0-name-ui" style="font-weight:bold;"></div><div id="p0-score" style="font-size:1.8rem;">0</div></div>
@@ -88,14 +89,17 @@
         <div id="master-controls">
             <div class="box-section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <span class="label" style="margin-bottom:0;">Arsenal Toggle</span>
-                    <button onclick="openVault()" style="background:none; border:1px solid var(--accent); color:var(--accent); font-size:0.55rem; padding:2px 6px; cursor:pointer; border-radius:4px;">MANAGE ITEMS</button>
+                    <span class="label" style="margin-bottom:0;">Arsenal Selection</span>
+                    <button onclick="openVault()" style="background:none; border:1px solid var(--accent); color:var(--accent); font-size:0.55rem; padding:2px 8px; cursor:pointer; border-radius:4px; font-weight:bold;">MANAGE ITEMS</button>
                 </div>
                 <div class="toggle-grid" id="arsenal-mount"></div>
-                
+            </div>
+
+            <div class="box-section">
                 <span class="label">Active Protocols</span>
                 <div class="toggle-grid" id="protocol-mount"></div>
             </div>
+            
             <button class="btn" onclick="generate()">Command Decree</button>
         </div>
 
@@ -115,21 +119,21 @@
     const state = {
         curr: 1, total: 30,
         players: [{n:"", g:"M", role:"Master", score:0}, {n:"", g:"F", role:"Slave", score:0}],
-        vault: JSON.parse(localStorage.getItem('sov_vault_v15')) || {
+        vault: JSON.parse(localStorage.getItem('sov_vault_final')) || {
             "Restraints": { active: true, items: ["Rope", "Handcuffs"] },
             "Sensory": { active: true, items: ["Blindfold", "Hood"] },
             "Discipline": { active: true, items: ["Flogger", "Cane"] },
             "Oral": { active: true, items: ["Ball Gag", "Tape"] }
         },
         protocols: {
-            "The Solitary Bind": { label: "Self Bondage", active: true, prompts: ["{S} must use the {T} to secure {SP} own wrists behind {SP} back, then connect to {SP} ankles in a tight arch."] },
-            "The Wicked Gamble": { label: "Dare", active: true, prompts: ["{M} chooses a dare. {S} must remain still while the {T} is used to enforce {M}'s will."] },
-            "The Veiled Confession": { label: "Truth", active: true, prompts: ["Bound by the {T}, {S} must reveal a truth. Hesitation adds tension to the restraint."] },
-            "The Silk Labyrinth": { label: "Shibari", active: true, prompts: ["{M} is to perform a decorative harness on {S} using the {T}, ensuring chest exposure."] },
-            "The Threshold of Agony": { label: "Edging", active: true, prompts: ["{M} will use the {T} to bring {S} to the peak 3 times, then command absolute stillness."] },
-            "The Flesh Endurance": { label: "Challenge", active: true, prompts: ["{S} must hold a rigid stress position while the {T} is balanced across {SP} body."] },
-            "The Great Unshackling": { label: "Escape", active: true, prompts: ["{M} secures {S} using the {T}. {S} has 3 minutes to escape using only body tension."] },
-            "The Velvet Command": { label: "Sensual", active: true, prompts: ["{M} will slowly trace the {T} along {S}'s body. {S} must describe every sensation."] }
+            "The Solitary Bind": { active: true, prompts: ["{S} must use the {T} to secure {SP} own wrists behind {SP} back, then connect to {SP} ankles in a tight arch."] },
+            "The Wicked Gamble": { active: true, prompts: ["{M} chooses a dare. {S} must remain still while the {T} is used to enforce {M}'s will."] },
+            "The Veiled Confession": { active: true, prompts: ["Bound by the {T}, {S} must reveal a truth. Hesitation adds tension to the restraint."] },
+            "The Silk Labyrinth": { active: true, prompts: ["{M} is to perform a decorative harness on {S} using the {T}, ensuring chest exposure."] },
+            "The Threshold of Agony": { active: true, prompts: ["{M} will use the {T} to bring {S} to the peak 3 times, then command absolute stillness."] },
+            "The Flesh Endurance": { active: true, prompts: ["{S} must hold a rigid stress position while the {T} is balanced across {SP} body."] },
+            "The Great Unshackling": { active: true, prompts: ["{M} secures {S} using the {T}. {S} has 3 minutes to escape using only body tension."] },
+            "The Velvet Command": { active: true, prompts: ["{M} will slowly trace the {T} along {S}'s body. {S} must describe every sensation."] }
         }
     };
 
@@ -158,55 +162,100 @@
             rt.className = 'role-tag' + (p.role === 'Master' ? ' master-glow' : '');
         });
         
+        // Render Arsenal Toggles
         const vM = document.getElementById('arsenal-mount'); vM.innerHTML = '';
-        for(let k in state.vault) vM.innerHTML += `<button class="tog-btn ${state.vault[k].active?'active':''}" onclick="state.vault['${k}'].active=!state.vault['${k}'].active; render()">${k}</button>`;
+        for(let k in state.vault) {
+            vM.innerHTML += `<button class="tog-btn ${state.vault[k].active?'active':''}" onclick="state.vault['${k}'].active=!state.vault['${k}'].active; render()">${k}</button>`;
+        }
         
+        // Render Protocol Toggles
         const pM = document.getElementById('protocol-mount'); pM.innerHTML = '';
-        for(let k in state.protocols) pM.innerHTML += `<button class="tog-btn ${state.protocols[k].active?'active':''}" onclick="state.protocols['${k}'].active=!state.protocols['${k}'].active; render()">${k}</button>`;
+        for(let k in state.protocols) {
+            pM.innerHTML += `<button class="tog-btn ${state.protocols[k].active?'active':''}" onclick="state.protocols['${k}'].active=!state.protocols['${k}'].active; render()">${k}</button>`;
+        }
     }
 
     function openVault() {
         const c = document.getElementById('vault-editor-content'); c.innerHTML = '';
         for(let cat in state.vault) {
-            c.innerHTML += `<div class="box-section"><span class="label">${cat}</span><div>${state.vault[cat].items.map((t,idx)=>`<span class="tag-pill">${t} <span class="tag-x" onclick="vRem('${cat}',${idx})">×</span></span>`).join('')}</div><div style="display:flex; gap:8px; margin-top:10px;"><input type="text" id="add-${cat}" placeholder="Add..."><button class="tog-btn active" style="flex:0.3;" onclick="vAdd('${cat}')">ADD</button></div></div>`;
+            c.innerHTML += `
+                <div class="box-section">
+                    <span class="label">${cat}</span>
+                    <div>${state.vault[cat].items.map((t,idx)=>`
+                        <span class="tag-pill">${t} <span class="tag-x" onclick="vRem('${cat}',${idx})">×</span></span>
+                    `).join('')}</div>
+                    <div class="add-row">
+                        <input type="text" id="add-${cat}" placeholder="Add tool...">
+                        <button class="tog-btn active" style="flex:0.3;" onclick="vAdd('${cat}')">ADD</button>
+                    </div>
+                </div>`;
         }
         document.getElementById('vault-overlay').style.display = 'block';
     }
-    function vAdd(c){ const v=document.getElementById('add-'+c).value; if(v){state.vault[c].items.push(v); openVault();}}
-    function vRem(c,idx){ state.vault[c].items.splice(idx,1); openVault();}
-    function closeVault(){ localStorage.setItem('sov_vault_v15', JSON.stringify(state.vault)); document.getElementById('vault-overlay').style.display='none'; render();}
+
+    function vAdd(c){ 
+        const v = document.getElementById('add-'+c).value; 
+        if(v.trim()){state.vault[c].items.push(v.trim()); openVault();}
+    }
+
+    function vRem(c,idx){ 
+        state.vault[c].items.splice(idx,1); 
+        openVault();
+    }
+
+    function closeVault(){ 
+        localStorage.setItem('sov_vault_final', JSON.stringify(state.vault)); 
+        document.getElementById('vault-overlay').style.display = 'none'; 
+        render();
+    }
 
     function generate() {
-        const pks = Object.keys(state.protocols).filter(k=>state.protocols[k].active);
-        const vks = Object.keys(state.vault).filter(k=>state.vault[k].active && state.vault[k].items.length);
-        if(!pks.length || !vks.length) return alert("Select a Protocol and Arsenal set.");
+        const pks = Object.keys(state.protocols).filter(k => state.protocols[k].active);
+        const vks = Object.keys(state.vault).filter(k => state.vault[k].active && state.vault[k].items.length > 0);
+        
+        if(!pks.length || !vks.length) return alert("Select at least one Arsenal category and one Protocol.");
         
         const pK = pks[Math.floor(Math.random()*pks.length)];
         const vK = vks[Math.floor(Math.random()*vks.length)];
         const tool = state.vault[vK].items[Math.floor(Math.random()*state.vault[vK].items.length)];
         
-        const mIdx = state.players.findIndex(p=>p.role==='Master');
-        const sIdx = mIdx===0?1:0;
+        const mIdx = state.players.findIndex(p => p.role === 'Master');
+        const sIdx = mIdx === 0 ? 1 : 0;
         const pron = state.players[sIdx].g === 'M' ? {s:'his'} : {s:'her'};
         
-        const txt = state.protocols[pK].prompts[0].replace(/{M}/g, state.players[mIdx].n).replace(/{S}/g, state.players[sIdx].n).replace(/{SP}/g, pron.s).replace(/{T}/g, `<strong>${tool}</strong>`);
+        const txt = state.protocols[pK].prompts[0]
+            .replace(/{M}/g, state.players[mIdx].n)
+            .replace(/{S}/g, state.players[sIdx].n)
+            .replace(/{SP}/g, pron.s)
+            .replace(/{T}/g, `<strong>${tool}</strong>`);
+            
         document.getElementById('decree-display').innerHTML = `<small style="color:var(--accent)">PROTOCOL: ${pK}</small><br><br>${txt}`;
         document.getElementById('master-controls').style.display = 'none';
         document.getElementById('active-view').style.display = 'block';
     }
 
     function resolve(success) {
-        const mIdx = state.players.findIndex(p=>p.role==='Master');
+        const mIdx = state.players.findIndex(p => p.role === 'Master');
         const sIdx = mIdx === 0 ? 1 : 0;
+        
         if(success) {
             state.players[sIdx].score++;
             const p0r = state.players[0].role;
             state.players[0].role = (p0r === 'Master' ? 'Slave' : 'Master');
             state.players[1].role = (p0r === 'Master' ? 'Master' : 'Slave');
-        } else state.players[mIdx].score++;
+        } else {
+            state.players[mIdx].score++;
+        }
         
-        if(state.curr >= state.total) { alert("Session Complete."); location.reload(); }
-        else { state.curr++; document.getElementById('master-controls').style.display='block'; document.getElementById('active-view').style.display='none'; render(); }
+        if(state.curr >= state.total) {
+            alert("Session Complete.");
+            location.reload();
+        } else {
+            state.curr++;
+            document.getElementById('master-controls').style.display = 'block';
+            document.getElementById('active-view').style.display = 'none';
+            render();
+        }
     }
 </script>
 </body>
