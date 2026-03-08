@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Arsenal Restored</title>
+    <title>SOVEREIGNTY: Identity Restored</title>
     <style>
         :root { 
             --accent: #0056b3; 
@@ -55,6 +55,15 @@
             font-weight: bold; border-radius: 15px; font-size: 1.6rem; 
         }
 
+        /* Gender Grid */
+        .gender-grid { display: flex; gap: 10px; margin-bottom: 20px; }
+        .g-btn { 
+            flex: 1; padding: 15px; background: #222; border: 2px solid #444; 
+            color: #777; cursor: pointer; text-transform: uppercase; font-weight: bold;
+            border-radius: 10px; font-size: 1.2rem;
+        }
+        .g-btn.active { background: var(--accent); color: white; border-color: white; }
+
         /* Inventory Chips */
         .chip { 
             display: inline-flex; align-items: center; background: #1a1a1a; 
@@ -82,14 +91,24 @@
 <body>
 
 <div class="container">
-    <h1 id="main-title">SOVEREIGNTY</h1>
+    <h1>SOVEREIGNTY</h1>
 
     <div id="step-1">
         <div class="box-section">
-            <span class="label">Master Name</span>
+            <span class="label">Player 1</span>
             <input type="text" id="p0-name" value="Dominus">
-            <span class="label">Slave Name</span>
+            <div class="gender-grid" id="p0-g-grid">
+                <button class="g-btn active" onclick="setGender(0, 'M', this)">Male</button>
+                <button class="g-btn" onclick="setGender(0, 'F', this)">Female</button>
+            </div>
+
+            <span class="label">Player 2</span>
             <input type="text" id="p1-name" value="Subject">
+            <div class="gender-grid" id="p1-g-grid">
+                <button class="g-btn" onclick="setGender(1, 'M', this)">Male</button>
+                <button class="g-btn active" onclick="setGender(1, 'F', this)">Female</button>
+            </div>
+
             <span class="label">Total Rounds</span>
             <input type="number" id="round-total" value="30">
         </div>
@@ -103,20 +122,14 @@
 
     <div id="step-3" style="display:none;">
         <div id="round-header" style="text-align:center; color:var(--accent); font-weight:900; font-size: 2rem; margin-bottom: 20px;"></div>
-        
         <div class="score-row">
             <div><div class="label">MASTER</div><div id="m-name" style="font-size:1.5rem;"></div><div id="m-score" class="p-score">0</div></div>
             <div><div class="label">SLAVE</div><div id="s-name" style="font-size:1.5rem;"></div><div id="s-score" class="p-score">0</div></div>
         </div>
-
         <div id="master-panel">
-            <div class="box-section">
-                <span class="label">Authorize Categories for this Decree</span>
-                <div id="toggle-grid" class="tog-grid"></div>
-            </div>
+            <div class="box-section"><div id="toggle-grid" class="tog-grid"></div></div>
             <button class="btn" onclick="generateDecree()">Issue Decree</button>
         </div>
-
         <div id="decree-view" style="display:none;">
             <div class="box-section"><div id="decree-text" style="text-align:center; font-size: 1.8rem; line-height: 1.6;"></div></div>
             <div style="display:flex; gap:15px;">
@@ -130,7 +143,10 @@
 <script>
     const state = {
         curr: 1, total: 30,
-        players: [{n:"", role:"Master", score:0, g:"M"}, {n:"", role:"Slave", score:0, g:"F"}],
+        players: [
+            {n:"", role:"Master", score:0, g:"M"}, 
+            {n:"", role:"Slave", score:0, g:"F"}
+        ],
         vault: {
             "The Shackles": [{n:"Handcuffs", t:"U"}],
             "The Silence": [{n:"Ball Gag", t:"U"}],
@@ -141,6 +157,13 @@
         },
         activeCats: []
     };
+
+    function setGender(pIdx, gender, btn) {
+        state.players[pIdx].g = gender;
+        const parent = btn.parentElement;
+        Array.from(parent.children).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
 
     function goToStep(n) {
         document.querySelectorAll('[id^="step-"]').forEach(s => s.style.display = 'none');
@@ -157,13 +180,12 @@
                 <span class="chip">${it.n} <span class="tag">${it.t}</span>
                 <span class="del" onclick="removeItem('${cat}', ${idx})">×</span></span>
             `).join('');
-            
             editor.innerHTML += `
                 <div class="box-section">
                     <span class="label">${cat}</span>
                     <div style="margin-bottom:15px;">${itemHtml}</div>
                     <div style="display:grid; grid-template-columns: 2fr 1fr 80px; gap:10px;">
-                        <input type="text" id="add-n-${cat}" placeholder="Item name...">
+                        <input type="text" id="add-n-${cat}" placeholder="New Item...">
                         <select id="add-t-${cat}"><option value="U">U</option><option value="M">M</option><option value="F">F</option></select>
                         <button class="btn" style="padding:0;" onclick="addItem('${cat}')">+</button>
                     </div>
@@ -189,10 +211,8 @@
 
     function renderRound() {
         if(state.curr > state.total) { alert("Session Complete"); location.reload(); return; }
-        
         const master = state.players.find(p => p.role === "Master");
         const slave = state.players.find(p => p.role === "Slave");
-        
         document.getElementById('round-header').innerText = `ROUND ${state.curr} / ${state.total}`;
         document.getElementById('m-name').innerText = master.n;
         document.getElementById('s-name').innerText = slave.n;
@@ -219,14 +239,11 @@
         const cat = state.activeCats[Math.floor(Math.random() * state.activeCats.length)];
         const sub = state.players.find(p => p.role === "Slave");
         const dom = state.players.find(p => p.role === "Master");
-        
-        // Filter by sub gender
         const items = state.vault[cat].filter(i => i.t === 'U' || i.t === sub.g);
-        if(items.length === 0) return alert("No items available for this category/gender.");
+        if(items.length === 0) return alert("No items available for this selection.");
 
         const item = items[Math.floor(Math.random() * items.length)];
-        document.getElementById('decree-text').innerHTML = `<span style="color:var(--accent);">${cat} Protocol</span><br><br>${dom.n} shall apply ${item.n} to ${sub.n}.`;
-        
+        document.getElementById('decree-text').innerHTML = `<span style="color:var(--accent); text-transform:uppercase;">${cat} Protocol</span><br><br>${dom.n} shall apply ${item.n} to ${sub.n}.`;
         document.getElementById('master-panel').style.display = 'none';
         document.getElementById('decree-view').style.display = 'block';
     }
@@ -239,7 +256,7 @@
             state.players.find(p => p.role === "Master").score++;
         }
         state.curr++;
-        state.activeCats = Object.keys(state.vault); // Reset for next Master
+        state.activeCats = Object.keys(state.vault);
         document.getElementById('master-panel').style.display = 'block';
         document.getElementById('decree-view').style.display = 'none';
         renderRound();
