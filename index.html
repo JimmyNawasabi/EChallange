@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SOVEREIGNTY: The Master Architect</title>
+    <title>SOVEREIGNTY: Explicit Protocol</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
@@ -12,32 +12,30 @@
         .container { max-width: 1000px; width: 100%; background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); box-shadow: 0 0 50px #000; }
         h1 { text-align: center; text-transform: uppercase; letter-spacing: 12px; font-size: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin: 10px 0; }
         
+        /* SETUP */
         .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         .p-setup { background: #080808; padding: 15px; border-radius: 10px; border: 1px solid #222; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; letter-spacing: 2px; }
         
-        /* INVENTORY & THEMES */
-        .manager-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
-        .manager-box { background: #050505; padding: 15px; border-radius: 12px; border: 1px solid #333; }
-        .inv-category, .theme-item { background: #111; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #222; }
-        
+        /* INVENTORY */
+        .manager-box { background: #050505; padding: 15px; border-radius: 12px; border: 1px solid #333; margin-top: 10px; }
         .chip { padding: 4px 10px; background: #222; border-radius: 4px; font-size: 0.7rem; margin: 2px; display: inline-flex; align-items: center; gap: 5px; }
-        .del-item { color: var(--crimson); cursor: pointer; font-weight: bold; }
-        
-        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(16px); }
+        .del-item { color: var(--crimson); cursor: pointer; }
+
+        /* THEME TOGGLES (PLAY SCREEN) */
+        .theme-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; background: #0a0a0a; padding: 15px; border-radius: 10px; border: 1px solid #222; }
+        .theme-toggle { padding: 10px; background: #111; border: 1px solid #333; border-radius: 5px; font-size: 0.65rem; text-align: center; cursor: pointer; color: #666; font-weight: bold; text-transform: uppercase; }
+        .theme-toggle.active { border-color: var(--gold); color: var(--gold); background: #1a1500; }
 
         /* PLAY STATE */
-        #decree-text { background: #050505; padding: 30px; border-radius: 10px; border-left: 5px solid var(--gold); font-size: 1.2rem; line-height: 1.7; margin: 20px 0; }
-        #timer { font-size: 5rem; color: var(--crimson); font-family: monospace; text-align: center; text-shadow: 0 0 20px rgba(208,0,0,0.3); }
+        #decree-text { background: #050505; padding: 30px; border-radius: 10px; border-left: 5px solid var(--gold); font-size: 1.1rem; line-height: 1.8; margin: 20px 0; color: #eee; }
+        #timer { font-size: 5rem; color: var(--crimson); font-family: monospace; text-align: center; }
         .btn-main { background: var(--accent); color: white; padding: 20px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
         .btn-commence { background: var(--gold); color: black; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 10px;}
         
-        .theme-active { border-color: var(--gold) !important; color: var(--gold); }
+        input[type="text"] { width: 100%; padding: 10px; background: #000; color: white; border: 1px solid #333; border-radius: 5px; margin-top: 5px; box-sizing: border-box; }
+        .gen-btn { flex: 1; padding: 10px; border: 1px solid #333; background: #000; color: #444; cursor: pointer; border-radius: 5px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .gen-btn.active { border-color: var(--accent); color: white; background: #001a35; }
     </style>
 </head>
 <body>
@@ -49,53 +47,37 @@
         <div class="setup-grid">
             <div class="p-setup">
                 <span class="label">Dominant</span>
-                <input type="text" id="name0" value="Master" placeholder="Name">
-                <div class="gender-select">
+                <input type="text" id="name0" value="Master">
+                <div class="gender-select" style="display:flex; gap:5px; margin-top:10px;">
                     <button class="gen-btn active" id="p0m" onclick="setGender(0,'M')">Male</button>
                     <button class="gen-btn" id="p0f" onclick="setGender(0,'F')">Female</button>
                 </div>
             </div>
             <div class="p-setup">
                 <span class="label">Submissive</span>
-                <input type="text" id="name1" value="Slave" placeholder="Name">
-                <div class="gender-select">
+                <input type="text" id="name1" value="Slave">
+                <div class="gender-select" style="display:flex; gap:5px; margin-top:10px;">
                     <button class="gen-btn" id="p1m" onclick="setGender(1,'M')">Male</button>
                     <button class="gen-btn active" id="p1f" onclick="setGender(1,'F')">Female</button>
                 </div>
             </div>
         </div>
 
-        <div class="manager-grid">
-            <div class="manager-box">
-                <span class="label">Arsenal (Physical Inventory)</span>
-                <div id="inventory-list"></div>
-            </div>
-
-            <div class="manager-box">
-                <span class="label">Decree Protocol Themes</span>
-                <div id="theme-list"></div>
-            </div>
+        <div class="manager-box">
+            <span class="label">Hardware Arsenal (Add/Remove Tools)</span>
+            <div id="inventory-list"></div>
         </div>
 
         <button class="btn-main" style="margin-top:20px;" onclick="startSession()">Initialize Sovereign Protocol</button>
     </div>
 
     <div id="play-screen" style="display:none;">
-        <div id="round-disp" style="text-align:center; color:var(--accent); margin-bottom:10px; letter-spacing: 2px; font-weight: bold;"></div>
-        <div style="display:flex; gap:15px; margin-bottom:20px;">
-            <div id="box0" class="p-setup" style="flex:1; text-align:center; border: 1px solid var(--accent);">
-                <span class="label">Dominant</span>
-                <div id="disp-name0" style="font-size: 1.2rem;"></div>
-                <div id="score0" style="color:var(--gold); font-size: 1.5rem;">0</div>
-            </div>
-            <div id="box1" class="p-setup" style="flex:1; text-align:center;">
-                <span class="label">Submissive</span>
-                <div id="disp-name1" style="font-size: 1.2rem;"></div>
-                <div id="score1" style="color:var(--gold); font-size: 1.5rem;">0</div>
-            </div>
-        </div>
+        <div id="round-disp" style="text-align:center; color:var(--accent); margin-bottom:10px; letter-spacing: 2px;"></div>
+        
+        <span class="label" style="text-align:center; display:block;">Active Decree Protocols (Toggle to Include)</span>
+        <div class="theme-selector" id="theme-selector"></div>
 
-        <div id="command-center"><button class="btn-main" onclick="issueDecree()">Generate Decree</button></div>
+        <div id="command-center"><button class="btn-main" onclick="issueDecree()">Generate Random Decree</button></div>
         
         <div id="decree-panel" style="display:none;">
             <div id="timer">00:00</div>
@@ -111,96 +93,69 @@
 
 <script>
 const DEFAULT_INV = {
-    "Restraints": ["Rope", "Handcuffs", "Ankle Cuffs", "Spreader Bar"],
-    "Impact": ["Cane", "Paddle", "Flogger", "Slapper"],
-    "Gags": ["Ball Gag", "Ring Gag", "Muzzle"],
-    "Sensory": ["Wax", "Ice", "Wartenberg Wheel", "Feather"],
-    "Ache": ["Clamps", "Weights", "Internal Plug"]
+    "Restraints": ["Nylon Rope", "Hemp Rope", "Steel Cuffs", "Zip Ties", "Leather Straps"],
+    "Impact": ["Heavy Cane", "Leather Paddle", "Dragon Flogger", "Crop", "Hand Slap"],
+    "Gags": ["Ball Gag", "Ring Gag", "Duct Tape", "Panties", "Medical Mask"],
+    "Sensory": ["Low-Temp Wax", "Ice Cubes", "Wartenberg Wheel", "Peacock Feather"],
+    "Ache": ["Nipple Clamps", "Weighted Plugs", "Crotch Rope", "Ball Stretcher"]
 };
 
-const THEME_MAP = {
-    "Self Bondage": "The Solitary Bind",
-    "Truth": "The Absolute Confession",
-    "Dare": "The Sovereign Challenge",
-    "Soft and Sexy": "Sensual Subjugation",
-    "Escape": "The Great Liberation",
-    "Shibari": "Artful Entwinement",
-    "Physical Challenge": "Ordeal of Endurance",
-    "Tease and Denial": "The Endless Threshold"
-};
+const THEMES = ["Self Bondage", "Truth", "Dare", "Soft and Sexy", "Escape", "Shibari", "Physical Challenge", "Tease and Denial"];
 
 let state = {
-    currRound: 1, lastTheme: "",
+    currRound: 1, history: [],
     p: [{name:"", gender:"M", score:0}, {name:"", gender:"F", score:0}],
-    inv: JSON.parse(localStorage.getItem('sov_inv_v20')) || DEFAULT_INV,
-    themes: JSON.parse(localStorage.getItem('sov_themes_v20')) || Object.keys(THEME_MAP).reduce((a,b)=> (a[b]=true,a), {}),
+    inv: JSON.parse(localStorage.getItem('sov_inv_v21')) || DEFAULT_INV,
+    activeThemes: [...THEMES],
     timer: null
 };
 
-function saveAll() {
-    localStorage.setItem('sov_inv_v20', JSON.stringify(state.inv));
-    localStorage.setItem('sov_themes_v20', JSON.stringify(state.themes));
-}
+function save() { localStorage.setItem('sov_inv_v21', JSON.stringify(state.inv)); }
 
-function renderUI() {
-    const iList = document.getElementById('inventory-list');
-    iList.innerHTML = '';
+function renderSetup() {
+    const list = document.getElementById('inventory-list');
+    list.innerHTML = '';
     Object.keys(state.inv).forEach(cat => {
         const div = document.createElement('div');
-        div.className = 'inv-category';
+        div.style.marginBottom = "10px";
         div.innerHTML = `
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                <span style="font-size:0.7rem; color:var(--accent); font-weight:bold;">${cat.toUpperCase()}</span>
-            </div>
-            <div class="chip-container">${state.inv[cat].map((item, idx) => `
-                <span class="chip">${item} <span class="del-item" onclick="removeItem('${cat}', ${idx})">×</span></span>
+            <span style="font-size:0.6rem; color:var(--accent);">${cat.toUpperCase()}</span>
+            <div class="chip-container">${state.inv[cat].map((it, idx) => `
+                <span class="chip">${it} <span class="del-item" onclick="removeItem('${cat}', ${idx})">×</span></span>
             `).join('')}</div>
-            <div style="display:flex; gap:5px; margin-top:5px;">
-                <input type="text" id="add-${cat}" placeholder="Add..." style="flex:1; padding:4px; background:#000; border:1px solid #333; color:white; font-size:0.7rem;">
-                <button onclick="addItem('${cat}')" style="background:var(--accent); color:white; border:none; padding:0 10px; cursor:pointer;">+</button>
-            </div>
+            <div style="display:flex; gap:5px;"><input type="text" id="add-${cat}" placeholder="Add tool..."><button onclick="addItem('${cat}')" style="background:var(--accent); border:none; color:white; padding:0 10px;">+</button></div>
         `;
-        iList.appendChild(div);
-    });
-
-    const tList = document.getElementById('theme-list');
-    tList.innerHTML = '';
-    Object.keys(THEME_MAP).forEach(key => {
-        const div = document.createElement('div');
-        div.className = `theme-item ${state.themes[key] ? 'theme-active' : ''}`;
-        div.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:bold;">${THEME_MAP[key]}</span>
-                <label class="switch">
-                    <input type="checkbox" ${state.themes[key] ? 'checked' : ''} onchange="state.themes['${key}']=this.checked; saveAll(); renderUI();">
-                    <span class="slider"></span>
-                </label>
-            </div>
-        `;
-        tList.appendChild(div);
+        list.appendChild(div);
     });
 }
 
-function addItem(cat) {
-    const val = document.getElementById(`add-${cat}`).value;
-    if(val) { state.inv[cat].push(val); saveAll(); renderUI(); }
+function renderThemes() {
+    const sel = document.getElementById('theme-selector');
+    sel.innerHTML = THEMES.map(t => `
+        <div class="theme-toggle ${state.activeThemes.includes(t) ? 'active' : ''}" onclick="toggleTheme('${t}')">${t}</div>
+    `).join('');
 }
-function removeItem(cat, idx) { state.inv[cat].splice(idx, 1); saveAll(); renderUI(); }
-function setGender(p, g) {
-    state.p[p].gender = g;
-    document.getElementById(`p${p}m`).classList.toggle('active', g==='M');
-    document.getElementById(`p${p}f`).classList.toggle('active', g==='F');
+
+function toggleTheme(t) {
+    if(state.activeThemes.includes(t)) state.activeThemes = state.activeThemes.filter(x => x !== t);
+    else state.activeThemes.push(t);
+    renderThemes();
 }
+
+function addItem(cat) { const v = document.getElementById(`add-${cat}`).value; if(v){state.inv[cat].push(v); save(); renderSetup();} }
+function removeItem(cat, idx) { state.inv[cat].splice(idx, 1); save(); renderSetup(); }
+function setGender(p, g) { state.p[p].gender = g; document.querySelectorAll(`.p-setup:nth-child(${p+1}) .gen-btn`).forEach(b => b.classList.remove('active')); event.target.classList.add('active'); }
 
 function startSession() {
     state.p[0].name = document.getElementById('name0').value;
     state.p[1].name = document.getElementById('name1').value;
     document.getElementById('setup-screen').style.display = 'none';
     document.getElementById('play-screen').style.display = 'block';
-    refreshDisplay();
+    renderThemes();
+    updateUI();
 }
 
-function refreshDisplay() {
+function updateUI() {
     document.getElementById('round-disp').innerText = `PHASE ${state.currRound}`;
     document.getElementById('disp-name0').innerText = state.p[0].name.toUpperCase();
     document.getElementById('score0').innerText = state.p[0].score;
@@ -208,59 +163,63 @@ function refreshDisplay() {
     document.getElementById('score1').innerText = state.p[1].score;
 }
 
-// PROCEDURAL DECREE ENGINE
+// DECREE ENGINE
 function issueDecree() {
-    const activeThemes = Object.keys(state.themes).filter(t => state.themes[t] && t !== state.lastTheme);
-    const theme = activeThemes[Math.floor(Math.random() * activeThemes.length)];
-    state.lastTheme = theme;
-
-    const dom = state.p[0].name;
-    const sub = state.p[1].name;
-    const r = (arr) => arr[Math.floor(Math.random()*arr.length)];
-    const tool = (cat) => state.inv[cat] ? r(state.inv[cat]) : "a chosen implement";
+    if(!state.activeThemes.length) return alert("Select at least one category.");
     
-    let activity = "";
-    let time = 600;
+    let pool = state.activeThemes.filter(t => !state.history.includes(t));
+    if(!pool.length) { state.history = []; pool = state.activeThemes; }
+    
+    const theme = pool[Math.floor(Math.random() * pool.length)];
+    state.history.push(theme);
+    
+    const d = state.p[0].name; const s = state.p[1].name;
+    const r = (arr) => arr[Math.floor(Math.random()*arr.length)];
+    const tool = (cat) => state.inv[cat] ? r(state.inv[cat]) : "a selected tool";
+    
+    let text = ""; let time = 600;
 
-    switch(theme) {
-        case "Self Bondage":
-            activity = `${sub} is ordered to perform the <strong>Solitary Bind</strong>. Using <strong>${tool('Restraints')}</strong>, you must secure your own wrists to your ${r(['ankles', 'thighs', 'waist'])}. ${dom} will inspect the knots. If they are loose, you will receive ${r([5,10,15])} strikes of <strong>${tool('Impact')}</strong> as a reminder of your incompetence.`;
-            time = 900;
-            break;
-        case "Truth":
-            activity = `${dom} initiates the <strong>Absolute Confession</strong>. ${sub} will be placed in a ${r(['kneeling', 'standing', 'bent-over'])} position. You must answer 5 probing questions regarding your deepest ${r(['fantasies', 'insecurities', 'desires'])}. For every hesitation, <strong>${tool('Sensory')}</strong> will be applied to your ${r(['inner thighs', 'nipples', 'stomach'])}.`;
-            time = 480;
-            break;
-        case "Dare":
-            activity = `A <strong>Sovereign Challenge</strong> is issued. ${sub} must ${r(['crawl to the furthest room and back', 'recite a pledge of service while balancing on one leg', 'maintain a deep squat'])} while <strong>${tool('Ache')}</strong> is applied to your ${r(['chest', 'extremities'])}. If you fail, the timer resets.`;
-            time = 300;
-            break;
-        case "Soft and Sexy":
-            activity = `Enter <strong>Sensual Subjugation</strong>. ${dom} will use <strong>${tool('Sensory')}</strong> to trace lines across ${sub}'s ${r(['lips', 'neck', 'spine'])}. ${sub} is forbidden from moving or making a sound. You must focus entirely on the pleasure/pain threshold. If you gasp, <strong>${tool('Gags')}</strong> will be applied immediately.`;
-            time = 600;
-            break;
-        case "Escape":
-            activity = `The <strong>Great Liberation</strong> protocol. ${dom} will bind ${sub} tightly using <strong>${tool('Restraints')}</strong> in a ${r(['hogtie', 'frog-tie', 'chair-bind'])}. You have the duration of the timer to escape. If you fail to free yourself, you remain bound for the next round.`;
-            time = 1200;
-            break;
-        case "Shibari":
-            activity = `<strong>Artful Entwinement</strong>. ${dom} will use <strong>${tool('Restraints')}</strong> to create a ${r(['Diamond harness', 'Chest harness', 'Crotch rope'])} on ${sub}. ${sub} must remain a living statue, describing the feeling of the rope biting into their skin in poetic detail.`;
-            time = 900;
-            break;
-        case "Physical Challenge":
-            activity = `An <strong>Ordeal of Endurance</strong>. ${sub} must hold a ${r(['Plank', 'Wall-sit', 'High Kneel'])} while <strong>${tool('Impact')}</strong> is delivered to your ${r(['buttocks', 'back', 'thighs'])} at random intervals. Any collapse of form results in a failed round.`;
-            time = 300;
-            break;
-        case "Tease and Denial":
-            activity = `The <strong>Endless Threshold</strong>. ${dom} will bring ${sub} to the absolute brink of climax using ${r(['manual touch', 'vibration', tool('Sensory')])}. ${sub} must signal when they are 'Close'. ${dom} will then immediately stop and apply <strong>${tool('Impact')}</strong>. This cycle repeats until the timer expires.`;
-            time = 720;
-            break;
+    // PROCEDURAL GENERATOR LOGIC
+    if(theme === "Self Bondage") {
+        const p1 = r(["ankles tightly together", "knees pressed against the chest", "thighs spread wide"]);
+        const p2 = r(["wrists behind the back", "elbows pulled together", "wrists to the throat"]);
+        text = `${s} must perform a **Strict Self-Hogtie**. Take the **${tool('Restraints')}** and bind your ${p1}. Once secured, take the remaining line and force your ${p2}, cinching the connection until your body is arched and immobile. ${d} will verify the tension. Any slack results in ${r([10, 20])} strikes of the **${tool('Impact')}**.`;
+        time = 900;
+    } 
+    else if(theme === "Tease and Denial") {
+        const area = r(["clitoris", "head of the penis", "inner labia", "prostate"]);
+        text = `**The Threshold Ordeal**. ${s} is to be spread-eagled. ${d} will use the **${tool('Sensory')}** and the **${tool('Ache')}** on the ${area} simultaneously. ${s} is forbidden from climaxing. When ${s} reaches the 'edge', ${d} will deliver 3 heavy strikes with the **${tool('Impact')}** and demand a detailed thank you. Repeat until the timer expires.`;
+        time = 1200;
+    }
+    else if(theme === "Shibari") {
+        const pattern = r(["Diamond Harness", "Takate Kote", "Karada Chest tie", "Crotch Rope Ladder"]);
+        text = `**Artful Restriction**. Using the **${tool('Restraints')}**, ${d} will construct a detailed **${pattern}** on ${s}. The rope must be bitten deep into the ${r(['skin of the shoulders', 'flesh of the thighs', 'crease of the waist'])}. ${s} must describe the sensation of every wrap in high detail as it is tightened.`;
+        time = 1500;
+    }
+    else if(theme === "Escape") {
+        text = `**The Bound Struggle**. ${d} will use the **${tool('Restraints')}** and **${tool('Gags')}** to fully immobilize ${s}. The ankles are tied to the neck, the wrists are bound to the waist, and the mouth is sealed. ${s} has the duration of the timer to struggle out. If you fail, you remain bound for the next round.`;
+        time = 1200;
+    }
+    else if(theme === "Physical Challenge") {
+        text = `${s} must hold a **Deep Wall-Sit** while the **${tool('Ache')}** is applied to the ${r(['nipples', 'inner thighs'])}. Every 60 seconds, ${d} will deliver ${r([5,10])} rhythmic strikes with the **${tool('Impact')}**. If ${s}'s legs shake or drop, the strikes double and the timer resets to 5 minutes.`;
+        time = 600;
+    }
+    else if(theme === "Soft and Sexy") {
+        text = `**Total Sensory Overload**. ${s} is blindfolded. ${d} will use the **${tool('Sensory')}** (wax or ice) to trace intricate, explicit patterns across the ${r(['genitals', 'inner thighs', 'soles of the feet'])}. ${s} must identify the shape being drawn. For every wrong guess, the **${tool('Gags')}** are tightened or more wax is applied.`;
+        time = 480;
+    }
+    else if(theme === "Truth") {
+        text = `**The Interrogation**. ${s} is placed in a ${r(['kneeling', 'bent-over'])} posture. ${d} will ask 5 explicit questions about ${s}'s ${r(['deepest shame', 'hidden fetishes', 'submissive needs'])}. Each answer must be 3 sentences long. If the answer is deemed 'dishonest', the **${tool('Impact')}** is used for 1 minute straight on the ${r(['chest', 'buttocks'])}.`;
+        time = 600;
+    }
+    else { // Dare
+        text = `**The Sovereign Dare**. ${s} must ${r(['crawl through the house blindfolded', 'beg for the use of the ' + tool('Ache'), 'present for 50 strikes of the ' + tool('Impact')])}. This must be done while the **${tool('Gags')}** ensure no intelligible words can be spoken.`;
+        time = 300;
     }
 
-    document.getElementById('decree-text').innerHTML = `<span style="color:var(--gold); font-weight:bold;">PROTOCOL: ${THEME_MAP[theme].toUpperCase()}</span><br><br>${activity}`;
+    document.getElementById('decree-text').innerHTML = `<strong>PROTOCOL: ${theme.toUpperCase()}</strong><br><br>${text}`;
     document.getElementById('timer').innerText = formatTime(time);
     state.activeTime = time;
-    
     document.getElementById('command-center').style.display = 'none';
     document.getElementById('decree-panel').style.display = 'block';
     document.getElementById('post-commence').style.display = 'none';
@@ -280,17 +239,16 @@ function startCountdown() {
 
 function endRound(win) {
     if(win) state.p[1].score++; else state.p[1].score--;
-    state.currRound++;
-    state.p.reverse();
+    state.currRound++; state.p.reverse();
     clearInterval(state.timer);
     document.getElementById('command-center').style.display = 'block';
     document.getElementById('decree-panel').style.display = 'none';
-    refreshDisplay();
+    updateUI();
 }
 
 function formatTime(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
 
-renderUI();
+renderSetup();
 </script>
 </body>
 </html>
