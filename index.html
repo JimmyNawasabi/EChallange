@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Hardened Protocol</title>
+    <title>SOVEREIGNTY: Protocol Hardened</title>
     <style>
         :root { 
             --accent: #d4af37; --bg: #0a0a0a; --card: #161616;
@@ -35,7 +35,6 @@
         .decree-box { font-size: 1.1rem; line-height: 1.8; color: #eee; border-left: 5px solid var(--accent); padding-left: 20px; margin: 20px 0; background: rgba(255,255,255,0.03); padding-top: 15px; padding-bottom: 15px; }
         .step { display: none; }
         .active { display: block !important; }
-        #round-counter { text-align: center; font-size: 0.7rem; color: #666; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
         #vault-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; display: none; padding: 30px; box-sizing: border-box; overflow-y: auto; }
     </style>
 </head>
@@ -77,7 +76,7 @@
     </div>
 
     <div id="screen-game" class="step">
-        <div id="round-counter">Round 1 of 30</div>
+        <div id="round-counter" style="text-align:center; font-size:0.7rem; color:#666; margin-bottom:10px; text-transform:uppercase;">Round 1 of 30</div>
         <div class="score-row">
             <div class="p-block">
                 <div id="p0-role" class="role-tag">MASTER</div>
@@ -97,7 +96,7 @@
             <div class="box-section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <span class="label">Include Arsenal Sets</span>
-                    <button onclick="openVault()" style="background:none; border:1px solid var(--accent); color:var(--accent); font-size:0.55rem; padding:3px 6px; cursor:pointer; border-radius:4px; font-weight:bold;">Edit Vault</button>
+                    <button onclick="openVault()" style="background:none; border:1px solid var(--accent); color:var(--accent); font-size:0.55rem; padding:3px 6px; cursor:pointer; font-weight:bold;">Edit Vault</button>
                 </div>
                 <div class="toggle-grid" id="arsenal-mount"></div>
                 <span class="label">Active Protocols</span>
@@ -128,21 +127,21 @@
         currentRound: 1,
         totalRounds: 30,
         players: [{ n: "", g: "M", role: "Master", score: 0, cards: ['yellow'] }, { n: "", g: "F", role: "Slave", score: 0, cards: ['red'] }],
-        vault: JSON.parse(localStorage.getItem('sov_v9_vault')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v10_vault')) || {
             "Restraints": { items: ["Rope", "Handcuffs"], active: true },
             "Sensory": { items: ["Blindfold", "Hood"], active: true },
             "Discipline": { items: ["Flogger", "Cane"], active: true },
             "Oral": { items: ["Ball Gag"], active: true }
         },
         protocols: {
-            "The Solitary Bind": { label: "Self Bondage", active: true, prompts: ["{S} must take the {T} and secure {SP} own wrists tightly behind {SP} back. {S} must then loop the length to {SP} ankles, pulling {SP} body into a forced arch."] },
-            "The Wicked Gamble": { label: "Dare", active: true, prompts: ["{M} dictates a gamble: {S} must remain still while {M} uses the {T} to create a precarious situation. Flinching results in a card penalty."] },
-            "The Veiled Confession": { label: "Truth", active: true, prompts: ["Bound by the {T}, {S} must reveal a deep, hidden truth. Every moment of hesitation results in a tighter adjustment of the tools."] },
-            "The Silk Labyrinth": { label: "Shibari", active: true, prompts: ["{M} is to perform a formal Takate Kote on {S} using the {T}, ensuring the chest is fully exposed and shoulders are pulled back."] },
-            "The Threshold of Agony": { label: "Edging/Denial", active: true, prompts: ["{M} will use the {T} to bring {S} to the peak of release three times, only to deny it by commanding absolute 'Stillness'."] },
-            "The Flesh Endurance": { label: "Physical Challenge", active: true, prompts: ["{S} must hold a rigid plank while the {T} is balanced across {SP} lower back. If it falls, the task begins anew."] },
-            "The Great Unshackling": { label: "Escape", active: true, prompts: ["{M} secures {S} using the {T} in a complex knot. {S} has three minutes to escape using only body tension. Failure results in forfeit."] },
-            "The Velvet Command": { label: "Soft & Sexy", active: true, prompts: ["{M} will use the {T} to trace every curve of {S} body. {S} must describe exactly how the touch feels in submissive detail."] }
+            "The Solitary Bind": { label: "Self Bondage", active: true, prompts: ["{S} must use the {T} to secure {SP} own wrists behind {SP} back, then connect them to {SP} ankles in a tight hogtie."] },
+            "The Wicked Gamble": { label: "Dare", active: true, prompts: ["{M} chooses a dare. {S} must remain passive while the {T} is used to enforce {M}'s will."] },
+            "The Veiled Confession": { label: "Truth", active: true, prompts: ["{S} must confess a truth while bound by the {T}. Hesitation adds tension to the restraint."] },
+            "The Silk Labyrinth": { label: "Shibari", active: true, prompts: ["{M} performs a decorative chest harness on {S} using the {T}, pulling shoulders back and exposing the chest."] },
+            "The Threshold of Agony": { label: "Edging/Denial", active: true, prompts: ["{M} uses the {T} to bring {S} to the peak three times, denying release each time."] },
+            "The Flesh Endurance": { label: "Physical Challenge", active: true, prompts: ["{S} must hold a wall-sit while the {T} is held between {SP} teeth or balanced on {SP} knees."] },
+            "The Great Unshackling": { label: "Escape", active: true, prompts: ["{M} ties {S} with the {T}. {S} has 3 minutes to struggle free or face a penalty."] },
+            "The Velvet Command": { label: "Soft & Sexy", active: true, prompts: ["{M} uses the {T} to trace {S}'s body slowly. {S} must narrate the sensation submissively."] }
         }
     };
 
@@ -200,7 +199,7 @@
 
     function vetoCurrent() {
         state.protocols[state.currentCat].prompts.splice(state.currentIdx, 1);
-        if(state.protocols[state.currentCat].prompts.length === 0) state.protocols[state.currentCat].prompts.push("Reset game to refill library.");
+        if(state.protocols[state.currentCat].prompts.length === 0) state.protocols[state.currentCat].prompts.push("Library exhausted.");
         generateDecree();
     }
 
@@ -220,16 +219,8 @@
             state.players[0].role = (p0r === 'Master' ? 'Slave' : 'Master');
             state.players[1].role = (p0r === 'Master' ? 'Master' : 'Slave');
         } else state.players[mIdx].score++;
-        
-        if(state.currentRound >= state.totalRounds) {
-            alert("Protocol Complete. Sovereignty has been fully established.");
-            location.reload();
-        } else {
-            state.currentRound++;
-            document.getElementById('master-controls').style.display = 'block';
-            document.getElementById('active-round-view').style.display = 'none';
-            updateUI();
-        }
+        if(state.currentRound >= state.totalRounds) { alert("Session Complete."); location.reload(); }
+        else { state.currentRound++; document.getElementById('master-controls').style.display = 'block'; document.getElementById('active-round-view').style.display = 'none'; updateUI(); }
     }
 
     function openVault() {
@@ -238,7 +229,7 @@
         document.getElementById('vault-overlay').style.display = 'block';
     }
     function vAdd(c) { const v = document.getElementById(`v-${c}`).value; if(v){ state.vault[c].items.push(v); openVault(); } }
-    function closeVault() { localStorage.setItem('sov_v9_vault', JSON.stringify(state.vault)); document.getElementById('vault-overlay').style.display = 'none'; updateUI(); }
+    function closeVault() { localStorage.setItem('sov_v10_vault', JSON.stringify(state.vault)); document.getElementById('vault-overlay').style.display = 'none'; updateUI(); }
 </script>
 </body>
 </html>
