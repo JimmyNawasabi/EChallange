@@ -3,47 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Protocol Engine</title>
+    <title>SOVEREIGNTY</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
             --text: #FFF; --crimson: #d00000; --success: #008000; --gold: #ffd700;
         }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 0.85rem; }
-        .container { max-width: 900px; width: 100%; background: var(--card); padding: 20px; border-radius: 20px; border: 3px solid var(--accent); box-shadow: 0 0 50px #000; }
-        h1 { text-align: center; text-transform: uppercase; letter-spacing: 12px; font-size: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin: 15px 0;}
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .container { max-width: 800px; width: 100%; background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); box-shadow: 0 0 40px #000; }
+        h1 { text-align: center; text-transform: uppercase; letter-spacing: 10px; font-size: 1.8rem; border-bottom: 1px solid #333; padding-bottom: 15px; }
         
-        .box-section { background: #000; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #333; position: relative; }
-        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 2px; }
+        .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .p-setup { background: #080808; padding: 15px; border-radius: 10px; border: 1px solid #222; }
+        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; }
         
-        input { width: 100%; padding: 10px; border: 1px solid var(--accent); border-radius: 4px; background: #000; color: white; margin-bottom: 10px; box-sizing: border-box; }
+        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 5px; background: #000; color: white; margin-bottom: 10px; box-sizing: border-box; }
         
-        /* Gender Toggles */
-        .tog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .tog-btn { padding: 8px; border: 1px solid #444; background: #000; color: #555; cursor: pointer; border-radius: 4px; font-size: 0.7rem; text-transform: uppercase; font-weight: bold; }
-        .tog-btn.active { border-color: var(--accent); color: #FFF; background: #001a35; }
+        /* GENDER BUTTONS */
+        .gender-select { display: flex; gap: 5px; }
+        .gen-btn { flex: 1; padding: 10px; border: 1px solid #333; background: #000; color: #444; cursor: pointer; border-radius: 5px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; transition: 0.2s; }
+        .gen-btn.active { border-color: var(--accent); color: white; background: #001a35; box-shadow: 0 0 10px rgba(0,86,179,0.4); }
 
-        /* Arsenal */
-        .item-grid { display: flex; flex-wrap: wrap; gap: 5px; margin: 5px 0; }
-        .chip { padding: 4px 10px; border: 1px solid #444; border-radius: 4px; font-size: 0.7rem; cursor: pointer; background: #0a0a0a; color: #666; }
-        .chip.active { border-color: var(--accent); color: #fff; background: #001a35; }
-        .add-row { display: flex; gap: 5px; margin-top: 5px; }
-        .add-row input { margin: 0; flex: 1; }
-        .add-row button { background: #222; border: 1px solid #444; color: #fff; padding: 0 10px; cursor: pointer; border-radius: 4px; }
-
-        /* Gameplay */
-        .inventory-cards { display: flex; justify-content: center; gap: 10px; min-height: 50px; margin-top: 10px; }
-        .card-obj { width: 35px; height: 50px; border-radius: 4px; border: 1px solid #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .c-yellow { background: var(--gold); color: #000; }
-        .c-red { background: var(--crimson); color: #fff; }
+        /* ARSENAL */
+        .arsenal-box { background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-top: 20px; }
+        .item-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+        .chip { padding: 5px 12px; border: 1px solid #333; background: #0a0a0a; color: #555; cursor: pointer; border-radius: 4px; font-size: 0.7rem; }
+        .chip.active { border-color: var(--accent); color: white; background: #001a35; }
         
-        .btn { background: var(--accent); color: white; border: 1px solid #FFF; padding: 14px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 8px; margin-top: 10px; border: none; }
-        .score-row { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
-        .player-box { flex: 1; background: #0a0a0a; border: 1px solid #333; padding: 15px; border-radius: 12px; text-align: center; }
-        .player-box.active-dom { border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 86, 179, 0.3); }
+        /* GAMEPLAY */
+        .player-status { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
+        .p-box { flex: 1; padding: 15px; background: #080808; border: 1px solid #222; border-radius: 12px; text-align: center; transition: 0.3s; }
+        .p-box.active-dom { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,86,179,0.2); }
+        .card-inv { display: flex; justify-content: center; gap: 10px; margin-top: 10px; height: 45px; }
+        .card { width: 30px; height: 45px; border-radius: 3px; border: 1px solid #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
+        .card-y { background: var(--gold); color: black; }
+        .card-r { background: var(--crimson); color: white; }
 
-        #timer-box { font-size: 3rem; font-weight: 100; color: var(--crimson); text-align: center; }
-        #decree-text { font-size: 1.1rem; line-height: 1.6; color: #ccc; min-height: 100px; padding: 20px; border: 1px solid #222; margin: 10px 0; border-radius: 8px; text-align: center;}
+        .btn-main { background: var(--accent); color: white; padding: 18px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
+        #decree-panel { display: none; margin-top: 20px; text-align: center; }
+        #decree-text { background: #000; padding: 25px; border-radius: 10px; border: 1px solid #222; font-size: 1.1rem; line-height: 1.6; margin-bottom: 20px; }
+        #timer { font-size: 3rem; color: var(--crimson); font-weight: 100; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -51,201 +50,199 @@
 <div class="container">
     <h1>SOVEREIGNTY</h1>
 
-    <div id="setup-view">
-        <div class="box-section">
-            <span class="label">Participant 1</span>
-            <input type="text" id="p0-name" value="Master">
-            <div class="tog-grid">
-                <button id="p0-m" class="tog-btn active" onclick="setG(0,'M')">Male</button>
-                <button id="p0-f" class="tog-btn" onclick="setG(0,'F')">Female</button>
+    <div id="setup-screen">
+        <div class="setup-grid">
+            <div class="p-setup">
+                <span class="label">Participant 1</span>
+                <input type="text" id="name0" value="Master">
+                <div class="gender-select">
+                    <button class="gen-btn active" id="p0m" onclick="setGender(0,'M')">Male</button>
+                    <button class="gen-btn" id="p0f" onclick="setGender(0,'F')">Female</button>
+                </div>
             </div>
-            
-            <span class="label">Participant 2</span>
-            <input type="text" id="p1-name" value="Slave">
-            <div class="tog-grid">
-                <button id="p1-m" class="tog-btn" onclick="setG(1,'M')">Male</button>
-                <button id="p1-f" class="tog-btn active" onclick="setG(1,'F')">Female</button>
+            <div class="p-setup">
+                <span class="label">Participant 2</span>
+                <input type="text" id="name1" value="Slave">
+                <div class="gender-select">
+                    <button class="gen-btn" id="p1m" onclick="setGender(1,'M')">Male</button>
+                    <button class="gen-btn active" id="p1f" onclick="setGender(1,'F')">Female</button>
+                </div>
             </div>
         </div>
 
-        <div class="box-section">
-            <span class="label">Arsenal Configuration</span>
-            <div id="arsenal-container"></div>
+        <div class="arsenal-box">
+            <span class="label">Arsenal / Hardware</span>
+            <div id="arsenal-list"></div>
         </div>
-        
-        <button class="btn" onclick="begin()">Initialize Protocol</button>
+
+        <button class="btn-main" onclick="startSession()">Initialize Protocol</button>
     </div>
 
-    <div id="game-view" style="display:none;">
-        <div id="round-info" style="text-align:center; color:var(--accent); letter-spacing: 2px; margin-bottom: 10px;"></div>
-        
-        <div class="score-row">
-            <div id="box-0" class="player-box">
-                <div class="label" id="role-0"></div>
-                <div id="name-0" style="font-weight:bold;"></div>
-                <div id="score-0" style="font-size:1.5rem; color:var(--accent);">0</div>
-                <div id="inv-0" class="inventory-cards"></div>
+    <div id="play-screen" style="display:none;">
+        <div class="player-status">
+            <div id="box0" class="p-box">
+                <div class="label" id="role0">MASTER</div>
+                <div id="disp-name0" style="font-weight:bold; font-size:1rem;"></div>
+                <div id="score0" style="font-size:1.5rem; color:var(--accent); margin:5px 0;">0</div>
+                <div id="inv0" class="card-inv"></div>
             </div>
-            <div id="box-1" class="player-box">
-                <div class="label" id="role-1"></div>
-                <div id="name-1" style="font-weight:bold;"></div>
-                <div id="score-1" style="font-size:1.5rem; color:var(--accent);">0</div>
-                <div id="inv-1" class="inventory-cards"></div>
+            <div id="box1" class="p-box">
+                <div class="label" id="role1">SLAVE</div>
+                <div id="disp-name1" style="font-weight:bold; font-size:1rem;"></div>
+                <div id="score1" style="font-size:1.5rem; color:var(--accent); margin:5px 0;">0</div>
+                <div id="inv1" class="card-inv"></div>
             </div>
-        </div>
-        
-        <div id="action-panel">
-            <button class="btn" onclick="issueCommand()">ISSUE DECREE</button>
         </div>
 
-        <div id="decree-view" style="display:none;">
-            <div id="timer-box">03:00</div>
+        <div id="command-center">
+            <button class="btn-main" onclick="issueDecree()">Issue Command</button>
+        </div>
+
+        <div id="decree-panel">
+            <div id="timer">03:00</div>
             <div id="decree-text"></div>
             <div style="display:flex; gap:10px;">
-                <button class="btn" style="background:#1a1a1a; flex:1;" onclick="finishRound(false)">Fail</button>
-                <button class="btn" style="background:var(--success); flex:1;" onclick="finishRound(true)">Success</button>
+                <button class="btn-main" style="background:#1a1a1a; flex:1;" onclick="endRound(false)">Fail</button>
+                <button class="btn-main" style="background:var(--success); flex:1;" onclick="endRound(true)">Success</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-const DEFAULTS = {
+const HARDWARE = {
     "Quietude": ["Ball Gag", "Tape"],
     "Stillness": ["Rope", "Cuffs"],
     "Impact": ["Flogger", "Cane"],
-    "Ache": ["Vibrator", "Plug"]
+    "Sensory": ["Blindfold", "Wax"],
+    "Ache": ["Plug", "Vibrator"]
 };
 
-let state = {
-    round: 1, timer: null,
-    players: [
-        {id:0, name:"", role:"Master", score:0, g:"M", cards:[]},
-        {id:1, name:"", role:"Slave", score:0, g:"F", cards:[]}
+let game = {
+    p: [
+        {id:0, name:"", role:"Master", gender:"M", score:0, cards:[]},
+        {id:1, name:"", role:"Slave", gender:"F", score:0, cards:[]}
     ],
-    h: JSON.parse(localStorage.getItem('sov_v6_h')) || DEFAULTS,
+    h: JSON.parse(localStorage.getItem('sov_items')) || HARDWARE,
     activeH: {},
+    timer: null,
     db: [
-        "{sub} is to be silenced with {item} for this phase.",
-        "{sub} must be bound in {item}. {dom} will inspect for snugness.",
-        "{dom} will strike {sub} 20 times with {item}.",
-        "{sub} accepts {item} internally. No release until {dom} decrees.",
-        "{dom} uses {item} to explore {sub}'s nerves. Absolute silence."
+        "{sub} is silenced with {item} for this phase. Silence is absolute.",
+        "{sub} is to be bound in {item}. {dom} will verify the security of the bind.",
+        "{dom} uses {item} to deliver 15 precise strikes to {sub}.",
+        "{sub} must accept {item} internally. No movement until {dom} allows.",
+        "{dom} uses {item} to tease {sub}'s senses while they are blindfolded."
     ]
 };
 
-function init() {
-    const cont = document.getElementById('arsenal-container');
-    Object.keys(state.h).forEach(c => {
-        state.activeH[c] = [...state.h[c]];
-        let d = document.createElement('div');
-        d.className = "box-section";
-        d.style.marginBottom = "10px";
-        d.innerHTML = `<span class="label">${c}</span><div class="item-grid" id="g-${c}"></div>
-        <div class="add-row"><input type="text" id="in-${c}" placeholder="Add..."><button onclick="add('${c}')">+</button></div>`;
-        cont.appendChild(d);
-        renderH(c);
+function initArsenal() {
+    const cont = document.getElementById('arsenal-list');
+    Object.keys(game.h).forEach(cat => {
+        game.activeH[cat] = [...game.h[cat]];
+        let div = document.createElement('div');
+        div.innerHTML = `<span class="label" style="color:#555; margin-top:10px;">${cat}</span><div class="item-grid" id="grid-${cat}"></div>`;
+        cont.appendChild(div);
+        renderItems(cat);
     });
 }
 
-function renderH(c) {
-    const g = document.getElementById(`g-${c}`);
-    g.innerHTML = state.h[c].map(i => `<div class="chip ${state.activeH[c].includes(i)?'active':''}" onclick="tog('${c}','${i}')">${i}</div>`).join('');
+function renderItems(cat) {
+    const grid = document.getElementById(`grid-${cat}`);
+    grid.innerHTML = game.h[cat].map(i => `<div class="chip ${game.activeH[cat].includes(i)?'active':''}" onclick="toggleItem('${cat}','${i}')">${i}</div>`).join('');
 }
 
-function tog(c,i) {
-    let a = state.activeH[c];
+function toggleItem(cat, i) {
+    let a = game.activeH[cat];
     a.includes(i) ? a.splice(a.indexOf(i),1) : a.push(i);
-    renderH(c);
+    renderItems(cat);
 }
 
-function add(c) {
-    let v = document.getElementById(`in-${c}`).value;
-    if(v) { state.h[c].push(v); state.activeH[c].push(v); localStorage.setItem('sov_v6_h', JSON.stringify(state.h)); renderH(c); }
+function setGender(p, g) {
+    game.p[p].gender = g;
+    document.getElementById(`p${p}m`).classList.toggle('active', g === 'M');
+    document.getElementById(`p${p}f`).classList.toggle('active', g === 'F');
 }
 
-function setG(p, g) {
-    state.players[p].g = g;
-    document.getElementById(`p${p}-m`).classList.toggle('active', g === 'M');
-    document.getElementById(`p${p}-f`).classList.toggle('active', g === 'F');
-}
-
-function begin() {
-    state.players[0].name = document.getElementById('p0-name').value;
-    state.players[1].name = document.getElementById('p1-name').value;
-    // Initial Card Shuffle
-    if(Math.random() > 0.5) { state.players[0].cards = ['Y']; state.players[1].cards = ['R']; } 
-    else { state.players[0].cards = ['R']; state.players[1].cards = ['Y']; }
+function startSession() {
+    game.p[0].name = document.getElementById('name0').value;
+    game.p[1].name = document.getElementById('name1').value;
     
-    document.getElementById('setup-view').style.display='none';
-    document.getElementById('game-view').style.display='block';
-    refresh();
+    // Card Distribution
+    if(Math.random() > 0.5) { game.p[0].cards = ['Y']; game.p[1].cards = ['R']; }
+    else { game.p[0].cards = ['R']; game.p[1].cards = ['Y']; }
+
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('play-screen').style.display = 'block';
+    refreshUI();
 }
 
-function refresh() {
-    document.getElementById('round-info').innerText = `PHASE ${state.round}`;
-    state.players.forEach((p, i) => {
-        document.getElementById(`name-${i}`).innerText = p.name.toUpperCase();
-        document.getElementById(`role-${i}`).innerText = p.role;
-        document.getElementById(`score-${i}`).innerText = p.score;
-        document.getElementById(`box-${i}`).className = `player-box ${p.role==='Master'?'active-dom':''}`;
-        const inv = document.getElementById(`inv-${i}`);
-        inv.innerHTML = p.cards.map(c => `<div class="card-obj c-${c==='Y'?'yellow':'red'}" onclick="useCard(${i},'${c}')">${c}</div>`).join('');
+function refreshUI() {
+    game.p.forEach((p, i) => {
+        document.getElementById(`disp-name${i}`).innerText = p.name.toUpperCase();
+        document.getElementById(`role${i}`).innerText = p.role;
+        document.getElementById(`score${i}`).innerText = p.score;
+        document.getElementById(`box${i}`).className = `p-box ${p.role==='Master'?'active-dom':''}`;
+        
+        const inv = document.getElementById(`inv${i}`);
+        inv.innerHTML = p.cards.map(c => `<div class="card card-${c==='Y'?'y':'r'}" onclick="triggerCard(${i},'${c}')">${c}</div>`).join('');
     });
 }
 
-function issueCommand() {
-    const dom = state.players.find(p => p.role === 'Master');
-    const sub = state.players.find(p => p.role === 'Slave');
-    let pool = [];
-    Object.keys(state.activeH).forEach(c => pool = pool.concat(state.activeH[c]));
-    
-    let raw = state.db[Math.floor(Math.random()*state.db.length)];
-    let item = pool[Math.floor(Math.random()*pool.length)] || "the designated tool";
-    
-    document.getElementById('decree-text').innerHTML = raw.replace(/{item}/g, `<strong>${item}</strong>`).replace(/{dom}/g, dom.name).replace(/{sub}/g, sub.name);
-    document.getElementById('action-panel').style.display='none';
-    document.getElementById('decree-view').style.display='block';
-    
-    let s = 180;
-    clearInterval(state.timer);
-    state.timer = setInterval(() => {
-        s--; document.getElementById('timer-box').innerText = `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
-        if(s <= 0) finishRound(false);
-    }, 1000);
-}
-
-function useCard(pIdx, type) {
+function triggerCard(pIdx, type) {
     const other = pIdx === 0 ? 1 : 0;
     if(type === 'Y') {
-        alert(`${state.players[pIdx].name} plays YELLOW CARD: Role Swap.`);
-        state.players[other].cards.push('Y');
-        state.players[pIdx].cards = state.players[pIdx].cards.filter(c => c !== 'Y');
-        swap();
+        alert("YELLOW CARD: Role Swap Triggered.");
+        game.p[other].cards.push('Y');
+        game.p[pIdx].cards = game.p[pIdx].cards.filter(c => c !== 'Y');
+        swapRoles();
     } else {
-        alert(`${state.players[pIdx].name} plays RED CARD: Round Forfeit.`);
-        state.players[other].cards.push('R');
-        state.players[pIdx].cards = state.players[pIdx].cards.filter(c => c !== 'R');
-        state.round++;
-        swap();
+        alert("RED CARD: Forfeit. No points. Swap roles.");
+        game.p[other].cards.push('R');
+        game.p[pIdx].cards = game.p[pIdx].cards.filter(c => c !== 'R');
+        swapRoles();
     }
 }
 
-function finishRound(win) {
-    if(win) state.players.find(p => p.role === 'Slave').score++;
-    state.round++;
-    swap();
+function issueDecree() {
+    const dom = game.p.find(x => x.role === 'Master');
+    const sub = game.p.find(x => x.role === 'Slave');
+    let pool = [];
+    Object.keys(game.activeH).forEach(c => pool = pool.concat(game.activeH[c]));
+    
+    let txt = game.db[Math.floor(Math.random()*game.db.length)];
+    let item = pool[Math.floor(Math.random()*pool.length)] || "the master's choice";
+    
+    document.getElementById('decree-text').innerHTML = txt.replace(/{item}/g, `<strong>${item}</strong>`).replace(/{dom}/g, dom.name).replace(/{sub}/g, sub.name);
+    document.getElementById('command-center').style.display = 'none';
+    document.getElementById('decree-panel').style.display = 'block';
+    
+    startTimer(180);
 }
 
-function swap() {
-    clearInterval(state.timer);
-    state.players.forEach(p => p.role = p.role === 'Master' ? 'Slave' : 'Master');
-    document.getElementById('action-panel').style.display='block';
-    document.getElementById('decree-view').style.display='none';
-    refresh();
+function startTimer(s) {
+    let t = s;
+    clearInterval(game.timer);
+    game.timer = setInterval(() => {
+        t--;
+        document.getElementById('timer').innerText = `${Math.floor(t/60)}:${(t%60).toString().padStart(2,'0')}`;
+        if(t <= 0) endRound(false);
+    }, 1000);
 }
 
-init();
+function endRound(win) {
+    if(win) game.p.find(x => x.role === 'Slave').score++;
+    swapRoles();
+}
+
+function swapRoles() {
+    clearInterval(game.timer);
+    game.p.forEach(x => x.role = x.role === 'Master' ? 'Slave' : 'Master');
+    document.getElementById('command-center').style.display = 'block';
+    document.getElementById('decree-panel').style.display = 'none';
+    refreshUI();
+}
+
+initArsenal();
 </script>
 </body>
 </html>
