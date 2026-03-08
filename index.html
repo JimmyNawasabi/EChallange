@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Final Master Edition</title>
+    <title>SOVEREIGNTY: Sovereign Default Restored</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto: #444; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -12,6 +12,9 @@
         .box-section { background: #1f1f1f; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #333; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; letter-spacing: 1px; }
         input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; margin-bottom: 10px; }
+        .gender-grid { display: flex; gap: 8px; margin-bottom: 15px; }
+        .g-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 8px; font-size: 0.7rem; font-weight: bold; }
+        .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
         .btn { background: var(--crimson); color: white; border: none; padding: 16px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 5px; transition: 0.2s; }
         .btn:active { transform: scale(0.98); }
         .tog-btn { padding: 10px; font-size: 0.65rem; border-radius: 6px; border: 1px solid #444; background: #111; color: #555; cursor: pointer; text-transform: uppercase; }
@@ -36,9 +39,19 @@
     <div id="step-1">
         <div class="box-section">
             <span class="label">Initial Master</span>
-            <input type="text" id="p0-name" value="Dominus">
+            <input type="text" id="p0-name" placeholder="Name...">
+            <div class="gender-grid">
+                <button class="g-btn active" onclick="setG(0,'M',this)">Male</button>
+                <button class="g-btn" onclick="setG(0,'F',this)">Female</button>
+                <button class="g-btn" onclick="setG(0,'NB',this)">NB</button>
+            </div>
             <span class="label">Initial Slave</span>
-            <input type="text" id="p1-name" value="Subject">
+            <input type="text" id="p1-name" placeholder="Name...">
+            <div class="gender-grid">
+                <button class="g-btn" onclick="setG(1,'M',this)">Male</button>
+                <button class="g-btn active" onclick="setG(1,'F',this)">Female</button>
+                <button class="g-btn" onclick="setG(1,'NB',this)">NB</button>
+            </div>
             <span class="label">Safeword</span>
             <input type="text" id="safeword-in" value="RED">
             <span class="label">Total Rounds</span>
@@ -49,7 +62,7 @@
 
     <div id="step-2" style="display:none;">
         <div id="inventory-editor"></div>
-        <button class="btn" style="background:var(--success); width:100%;" onclick="startSession()">Begin Session</button>
+        <button class="btn" style="background:var(--success); width:100%;" onclick="startSession()">Begin Protocol</button>
     </div>
 
     <div id="step-3" style="display:none;">
@@ -72,7 +85,7 @@
         <div class="box-section">
             <span class="label">The Grand Decree (Adult/RACK Protocol)</span>
             <div id="grand-decree-display" class="grand-decree-text"></div>
-            <button class="btn" style="background:#333; font-size:0.7rem;" onclick="generateGrandDecree()">Re-Generate Challenge</button>
+            <button class="btn" style="background:#333; font-size:0.7rem;" onclick="generateGrandDecree()">Re-Generate Finale</button>
         </div>
         <div class="box-section">
             <div style="display:flex; gap:10px;">
@@ -86,8 +99,8 @@
 <script>
     const state = {
         curr: 1, total: 30, lastProtocol: null,
-        players: [{n:"", role:"Master", score:0}, {n:"", role:"Slave", score:0}],
-        vault: JSON.parse(localStorage.getItem('sov_vault_v29')) || {
+        players: [{n:"", g:"M", role:"Master", score:0}, {n:"", g:"F", role:"Slave", score:0}],
+        vault: JSON.parse(localStorage.getItem('sov_v30')) || {
             "Restraints": [{n:"Heavy Rope", a:true}], "Gags": [{n:"Ball Gag", a:true}], "Blindfolds": [{n:"Leather Mask", a:true}], 
             "Sensory": [{n:"Ice Blocks", a:true}], "Toys": [{n:"Vibrator", a:true}], "Impact": [{n:"Heavy Flogger", a:true}]
         },
@@ -98,10 +111,11 @@
         }
     };
 
+    function setG(i, v, b) { state.players[i].g = v; Array.from(b.parentElement.children).forEach(x=>x.classList.remove('active')); b.classList.add('active'); }
     function showStep(n) { document.querySelectorAll('[id^="step-"]').forEach(s=>s.style.display='none'); document.getElementById('step-'+n).style.display='block'; if(n==2) renderInventory(); }
     
     function renderInventory() {
-        const m = document.getElementById('inventory-editor'); m.innerHTML = '<h3 style="color:var(--accent);text-align:center;font-size:0.8rem">MANAGE ARSENAL</h3>';
+        const m = document.getElementById('inventory-editor'); m.innerHTML = '<h3 style="color:var(--accent);text-align:center;font-size:0.8rem">ARSENAL CONFIGURATION</h3>';
         for(let c in state.vault) {
             let h = `<div class="box-section"><span class="label">${c}</span><div>`;
             state.vault[c].forEach((it, i) => {
@@ -120,11 +134,11 @@
     }
 
     function startSession() {
-        state.players[0].n = document.getElementById('p0-name').value;
-        state.players[1].n = document.getElementById('p1-name').value;
+        state.players[0].n = document.getElementById('p0-name').value || "Master";
+        state.players[1].n = document.getElementById('p1-name').value || "Slave";
         state.total = parseInt(document.getElementById('round-total').value) || 30;
         document.getElementById('panic-label').innerText = document.getElementById('safeword-in').value || "RED";
-        localStorage.setItem('sov_vault_v29', JSON.stringify(state.vault));
+        localStorage.setItem('sov_v30', JSON.stringify(state.vault));
         showStep(3); renderGame();
     }
 
@@ -172,15 +186,15 @@
 
     function generateGrandDecree() {
         const tasks = [
-            "IMMOBILIZATION: {S} is secured using {T1}. Immobility mandatory.",
-            "SENSORY FOCUS: Apply {T2}. Darkness for 15 minutes.",
-            "ENDURANCE: {M} delivers 50 strikes with {T3}. {S} must count aloud.",
-            "EDGING: Using {T4}, {M} edges {S} 5 times. No release permitted.",
-            "SILENCING: {S} is fitted with {T5} for the duration.",
-            "MASTER'S REWARD: {S} focuses on {M}'s pleasure until {M} climaxes.",
-            "FINAL VOW: {S} recites submission under {T6}."
+            "RESTRICT: {S} is to be immobilized with {T1}. Immobility mandatory.",
+            "ISOLATE: Apply {T2}. Darkness for 15 minutes of quiet contemplation.",
+            "DISCIPLINE: {M} delivers 50 strikes with {T3}. {S} must count each set.",
+            "DENY: Using {T4}, {M} edges {S} 5 times. Climax is strictly forbidden.",
+            "SILENCE: {S} is fitted with {T5} until the finale concludes.",
+            "REWARD: {S} focuses exclusively on {M}'s pleasure until {M} climaxes.",
+            "DEVOTION: {S} recites a vow of submission while bearing the weight of {T6}."
         ];
-        let d = `<strong>FINAL MANDATE:</strong><br><br>`;
+        let d = `<strong>THE GRAND DECREE PROTOCOL:</strong><br><br>`;
         tasks.sort(()=>0.5-Math.random()).forEach((t, i) => {
             d += `${i+1}. ${t.replace('{M}', state.win.n).replace('{S}', state.los.n)
                 .replace('{T1}', state.vault.Restraints[0].n).replace('{T2}', state.vault.Blindfolds[0].n)
@@ -191,7 +205,7 @@
         document.getElementById('grand-decree-display').innerHTML = d;
     }
 
-    function finalize() { alert("Grand Decree Activated."); location.reload(); }
+    function finalize() { alert("Grand Decree Activated. The session concludes."); location.reload(); }
 </script>
 </body>
 </html>
