@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Veto Protocol</title>
+    <title>SOVEREIGNTY: Veto Protocol Fixed</title>
     <style>
-        :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; }
+        :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto: #444; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 600px; width: 100%; background: var(--card); padding: 20px; border-radius: 20px; border: 2px solid #333; box-shadow: 0 0 50px #000; }
         h1 { text-align: center; text-transform: uppercase; letter-spacing: 5px; color: var(--accent); margin-bottom: 20px; }
@@ -15,7 +15,7 @@
         .gender-grid { display: flex; gap: 8px; margin-bottom: 15px; }
         .g-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 8px; font-size: 0.7rem; font-weight: bold; }
         .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
-        .btn { background: var(--crimson); color: white; border: none; padding: 16px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 5px; width: 100%; transition: 0.2s; }
+        .btn { background: var(--crimson); color: white; border: none; padding: 16px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 5px; transition: 0.2s; }
         .btn:active { transform: scale(0.98); }
         .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
         .tog-btn { padding: 10px; font-size: 0.65rem; border-radius: 6px; border: 1px solid #444; background: #111; color: #555; cursor: pointer; text-transform: uppercase; }
@@ -29,8 +29,11 @@
         .status-tag { font-size: 0.6rem; margin-top: 4px; padding: 2px 6px; border-radius: 4px; display: none; text-transform: uppercase; }
         .yellow-active { background: var(--warning); color: black; display: block; }
         .red-active { background: var(--crimson); color: white; display: block; }
-        .veto-btn { background: #444 !important; font-size: 0.7rem; margin-top: 10px; border: 1px solid #666 !important; }
-        .panic-btn { background: linear-gradient(45deg, #800, #f00) !important; border: 2px solid #fff !important; margin-top: 10px; }
+        
+        /* Fixed UI for Decree View */
+        .mgmt-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .veto-btn { background: var(--veto) !important; color: #bbb !important; border: 1px solid #555 !important; font-size: 0.7rem; }
+        .panic-btn { background: linear-gradient(45deg, #800, #f00) !important; border: 2px solid #fff !important; font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -42,20 +45,20 @@
         <div class="box-section">
             <span class="label">Initial Master</span>
             <input type="text" id="p0-name" placeholder="Name...">
-            <div class="gender-grid"><button class="g-btn active" onclick="setG(0,'M',this)">Male</button><button class="g-btn" onclick="setG(0,'F',this)">Female</button><button class="g-btn" onclick="setG(1,'NB',this)">NB</button></div>
+            <div class="gender-grid"><button class="g-btn active" onclick="setG(0,'M',this)">Male</button><button class="g-btn" onclick="setG(0,'F',this)">Female</button><button class="g-btn" onclick="setG(0,'NB',this)">NB</button></div>
             <span class="label">Initial Slave</span>
             <input type="text" id="p1-name" placeholder="Name...">
             <div class="gender-grid"><button class="g-btn" onclick="setG(1,'M',this)">Male</button><button class="g-btn active" onclick="setG(1,'F',this)">Female</button><button class="g-btn" onclick="setG(1,'NB',this)">NB</button></div>
             <span class="label">Safeword</span>
             <input type="text" id="safeword-in" value="RED">
         </div>
-        <button class="btn" onclick="showStep(2)">Next: Configure Arsenal</button>
+        <button class="btn" style="width:100%" onclick="showStep(2)">Next: Configure Arsenal</button>
     </div>
 
     <div id="step-2" style="display:none;">
         <h3 style="color:var(--accent); text-align:center; font-size:0.8rem;">ARSENAL PREPARATIONS</h3>
         <div id="inventory-editor"></div>
-        <button class="btn" style="background:var(--success)" onclick="startSession()">Begin Protocol</button>
+        <button class="btn" style="background:var(--success); width:100%;" onclick="startSession()">Begin Protocol</button>
     </div>
 
     <div id="step-3" style="display:none;">
@@ -67,30 +70,35 @@
 
         <div id="game-controls">
             <div class="box-section"><span class="label">Active Protocols</span><div class="toggle-grid" id="proto-mount"></div></div>
-            <button class="btn" onclick="generate()">Command Decree</button>
+            <button class="btn" style="width:100%" onclick="generate()">Command Decree</button>
         </div>
 
         <div id="decree-view" style="display:none;">
-            <div class="box-section"><div id="decree-display" style="line-height:1.8; color:#ddd;"></div></div>
+            <div class="box-section"><div id="decree-display" style="line-height:1.8; color:#ddd; min-height:80px;"></div></div>
+            
             <div style="display:flex; gap:10px;">
                 <button class="btn" style="background:#333; flex:1;" onclick="resolve('fail')">FAIL</button>
                 <button class="btn" style="background:var(--success); flex:1;" onclick="resolve('success')">SUCCESS</button>
             </div>
+            
             <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="btn" style="background:var(--warning); color:black; flex:1; font-size:0.6rem;" onclick="triggerCard('YELLOW')">YELLOW CARD</button>
-                <button class="btn" style="background:var(--crimson); flex:1; font-size:0.6rem;" onclick="triggerCard('RED')">RED CARD</button>
+                <button class="btn" style="background:var(--warning); color:black; flex:1; font-size:0.6rem; padding:10px;" onclick="triggerCard('YELLOW')">YELLOW CARD</button>
+                <button class="btn" style="background:var(--crimson); flex:1; font-size:0.6rem; padding:10px;" onclick="triggerCard('RED')">RED CARD</button>
             </div>
-            <button class="btn veto-btn" onclick="vetoCurrent()">VETO DECREE (PERMANENT DELETE)</button>
-            <button class="btn panic-btn" id="panic-label" onclick="triggerSafeword()">SAFEWORD</button>
+
+            <div class="mgmt-row">
+                <button class="btn veto-btn" onclick="vetoCurrent()">VETO & PURGE</button>
+                <button class="btn panic-btn" id="panic-label" onclick="triggerSafeword()">SAFEWORD</button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
     const state = {
-        curr: 1, total: 30, safeword: "RED", lastProtocol: null, lastPromptIdx: null,
+        curr: 1, safeword: "RED", lastProtocol: null, lastPromptIdx: null,
         players: [{n:"", g:"M", role:"Master", score:0, card:null}, {n:"", g:"F", role:"Slave", score:0, card:null}],
-        vault: JSON.parse(localStorage.getItem('sov_v24')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v25')) || {
             "Restraints": [ {n:"Rope", a:true}, {n:"Steel Cuffs", a:true} ],
             "Gags": [ {n:"Ball Gag", a:true}, {n:"Tape", a:true} ],
             "Blindfolds": [ {n:"Leather Blindfold", a:true}, {n:"Silk Scarf", a:true} ],
@@ -134,14 +142,14 @@
         state.players[0].n = document.getElementById('p0-name').value || "Dom";
         state.players[1].n = document.getElementById('p1-name').value || "Sub";
         state.safeword = document.getElementById('safeword-in').value.toUpperCase();
-        localStorage.setItem('sov_v24', JSON.stringify(state.vault));
-        document.getElementById('panic-label').innerText = `SAFEWORD: ${state.safeword}`;
+        localStorage.setItem('sov_v25', JSON.stringify(state.vault));
+        document.getElementById('panic-label').innerText = `${state.safeword}`;
         showStep(3);
         renderGame();
     }
 
     function renderGame() {
-        document.getElementById('round-ui').innerText = `ROUND ${state.curr} / 30`;
+        document.getElementById('round-ui').innerText = `ROUND ${state.curr}`;
         state.players.forEach((p, i) => {
             document.getElementById('n'+i).innerText = p.n;
             document.getElementById('s'+i).innerText = p.score;
@@ -165,7 +173,7 @@
         if(!items.length) return alert(`Need active item in ${cat}`);
         
         const promptList = state.prompts[p];
-        if(!promptList.length) return alert("Protocol empty. Select another.");
+        if(!promptList.length) return alert("All decrees in this protocol have been vetoed!");
         
         const idx = Math.floor(Math.random()*promptList.length);
         const t = items[Math.floor(Math.random()*items.length)].n;
@@ -181,9 +189,8 @@
     }
 
     function vetoCurrent() {
-        if(confirm("Permanently delete this decree from the database for this session?")) {
+        if(confirm("Permanently delete this decree?")) {
             state.prompts[state.lastProtocol].splice(state.lastPromptIdx, 1);
-            alert("Decree purged. Generating replacement...");
             generate();
         }
     }
@@ -192,7 +199,7 @@
         const sIdx = state.players.findIndex(p => p.role === 'Slave');
         state.players[sIdx].score = Math.max(0, state.players[sIdx].score - 5);
         state.players[sIdx].card = null;
-        alert(`SAFEWORD!\n${state.players[sIdx].n} penalized 5 points.\nRoles remain unchanged.`);
+        alert(`SAFEWORD TRIGGERED.\n${state.players[sIdx].n} penalized 5 points.\nResetting...`);
         document.getElementById('game-controls').style.display = 'block';
         document.getElementById('decree-view').style.display = 'none';
         renderGame();
