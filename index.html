@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sovereignty: Hardened Command Protocol</title>
+    <title>Sovereignty: The Competitive Protocol</title>
     <style>
         :root { 
             --accent: #d4af37; --bg: #0a0a0a; --card: #161616;
             --text: #ffffff; --crimson: #a00000; --success: #1e4d2b;
+            --yellow: #ffd700; --red: #ff4500;
         }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
-        .container { max-width: 500px; width: 100%; background: var(--card); padding: 30px; border-radius: 30px; border: 2px solid #333; box-shadow: 0 0 50px #000; }
+        .container { max-width: 500px; width: 100%; background: var(--card); padding: 30px; border-radius: 30px; border: 2px solid #333; box-shadow: 0 0 50px #000; position: relative; }
         h1 { text-align: center; text-transform: uppercase; letter-spacing: 8px; color: var(--accent); margin: 0; }
         .subtitle { text-align: center; font-size: 0.7rem; color: #666; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 4px; }
         .box-section { background: #1f1f1f; padding: 20px; margin-bottom: 15px; border-radius: 20px; border: 1px solid #333; }
@@ -26,188 +27,236 @@
         .timer-big { font-size: 3.5rem; text-align: center; font-weight: bold; color: var(--accent); margin: 10px 0; font-variant-numeric: tabular-nums; }
         .step { display: none; }
         .active { display: block !important; }
-        .decree-text { line-height: 1.8; text-align: left; font-size: 0.95rem; color: #eee; border-left: 3px solid var(--crimson); padding-left: 15px; }
-        .btn-veto { background: #333; font-size: 0.7rem; padding: 10px; border-radius: 8px; border: 1px solid #444; color: #ccc; cursor: pointer; }
+        .decree-text { line-height: 1.8; text-align: left; font-size: 0.95rem; color: #eee; border-left: 3px solid var(--accent); padding-left: 15px; }
+        
+        /* Card System */
+        .card-zone { display: flex; gap: 10px; margin-top: 15px; }
+        .card { flex: 1; padding: 10px; border-radius: 8px; font-weight: 900; cursor: pointer; text-align: center; text-transform: uppercase; font-size: 0.7rem; border: none; }
+        .card-yellow { background: var(--yellow); color: #000; }
+        .card-red { background: var(--red); color: #fff; }
+        
+        /* Success/Fail Buttons */
+        .outcome-zone { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-fail { background: #444; color: white; flex: 1; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; border: none; }
+        .btn-success { background: var(--success); color: white; flex: 1; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; border: none; }
+        
+        .score-display { display: flex; justify-content: space-around; background: #000; padding: 10px; border-radius: 15px; border: 1px solid #333; margin-bottom: 15px; }
+        .player-score { text-align: center; }
+        .score-num { font-size: 1.5rem; color: var(--accent); font-weight: bold; }
+        .role-tag { font-size: 0.6rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>SOVEREIGNTY</h1>
-    <div class="subtitle">Hardened Command Protocol</div>
+    <div class="subtitle">Competitive Command Protocol</div>
 
     <div id="screen-1" class="step active">
         <div class="box-section">
-            <span class="label">Dominant</span>
-            <input type="text" id="p1-name" placeholder="Name" oninput="persistState()">
-            <div class="gender-grid" id="m-g-box"><button class="g-btn" data-g="M" onclick="setG(0,'M',this)">Male</button><button class="g-btn" data-g="F" onclick="setG(0,'F',this)">Female</button><button class="g-btn" data-g="NB" onclick="setG(0,'NB',this)">NB</button></div>
+            <span class="label">Player 1</span>
+            <input type="text" id="p1-name" placeholder="Name">
+            <div class="gender-grid"><button class="g-btn active" onclick="setG(0,'M',this)">Male</button><button class="g-btn" onclick="setG(0,'F',this)">Female</button><button class="g-btn" onclick="setG(0,'NB',this)">NB</button></div>
         </div>
         <div class="box-section">
-            <span class="label">Submissive</span>
-            <input type="text" id="p2-name" placeholder="Name" oninput="persistState()">
-            <div class="gender-grid" id="s-g-box"><button class="g-btn" data-g="M" onclick="setG(1,'M',this)">Male</button><button class="g-btn" data-g="F" onclick="setG(1,'F',this)">Female</button><button class="g-btn" data-g="NB" onclick="setG(1,'NB',this)">NB</button></div>
+            <span class="label">Player 2</span>
+            <input type="text" id="p2-name" placeholder="Name">
+            <div class="gender-grid"><button class="g-btn" onclick="setG(1,'M',this)">Male</button><button class="g-btn active" onclick="setG(1,'F',this)">Female</button><button class="g-btn" onclick="setG(1,'NB',this)">NB</button></div>
         </div>
-        <button class="btn" onclick="nav(2)">Secure Vault</button>
+        <div class="box-section"><span class="label">Session Length (Rounds)</span><input type="number" id="rounds-total" value="10"></div>
+        <button class="btn" onclick="initGame()">Initialize Sovereign Struggle</button>
     </div>
 
     <div id="screen-2" class="step">
-        <div id="vault-mount"></div>
-        <button class="btn" onclick="nav(3)">Finalize Session</button>
+        <div class="score-display">
+            <div class="player-score">
+                <div class="role-tag" id="p1-role">Master</div>
+                <div id="p1-label" style="font-weight:bold;">Name</div>
+                <div class="score-num" id="p1-points">0</div>
+            </div>
+            <div style="align-self:center; color:#333;">VS</div>
+            <div class="player-score">
+                <div class="role-tag" id="p2-role">Slave</div>
+                <div id="p2-label" style="font-weight:bold;">Name</div>
+                <div class="score-num" id="p2-points">0</div>
+            </div>
+        </div>
+
+        <div id="status-bar" style="text-align:center; font-size: 0.8rem; color: var(--accent); font-weight: bold; margin-bottom:10px;">ROUND 1</div>
+
+        <div id="pre-round-ui">
+            <div class="box-section">
+                <span class="label">Master's Settings</span>
+                <div class="toggle-grid" id="category-mount"></div>
+            </div>
+            <button class="btn" onclick="actionGenerate()">Generate Decree</button>
+        </div>
+
+        <div id="active-round-ui" style="display:none;">
+            <div class="box-section" id="decree-display" class="decree-text"></div>
+            
+            <div class="card-zone">
+                <button class="card card-yellow" onclick="alert('YELLOW CARD: Infraction recorded.')">Yellow Card</button>
+                <button class="card card-red" onclick="alert('RED CARD: Immediate penalty required!')">Red Card</button>
+            </div>
+
+            <div class="timer-big" id="timer-text">10:00</div>
+
+            <div class="outcome-zone">
+                <button class="btn-fail" onclick="handleOutcome(false)">FAILED (Stay Slave)</button>
+                <button class="btn-success" onclick="handleOutcome(true)">SUCCESS (Swap Roles)</button>
+            </div>
+        </div>
     </div>
 
     <div id="screen-3" class="step">
-        <div id="status-bar" style="display:flex; justify-content: space-between; font-size: 0.8rem; color: var(--accent); font-weight: bold; margin-bottom:10px;"></div>
-        <div class="box-section">
-            <span class="label">Available Tools</span>
-            <div class="toggle-grid" id="arsenal-mount"></div>
-            <span class="label">Decree Library</span>
-            <div class="toggle-grid" id="category-mount"></div>
+        <div class="box-section" style="text-align:center;">
+            <h2 id="winner-name" style="color:var(--accent); text-transform:uppercase;">Winner</h2>
+            <p id="winner-stat"></p>
         </div>
-        <div id="pre-round-ui"><button class="btn" onclick="actionGenerate()">Generate Protocol</button></div>
-        <div id="active-round-ui" style="display:none;">
-            <div class="box-section" id="decree-display" class="decree-text"></div>
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <button class="btn-veto" style="flex:1" onclick="veto()">Veto / Burn</button>
-                <button class="btn" style="flex:2; background:var(--success)" onclick="complete()">Decree Met</button>
-            </div>
-            <div class="timer-big" id="timer-text">10:00</div>
-            <div style="text-align:center;"><span class="label">Session Peaks</span><button onclick="edge(-1)">-</button><span id="edge-val" style="font-size:1.8rem; margin:0 20px;">0</span><button onclick="edge(1)">+</button></div>
-        </div>
-        <button class="btn" style="background:#444; margin-top:10px; font-size:0.7rem;" onclick="location.reload()">Emergency Reset</button>
+        <button class="btn" onclick="location.reload()">Reset Protocol</button>
     </div>
 </div>
 
 <script>
-    // HARDENED STATE ENGINE
     const state = {
-        players: [{n:"", g:"M"}, {n:"", g:"F"}],
-        rounds: { cur: 1 },
-        edges: 0,
-        vault: JSON.parse(localStorage.getItem('sov_vault_v20')) || {
-            "The Bindings": { items: ["Heavy Rope", "Leather Cuffs", "Tape"], active: true },
-            "The Shadows": { items: ["Mask", "Scarf"], active: true },
-            "The Discipline": { items: ["Flogger", "Cane"], active: true },
-            "The Silence": { items: ["Ball Gag", "Tape"], active: true },
-            "The Pleasures": { items: ["Wand", "Internal Plug"], active: true }
-        },
+        p: [
+            { n: "", g: "M", score: 0, role: "Master" },
+            { n: "", g: "F", score: 0, role: "Slave" }
+        ],
+        curRound: 1,
+        totalRounds: 10,
         cats: {
-            "The Solitary Bind": { active: true }, "The Geometric Cage": { active: true },
-            "The Hidden Truths": { active: true }, "The Wicked Gamble": { active: true },
+            "The Solitary Bind": { active: true }, "The Hidden Truths": { active: true },
+            "The Wicked Gamble": { active: true }, "The Geometric Cage": { active: true },
             "The Agony of Nearness": { active: true }, "The Flesh Endurance": { active: true },
             "The Desperate Struggle": { active: true }, "The Velveteen Command": { active: true }
         }
     };
 
-    // IMMUTABLE PROCEDURAL LIBRARY (Expanded Samples)
-    const masterLibrary = Object.freeze({
-        "The Solitary Bind": [
-            "{Subject} is to take <strong>{The Bindings}</strong> and tightly bind {S_POSS} own wrists behind {S_POSS} back. {S_PRON} must then drop to {S_POSS} knees and secure {S_POSS} ankles together, pulling the final length of the line through the wrist-knot to cinch {S_OBJ} into a restrictive, chest-arched hogtie.",
-            "{Subject} must use <strong>{The Bindings}</strong> to create a 'frogtie' by pulling {S_POSS} ankles up toward {S_POSS} hips and securing the line behind {S_POSS} neck. In this vulnerable position, {S_PRON} is to remain perfectly still on the floor, awaiting {M_POSS} judgment.",
-            "{Subject} is to wrap <strong>{The Bindings}</strong> four times around {S_POSS} upper chest, pinning {S_POSS} elbows to {S_POSS} ribs. {S_PRON} must then apply <strong>{The Silence}</strong> to {S_POSS} own mouth and kneel in the center of the room."
-        ],
-        "The Geometric Cage": [
-            "{Master} will use <strong>{The Bindings}</strong> to construct a strict box-tie. {Subject}'s wrists are pulled high between {S_POSS} shoulder blades, while a secondary line connects {S_POSS} throat to {S_POSS} ankles, forcing a deep, exposed arch.",
-            "Using <strong>{The Bindings}</strong>, {Master} will secure {Subject} in a diamond-spread on the bed or floor. The rope must be cinched tight enough to leave impressions, ensuring {S_PRON} cannot move even a finger as <strong>{The Discipline}</strong> is prepared."
-        ],
-        "The Hidden Truths": [
-            "{Master} applies <strong>{The Shadows}</strong>. {Subject} must answer: 'What is the one command that makes you tremble most?' If the answer is not descriptive enough, 10 strikes of <strong>{The Discipline}</strong> are applied to the thighs.",
-            "While bound in <strong>{The Bindings}</strong>, {Subject} must recount the exact feeling of {S_POSS} first time being denied. Every time {S_PRON} stammers, <strong>{The Pleasures}</strong> are pressed against {S_POSS} skin for 30 seconds."
-        ]
-    });
+    const library = {
+        "The Solitary Bind": ["{Subject} must use the rope to secure {S_POSS} own ankles to {S_POSS} throat in a strict frogtie. {S_PRON} must remain perfectly still as {Master} inspects the knots."],
+        "The Hidden Truths": ["{Master} commands {Subject} to reveal {S_POSS} most shameful submissive secret. If {Master} deems the truth insufficient, {S_PRON} must perform 20 pushups while bound."],
+        "The Wicked Gamble": ["{Subject} must guess which tool {Master} is holding behind {M_POSS} back. If wrong, 10 strikes of the flogger are delivered."],
+        "The Geometric Cage": ["{Master} will bind {Subject} in a 'Box Tie', pulling {S_POSS} elbows together behind {S_POSS} back until {S_POSS} chest is fully arched and exposed."],
+        "The Agony of Nearness": ["{Master} will edge {Subject} 3 times. {Subject} is not allowed to make a single sound. If {S_PRON} moans, the count resets."],
+        "The Flesh Endurance": ["{Subject} must hold a wall-sit while <strong>balancing the Master's favorite toy</strong> on {S_POSS} head for 3 minutes."],
+        "The Desperate Struggle": ["{Master} binds {Subject}'s wrists to {S_POSS} ankles. {Subject} has 4 minutes to hop/roll across the room and back."],
+        "The Velveteen Command": ["{Master} will use silk or soft touch to tease {Subject}. {Subject} must recite a poem of devotion while <strong>{The Silence}</strong> is applied."]
+    };
 
-    let currentSessionLibrary = JSON.parse(JSON.stringify(masterLibrary));
-
-    function persistState() {
-        state.players[0].n = document.getElementById('p1-name').value;
-        state.players[1].n = document.getElementById('p2-name').value;
-        localStorage.setItem('sov_persistent_state', JSON.stringify(state));
+    function setG(i, v, e) {
+        state.p[i].g = v;
+        e.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        e.classList.add('active');
     }
 
-    function syncUI() {
-        const saved = JSON.parse(localStorage.getItem('sov_persistent_state'));
-        if(saved) {
-            state.players = saved.players;
-            document.getElementById('p1-name').value = state.players[0].n;
-            document.getElementById('p2-name').value = state.players[1].n;
-            document.querySelectorAll('#m-g-box .g-btn').forEach(b => { if(b.dataset.g === state.players[0].g) b.classList.add('active'); });
-            document.querySelectorAll('#s-g-box .g-btn').forEach(b => { if(b.dataset.g === state.players[1].g) b.classList.add('active'); });
-        }
+    function initGame() {
+        state.p[0].n = document.getElementById('p1-name').value || "Player 1";
+        state.p[1].n = document.getElementById('p2-name').value || "Player 2";
+        state.totalRounds = parseInt(document.getElementById('rounds-total').value);
+        
+        document.getElementById('p1-label').innerText = state.p[0].n;
+        document.getElementById('p2-label').innerText = state.p[1].n;
+        
+        renderToggles();
+        nav(2);
     }
 
-    function setG(i,v,e){ 
-        state.players[i].g=v; 
-        e.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active')); 
-        e.classList.add('active'); 
-        persistState();
-    }
-
-    function nav(n){
-        if(n==2) renderVault();
-        if(n==3){
-            renderToggles('arsenal-mount', state.vault);
-            renderToggles('category-mount', state.cats);
-            updateStatus();
-        }
-        document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+    function nav(n) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById(`screen-${n}`).classList.add('active');
     }
 
-    function actionGenerate(){
-        const activeCats = Object.keys(state.cats).filter(k=>state.cats[k].active && currentSessionLibrary[k]);
-        if(!activeCats.length) return alert("Select an active Mode.");
-        const cat = activeCats[Math.floor(Math.random()*activeCats.length)];
-        const pool = currentSessionLibrary[cat];
-        const template = pool[Math.floor(Math.random()*pool.length)];
-        
-        const sG = {M:{p:'he',o:'him',s:'his'},F:{p:'she',o:'her',s:'her'},NB:{p:'they',o:'them',s:'their'}}[state.players[1].g];
-        const mG = {M:{p:'he',o:'him',s:'his'},F:{p:'she',o:'her',s:'her'},NB:{p:'they',o:'them',s:'their'}}[state.players[0].g];
+    function renderToggles() {
+        const mn = document.getElementById('category-mount'); mn.innerHTML = '';
+        for (let k in state.cats) {
+            mn.innerHTML += `<button class="tog-btn ${state.cats[k].active ? 'active' : ''}" onclick="state.cats['${k}'].active=!state.cats['${k}'].active; this.classList.toggle('active')">${k}</button>`;
+        }
+    }
 
-        let p = template.replace(/{Master}/g, state.players[0].n).replace(/{Subject}/g, state.players[1].n)
+    function actionGenerate() {
+        const activeCats = Object.keys(state.cats).filter(k => state.cats[k].active);
+        const cat = activeCats[Math.floor(Math.random() * activeCats.length)];
+        const template = library[cat][0];
+        
+        const mIdx = state.p[0].role === "Master" ? 0 : 1;
+        const sIdx = state.p[0].role === "Slave" ? 0 : 1;
+
+        const sG = { M: { p: 'he', o: 'him', s: 'his' }, F: { p: 'she', o: 'her', s: 'her' }, NB: { p: 'they', o: 'them', s: 'their' } }[state.p[sIdx].g];
+        const mG = { M: { p: 'he', o: 'him', s: 'his' }, F: { p: 'she', o: 'her', s: 'her' }, NB: { p: 'they', o: 'them', s: 'their' } }[state.p[mIdx].g];
+
+        let p = template.replace(/{Master}/g, state.p[mIdx].n).replace(/{Subject}/g, state.p[sIdx].n)
             .replace(/{S_PRON}/g, sG.p).replace(/{S_OBJ}/g, sG.o).replace(/{S_POSS}/g, sG.s)
             .replace(/{M_POSS}/g, mG.s);
-        
-        p = p.replace(/{([\s\w]+)}/g, (m,t)=>{
-            const it = state.vault[t].items;
-            return `<b style="color:var(--accent)">${it[Math.floor(Math.random()*it.length)]}</b>`;
-        });
 
-        document.getElementById('decree-display').innerHTML = `<span class="label" style="color:var(--crimson)">${cat}</span>${p}`;
-        document.getElementById('pre-round-ui').style.display='none';
-        document.getElementById('active-round-ui').style.display='block';
+        document.getElementById('decree-display').innerHTML = `<span class="label">${cat}</span>${p}`;
+        document.getElementById('pre-round-ui').style.display = 'none';
+        document.getElementById('active-round-ui').style.display = 'block';
         startTimer();
     }
 
-    function renderVault() {
-        const m = document.getElementById('vault-mount'); m.innerHTML = '<span class="label">Arsenal Config</span>';
-        for(let c in state.vault){
-            const id = c.replace(/\s+/g,'');
-            m.innerHTML += `<div class="box-section"><span class="label">${c}</span><div id="t-${id}" style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;"></div><input type="text" id="i-${id}" placeholder="Add..."><button onclick="add('${c}')">+</button></div>`;
-            upTags(c);
+    function handleOutcome(success) {
+        clearInterval(state.int);
+        const mIdx = state.p[0].role === "Master" ? 0 : 1;
+        const sIdx = state.p[0].role === "Slave" ? 0 : 1;
+
+        if (success) {
+            state.p[sIdx].score += 1;
+            // SWAP ROLES
+            state.p[mIdx].role = "Slave";
+            state.p[sIdx].role = "Master";
+            alert(`${state.p[sIdx].n} succeeded! Roles are now REVERSED.`);
+        } else {
+            state.p[mIdx].score += 1;
+            alert(`${state.p[sIdx].n} failed. ${state.p[mIdx].n} retains sovereignty.`);
+        }
+
+        updateUI();
+        
+        if (state.curRound >= state.totalRounds) {
+            endGame();
+        } else {
+            state.curRound++;
+            document.getElementById('status-bar').innerText = `ROUND ${state.curRound}`;
+            document.getElementById('pre-round-ui').style.display = 'block';
+            document.getElementById('active-round-ui').style.display = 'none';
         }
     }
-    function upTags(c){
-        const id = c.replace(/\s+/g,''); const cl = document.getElementById(`t-${id}`); cl.innerHTML='';
-        state.vault[c].items.forEach((it,i)=>{ cl.innerHTML += `<div style="background:#000; padding:5px; border:1px solid #333; font-size:0.7rem;">${it} <span onclick="rem('${c}',${i})" style="color:red; cursor:pointer;">✕</span></div>`; });
-    }
-    function add(c){ const id=c.replace(/\s+/g,''); const i=document.getElementById(`i-${id}`); if(i.value){ state.vault[c].items.push(i.value); save(); upTags(c); i.value=''; } }
-    function rem(c,i){ state.vault[c].items.splice(i,1); save(); upTags(c); }
-    function save(){ localStorage.setItem('sov_vault_v20', JSON.stringify(state.vault)); }
-    function renderToggles(m,d){
-        const mn = document.getElementById(m); mn.innerHTML='';
-        for(let k in d){ mn.innerHTML += `<button class="tog-btn ${d[k].active?'active':''}" onclick="state.${m==='arsenal-mount'?'vault':'cats'}['${k}'].active=!state.${m==='arsenal-mount'?'vault':'cats'}['${k}'].active; this.classList.toggle('active'); persistState()">${k}</button>`; }
-    }
-    function edge(v){ state.edges=Math.max(0,state.edges+v); document.getElementById('edge-val').innerText=state.edges; persistState(); }
-    function updateStatus(){ document.getElementById('status-bar').innerHTML=`<span>ROUND ${state.rounds.cur}</span><span>PEAKS: ${state.edges}</span>`; }
-    function startTimer(){ let v=600; clearInterval(state.int); state.int=setInterval(()=>{v--; document.getElementById('timer-text').innerText=`${Math.floor(v/60)}:${(v%60<10?'0':'')+v%60}`; if(v<=0) complete();}, 1000); }
-    function complete(){
-        clearInterval(state.int);
-        state.rounds.cur++; updateStatus(); 
-        document.getElementById('pre-round-ui').style.display='block'; 
-        document.getElementById('active-round-ui').style.display='none';
-    }
-    function veto() { actionGenerate(); }
 
-    window.onload = syncUI;
+    function updateUI() {
+        document.getElementById('p1-points').innerText = state.p[0].score;
+        document.getElementById('p2-points').innerText = state.p[1].score;
+        document.getElementById('p1-role').innerText = state.p[0].role;
+        document.getElementById('p2-role').innerText = state.p[1].role;
+        
+        // Visual cue for role
+        document.getElementById('p1-role').style.color = state.p[0].role === "Master" ? "var(--accent)" : "#888";
+        document.getElementById('p2-role').style.color = state.p[1].role === "Master" ? "var(--accent)" : "#888";
+    }
+
+    function startTimer() {
+        let v = 600;
+        state.int = setInterval(() => {
+            v--;
+            document.getElementById('timer-text').innerText = `${Math.floor(v / 60)}:${(v % 60 < 10 ? '0' : '') + v % 60}`;
+            if (v <= 0) handleOutcome(false);
+        }, 1000);
+    }
+
+    function endGame() {
+        nav(3);
+        const winner = state.p[0].score > state.p[1].score ? state.p[0] : state.p[1];
+        const isTie = state.p[0].score === state.p[1].score;
+        
+        if (isTie) {
+            document.getElementById('winner-name').innerText = "Stalemate";
+            document.getElementById('winner-stat').innerText = "Both souls are equally matched in power.";
+        } else {
+            document.getElementById('winner-name').innerText = `${winner.n} Wins`;
+            document.getElementById('winner-stat').innerText = `With ${winner.score} points, they are the Ultimate Sovereign.`;
+        }
+    }
 </script>
 </body>
 </html>
