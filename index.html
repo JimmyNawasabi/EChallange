@@ -1,272 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sovereignty: The Command Protocol</title>
-    <style>
-        :root { 
-            --accent: #d4af37; --bg: #0a0a0a; --card: #161616;
-            --text: #ffffff; --crimson: #a00000; --success: #1e4d2b;
-        }
-
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
-        .container { max-width: 500px; width: 100%; background: var(--card); padding: 30px; border-radius: 30px; border: 2px solid #333; }
-        h1 { text-align: center; text-transform: uppercase; letter-spacing: 8px; color: var(--accent); margin-bottom: 5px; }
-        .subtitle { text-align: center; font-size: 0.7rem; color: #666; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; }
-        
-        .box-section { background: #1f1f1f; padding: 20px; margin-bottom: 20px; border-radius: 20px; border: 1px solid #333; }
-        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 12px; }
-        
-        input[type="text"], input[type="number"] { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 12px; background: #000; color: white; font-size: 1.1rem; box-sizing: border-box; margin-bottom: 10px; }
-
-        .gender-select { display: flex; gap: 10px; margin-bottom: 15px; }
-        .g-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #444; background: #111; color: #666; cursor: pointer; text-align: center; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; }
-        .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
-
-        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px; }
-        
-        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
-        .tag { background: #000; padding: 8px 12px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; border: 1px solid #333; color: #999; }
-        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        
-        .add-row { display: flex; gap: 8px; margin-top: 10px; }
-        .add-row input { margin-bottom: 0 !important; flex-grow: 1; padding: 12px; font-size: 0.9rem; }
-        .add-btn { background: var(--accent); border: none; padding: 0 20px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.2rem; color: #000; }
-
-        .status-header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-        .stat-box { background: #000; padding: 10px; border-radius: 10px; text-align: center; font-size: 0.7rem; border: 1px solid #444; flex: 1; min-width: 40%; }
-        
-        .master-toggles { background: #000; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #d4af37; }
-        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .tog-btn { padding: 8px; font-size: 0.65rem; border-radius: 8px; border: 1px solid #333; background: #111; color: #555; cursor: pointer; text-transform: uppercase; font-weight: bold; }
-        .tog-btn.active { border-color: var(--accent); color: var(--accent); }
-
-        .timer-big { font-size: 4rem; text-align: center; font-weight: bold; margin: 10px 0; color: var(--accent); }
-        .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-        .card-btn { background: #1a1a1a; color: white; border: 1px solid #444; padding: 15px; border-radius: 12px; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; font-weight: bold; }
-
-        .step { display: none; }
-        .active { display: block !important; }
-
-        .btn-safeword {
-            background: #ff0000 !important; color: #ffffff !important; padding: 25px; font-size: 1.5rem; letter-spacing: 5px; border-radius: 15px;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); animation: pulse-red 1.5s infinite; border: 4px solid #ffffff; width: 100%; font-weight: 900; cursor: pointer; text-transform: uppercase;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1>SOVEREIGNTY</h1>
-    <div class="subtitle">The Command Protocol</div>
-
-    <div id="screen-1" class="step active">
-        <div class="box-section">
-            <span class="label">Primary (Master)</span>
-            <input type="text" id="p1-name" placeholder="Name">
-            <div class="gender-select">
-                <div class="g-btn active" onclick="setG(1,'M')">Male</div>
-                <div class="g-btn" onclick="setG(1,'F')">Female</div>
-                <div class="g-btn" onclick="setG(1,'NB')">NB</div>
-            </div>
-        </div>
-        <div class="box-section">
-            <span class="label">Secondary (Subject)</span>
-            <input type="text" id="p2-name" placeholder="Name">
-            <div class="gender-select">
-                <div class="g-btn" onclick="setG(2,'M')">Male</div>
-                <div class="g-btn active" onclick="setG(2,'F')">Female</div>
-                <div class="g-btn" onclick="setG(2,'NB')">NB</div>
-            </div>
-        </div>
-        <div class="box-section">
-            <span class="label">Rounds</span>
-            <input type="number" id="rounds-total" value="30">
-        </div>
-        <button class="btn" onclick="nav(2)">Access the Arsenal</button>
-    </div>
-
-    <div id="screen-2" class="step">
-        <div id="vault-mount"></div>
-        <button class="btn" onclick="nav(3)">Finalize & Begin</button>
-    </div>
-
-    <div id="screen-3" class="step">
-        <div class="status-header" id="status-bar"></div>
-
-        <div class="master-toggles">
-            <span class="label" style="margin-bottom:8px;">Arsenal Lockdown</span>
-            <div class="toggle-grid" id="toggle-mount"></div>
-        </div>
-
-        <div id="pre-round-ui"><button class="btn" onclick="actionGenerate()">Generate Decree</button></div>
-        
-        <div id="active-round-ui" style="display:none;">
-            <div class="box-section" id="decree-display" style="min-height: 180px; text-align: center; font-style: italic; line-height: 1.6; color: #ddd; display: flex; align-items: center; justify-content: center; padding: 25px;"></div>
-            <div class="timer-big" id="timer-text">10:00</div>
-            <div class="card-grid">
-                <button class="card-btn" style="border-color:yellow;" onclick="card('YELLOW')">Yellow Card</button>
-                <button class="card-btn" style="border-color:red;" onclick="card('RED')">Red Card</button>
-            </div>
-            <button class="btn" style="background:var(--success);" onclick="complete()">Complete Round</button>
-        </div>
-        
-        <button class="btn-safeword" onclick="location.reload()" style="margin-top:20px;">SAFE WORD</button>
-    </div>
-</div>
+<style>
+    .climax-box { background: linear-gradient(145deg, #1a0000, #000); border: 2px solid var(--accent); padding: 30px; border-radius: 20px; line-height: 1.8; color: #f0f0f0; }
+    .climax-step { margin-bottom: 25px; border-left: 3px solid var(--accent); padding-left: 15px; }
+    .climax-step h3 { color: var(--accent); text-transform: uppercase; margin-top: 0; font-size: 0.9rem; }
+    .winner-banner { text-align: center; color: var(--accent); font-size: 1.5rem; font-weight: 900; margin-bottom: 20px; text-shadow: 0 0 10px var(--accent); }
+</style>
 
 <script>
-    const state = {
-        players: [{n:"", g:"M"}, {n:"", g:"F"}],
-        rounds: { cur: 1, total: 30 },
-        cards: { y:"", r:"" },
-        timer: { val: 600, int: null },
-        vault: {
-            "The Bindings": { items: ["Rope", "Cuffs", "Tape", "Zipties"], active: true },
-            "The Shadows": { items: ["Sleep Mask", "Silk Scarf", "Hood"], active: true },
-            "The Discipline": { items: ["Paddle", "Crop", "Cane"], active: true },
-            "The Silence": { items: ["Ball Gag", "Cleave Gag", "Tape", "Bit Gag"], active: true },
-            "The Pleasures": { items: ["Wand", "Plug", "Remote Toy"], active: true }
-        },
-        activities: [
-            "Immobilization Protocol: Secure the Subject's wrists to their ankles tightly using {The Bindings}, forcing them into a submissive crouch. Once fixed, apply {The Silence} securely so that no sound can escape. The Master shall then use {The Pleasures} to dominate the Subject's focus.",
-            "Complete Sensory Deprivation: Firmly apply {The Shadows} to ensure total darkness. Use {The Bindings} to bind the Subject's limbs in a spread-eagle position. While the Subject is helpless, {The Pleasures} will be used relentlessly until the timer reaches its halfway mark.",
-            "Silence and Discipline: Bind the Subject's hands behind their back with {The Bindings} until the skin is taut. Seal their mouth with {The Silence}. The Master will then deliver controlled, stinging strikes with {The Discipline} at intervals dictated by the pulse of the timer.",
-            "Stress Endurance: Using {The Bindings}, bind the Subject in a challenging stress position. Insert or apply {The Pleasures} to keep the Subject on the edge of ecstasy and ache. {The Silence} must be worn to ensure all protests are muffled into silence.",
-            "The Possession: Secure {The Shadows} so the Subject is lost in the dark. Apply {The Silence} to take their voice. The Master will then use {The Discipline} to mark the flesh and {The Pleasures} to invade the senses, asserting total sovereignty over the slave."
-        ]
-    };
-
-    function setG(p, g) {
-        state.players[p-1].g = g;
-        const btns = document.querySelectorAll(`#screen-1 .box-section:nth-child(${p}) .g-btn`);
-        btns.forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-    }
-
-    function nav(n) {
-        if (n === 2) renderVault();
-        if (n === 3) {
-            state.players[0].n = document.getElementById('p1-name').value || "Master";
-            state.players[1].n = document.getElementById('p2-name').value || "Subject";
-            state.rounds.total = parseInt(document.getElementById('rounds-total').value) || 30;
-            state.cards.y = state.players[Math.floor(Math.random()*2)].n;
-            state.cards.r = state.players[Math.floor(Math.random()*2)].n;
-            renderToggles();
-            updateStatus();
-        }
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById(`screen-${n}`).classList.add('active');
-    }
-
-    function renderVault() {
-        const mount = document.getElementById('vault-mount');
-        mount.innerHTML = '<span class="label">Arsenal Management</span>';
-        for (let cat in state.vault) {
-            const div = document.createElement('div');
-            div.className = 'box-section';
-            const safeId = cat.replace(/\s+/g, '');
-            div.innerHTML = `<span class="label">${cat}</span><div class="tag-cloud" id="tags-${safeId}"></div>
-                             <div class="add-row"><input type="text" id="in-${safeId}" placeholder="Custom..."><button class="add-btn" onclick="addItem('${cat}')">+</button></div>`;
-            mount.appendChild(div);
-            updateTags(cat);
-        }
-    }
-
-    function updateTags(cat) {
-        const safeId = cat.replace(/\s+/g, '');
-        const cloud = document.getElementById(`tags-${safeId}`);
-        cloud.innerHTML = '';
-        state.vault[cat].items.forEach(item => {
-            const tag = document.createElement('div');
-            tag.className = 'tag on';
-            tag.innerText = item;
-            tag.onclick = () => tag.classList.toggle('on');
-            cloud.appendChild(tag);
-        });
-    }
-
-    function addItem(cat) {
-        const safeId = cat.replace(/\s+/g, '');
-        const input = document.getElementById(`in-${safeId}`);
-        if(input.value.trim()) {
-            state.vault[cat].items.push(input.value.trim());
-            input.value = '';
-            updateTags(cat);
-        }
-    }
-
-    function renderToggles() {
-        const mount = document.getElementById('toggle-mount');
-        mount.innerHTML = '';
-        for (let cat in state.vault) {
-            const btn = document.createElement('button');
-            btn.className = `tog-btn ${state.vault[cat].active ? 'active' : ''}`;
-            btn.innerText = cat;
-            btn.onclick = () => {
-                state.vault[cat].active = !state.vault[cat].active;
-                btn.classList.toggle('active');
-            };
-            mount.appendChild(btn);
-        }
-    }
-
-    function updateStatus() {
-        document.getElementById('status-bar').innerHTML = `
-            <div class="stat-box">ROUND: ${state.rounds.cur}/${state.rounds.total}</div>
-            <div class="stat-box">YELLOW: ${state.cards.y}</div>
-            <div class="stat-box">RED: ${state.cards.r}</div>
-        `;
-    }
-
-    function actionGenerate() {
-        const activeCats = Object.keys(state.vault).filter(k => state.vault[k].active);
-        const possible = state.activities.filter(a => {
-            const matches = a.match(/{([\s\w]+)}/g) || [];
-            return matches.every(m => activeCats.includes(m.replace(/{|}/g, '')));
-        });
-
-        let decree = possible.length > 0 ? possible[Math.floor(Math.random()*possible.length)] : "The Master shall dictate the trial manually based on the current active arsenal.";
-        
-        decree = decree.replace(/{([\s\w]+)}/g, (m, cat) => {
-            const pool = state.vault[cat].items;
-            return pool[Math.floor(Math.random()*pool.length)];
-        });
-
-        document.getElementById('decree-display').innerText = decree;
-        document.getElementById('pre-round-ui').style.display = 'none';
-        document.getElementById('active-round-ui').style.display = 'block';
-        startTimer();
-    }
-
-    function startTimer() {
-        state.timer.val = 600;
-        clearInterval(state.timer.int);
-        state.timer.int = setInterval(() => {
-            state.timer.val--;
-            const m = Math.floor(state.timer.val/60), s = state.timer.val%60;
-            document.getElementById('timer-text').innerText = `${m}:${s<10?'0'+s:s}`;
-            if(state.timer.val <= 0) complete();
-        }, 1000);
-    }
-
-    function card(type) {
-        const h = type === 'YELLOW' ? state.cards.y : state.cards.r;
-        alert(`${type} CARD activated by ${h}.`);
-        if(type === 'YELLOW') actionGenerate(); else complete();
-    }
-
     function complete() {
         clearInterval(state.timer.int);
-        if(state.rounds.cur >= state.rounds.total) { alert("PROTOCOL COMPLETE."); location.reload(); }
-        else {
+        if(state.rounds.cur >= state.rounds.total) {
+            renderFinalClimax();
+        } else {
             state.rounds.cur++;
             updateStatus();
             document.getElementById('pre-round-ui').style.display = 'block';
             document.getElementById('active-round-ui').style.display = 'none';
         }
     }
+
+    function renderFinalClimax() {
+        const winner = state.cards.r || state.players[0].n;
+        const playArea = document.getElementById('screen-3');
+        playArea.innerHTML = `
+            <div class="winner-banner">PROTOCOL CONSUMMATED</div>
+            <div class="box-section" style="text-align:center; margin-bottom:20px;">
+                <span class="label">The Sovereign Choice</span>
+                <p>${winner} has been awarded the Right of Command. They shall now decide the final roles for the Evening's Climax.</p>
+            </div>
+            
+            <div class="climax-box">
+                <div class="climax-step">
+                    <h3>Phase I: Total Enclosure (60-90 Mins)</h3>
+                    <p>The Master shall use <strong>{The Bindings}</strong> to create a comprehensive web of restraint. The Subject is to be positioned in a fixed, immobile state—wrist to ankle, or spread-eagle. <strong>{The Shadows}</strong> must be applied to erase the world, while <strong>{The Silence}</strong> ensures the Subject's only form of communication is through their body's reaction to the Master's touch.</p>
+                </div>
+
+                <div class="climax-step">
+                    <h3>Phase II: The Crucible (60 Mins)</h3>
+                    <p>Using a rhythmic application of <strong>{The Discipline}</strong>, the Master will mark the Subject's flesh, building a slow, internal heat. This is a trial of endurance. Between strikes, <strong>{The Pleasures}</strong> are to be introduced—remote-controlled or constant—keeping the Subject balanced on the razor's edge of sensory overload.</p>
+                </div>
+
+                <div class="climax-step">
+                    <h3>Phase III: The Final Sovereignty (The Climax)</h3>
+                    <p>The Master dictates the pace of the final release. Every breath and every muscle twitch belongs to the Sovereign. The Subject will remain bound and silenced until the Master reaches their own climax, using the Subject as the ultimate vessel for their satisfaction. Only then may the bindings be loosened for RACK-compliant aftercare.</p>
+                </div>
+            </div>
+
+            <button class="btn" onclick="location.reload()" style="margin-top:20px;">Archive Protocol & Exit</button>
+        `;
+
+        // Inject current arsenal items into the finale text
+        const box = playArea.querySelector('.climax-box');
+        box.innerHTML = box.innerHTML.replace(/{([\s\w]+)}/g, (m, cat) => {
+            const pool = state.vault[cat].items;
+            return `<span style="color:var(--accent)">${pool[Math.floor(Math.random()*pool.length)]}</span>`;
+        });
+    }
 </script>
-</body>
-</html>
