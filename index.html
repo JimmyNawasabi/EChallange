@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Persistent Arsenal</title>
+    <title>SOVEREIGNTY: Gendered Protocol</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
@@ -17,19 +17,21 @@
         .box-section { background: #000; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #333; position: relative; }
         .label { font-size: 0.8rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 2px; }
         
-        input, textarea, select { width: 100%; padding: 10px; border: 1px solid var(--accent); border-radius: 4px; background: #000; color: white; font-size: 1rem; box-sizing: border-box; }
+        input, select { width: 100%; padding: 10px; border: 1px solid var(--accent); border-radius: 4px; background: #000; color: white; font-size: 1rem; box-sizing: border-box; }
         
+        /* Gender Toggles */
+        .tog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+        .tog-btn { padding: 10px; border: 1px solid #333; background: #000; color: #555; cursor: pointer; border-radius: 4px; font-size: 0.7rem; text-transform: uppercase; font-weight: bold; text-align: center; }
+        .tog-btn.active { border-color: var(--accent); color: #FFF; background: #001a35; }
+
         /* Arsenal Management */
-        .arsenal-cat { margin-bottom: 20px; border-left: 3px solid #222; padding-left: 15px; transition: border-color 0.3s; }
-        .arsenal-cat:hover { border-color: var(--accent); }
+        .arsenal-cat { margin-bottom: 20px; border-left: 3px solid #222; padding-left: 15px; }
         .item-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
-        
         .item-chip { padding: 6px 14px; border: 1px solid #333; background: #0a0a0a; color: #555; cursor: pointer; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; transition: all 0.2s; }
         .item-chip.active { border-color: var(--accent); color: #fff; background: #001a35; box-shadow: 0 0 5px var(--accent); }
         
         .add-row { display: flex; gap: 8px; margin-top: 10px; }
         .btn-add { background: #1a1a1a; border: 1px solid #444; color: #fff; padding: 0 15px; cursor: pointer; border-radius: 4px; }
-        .btn-add:hover { background: var(--accent); }
 
         .btn { background: var(--accent); color: white; border: 1px solid #FFF; padding: 14px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 8px; font-size: 0.9rem; margin-top: 10px; }
         .btn:hover { background: #004494; box-shadow: 0 0 15px var(--accent); }
@@ -40,9 +42,7 @@
         #timer-box { font-size: 3.5rem; font-weight: 100; color: var(--crimson); text-align: center; letter-spacing: 5px; }
         #decree-text { font-size: 1.1rem; line-height: 1.7; color: #ccc; }
         .grand-display { border: 2px solid var(--gold); padding: 25px; background: #050500; display: none; }
-        
         .purge-btn { position: absolute; right: 15px; top: 15px; background: none; border: 1px solid var(--crimson); color: var(--crimson); font-size: 0.6rem; padding: 2px 5px; cursor: pointer; opacity: 0.5; }
-        .purge-btn:hover { opacity: 1; background: var(--crimson); color: #fff; }
     </style>
 </head>
 <body>
@@ -52,10 +52,18 @@
 
     <div id="setup-view">
         <div class="box-section">
-            <span class="label">Participants</span>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <input type="text" id="p0-name" value="Master">
-                <input type="text" id="p1-name" value="Slave">
+            <span class="label">Primary Authority</span>
+            <input type="text" id="p0-name" value="Master">
+            <div class="tog-grid">
+                <button id="p0-m" class="tog-btn active" onclick="setGender(0,'M')">Male</button>
+                <button id="p0-f" class="tog-btn" onclick="setGender(0,'F')">Female</button>
+            </div>
+            <br>
+            <span class="label">Subject Participant</span>
+            <input type="text" id="p1-name" value="Slave">
+            <div class="tog-grid">
+                <button id="p1-m" class="tog-btn" onclick="setGender(1,'M')">Male</button>
+                <button id="p1-f" class="tog-btn active" onclick="setGender(1,'F')">Female</button>
             </div>
             <br>
             <span class="label">Total Rounds: <input type="number" id="max-rounds" value="10" style="width: 70px; display:inline;"></span>
@@ -63,18 +71,18 @@
 
         <div class="box-section">
             <button class="purge-btn" onclick="purgeMemory()">Purge Memory</button>
-            <span class="label">Arsenal Configuration (Persistent)</span>
+            <span class="label">Arsenal Configuration</span>
             <div id="arsenal-container"></div>
         </div>
         
-        <button class="btn" onclick="beginSession()">Engage Protocol</button>
+        <button class="btn" onclick="beginSession()">Initialize Protocol</button>
     </div>
 
     <div id="game-view" style="display:none;">
         <div id="round-header" style="text-align:center; color:var(--accent); letter-spacing: 3px; margin-bottom: 10px;"></div>
         <div class="score-row">
-            <div style="flex:1;"><div class="label">DOMINANT</div><div id="dom-display" style="font-size:1.2rem;"></div></div>
-            <div style="flex:1;"><div class="label">SUBMISSIVE</div><div id="sub-display" style="font-size:1.2rem;"></div><div id="sub-score" class="p-score">0</div></div>
+            <div style="flex:1;"><div class="label">DOMINANT</div><div id="dom-display" style="font-size:1.1rem;"></div></div>
+            <div style="flex:1;"><div class="label">SUBMISSIVE</div><div id="sub-display" style="font-size:1.1rem;"></div><div id="sub-score" class="p-score">0</div></div>
         </div>
         
         <div id="action-panel">
@@ -110,7 +118,7 @@ const DEFAULT_HARDWARE = {
 
 let state = {
     round: 1, total: 10, timer: null,
-    players: [{n:"", role:"Master", score:0}, {n:"", role:"Slave", score:0}],
+    players: [{n:"", role:"Master", score:0, g:"M"}, {n:"", role:"Slave", score:0, g:"F"}],
     hardware: JSON.parse(localStorage.getItem('sov_hardware')) || DEFAULT_HARDWARE,
     activeSelection: {}, 
     db: {
@@ -129,7 +137,6 @@ function init() {
     const container = document.getElementById('arsenal-container');
     Object.keys(state.hardware).forEach(cat => {
         state.activeSelection[cat] = [...state.hardware[cat]];
-        
         let section = document.createElement('div');
         section.className = 'arsenal-cat';
         section.id = `cat-${cat.replace(/\s/g, '')}`;
@@ -139,19 +146,7 @@ function init() {
 }
 
 function renderCategory(cat, element) {
-    element.innerHTML = `
-        <span class="label">${cat}</span>
-        <div class="item-grid">
-            ${state.hardware[cat].map(item => `
-                <div class="item-chip ${state.activeSelection[cat].includes(item) ? 'active' : ''}" 
-                     onclick="toggleItem('${cat}', '${item}')">${item}</div>
-            `).join('')}
-        </div>
-        <div class="add-row">
-            <input type="text" id="input-${cat.replace(/\s/g, '')}" placeholder="Add custom ${cat}...">
-            <button class="btn-add" onclick="addItem('${cat}')">+</button>
-        </div>
-    `;
+    element.innerHTML = `<span class="label">${cat}</span><div class="item-grid">${state.hardware[cat].map(item => `<div class="item-chip ${state.activeSelection[cat].includes(item) ? 'active' : ''}" onclick="toggleItem('${cat}', '${item}')">${item}</div>`).join('')}</div><div class="add-row"><input type="text" id="input-${cat.replace(/\s/g, '')}" placeholder="Add..."><button class="btn-add" onclick="addItem('${cat}')">+</button></div>`;
 }
 
 function toggleItem(cat, item) {
@@ -165,20 +160,20 @@ function addItem(cat) {
     const input = document.getElementById(`input-${cat.replace(/\s/g, '')}`);
     const val = input.value.trim();
     if (val && !state.hardware[cat].includes(val)) {
-        state.hardware[cat].push(val);
-        state.activeSelection[cat].push(val);
+        state.hardware[cat].push(val); state.activeSelection[cat].push(val);
         localStorage.setItem('sov_hardware', JSON.stringify(state.hardware));
         renderCategory(cat, document.getElementById(`cat-${cat.replace(/\s/g, '')}`));
         input.value = '';
     }
 }
 
-function purgeMemory() {
-    if (confirm("Reset Arsenal to factory defaults?")) {
-        localStorage.removeItem('sov_hardware');
-        location.reload();
-    }
+function setGender(p, g) {
+    state.players[p].g = g;
+    document.getElementById(`p${p}-m`).classList.toggle('active', g === 'M');
+    document.getElementById(`p${p}-f`).classList.toggle('active', g === 'F');
 }
+
+function purgeMemory() { if (confirm("Reset Arsenal?")) { localStorage.removeItem('sov_hardware'); location.reload(); } }
 
 function beginSession() {
     state.players[0].n = document.getElementById('p0-name').value;
@@ -201,19 +196,14 @@ function renderUI() {
 function generateDecree() {
     const cats = Object.keys(state.db);
     const cat = cats[Math.floor(Math.random() * cats.length)];
-    const dom = state.players.find(p => p.role === "Master").n;
-    const sub = state.players.find(p => p.role === "Slave").n;
+    const dom = state.players.find(p => p.role === "Master");
+    const sub = state.players.find(p => p.role === "Slave");
     
-    let rawText = state.db[cat][Math.floor(Math.random() * state.db[cat].length)];
-    
-    // Replace {item} or {item:Category}
-    let text = rawText.replace(/{item(?::([^}]+))?}/g, (match, specificCat) => {
-        const targetCat = specificCat || cat;
-        const pool = state.activeSelection[targetCat] || ["an unspecified tool"];
+    let text = state.db[cat][0].replace(/{item(?::([^}]+))?}/g, (match, spec) => {
+        const pool = state.activeSelection[spec || cat] || ["tool"];
         return `<strong>${pool[Math.floor(Math.random() * pool.length)]}</strong>`;
     });
-    
-    text = text.replace(/{dom}/g, dom).replace(/{sub}/g, sub);
+    text = text.replace(/{dom}/g, dom.n).replace(/{sub}/g, sub.n);
 
     document.getElementById('decree-text').innerHTML = `<strong style="color:var(--accent); font-size:1.4rem;">${cat.toUpperCase()}</strong><br><br>${text}`;
     document.getElementById('action-panel').style.display = 'none';
@@ -222,11 +212,9 @@ function generateDecree() {
 }
 
 function startTimer(s) {
-    let t = s;
-    clearInterval(state.timer);
+    let t = s; clearInterval(state.timer);
     state.timer = setInterval(() => {
-        t--;
-        document.getElementById('timer-box').innerText = `${Math.floor(t/60)}:${(t%60).toString().padStart(2,'0')}`;
+        t--; document.getElementById('timer-box').innerText = `${Math.floor(t/60)}:${(t%60).toString().padStart(2, '0')}`;
         if (t <= 0) finalize(false);
     }, 1000);
 }
@@ -247,10 +235,7 @@ function showGrand() {
     document.getElementById('grand-view').style.display = 'block';
     const winner = state.players[0].score >= state.players[1].score ? state.players[0] : state.players[1];
     document.getElementById('winner-announcement').innerText = `${winner.n.toUpperCase()} HAS ACHIEVED SOVEREIGNTY.`;
-    document.getElementById('grand-options').innerHTML = `
-        <div class="box-section"><strong>THE RITUAL OF RELEASE:</strong> 45 minutes of intensive protocol. Master may climax only at the conclusion.</div>
-        <div class="box-section"><strong>THE TOTAL ECLIPSE:</strong> 60 minutes of sensory deprivation and impact.</div>
-    `;
+    document.getElementById('grand-options').innerHTML = `<div class="box-section"><strong>THE RITUAL OF RELEASE:</strong> Intensive protocol. Master may climax only at the end.</div>`;
 }
 
 init();
