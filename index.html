@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SOVEREIGNTY: Judicial Protocol</title>
+    <title>SOVEREIGNTY: Absolute Protocol</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
@@ -74,11 +74,11 @@
             </div>
         </div>
         <div class="box-section" style="background:#080808; padding:15px; border-radius:10px; border:1px solid #222;">
-            <span class="label">Session Length</span>
+            <span class="label">Session Protocol: Rounds</span>
             <select id="total-rounds"><option value="4">4 Rounds</option><option value="10" selected>10 Rounds</option><option value="20">20 Rounds</option></select>
         </div>
-        <div class="arsenal-box"><span class="label">Inventory</span><div id="arsenal-list"></div></div>
-        <button class="btn-main" onclick="startSession()">Commence Protocol</button>
+        <div class="arsenal-box"><span class="label">Full Arsenal Setup</span><div id="arsenal-list"></div></div>
+        <button class="btn-main" onclick="startSession()">Initialize Session</button>
     </div>
 
     <div id="play-screen" style="display:none;">
@@ -104,14 +104,14 @@
             <span id="intensity-display" class="intensity-tag"></span>
             <div id="timer">00:00</div>
             <div id="pre-commence-controls">
-                <button id="commence-btn" class="btn-commence" onclick="startCountdown()">Commence Phase</button>
-                <button class="btn-veto" onclick="triggerVeto()">Master's Veto (Discard Decree)</button>
+                <button id="commence-btn" class="btn-commence" onclick="startCountdown()">Commence Protocol</button>
+                <button class="btn-veto" onclick="triggerVeto()">Master's Veto (Purge Decree)</button>
             </div>
             <div id="decree-text"></div>
             <div id="completion-controls" style="display:none; flex-direction:column; gap:10px;">
                 <div style="display:flex; gap:10px;">
-                    <button class="btn-main" style="background:#1a1a1a; flex:1;" onclick="endRound(false)">Forfeit</button>
-                    <button class="btn-main" style="background:var(--success); flex:1;" onclick="endRound(true)">Protocol Met</button>
+                    <button class="btn-main" style="background:#1a1a1a; flex:1;" onclick="endRound(false)">Failure</button>
+                    <button class="btn-main" style="background:var(--success); flex:1;" onclick="endRound(true)">Success</button>
                 </div>
                 <button class="btn-safeword" onclick="triggerSafeword()">SAFEWORD (End Task / -5 Points)</button>
             </div>
@@ -119,55 +119,56 @@
     </div>
 
     <div id="win-screen" style="display:none; text-align:center;">
-        <h1 style="color:var(--gold); border:none;">SESSION TERMINATED</h1>
+        <h1 style="color:var(--gold); border:none;">SESSION COMPLETE</h1>
         <p id="winner-text" style="font-size:1.5rem;"></p>
-        <button class="btn-main" onclick="location.reload()">Reset Protocol</button>
+        <button class="btn-main" onclick="location.reload()">Return to Setup</button>
     </div>
 </div>
 
 <script>
 const HARDWARE = { 
     "Stillness":{"items":["Rope","Cuffs","Chain"], "time": 900}, 
-    "Impact":{"items":["Cane","Paddle","Flogger","Slapper"], "time": 480}, 
+    "Impact":{"items":["Cane","Paddle","Flogger"], "time": 480}, 
     "Quietude":{"items":["Ball Gag","Tape","Ring Gag"], "time": 600}, 
     "Ache":{"items":["Internal Plug","Vibrator","Clamps"], "time": 720},
-    "Sensory":{"items":["Blindfold","Hot Wax","Ice","Wartenberg Wheel"], "time": 300}
+    "Shadow":{"items":["Blindfold","Hood","Blackout Mask"], "time": 600},
+    "Sensory":{"items":["Hot Wax","Ice cubes","Wartenberg Wheel"], "time": 300}
 };
 
 const TEMPLATES = {
     "Stillness": [
-        "{dom} is to secure {sub}’s wrists behind the back tightly using {item}. Once bound, anchor the {item} to the ankles and pull {sub} into a strict hogtie position. {sub} must remain balanced on their stomach, unable to touch the floor with hands or feet, for the duration.",
-        "{sub} must be placed in a kneeling position. {dom} will use {item} to bind the thighs to the calves and then secure the wrists to a point above {sub}'s head. {sub} is to remain perfectly immobile; any shift in weight is a failure of discipline.",
-        "Using {item}, {dom} will perform a full chest harness on {sub}. The binding must be restrictive enough to remind {sub} of their breathing. Wrists are then to be cuffed to the harness rings, ensuring no reach below the waist."
+        "{dom} is to secure {sub}’s wrists behind the back tightly using {item}. Once bound, anchor the {item} to the ankles and pull {sub} into a strict hogtie position. {sub} must remain balanced on their stomach, unable to touch the floor with hands or feet.",
+        "{sub} must be placed in a kneeling position. {dom} will use {item} to bind the thighs to the calves and then secure the wrists to a point above {sub}'s head. {sub} is to remain perfectly immobile; any shift in weight is a failure of discipline."
     ],
     "Impact": [
-        "{sub} is to bend over the edge of the furniture, exposing the target area fully. {dom} will deliver 30 measured, rhythmic strikes with {item}. {sub} must count each strike out loud. If {sub} loses count or makes a sound other than the number, the count resets to zero.",
-        "{dom} will secure {sub} in a standing spread-eagle position. {dom} will then use {item} to strike the inner thighs and buttocks in a 'cross-hatch' pattern. {sub} is to focus solely on the sting, maintaining a submissive posture without flinching away.",
-        "Using {item}, {dom} will deliver 10 heavy strikes followed by 20 rapid-fire light taps. {sub} must keep their forehead pressed against the floor throughout. Movement is strictly forbidden; {sub} is to absorb the energy entirely."
+        "{sub} is to bend over the edge of the furniture, exposing the target area fully. {dom} will deliver 30 measured, rhythmic strikes with {item}. {sub} must count each strike out loud. If {sub} loses count, the count resets to zero.",
+        "{dom} will secure {sub} in a standing spread-eagle position. {dom} will then use {item} to strike the inner thighs and buttocks in a 'cross-hatch' pattern. {sub} is to maintain a submissive posture without flinching."
     ],
     "Quietude": [
-        "{dom} will inspect {sub}'s mouth before applying {item} firmly. The straps must be notched to the tightest comfortable setting to ensure zero verbalization. {sub} is to maintain eye contact with {dom} while breathing only through the nose.",
-        "{sub} is to be silenced using {item}. Once applied, {dom} will secure a secondary layer of tape or binding to ensure no muffled sounds escape. {sub} will then spend the phase in total silence, reflecting on their status as a subject.",
-        "{item} is to be placed. {dom} will then bind {sub}’s hands behind their back. {sub} is not permitted to make a single muffle; if {dom} hears a sound, {sub} must perform 5 minutes of 'wall-sitting' while still silenced."
+        "{dom} will inspect {sub}'s mouth before applying {item} firmly. The straps must be notched to the tightest setting. {sub} is to maintain eye contact with {dom} while breathing only through the nose.",
+        "{sub} is to be silenced using {item}. Once applied, {dom} will secure a secondary layer of binding to ensure no muffled sounds escape. {sub} will then spend the phase in total silence."
     ],
     "Ache": [
-        "{dom} will prepare {sub} for {item}. {sub} is to accept the internal depth of the device slowly. Once seated, {sub} must remain in a deep squat. The goal is endurance; {sub} is to feel the constant presence of {item} without seeking relief.",
-        "Apply {item} to {sub}’s most sensitive nerve endings. Set the intensity to a level that demands absolute focus. {sub} must keep their hands behind their head and remain still. If {sub} is male, {dom} will strictly monitor for over-arousal; climax is a forfeit of the round.",
-        "{dom} will secure {item} to {sub}. Every 60 seconds, {dom} will increase the tension or vibration. {sub} must endure the mounting ache without begging for release. The focus is on prolonged stimulation and the psychological weight of the device."
+        "{dom} will prepare {sub} for {item}. {sub} is to accept the internal depth of the device slowly. Once seated, {sub} must remain in a deep squat. {sub} is to feel the constant presence of {item} without seeking relief.",
+        "Apply {item} to {sub}’s sensitive nerve endings. {sub} must keep their hands behind their head and remain still. {dom} will strictly monitor for over-arousal; climax is a forfeit of the round."
+    ],
+    "Shadow": [
+        "{dom} will apply {item} to {sub}, ensuring absolute total darkness. {sub} is to be led to the center of the room and left standing. {dom} will circle {sub} in total silence. {sub} must remain perfectly still, reacting only to the psychological weight of the darkness.",
+        "{sub} is to be blinded by {item} and seated. {dom} will then secure {sub}'s hands to the chair. {dom} will describe exactly what they intend to do in future rounds, utilizing {sub}'s heightened hearing to build mental submission.",
+        "Using {item}, {dom} will strip {sub} of their sight. {sub} must be placed on all fours. {dom} will move around the room, making various noises. {sub} must track {dom}’s position by sound alone, turning their head toward the source."
     ],
     "Sensory": [
-        "{sub} is to be blindfolded using {item}. {dom} will then use secondary tools to tease the skin from head to toe. {sub} must guess which tool is being used. A wrong guess results in {dom} applying more pressure or a sharper sensation.",
-        "{dom} will use {item} to create a path of sensation across {sub}’s torso. {sub} is to be kept in a state of high anticipation, never knowing where the next touch will land. {sub} must keep their eyes closed and hands bound.",
-        "Temperature play: {dom} will use {item} to shock {sub}’s system, alternating with warmth. {sub} is to describe the sensation in one-word responses. The focus is on the psychological transition between comfort and intensity."
+        "{sub} is to be blindfolded. {dom} will use {item} to create a path of sensation across {sub}’s torso. {sub} is to be kept in a state of high anticipation, never knowing where the next touch will land.",
+        "Temperature play: {dom} will use {item} to shock {sub}’s system, alternating with body heat. {sub} is to describe the sensation in one-word responses. The focus is on the psychological transition."
     ]
 };
 
 let game = {
     currRound: 1, totalRounds: 10,
-    p: [{id:0, name:"", role:"Master", gender:"M", score:0, cards:[]}, {id:1, name:"", role:"Slave", gender:"F", score:0, cards:[]}],
-    h: JSON.parse(localStorage.getItem('sov_v9_items')) || HARDWARE,
-    activeH: {}, timer: null, activeTime: 0, currentDecreeIdx: -1,
-    activePool: []
+    p: [{id:0, name:"", role:"Master", score:0, cards:[]}, {id:1, name:"", role:"Slave", score:0, cards:[]}],
+    h: JSON.parse(localStorage.getItem('sov_v11_items')) || HARDWARE,
+    activeH: {}, timer: null, activeTime: 0,
+    activePool: {}
 };
 
 function init() {
@@ -185,15 +186,13 @@ function init() {
 }
 function renderItems(cat) { document.getElementById(`grid-${cat}`).innerHTML = game.h[cat].items.map(i => `<div class="chip ${game.activeH[cat].includes(i)?'active':''}" onclick="tog('${cat}','${i}')">${i}</div>`).join(''); }
 function tog(cat, i) { let a = game.activeH[cat]; a.includes(i) ? a.splice(a.indexOf(i),1) : a.push(i); renderItems(cat); }
-function addItem(cat) { let v = document.getElementById(`add-${cat}`).value; if(v){ game.h[cat].items.push(v); game.activeH[cat].push(v); localStorage.setItem('sov_v9_items', JSON.stringify(game.h)); renderItems(cat); } }
-function setGender(p, g) { game.p[p].gender = g; document.getElementById(`p${p}m`).classList.toggle('active', g === 'M'); document.getElementById(`p${p}f`).classList.toggle('active', g === 'F'); }
+function addItem(cat) { let v = document.getElementById(`add-${cat}`).value; if(v){ game.h[cat].items.push(v); game.activeH[cat].push(v); localStorage.setItem('sov_v11_items', JSON.stringify(game.h)); document.getElementById(`add-${cat}`).value=''; renderItems(cat); } }
+function setGender(p, g) { document.getElementById(`p${p}m`).classList.toggle('active', g === 'M'); document.getElementById(`p${p}f`).classList.toggle('active', g === 'F'); }
 
 function startSession() {
     game.p[0].name = document.getElementById('name0').value; game.p[1].name = document.getElementById('name1').value;
     game.totalRounds = parseInt(document.getElementById('total-rounds').value);
-    // Initializing the active template pool
     game.activePool = JSON.parse(JSON.stringify(TEMPLATES));
-    
     if(Math.random() > 0.5) { game.p[0].cards = ['Y']; game.p[1].cards = ['R']; } else { game.p[0].cards = ['R']; game.p[1].cards = ['Y']; }
     document.getElementById('setup-screen').style.display = 'none'; document.getElementById('play-screen').style.display = 'block';
     refresh();
@@ -211,36 +210,24 @@ function refresh() {
         document.getElementById(`disp-name${i}`).innerText = p.name.toUpperCase();
         document.getElementById(`role${i}`).innerText = i===0 ? "DOMINANT" : "SUBMISSIVE";
         document.getElementById(`score${i}`).innerText = p.score;
-        document.getElementById(`box${i}`).className = `p-box ${p.role==='Master'?'active-dom':''}`;
+        document.getElementById(`box${i}`).className = `p-box ${i===0?'active-dom':''}`;
         document.getElementById(`inv${i}`).innerHTML = p.cards.map(c => `<div class="card card-${c==='Y'?'y':'r'}" onclick="triggerCard(${i},'${c}')">${c}</div>`).join('');
     });
 }
 
 function issueDecree() {
-    const dom = game.p.find(x => x.role === 'Master');
-    const sub = game.p.find(x => x.role === 'Slave');
-    
-    let cats = Object.keys(game.activeH).filter(c => game.activeH[c].length > 0 && game.activePool[c].length > 0);
-    if(cats.length === 0) { alert("Database depleted. Resetting pool."); game.activePool = JSON.parse(JSON.stringify(TEMPLATES)); cats = Object.keys(game.activeH); }
-    
+    const dom = game.p[0]; const sub = game.p[1];
+    let cats = Object.keys(game.activeH).filter(c => game.activeH[c].length > 0 && game.activePool[c] && game.activePool[c].length > 0);
+    if(cats.length === 0) { game.activePool = JSON.parse(JSON.stringify(TEMPLATES)); cats = Object.keys(game.activeH).filter(c => game.activeH[c].length > 0); }
     let chosenCat = cats[Math.floor(Math.random() * cats.length)];
     let templateIdx = Math.floor(Math.random() * game.activePool[chosenCat].length);
     let raw = game.activePool[chosenCat][templateIdx];
-    
     let item = game.activeH[chosenCat][Math.floor(Math.random()*game.activeH[chosenCat].length)];
     game.activeTime = game.h[chosenCat].time;
-    
     document.getElementById('intensity-display').innerText = `${chosenCat.toUpperCase()} PROTOCOL: ${Math.floor(game.activeTime/60)} MIN`;
     document.getElementById('timer').innerText = formatTime(game.activeTime);
-    
-    // Dynamic text replacement
-    let finalTxt = raw.replace(/{item}/g, `<strong>${item}</strong>`)
-                      .replace(/{dom}/g, dom.name)
-                      .replace(/{sub}/g, sub.name);
-                      
-    document.getElementById('decree-text').innerHTML = finalTxt;
+    document.getElementById('decree-text').innerHTML = raw.replace(/{item}/g, `<strong>${item}</strong>`).replace(/{dom}/g, dom.name).replace(/{sub}/g, sub.name);
     game.currentDecreeInfo = { cat: chosenCat, idx: templateIdx };
-    
     document.getElementById('command-center').style.display = 'none';
     document.getElementById('decree-panel').style.display = 'block';
     document.getElementById('pre-commence-controls').style.display = 'block';
@@ -248,9 +235,8 @@ function issueDecree() {
 }
 
 function triggerVeto() {
-    // Delete from pool to prevent repetition
     game.activePool[game.currentDecreeInfo.cat].splice(game.currentDecreeInfo.idx, 1);
-    alert("Decree purged from database. Generating new protocol...");
+    alert("Purged. Discarding this protocol template.");
     issueDecree();
 }
 
@@ -266,10 +252,9 @@ function startCountdown() {
 }
 
 function triggerSafeword() {
-    const sub = game.p.find(x => x.role === 'Slave');
-    sub.score = Math.max(0, sub.score - 5);
+    game.p[1].score = Math.max(0, game.p[1].score - 5);
     clearInterval(game.timer);
-    alert(`SAFEWORD: Protocol Halted. ${sub.name} penalized 5 points.`);
+    alert(`SAFEWORD. Protocol halted. Score penalized.`);
     document.getElementById('command-center').style.display = 'block';
     document.getElementById('decree-panel').style.display = 'none';
     refresh();
@@ -277,12 +262,12 @@ function triggerSafeword() {
 
 function triggerCard(pIdx, type) {
     const other = pIdx === 0 ? 1 : 0;
-    if(type === 'Y') { alert("ROLE SWAP PROTOCOL."); game.p[other].cards.push('Y'); game.p[pIdx].cards = game.p[pIdx].cards.filter(c => c !== 'Y'); swap(); }
-    else { alert("RED CARD: Forfeit."); game.p[other].cards.push('R'); game.p[pIdx].cards = game.p[pIdx].cards.filter(c => c !== 'R'); game.currRound++; swap(); }
+    if(type === 'Y') { alert("ROLE SWAP."); swap(); }
+    else { alert("RED CARD: Forfeit."); game.currRound++; swap(); }
 }
 
-function endRound(win) { if(win) game.p.find(x => x.role === 'Slave').score++; game.currRound++; swap(); }
-function swap() { clearInterval(game.timer); game.p.forEach(x => x.role = x.role === 'Master' ? 'Slave' : 'Master'); document.getElementById('command-center').style.display = 'block'; document.getElementById('decree-panel').style.display = 'none'; refresh(); }
+function endRound(win) { if(win) game.p[1].score++; game.currRound++; swap(); }
+function swap() { clearInterval(game.timer); game.p.reverse(); document.getElementById('command-center').style.display = 'block'; document.getElementById('decree-panel').style.display = 'none'; refresh(); }
 function formatTime(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
 
 init();
