@@ -7,7 +7,7 @@
     <style>
         :root { 
             --accent: #d4af37; --bg: #0a0a0a; --card: #161616;
-            --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --disabled: #333;
+            --text: #ffffff; --crimson: #a00000; --success: #1e4d2b;
         }
 
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
@@ -15,15 +15,9 @@
         h1 { text-align: center; text-transform: uppercase; letter-spacing: 8px; color: var(--accent); margin-bottom: 5px; }
         .subtitle { text-align: center; font-size: 0.7rem; color: #666; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; }
         
-        .box-section { background: #1f1f1f; padding: 20px; margin-bottom: 20px; border-radius: 20px; border: 1px solid #333; transition: opacity 0.3s; }
-        .box-section.off { opacity: 0.4; border-color: transparent; }
+        .box-section { background: #1f1f1f; padding: 20px; margin-bottom: 20px; border-radius: 20px; border: 1px solid #333; }
+        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 12px; }
         
-        .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--accent); }
-        
-        .toggle-cat { font-size: 0.6rem; background: var(--accent); color: #000; padding: 4px 8px; border-radius: 5px; cursor: pointer; font-weight: 900; }
-        .off .toggle-cat { background: #555; }
-
         input[type="text"], input[type="number"] { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 12px; background: #000; color: white; font-size: 1.1rem; box-sizing: border-box; margin-bottom: 10px; }
 
         .gender-select { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -43,8 +37,13 @@
         .status-header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
         .stat-box { background: #000; padding: 10px; border-radius: 10px; text-align: center; font-size: 0.7rem; border: 1px solid #444; flex: 1; min-width: 40%; }
         
+        /* Master Toggle Styling */
+        .master-toggles { background: #000; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #d4af37; }
+        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .tog-btn { padding: 8px; font-size: 0.65rem; border-radius: 8px; border: 1px solid #333; background: #111; color: #555; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+        .tog-btn.active { border-color: var(--accent); color: var(--accent); }
+
         .timer-big { font-size: 4rem; text-align: center; font-weight: bold; margin: 10px 0; color: var(--accent); }
-        
         .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .card-btn { background: #1a1a1a; color: white; border: 1px solid #444; padding: 15px; border-radius: 12px; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; font-weight: bold; }
 
@@ -67,103 +66,98 @@
     <div id="screen-1" class="step active">
         <div class="box-section">
             <span class="label">Primary (Master)</span>
-            <input type="text" id="p1-name-input" placeholder="Name">
+            <input type="text" id="p1-name" placeholder="Name">
             <div class="gender-select">
-                <div class="g-btn active" onclick="updateGender(1,'M')">Male</div>
-                <div class="g-btn" onclick="updateGender(1,'F')">Female</div>
-                <div class="g-btn" onclick="updateGender(1,'NB')">NB</div>
+                <div class="g-btn active" onclick="setG(1,'M')">Male</div>
+                <div class="g-btn" onclick="setG(1,'F')">Female</div>
+                <div class="g-btn" onclick="setG(1,'NB')">NB</div>
             </div>
         </div>
         <div class="box-section">
             <span class="label">Secondary (Subject)</span>
-            <input type="text" id="p2-name-input" placeholder="Name">
+            <input type="text" id="p2-name" placeholder="Name">
             <div class="gender-select">
-                <div class="g-btn" onclick="updateGender(2,'M')">Male</div>
-                <div class="g-btn active" onclick="updateGender(2,'F')">Female</div>
-                <div class="g-btn" onclick="updateGender(2,'NB')">NB</div>
+                <div class="g-btn" onclick="setG(2,'M')">Male</div>
+                <div class="g-btn active" onclick="setG(2,'F')">Female</div>
+                <div class="g-btn" onclick="setG(2,'NB')">NB</div>
             </div>
         </div>
         <div class="box-section">
             <span class="label">Rounds</span>
-            <input type="number" id="rounds-input" value="30">
+            <input type="number" id="rounds-total" value="30">
         </div>
-        <button class="btn" onclick="goToStep(2)">Configure Arsenal</button>
+        <button class="btn" onclick="nav(2)">Access the Arsenal</button>
     </div>
 
     <div id="screen-2" class="step">
         <div id="vault-mount"></div>
-        <button class="btn" onclick="goToStep(3)">Lock Arsenal & Begin</button>
+        <button class="btn" onclick="nav(3)">Finalize & Begin</button>
     </div>
 
     <div id="screen-3" class="step">
-        <div class="status-header" id="stat-bar">
-            </div>
-        <div id="play-area">
-            <div id="pre-round-ui"><button class="btn" onclick="actionGenerate()">Generate Decree</button></div>
-            <div id="active-round-ui" style="display:none;">
-                <div class="box-section" id="decree-text" style="min-height: 150px; text-align: center; font-weight: 500; font-size: 1.05rem; line-height: 1.5; color: #eee; display: flex; align-items: center; justify-content: center;"></div>
-                <div class="timer-big" id="timer-display">10:00</div>
-                <div class="card-grid">
-                    <button class="card-btn" style="border-color: #ffd700;" onclick="actionCard('YELLOW')">Yellow Card</button>
-                    <button class="card-btn" style="border-color: #ff4444;" onclick="actionCard('RED')">Red Card</button>
-                </div>
-                <button class="btn" style="background:var(--success);" onclick="actionComplete()">Complete Round</button>
-            </div>
-            <button class="btn-safeword" onclick="actionSafeword()" style="margin-top:20px;">SAFE WORD</button>
+        <div class="status-header" id="status-bar"></div>
+
+        <div class="master-toggles">
+            <span class="label" style="margin-bottom:8px;">Arsenal Lockdown (Toggle Before Decree)</span>
+            <div class="toggle-grid" id="toggle-mount"></div>
         </div>
+
+        <div id="pre-round-ui"><button class="btn" onclick="actionGenerate()">Generate Decree</button></div>
+        
+        <div id="active-round-ui" style="display:none;">
+            <div class="box-section" id="decree-display" style="min-height: 180px; text-align: center; font-style: italic; line-height: 1.6; color: #ddd; display: flex; align-items: center; justify-content: center; padding: 25px;"></div>
+            <div class="timer-big" id="timer-text">10:00</div>
+            <div class="card-grid">
+                <button class="card-btn" style="border-color:yellow;" onclick="card('YELLOW')">Yellow Card</button>
+                <button class="card-btn" style="border-color:red;" onclick="card('RED')">Red Card</button>
+            </div>
+            <button class="btn" style="background:var(--success);" onclick="complete()">Complete Round</button>
+        </div>
+        
+        <button class="btn-safeword" onclick="location.reload()" style="margin-top:20px;">SAFE WORD</button>
     </div>
 </div>
 
 <script>
     const state = {
-        players: [{ name: "", gender: "M" }, { name: "", gender: "F" }],
-        rounds: { current: 1, total: 30 },
-        cards: { yellow: "", red: "" },
-        timer: { value: 600, interval: null },
+        players: [{n:"", g:"M"}, {n:"", g:"F"}],
+        rounds: { cur: 1, total: 30 },
+        cards: { y:"", r:"" },
+        timer: { val: 600, int: null },
         vault: {
             "Restraints": { items: ["Rope", "Cuffs", "Tape"], active: true },
-            "Blindfolds": { items: ["Silk Scarf", "Sleep Mask", "Hood"], active: true },
-            "Impact": { items: ["Paddle", "Cane", "Crop"], active: true },
-            "Sensory": { items: ["Feather", "Wand", "Ice", "Wax"], active: true },
-            "Temperature": { items: ["Ice Cubes", "Warm Oil", "Metal Spoons"], active: true },
-            "Weighted": { items: ["Heavy Blankets", "Weights", "Chains"], active: true },
-            "Audio": { items: ["White Noise", "Music", "Earplugs"], active: true },
-            "Medical": { items: ["Stethoscope", "Gloves", "Thermometer"], active: true }
+            "Blindfolds": { items: ["Sleep Mask", "Silk Scarf", "Hood"], active: true },
+            "Impact": { items: ["Paddle", "Crop", "Cane"], active: true },
+            "Sensation": { items: ["Ice", "Feather", "Wand"], active: true },
+            "Mouth": { items: ["Tape", "Ball Gag", "Cleave Gag"], active: true },
+            "Weight": { items: ["Chains", "Heavy Blanket"], active: true }
         },
         activities: [
-            "The Subject is to be blindfolded with {Blindfolds}. Secure them using {Restraints}. The Master will then systematically apply {Sensory} to three different zones of the body.",
-            "Using {Restraints}, the Master will position the Subject. The Master must apply {Sensory} and {Temperature} in alternating patterns until the timer reaches halfway.",
-            "The Master commands the Subject to remain perfectly still while {Weighted} items are placed. {Audio} should be used to isolate the Subject's focus.",
-            "Prepare the Subject with {Blindfolds}. The Master will use {Sensory} to tease, followed by a controlled demonstration of {Impact} to a chosen zone.",
-            "The Master will perform a detailed exploration using {Medical} tools. The Subject must remain silent and compliant, secured by {Restraints}.",
-            "A trial of temperature: The Master will utilize {Temperature} combined with {Sensory} to create a contrasting experience for the Subject.",
-            "The Subject must endure the weight of {Weighted} while the Master uses {Audio} to dictate the rhythm of the trial.",
-            "Master's Choice: Combine {Restraints} and {Impact} for a focused trial of discipline and endurance."
+            "The Subject is to be thoroughly immobilized. Secure their wrists to their ankles tightly using {Restraints}, forcing a deep crouch. Once fixed, apply {Mouth} over the lips so no sound can escape. The Master shall then use {Sensation} to explore the Subject's vulnerability.",
+            "Complete sensory isolation is required. Secure {Blindfolds} firmly, ensuring no light reaches the eyes. The Master will then use {Restraints} to bind the Subject's limbs to a fixed point. For the duration, {Sensation} will be applied in a rhythmic, relentless pattern.",
+            "The Master commands absolute silence. Wrap {Mouth} multiple times around the Subject's head. Bind the Subject's hands behind their back with {Restraints} until the skin is taut. The Master will then deliver controlled strikes with {Impact} at intervals determined by the timer.",
+            "Using {Restraints}, the Master will bind the Subject in a stress position. The Subject must endure the pressure of {Weight} placed upon their chest while {Sensation} is used to tease their senses. Any movement will result in the Master adding more {Weight}.",
+            "The Subject's voice is to be taken. Apply {Mouth} securely. Use {Restraints} to ensure the Subject cannot reach their face or struggle. The Master will then utilize {Sensation} and {Impact} to create a landscape of contrasting feelings across the Subject's body."
         ]
     };
 
-    function updateGender(p, g) {
-        state.players[p-1].gender = g;
+    function setG(p, g) {
+        state.players[p-1].g = g;
         const btns = document.querySelectorAll(`#screen-1 .box-section:nth-child(${p}) .g-btn`);
         btns.forEach(b => b.classList.remove('active'));
         event.target.classList.add('active');
     }
 
-    function toggleCategory(cat) {
-        state.vault[cat].active = !state.vault[cat].active;
-        document.getElementById(`box-${cat.toLowerCase()}`).classList.toggle('off');
-        document.getElementById(`btn-tog-${cat.toLowerCase()}`).innerText = state.vault[cat].active ? "ENABLED" : "DISABLED";
-    }
-
-    function goToStep(n) {
+    function nav(n) {
         if (n === 2) renderVault();
         if (n === 3) {
-            state.players[0].name = document.getElementById('p1-name-input').value || "Primary";
-            state.players[1].name = document.getElementById('p2-name-input').value || "Secondary";
-            state.rounds.total = parseInt(document.getElementById('rounds-input').value) || 30;
-            state.cards.yellow = state.players[Math.floor(Math.random() * 2)].name;
-            state.cards.red = state.players[Math.floor(Math.random() * 2)].name;
-            refreshStatus();
+            state.players[0].n = document.getElementById('p1-name').value || "Master";
+            state.players[1].n = document.getElementById('p2-name').value || "Subject";
+            state.rounds.total = parseInt(document.getElementById('rounds-total').value) || 30;
+            state.cards.y = state.players[Math.floor(Math.random()*2)].n;
+            state.cards.r = state.players[Math.floor(Math.random()*2)].n;
+            renderToggles();
+            updateStatus();
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById(`screen-${n}`).classList.add('active');
@@ -171,29 +165,19 @@
 
     function renderVault() {
         const mount = document.getElementById('vault-mount');
-        mount.innerHTML = '<span class="label">Protocol Arsenal</span>';
+        mount.innerHTML = '<span class="label">Arsenal Management</span>';
         for (let cat in state.vault) {
-            const id = cat.toLowerCase();
-            const section = document.createElement('div');
-            section.className = `box-section ${state.vault[cat].active ? '' : 'off'}`;
-            section.id = `box-${id}`;
-            section.innerHTML = `
-                <div class="label-row">
-                    <span class="label">${cat}</span>
-                    <span class="toggle-cat" id="btn-tog-${id}" onclick="toggleCategory('${cat}')">${state.vault[cat].active ? 'ENABLED' : 'DISABLED'}</span>
-                </div>
-                <div class="tag-cloud" id="tags-${id}"></div>
-                <div class="add-row">
-                    <input type="text" id="in-${id}" placeholder="Add Item...">
-                    <button class="add-btn" onclick="addVaultItem('${cat}', 'in-${id}')">+</button>
-                </div>`;
-            mount.appendChild(section);
-            renderTags(cat);
+            const div = document.createElement('div');
+            div.className = 'box-section';
+            div.innerHTML = `<span class="label">${cat}</span><div class="tag-cloud" id="tags-${cat}"></div>
+                             <div class="add-row"><input type="text" id="in-${cat}" placeholder="Custom..."><button class="add-btn" onclick="addItem('${cat}')">+</button></div>`;
+            mount.appendChild(div);
+            updateTags(cat);
         }
     }
 
-    function renderTags(cat) {
-        const cloud = document.getElementById(`tags-${cat.toLowerCase()}`);
+    function updateTags(cat) {
+        const cloud = document.getElementById(`tags-${cat}`);
         cloud.innerHTML = '';
         state.vault[cat].items.forEach(item => {
             const tag = document.createElement('div');
@@ -204,79 +188,86 @@
         });
     }
 
-    function addVaultItem(cat, inputId) {
-        const input = document.getElementById(inputId);
-        if (input.value.trim()) {
+    function addItem(cat) {
+        const input = document.getElementById(`in-${cat}`);
+        if(input.value.trim()) {
             state.vault[cat].items.push(input.value.trim());
             input.value = '';
-            renderTags(cat);
+            updateTags(cat);
         }
     }
 
-    function refreshStatus() {
-        const bar = document.getElementById('stat-bar');
-        bar.innerHTML = `
-            <div class="stat-box">ROUND: ${state.rounds.current} / ${state.rounds.total}</div>
-            <div class="stat-box">REMAINING: ${state.rounds.total - state.rounds.current}</div>
-            <div class="stat-box" style="color:#ffd700">YELLOW: ${state.cards.yellow}</div>
-            <div class="stat-box" style="color:#ff4444">RED: ${state.cards.red}</div>
+    function renderToggles() {
+        const mount = document.getElementById('toggle-mount');
+        mount.innerHTML = '';
+        for (let cat in state.vault) {
+            const btn = document.createElement('button');
+            btn.className = `tog-btn ${state.vault[cat].active ? 'active' : ''}`;
+            btn.innerText = cat;
+            btn.onclick = () => {
+                state.vault[cat].active = !state.vault[cat].active;
+                btn.classList.toggle('active');
+            };
+            mount.appendChild(btn);
+        }
+    }
+
+    function updateStatus() {
+        document.getElementById('status-bar').innerHTML = `
+            <div class="stat-box">ROUND: ${state.rounds.cur}/${state.rounds.total}</div>
+            <div class="stat-box">YELLOW: ${state.cards.y}</div>
+            <div class="stat-box">RED: ${state.cards.r}</div>
         `;
     }
 
     function actionGenerate() {
-        // Filter activities that only use active categories
+        // Filter tasks that only use active categories
         const activeCats = Object.keys(state.vault).filter(k => state.vault[k].active);
-        const validActivities = state.activities.filter(act => {
-            const needed = act.match(/{(\w+)}/g) || [];
-            return needed.every(n => activeCats.includes(n.replace(/{|}/g, '')));
+        const possible = state.activities.filter(a => {
+            const matches = a.match(/{(\w+)}/g) || [];
+            return matches.every(m => activeCats.includes(m.replace(/{|}/g, '')));
         });
 
-        let text = validActivities.length > 0 
-            ? validActivities[Math.floor(Math.random() * validActivities.length)] 
-            : "The Master shall dictate the trial manually as all categories are locked.";
-
-        text = text.replace(/{(\w+)}/g, (match, cat) => {
-            const items = state.vault[cat].items;
-            return items[Math.floor(Math.random() * items.length)];
+        let decree = possible.length > 0 ? possible[Math.floor(Math.random()*possible.length)] : "The Master shall dictate the trial manually.";
+        
+        decree = decree.replace(/{(\w+)}/g, (m, cat) => {
+            const pool = state.vault[cat].items;
+            return pool[Math.floor(Math.random()*pool.length)];
         });
 
-        document.getElementById('decree-text').innerText = text;
+        document.getElementById('decree-display').innerText = decree;
         document.getElementById('pre-round-ui').style.display = 'none';
         document.getElementById('active-round-ui').style.display = 'block';
         startTimer();
     }
 
     function startTimer() {
-        state.timer.value = 600;
-        clearInterval(state.timer.interval);
-        state.timer.interval = setInterval(() => {
-            state.timer.value--;
-            const m = Math.floor(state.timer.value/60), s = state.timer.value % 60;
-            document.getElementById('timer-display').innerText = `${m}:${s<10?'0'+s:s}`;
-            if(state.timer.value <= 0) actionComplete();
+        state.timer.val = 600;
+        clearInterval(state.timer.int);
+        state.timer.int = setInterval(() => {
+            state.timer.val--;
+            const m = Math.floor(state.timer.val/60), s = state.timer.val%60;
+            document.getElementById('timer-text').innerText = `${m}:${s<10?'0'+s:s}`;
+            if(state.timer.val <= 0) complete();
         }, 1000);
     }
 
-    function actionCard(type) {
-        const h = type === 'YELLOW' ? state.cards.yellow : state.cards.red;
-        alert(`${type} CARD played by ${h}.`);
-        if(type === 'YELLOW') actionGenerate(); else actionComplete();
+    function card(type) {
+        const h = type === 'YELLOW' ? state.cards.y : state.cards.r;
+        alert(`${type} CARD activated by ${h}.`);
+        if(type === 'YELLOW') actionGenerate(); else complete();
     }
 
-    function actionComplete() {
-        clearInterval(state.timer.interval);
-        if(state.rounds.current >= state.rounds.total) {
-            alert("PROTOCOL COMPLETE.");
-            location.reload();
-        } else {
-            state.rounds.current++;
-            refreshStatus();
+    function complete() {
+        clearInterval(state.timer.int);
+        if(state.rounds.cur >= state.rounds.total) { alert("PROTOCOL COMPLETE."); location.reload(); }
+        else {
+            state.rounds.cur++;
+            updateStatus();
             document.getElementById('pre-round-ui').style.display = 'block';
             document.getElementById('active-round-ui').style.display = 'none';
         }
     }
-
-    function actionSafeword() { alert("SAFE WORD TRIGGERED."); location.reload(); }
 </script>
 </body>
 </html>
