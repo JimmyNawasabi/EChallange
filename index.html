@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Absolute Integrity</title>
+    <title>SOVEREIGNTY: High-Stakes Protocol</title>
     <style>
-        :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; }
+        :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --panic: #ff0000; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 600px; width: 100%; background: var(--card); padding: 20px; border-radius: 20px; border: 2px solid #333; box-shadow: 0 0 50px #000; }
         h1 { text-align: center; text-transform: uppercase; letter-spacing: 5px; color: var(--accent); margin-bottom: 20px; }
@@ -26,10 +26,10 @@
         .score-row { display: flex; justify-content: space-between; padding: 12px; background: #000; border-radius: 12px; border: 1px solid #222; text-align: center; margin-bottom: 15px; }
         .role-tag { font-size: 0.6rem; font-weight: bold; color: #444; }
         .master-glow { color: var(--accent) !important; text-shadow: 0 0 5px var(--accent); }
-        .safeword-bar { text-align: center; color: var(--crimson); font-weight: 900; font-size: 0.8rem; letter-spacing: 3px; margin-top: 10px; border: 1px dashed var(--crimson); padding: 5px; border-radius: 5px; }
+        .panic-btn { background: linear-gradient(45deg, #600, #f00) !important; border: 2px solid white !important; margin-top: 20px; letter-spacing: 2px; }
         .card-row { display: flex; gap: 10px; margin-top: 15px; }
-        .y-card { background: var(--warning) !important; color: black !important; flex: 1; }
-        .r-card { background: var(--crimson) !important; flex: 1; }
+        .y-card { background: var(--warning) !important; color: black !important; flex: 1; font-size: 0.7rem; }
+        .r-card { background: var(--crimson) !important; flex: 1; font-size: 0.7rem; }
     </style>
 </head>
 <body>
@@ -67,7 +67,6 @@
             <div class="p-block"><div id="r0" class="role-tag">MASTER</div><div id="n0"></div><div id="s0" style="font-size:1.5rem;">0</div></div>
             <div class="p-block"><div id="r1" class="role-tag">SLAVE</div><div id="n1"></div><div id="s1" style="font-size:1.5rem;">0</div></div>
         </div>
-        <div id="sw-display" class="safeword-bar">SAFEWORD: RED</div>
 
         <div id="game-controls">
             <div class="box-section"><span class="label">Active Protocols</span><div class="toggle-grid" id="proto-mount"></div></div>
@@ -84,6 +83,7 @@
                 <button class="btn y-card" onclick="triggerCard('YELLOW')">YELLOW CARD</button>
                 <button class="btn r-card" onclick="triggerCard('RED')">RED CARD</button>
             </div>
+            <button class="btn panic-btn" id="panic-label" onclick="triggerSafeword()">SAFEWORD: RED</button>
         </div>
     </div>
 </div>
@@ -92,7 +92,7 @@
     const state = {
         curr: 1, total: 30, safeword: "RED",
         players: [{n:"", g:"M", role:"Master", score:0}, {n:"", g:"F", role:"Slave", score:0}],
-        vault: JSON.parse(localStorage.getItem('sov_v20')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v21')) || {
             "Restraints": [ {n:"Rope", a:true}, {n:"Steel Cuffs", a:true} ],
             "Gags": [ {n:"Ball Gag", a:true}, {n:"Tape", a:true} ],
             "Blindfolds": [ {n:"Leather Blindfold", a:true}, {n:"Silk Scarf", a:true} ],
@@ -130,9 +130,9 @@
         state.players[0].n = document.getElementById('p0-name').value || "Master";
         state.players[1].n = document.getElementById('p1-name').value || "Slave";
         state.total = document.getElementById('round-count').value;
-        state.safeword = document.getElementById('safeword-in').value || "RED";
-        localStorage.setItem('sov_v20', JSON.stringify(state.vault));
-        document.getElementById('sw-display').innerText = `SAFEWORD: ${state.safeword}`;
+        state.safeword = document.getElementById('safeword-in').value.toUpperCase() || "RED";
+        localStorage.setItem('sov_v21', JSON.stringify(state.vault));
+        document.getElementById('panic-label').innerText = `SAFEWORD: ${state.safeword}`;
         showStep(3);
         renderGame();
     }
@@ -176,11 +176,24 @@
         document.getElementById('decree-view').style.display = 'block';
     }
 
+    function triggerSafeword() {
+        const sIdx = state.players.findIndex(p=>p.role==='Slave');
+        const oldScore = state.players[sIdx].score;
+        state.players[sIdx].score = Math.max(0, oldScore - 5);
+        
+        alert(`${state.safeword} ACTIVATED! Protocol Aborted.\n${state.players[sIdx].n} loses 5 points.\nRoles remain unchanged.`);
+        
+        // Return to command hub without swapping roles or incrementing round
+        document.getElementById('game-controls').style.display = 'block';
+        document.getElementById('decree-view').style.display = 'none';
+        renderGame();
+    }
+
     function triggerCard(type) {
         if(type === 'YELLOW') {
             const sIdx = state.players.findIndex(p=>p.role==='Slave');
             state.players[sIdx].score = Math.max(0, state.players[sIdx].score - 1);
-            alert("YELLOW CARD: Warning Issued. Slave penalty applied.");
+            alert("YELLOW CARD: Warning Issued. Slave penalty (-1).");
         } else {
             alert("RED CARD: Emergency Stop. Round awarded to Master.");
             resolve('fail');
@@ -191,12 +204,22 @@
     function resolve(type) {
         if(type === 'success') {
             state.players.find(p=>p.role==='Slave').score++;
+            // Role Swap
             state.players.forEach(p => p.role = p.role==='Master'?'Slave':'Master');
         } else {
             state.players.find(p=>p.role==='Master').score++;
+            // No swap on fail
         }
-        if(state.curr >= state.total) { alert("Session Terminated."); location.reload(); }
-        else { state.curr++; document.getElementById('game-controls').style.display='block'; document.getElementById('decree-view').style.display='none'; renderGame(); }
+        
+        if(state.curr >= state.total) { 
+            alert("Session Terminated."); 
+            location.reload(); 
+        } else { 
+            state.curr++; 
+            document.getElementById('game-controls').style.display='block'; 
+            document.getElementById('decree-view').style.display='none'; 
+            renderGame(); 
+        }
     }
 </script>
 </body>
