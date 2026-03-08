@@ -10,37 +10,26 @@
             --text: #ffffff; --crimson: #a00000; --success: #1e4d2b;
         }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
-        .container { max-width: 500px; width: 100%; background: var(--card); padding: 30px; border-radius: 30px; border: 2px solid #333; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .container { max-width: 500px; width: 100%; background: var(--card); padding: 30px; border-radius: 30px; border: 2px solid #333; }
         h1 { text-align: center; text-transform: uppercase; letter-spacing: 8px; color: var(--accent); margin-bottom: 5px; }
         .subtitle { text-align: center; font-size: 0.7rem; color: #666; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; }
-        
         .box-section { background: #1f1f1f; padding: 20px; margin-bottom: 20px; border-radius: 20px; border: 1px solid #333; }
         .label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 12px; }
-        
         input[type="text"], input[type="number"] { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 12px; background: #000; color: white; font-size: 1.1rem; box-sizing: border-box; margin-bottom: 10px; }
-
-        /* REINSTATED GENDER SELECTOR */
         .gender-grid { display: flex; gap: 8px; margin-bottom: 5px; }
-        .g-btn { flex: 1; padding: 12px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 10px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; transition: all 0.2s ease; }
-        .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
-
-        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px; transition: 0.3s; }
-        .btn:hover { background: #e60000; transform: translateY(-2px); }
-        
+        .g-btn { flex: 1; padding: 12px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 10px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px; }
         .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
-        .tag { background: #000; padding: 8px 12px; border-radius: 10px; font-size: 0.85rem; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 5px; }
-        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        
+        .tag { background: #000; padding: 8px 12px; border-radius: 10px; font-size: 0.85rem; border: 1px solid #333; color: #999; }
         .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
         .tog-btn { padding: 12px; font-size: 0.65rem; border-radius: 8px; border: 1px solid #333; background: #111; color: #555; cursor: pointer; text-transform: uppercase; font-weight: bold; }
         .tog-btn.active { border-color: var(--accent); color: var(--accent); background: #1a1608; }
-
-        .timer-big { font-size: 3.5rem; text-align: center; font-weight: bold; margin: 5px 0; color: var(--accent); font-variant-numeric: tabular-nums; }
+        .timer-big { font-size: 3.5rem; text-align: center; font-weight: bold; margin: 5px 0; color: var(--accent); }
         .step { display: none; }
         .active { display: block !important; }
-        
-        .decree-text { line-height: 1.8; text-align: left; font-size: 1rem; color: #eee; min-height: 150px; }
-        .btn-safeword { background: #ff0000 !important; color: #fff; padding: 20px; width: 100%; border-radius: 15px; font-weight: 900; letter-spacing: 3px; border: 4px solid #fff; margin-top: 20px; cursor: pointer; }
+        .decree-text { line-height: 1.8; text-align: left; font-size: 1rem; color: #eee; }
+        .btn-safeword { background: #ff0000 !important; color: #fff; padding: 20px; width: 100%; border-radius: 15px; font-weight: 900; border: 4px solid #fff; margin-top: 20px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -51,65 +40,40 @@
 
     <div id="screen-1" class="step active">
         <div class="box-section">
-            <span class="label">Dominant (Player 1)</span>
-            <input type="text" id="p1-name" placeholder="Enter Name/Title">
-            <div class="gender-grid" id="m-gender">
-                <button class="g-btn active" onclick="setGender(0, 'M', this)">Male</button>
-                <button class="g-btn" onclick="setGender(0, 'F', this)">Female</button>
-                <button class="g-btn" onclick="setGender(0, 'NB', this)">NB</button>
-            </div>
+            <span class="label">Dominant</span>
+            <input type="text" id="p1-name" placeholder="Name">
+            <div class="gender-grid"><button class="g-btn active" onclick="setG(0,'M',this)">Male</button><button class="g-btn" onclick="setG(0,'F',this)">Female</button><button class="g-btn" onclick="setG(0,'NB',this)">NB</button></div>
         </div>
-
         <div class="box-section">
-            <span class="label">Submissive (Player 2)</span>
-            <input type="text" id="p2-name" placeholder="Enter Name/Title">
-            <div class="gender-grid" id="s-gender">
-                <button class="g-btn" onclick="setGender(1, 'M', this)">Male</button>
-                <button class="g-btn active" onclick="setGender(1, 'F', this)">Female</button>
-                <button class="g-btn" onclick="setGender(1, 'NB', this)">NB</button>
-            </div>
+            <span class="label">Submissive</span>
+            <input type="text" id="p2-name" placeholder="Name">
+            <div class="gender-grid"><button class="g-btn" onclick="setG(1,'M',this)">Male</button><button class="g-btn active" onclick="setG(1,'F',this)">Female</button><button class="g-btn" onclick="setG(1,'NB',this)">NB</button></div>
         </div>
-
-        <div class="box-section">
-            <span class="label">Protocol Duration (Rounds)</span>
-            <input type="number" id="rounds-total" value="15">
-        </div>
-        <button class="btn" onclick="nav(2)">Proceed to Arsenal</button>
+        <div class="box-section"><span class="label">Rounds</span><input type="number" id="rounds-total" value="15"></div>
+        <button class="btn" onclick="nav(2)">Prepare Vault</button>
     </div>
 
     <div id="screen-2" class="step">
         <div id="vault-mount"></div>
-        <button class="btn" onclick="nav(3)">Lock Protocol</button>
+        <button class="btn" onclick="nav(3)">Start Session</button>
     </div>
 
     <div id="screen-3" class="step">
-        <div id="status-bar" style="display:flex; justify-content: space-around; margin-bottom: 15px; font-size: 0.8rem; color: var(--accent); font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 10px;"></div>
-        
-        <div class="box-section" style="padding:15px;">
-            <span class="label">Arsenal Available</span>
+        <div id="status-bar" style="display:flex; justify-content: space-between; margin-bottom: 15px; color: var(--accent); font-weight: bold;"></div>
+        <div class="box-section">
             <div class="toggle-grid" id="arsenal-mount"></div>
-            <span class="label">Decree Selection</span>
             <div class="toggle-grid" id="category-mount"></div>
         </div>
-
-        <div id="pre-round-ui"><button class="btn" onclick="actionGenerate()">Generate Extreme Decree</button></div>
-        
+        <div id="pre-round-ui"><button class="btn" onclick="actionGenerate()">Receive Decree</button></div>
         <div id="active-round-ui" style="display:none;">
             <div class="box-section" id="decree-display" class="decree-text"></div>
-            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                <button class="g-btn" style="flex: 1; border-color: #555;" onclick="vetoActivity()">Veto & Burn</button>
-                <button class="btn" style="flex: 2; background: var(--success); padding: 10px;" onclick="complete()">Task Complete</button>
+            <div style="display:flex; gap:10px;">
+                <button class="g-btn" style="flex:1" onclick="veto()">Veto</button>
+                <button class="btn" style="flex:2; background:var(--success)" onclick="complete()">Complete</button>
             </div>
             <div class="timer-big" id="timer-text">10:00</div>
-            
-            <div style="text-align:center;">
-                <span class="label">Edging Peaks</span>
-                <button onclick="changeEdge(-1)" style="background:none; border:1px solid #444; color:white; padding:5px 15px; border-radius: 5px;">-</button>
-                <span id="edge-val" style="font-size: 1.8rem; margin: 0 20px; font-weight: bold; color: var(--accent);">0</span>
-                <button onclick="changeEdge(1)" style="background:none; border:1px solid #444; color:white; padding:5px 15px; border-radius: 5px;">+</button>
-            </div>
+            <div style="text-align:center;"><span class="label">Peaks</span><button onclick="edge(-1)">-</button><span id="edge-val" style="font-size:1.8rem; margin:0 20px;">0</span><button onclick="edge(1)">+</button></div>
         </div>
-
         <button class="btn-safeword" onclick="location.reload()">SAFE WORD</button>
     </div>
 </div>
@@ -119,132 +83,100 @@
         players: [{n:"", g:"M"}, {n:"", g:"F"}],
         rounds: { cur: 1, total: 15 },
         edges: 0,
-        currentActivityIndex: null,
-        currentCategoryKey: null,
-        vault: JSON.parse(localStorage.getItem('sov_v9_vault')) || {
-            "The Bindings": { items: ["Rope", "Steel Cuffs", "Heavy Tape"], active: true },
-            "The Shadows": { items: ["Blackout Mask", "Silk Scarf"], active: true },
-            "The Discipline": { items: ["Woven Flogger", "Cane", "Paddle"], active: true },
+        vault: JSON.parse(localStorage.getItem('sov_v10')) || {
+            "The Bindings": { items: ["Rope", "Cuffs", "Tape"], active: true },
+            "The Shadows": { items: ["Mask", "Scarf"], active: true },
+            "The Discipline": { items: ["Flogger", "Cane", "Paddle"], active: true },
             "The Silence": { items: ["Ball Gag", "Tape"], active: true },
-            "The Pleasures": { items: ["Wand", "Internal Plug"], active: true }
+            "The Pleasures": { items: ["Wand", "Toy"], active: true }
         },
-        cats: {
-            "The Solitary Knot": { active: true },
-            "The Devotion Test": { active: true },
-            "The Cruel Edge": { active: true },
-            "The Intricate Art": { active: true }
-        }
+        cats: { "The Solitary Knot": {active:true}, "The Devotion Test": {active:true}, "The Cruel Edge": {active:true}, "The Intricate Art": {active:true} }
     };
 
     const library = {
         "The Solitary Knot": [
-            "{Master} commands {Subject} to take <strong>{The Bindings}</strong> and secure {S_POSS} ankles together. {S_PRON} must then pull {S_POSS} wrists behind {S_POSS} back and connect them to the ankle line, pulling {S_OBJ} into a tight, restrictive hogtie. {S_PRON} shall remain in this helpless state, exposed and unable to move for the duration.",
-            "{Subject} must use <strong>{The Bindings}</strong> to create a strict 'frogtie' restraint on {S_POSS} own body. Once the knots are cinched tight, {S_PRON} must kneel before {Master} and present {S_POSS} throat, acknowledging {M_POSS} absolute sovereignty while immobilized.",
-            "The 'Mummy' Protocol: {Master} will use <strong>{The Bindings}</strong> to wrap {Subject} from shoulders to knees, pinning {S_POSS} arms to {S_POSS} sides. {S_PRON} is to be placed on a soft surface, unable to move a single limb, forced to endure {M_POSS} gaze in total stillness."
+            "{Master} commands {Subject} to take <strong>{The Bindings}</strong> and cross {S_POSS} wrists tightly behind {S_POSS} back. {S_PRON} must then secure {S_POSS} ankles and pull them up to meet {S_POSS} wrists, locking {S_OBJ} into a restrictive hogtie. {S_PRON} must remain in this state of total physical submission until the timer expires.",
+            "Using <strong>{The Bindings}</strong>, {Subject} must secure {S_POSS} own knees to {S_POSS} chest in a deep frogtie. Once bound, {S_PRON} is to be placed in <strong>{The Shadows}</strong>, unable to see {M_POSS} approach, forced to wait in total darkness and stillness.",
+            "{Subject} is to be bound to a chair or heavy furniture using <strong>{The Bindings}</strong>. The wrap must go around the chest and midsection four times, pinning the arms to the sides. <strong>{The Silence}</strong> is to be applied to ensure {S_POSS} absolute quiet during {M_POSS} inspection."
         ],
         "The Devotion Test": [
-            "{Master} will apply <strong>{The Silence}</strong> to ensure {Subject} remains mute. {S_PRON} is then draped over a hard surface. {Master} shall use <strong>{The Discipline}</strong> to deliver 15 heavy, rhythmic strikes to the buttocks. {S_PRON} must not flinch or attempt to move; any resistance results in the count restarting.",
-            "With {Subject} blindfolded by <strong>{The Shadows}</strong>, {Master} will use <strong>{The Discipline}</strong> to explore the sensitivity of {S_POSS} inner thighs. {S_PRON} must remain perfectly still, showing devotion by enduring the sting without a single muffled plea from {S_POSS} gag."
+            "{Master} will apply <strong>{The Silence}</strong> to {Subject}. {S_PRON} is then draped over {Master}'s lap or a hard surface. {Master} shall deliver 20 rhythmic strikes with <strong>{The Discipline}</strong>. {Subject} must count each one mentally; any flinch or loss of composure adds 5 strikes to the total.",
+            "With {Subject} blindfolded by <strong>{The Shadows}</strong>, {Master} will use <strong>{The Discipline}</strong> to map the sensitivity of {S_POSS} inner thighs and buttocks. Every strike is a test of {S_POSS} resolve. {S_PRON} is to remain perfectly still, showing devotion through silent endurance of the sting."
         ],
         "The Cruel Edge": [
-            "With {Subject} bound by <strong>{The Bindings}</strong>, {Master} will use <strong>{The Pleasures}</strong> to bring {S_OBJ} to the very edge of release. On command, {Master} will stop and immediately apply the sharp bite of <strong>{The Discipline}</strong>. This peak must be recorded in the tracker before the next wave of pleasure.",
-            "{Master} uses <strong>{The Pleasures}</strong> relentlessly. Every time {Subject} nears a climax, {S_PRON} must beg for permission via muffled grunts through <strong>{The Silence}</strong>. If permission is denied, a strike of <strong>{The Discipline}</strong> is the only release granted."
+            "With {Subject} bound by <strong>{The Bindings}</strong>, {Master} will use <strong>{The Pleasures}</strong> to drive {S_OBJ} to the brink. On the command 'Still', {Master} replaces the pleasure with the sharp, cold bite of <strong>{The Discipline}</strong>. Record the peak and repeat the cycle.",
+            "{Master} will use <strong>{The Pleasures}</strong> to tease {Subject} while {S_PRON} is gagged by <strong>{The Silence}</strong>. Every time {S_PRON} attempts to reach release, {Master} will apply a sharp slap with <strong>{The Discipline}</strong> to the most sensitive areas, resetting the climb."
         ]
     };
 
-    function setGender(pIdx, gVal, el) {
-        state.players[pIdx].g = gVal;
-        el.parentElement.querySelectorAll('.g-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-    }
-
-    function nav(n) {
-        if (n === 2) renderVault();
-        if (n === 3) {
-            state.players[0].n = document.getElementById('p1-name').value || "Master";
-            state.players[1].n = document.getElementById('p2-name').value || "Subject";
-            state.rounds.total = parseInt(document.getElementById('rounds-total').value) || 15;
+    function setG(i,v,e){ state.players[i].g=v; e.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active')); e.classList.add('active'); }
+    function nav(n){
+        if(n==2) renderVault();
+        if(n==3){
+            state.players[0].n=document.getElementById('p1-name').value||"Master";
+            state.players[1].n=document.getElementById('p2-name').value||"Subject";
             renderToggles('arsenal-mount', state.vault);
             renderToggles('category-mount', state.cats);
             updateStatus();
         }
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
         document.getElementById(`screen-${n}`).classList.add('active');
     }
 
-    function getPronouns(g) {
-        if (g === 'M') return { p: 'he', o: 'him', s: 'his' };
-        if (g === 'F') return { p: 'she', o: 'her', s: 'her' };
-        return { p: 'they', o: 'them', s: 'their' };
-    }
+    function actionGenerate(){
+        const activeCats = Object.keys(state.cats).filter(k=>state.cats[k].active);
+        const cat = activeCats[Math.floor(Math.random()*activeCats.length)];
+        const template = library[cat][Math.floor(Math.random()*library[cat].length)];
+        const sG = {M:{p:'he',o:'him',s:'his'},F:{p:'she',o:'her',s:'her'},NB:{p:'they',o:'them',s:'their'}}[state.players[1].g];
+        const mG = {M:{p:'he',o:'him',s:'his'},F:{p:'she',o:'her',s:'her'},NB:{p:'they',o:'them',s:'their'}}[state.players[0].g];
 
-    function actionGenerate() {
-        const activeCats = Object.keys(state.cats).filter(k => state.cats[k].active && library[k]);
-        const catKey = activeCats[Math.floor(Math.random()*activeCats.length)];
-        const activityIndex = Math.floor(Math.random()*library[catKey].length);
-        const template = library[catKey][activityIndex];
+        let p = template.replace(/{Master}/g, state.players[0].n).replace(/{Subject}/g, state.players[1].n)
+            .replace(/{S_PRON}/g, sG.p).replace(/{S_OBJ}/g, sG.o).replace(/{S_POSS}/g, sG.s)
+            .replace(/{M_POSS}/g, mG.s);
         
-        state.currentCategoryKey = catKey;
-        state.currentActivityIndex = activityIndex;
-
-        const mG = getPronouns(state.players[0].g);
-        const sG = getPronouns(state.players[1].g);
-
-        let processed = template
-            .replace(/{Master}/g, `<strong style="color:var(--accent)">${state.players[0].n}</strong>`)
-            .replace(/{Subject}/g, `<strong style="color:var(--accent)">${state.players[1].n}</strong>`)
-            .replace(/{M_PRON}/g, mG.p).replace(/{M_OBJ}/g, mG.o).replace(/{M_POSS}/g, mG.s)
-            .replace(/{S_PRON}/g, sG.p).replace(/{S_OBJ}/g, sG.o).replace(/{S_POSS}/g, sG.s);
-
-        processed = processed.replace(/{([\s\w]+)}/g, (m, tool) => {
-            const items = state.vault[tool].items;
+        p = p.replace(/{([\s\w]+)}/g, (m,t)=>{
+            const items = state.vault[t].items;
             return `<u>${items[Math.floor(Math.random()*items.length)]}</u>`;
         });
 
-        document.getElementById('decree-display').innerHTML = `<strong>[DECREE: ${catKey.toUpperCase()}]</strong><br><br>` + processed;
-        document.getElementById('pre-round-ui').style.display = 'none';
-        document.getElementById('active-round-ui').style.display = 'block';
+        document.getElementById('decree-display').innerHTML = `<strong>[${cat.toUpperCase()}]</strong><br><br>${p}`;
+        document.getElementById('pre-round-ui').style.display='none';
+        document.getElementById('active-round-ui').style.display='block';
         startTimer();
     }
 
     function renderVault() {
-        const mount = document.getElementById('vault-mount'); mount.innerHTML = '<span class="label">Arsenal Storage</span>';
-        for (let cat in state.vault) {
-            const safeId = cat.replace(/\s+/g, '');
-            mount.innerHTML += `<div class="box-section"><span class="label">${cat}</span><div class="tag-cloud" id="tags-${safeId}"></div><div class="add-row"><input type="text" id="in-${safeId}" placeholder="Add instrument..."><button onclick="addItem('${cat}')" class="g-btn" style="width:40px">+</button></div></div>`;
-            updateTags(cat);
+        const m = document.getElementById('vault-mount'); m.innerHTML = '<span class="label">Arsenal Storage</span>';
+        for(let c in state.vault){
+            const id = c.replace(/\s+/g,'');
+            m.innerHTML += `<div class="box-section"><span class="label">${c}</span><div class="tag-cloud" id="t-${id}"></div><input type="text" id="i-${id}" placeholder="Add..."><button onclick="add('${c}')">+</button></div>`;
+            upTags(c);
         }
     }
-    function updateTags(cat) {
-        const safeId = cat.replace(/\s+/g, ''); const cloud = document.getElementById(`tags-${safeId}`); cloud.innerHTML = '';
-        state.vault[cat].items.forEach((item, i) => { cloud.innerHTML += `<div class="tag on">${item} <span onclick="removeItem('${cat}', ${i})" style="cursor:pointer; color:black; font-weight:bold; margin-left:5px;">✕</span></div>`; });
+    function upTags(c){
+        const id = c.replace(/\s+/g,''); const cl = document.getElementById(`t-${id}`); cl.innerHTML='';
+        state.vault[c].items.forEach((it,i)=>{ cl.innerHTML += `<div class="tag">${it} <span onclick="rem('${c}',${i})">✕</span></div>`; });
     }
-    function addItem(cat) {
-        const id = cat.replace(/\s+/g, ''); const inp = document.getElementById(`in-${id}`);
-        if(inp.value.trim()){ state.vault[cat].items.push(inp.value.trim()); save(); updateTags(cat); inp.value = ''; }
+    function add(c){ const id=c.replace(/\s+/g,''); const i=document.getElementById(`i-${id}`); if(i.value){ state.vault[c].items.push(i.value); save(); upTags(c); i.value=''; } }
+    function rem(c,i){ state.vault[c].items.splice(i,1); save(); upTags(c); }
+    function save(){ localStorage.setItem('sov_v10', JSON.stringify(state.vault)); }
+    function renderToggles(m,d){
+        const mn = document.getElementById(m); mn.innerHTML='';
+        for(let k in d){ mn.innerHTML += `<button class="tog-btn ${d[k].active?'active':''}" onclick="state.${m==='arsenal-mount'?'vault':'cats'}['${k}'].active=!state.${m==='arsenal-mount'?'vault':'cats'}['${k}'].active; this.classList.toggle('active')">${k}</button>`; }
     }
-    function removeItem(cat, i) { state.vault[cat].items.splice(i, 1); save(); updateTags(cat); }
-    function save() { localStorage.setItem('sov_v9_vault', JSON.stringify(state.vault)); }
-    function renderToggles(m, d) {
-        const mount = document.getElementById(m); mount.innerHTML = '';
-        for (let k in d) { mount.innerHTML += `<button class="tog-btn ${d[k].active ? 'active' : ''}" onclick="state.${m==='arsenal-mount'?'vault':'cats'}['${k}'].active = !state.${m==='arsenal-mount'?'vault':'cats'}['${k}'].active; this.classList.toggle('active')">${k}</button>`; }
-    }
-    function changeEdge(v) { state.edges = Math.max(0, state.edges + v); document.getElementById('edge-val').innerText = state.edges; }
-    function updateStatus() { document.getElementById('status-bar').innerHTML = `<span>ROUND ${state.rounds.cur}/${state.rounds.total}</span><span>PEAKS: ${state.edges}</span>`; }
-    function vetoActivity() { library[state.currentCategoryKey].splice(state.currentActivityIndex, 1); actionGenerate(); }
-    function startTimer() {
-        let v = 600; clearInterval(state.int);
-        state.int = setInterval(() => { v--; document.getElementById('timer-text').innerText = `${Math.floor(v/60)}:${(v%60<10?'0':'')+v%60}`; if(v<=0) complete(); }, 1000);
-    }
-    function complete() {
+    function edge(v){ state.edges=Math.max(0,state.edges+v); document.getElementById('edge-val').innerText=state.edges; }
+    function updateStatus(){ document.getElementById('status-bar').innerHTML=`<span>ROUND ${state.rounds.cur}/${state.rounds.total}</span><span>PEAKS: ${state.edges}</span>`; }
+    function veto(){ actionGenerate(); }
+    function startTimer(){ let v=600; clearInterval(state.int); state.int=setInterval(()=>{v--; document.getElementById('timer-text').innerText=`${Math.floor(v/60)}:${(v%60<10?'0':'')+v%60}`; if(v<=0) complete();},1000); }
+    function complete(){
         clearInterval(state.int);
         if(state.rounds.cur >= state.rounds.total) renderFinal();
-        else { state.rounds.cur++; updateStatus(); document.getElementById('pre-round-ui').style.display = 'block'; document.getElementById('active-round-ui').style.display = 'none'; }
+        else { state.rounds.cur++; updateStatus(); document.getElementById('pre-round-ui').style.display='block'; document.getElementById('active-round-ui').style.display='none'; }
     }
-    function renderFinal() {
-        document.getElementById('screen-3').innerHTML = `<div style="text-align:center; color:var(--accent); font-weight:900; font-size:1.8rem;">FINAL CONSUMMATION</div>
-        <div class="box-section" style="margin-top:20px; font-style:italic;"><p>The protocol concludes. ${state.players[0].n} has achieved absolute dominance over ${state.players[1].n}. With ${state.edges} recorded peaks, the Subject is now to be sealed in <strong>${state.vault["The Bindings"].items[0]}</strong> for an indefinite period of aftercare and reflection. Sovereignty belongs to the Master.</p></div>
-        <button class="btn" onclick="location.reload()">Begin New Protocol</button>`;
+    function renderFinal(){
+        document.getElementById('screen-3').innerHTML = `<div style="text-align:center; color:var(--accent); font-weight:900; font-size:1.8rem;">FINAL DECREE</div>
+        <div class="box-section"><p>${state.players[0].n} has achieved absolute sovereignty. ${state.players[1].n} is to be placed in <strong>${state.vault["The Bindings"].items[0]}</strong> and <strong>{The Shadows}</strong> for an indefinite period of aftercare. Peaks recorded: ${state.edges}.</p></div>
+        <button class="btn" onclick="location.reload()">Reset</button>`;
     }
 </script>
 </body>
