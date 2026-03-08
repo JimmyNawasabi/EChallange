@@ -1,15 +1,224 @@
-<style>
-    .climax-box { background: linear-gradient(145deg, #1a0000, #000); border: 2px solid var(--accent); padding: 30px; border-radius: 20px; line-height: 1.8; color: #f0f0f0; }
-    .climax-step { margin-bottom: 25px; border-left: 3px solid var(--accent); padding-left: 15px; }
-    .climax-step h3 { color: var(--accent); text-transform: uppercase; margin-top: 0; font-size: 0.9rem; }
-    .winner-banner { text-align: center; color: var(--accent); font-size: 1.5rem; font-weight: 900; margin-bottom: 20px; text-shadow: 0 0 10px var(--accent); }
-</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sovereignty: The Command Protocol</title>
+    <style>
+        :root { 
+            --accent: #d4af37; --bg: #0a0a0a; --card: #161616;
+            --text: #ffffff; --crimson: #a00000; --success: #1e4d2b;
+        }
+
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
+        .container { max-width: 500px; width: 100%; background: var(--card); padding: 30px; border-radius: 30px; border: 2px solid #333; }
+        h1 { text-align: center; text-transform: uppercase; letter-spacing: 8px; color: var(--accent); margin-bottom: 5px; }
+        .subtitle { text-align: center; font-size: 0.7rem; color: #666; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 4px; }
+        
+        .box-section { background: #1f1f1f; padding: 20px; margin-bottom: 20px; border-radius: 20px; border: 1px solid #333; }
+        .label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 12px; }
+        
+        input[type="text"], input[type="number"] { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 12px; background: #000; color: white; font-size: 1.1rem; box-sizing: border-box; margin-bottom: 10px; }
+
+        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px; }
+        
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .tag { background: #000; padding: 8px 12px; border-radius: 10px; font-size: 0.85rem; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 5px; }
+        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
+        .tag .del { font-size: 10px; cursor: pointer; color: rgba(255,255,255,0.5); }
+
+        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .tog-btn { padding: 10px; font-size: 0.65rem; border-radius: 8px; border: 1px solid #333; background: #111; color: #555; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+        .tog-btn.active { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+
+        .timer-big { font-size: 4rem; text-align: center; font-weight: bold; margin: 10px 0; color: var(--accent); }
+        .step { display: none; }
+        .active { display: block !important; }
+
+        .decree-text { min-height: 180px; text-align: center; font-style: italic; line-height: 1.8; color: #ddd; display: flex; align-items: center; justify-content: center; padding: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>SOVEREIGNTY</h1>
+    <div class="subtitle">The Command Protocol</div>
+
+    <div id="screen-1" class="step active">
+        <input type="text" id="p1-name" placeholder="Master Name">
+        <input type="text" id="p2-name" placeholder="Subject Name">
+        <div class="box-section">
+            <span class="label">Rounds</span>
+            <input type="number" id="rounds-total" value="30">
+        </div>
+        <button class="btn" onclick="nav(2)">Initialize Arsenal</button>
+    </div>
+
+    <div id="screen-2" class="step">
+        <div id="vault-mount"></div>
+        <button class="btn" onclick="nav(3)">Finalize Protocol</button>
+    </div>
+
+    <div id="screen-3" class="step">
+        <div class="status-header" id="status-bar" style="margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;"></div>
+        
+        <div class="box-section" style="padding:15px;">
+            <span class="label">The Arsenal (Tools)</span>
+            <div class="toggle-grid" id="arsenal-mount"></div>
+            
+            <span class="label">The Decree Style (Action)</span>
+            <div class="toggle-grid" id="category-mount"></div>
+        </div>
+
+        <div id="pre-round-ui"><button class="btn" onclick="actionGenerate()">Generate Decree</button></div>
+        <div id="active-round-ui" style="display:none;">
+            <div class="box-section" id="decree-display" class="decree-text"></div>
+            <div class="timer-big" id="timer-text">10:00</div>
+            <button class="btn" style="background:var(--success);" onclick="complete()">Complete Round</button>
+        </div>
+    </div>
+</div>
 
 <script>
+    const defaultArsenal = {
+        "The Bindings": { items: ["Rope", "Cuffs", "Tape"], active: true },
+        "The Shadows": { items: ["Sleep Mask", "Silk Scarf"], active: true },
+        "The Discipline": { items: ["Paddle", "Cane"], active: true },
+        "The Silence": { items: ["Ball Gag", "Tape"], active: true },
+        "The Pleasures": { items: ["Wand", "Remote Toy"], active: true }
+    };
+
+    const decreeCats = {
+        "The Solitary Knot": { active: true, desc: "Subject must use {The Bindings} to secure themselves in a manner where they cannot escape without the Master's intervention. Once bound, they must wait in {The Shadows}." },
+        "The Devotion Test": { active: true, desc: "A dare of absolute submission. The Subject must allow the Master to apply {The Discipline} to a sensitive area while wearing {The Silence}." },
+        "The Unveiling": { active: true, desc: "Truth protocol. While bound by {The Bindings}, the Subject must confess a deep desire. Failure to satisfy the Master leads to a strike of {The Discipline}." },
+        "The Intricate Art": { active: true, desc: "The Master shall use {The Bindings} to create a complex Shibari harness. The Subject must remain perfectly still, their breath muffled by {The Silence}." },
+        "The Cruel Edge": { active: true, desc: "A trial of denial. The Master uses {The Pleasures} to bring the Subject to the brink, then abruptly stops, leaving them in {The Shadows} to thrum with unspent heat." },
+        "The Mortal Trial": { active: true, desc: "A physical challenge. The Subject must maintain a stress position while wearing {The Bindings}, enduring the weight of their own body and {The Discipline}." },
+        "The Great Escape": { active: true, desc: "The Master secures {The Bindings} with purposeful complexity. The Subject has until the timer ends to free themselves while blind by {The Shadows}." },
+        "The Tender Mercy": { active: true, desc: "Soft and sexy. The Master removes {The Silence} and uses {The Pleasures} with a gentle touch, focusing on slow, building intimacy." }
+    };
+
+    const state = {
+        rounds: { cur: 1, total: 30 },
+        vault: JSON.parse(localStorage.getItem('sov_arsenal')) || defaultArsenal,
+        cats: decreeCats
+    };
+
+    function nav(n) {
+        if (n === 2) renderVault();
+        if (n === 3) {
+            renderToggles('arsenal-mount', state.vault);
+            renderToggles('category-mount', state.cats);
+            updateStatus();
+        }
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById(`screen-${n}`).classList.add('active');
+    }
+
+    function renderVault() {
+        const mount = document.getElementById('vault-mount');
+        mount.innerHTML = '<span class="label">Seductive Tool Management</span>';
+        for (let cat in state.vault) {
+            const safeId = cat.replace(/\s+/g, '');
+            const div = document.createElement('div');
+            div.className = 'box-section';
+            div.innerHTML = `<span class="label">${cat}</span><div class="tag-cloud" id="tags-${safeId}"></div>
+                             <div class="add-row"><input type="text" id="in-${safeId}" placeholder="New..."><button onclick="addItem('${cat}')" class="add-btn">+</button></div>`;
+            mount.appendChild(div);
+            updateTags(cat);
+        }
+    }
+
+    function updateTags(cat) {
+        const safeId = cat.replace(/\s+/g, '');
+        const cloud = document.getElementById(`tags-${safeId}`);
+        cloud.innerHTML = '';
+        state.vault[cat].items.forEach((item, index) => {
+            const tag = document.createElement('div');
+            tag.className = 'tag on';
+            tag.innerHTML = `${item} <span class="del" onclick="removeItem('${cat}', ${index})">✕</span>`;
+            cloud.appendChild(tag);
+        });
+    }
+
+    function addItem(cat) {
+        const safeId = cat.replace(/\s+/g, '');
+        const input = document.getElementById(`in-${safeId}`);
+        if(input.value.trim()){
+            state.vault[cat].items.push(input.value.trim());
+            save(); updateTags(cat); input.value = '';
+        }
+    }
+
+    function removeItem(cat, index) {
+        state.vault[cat].items.splice(index, 1);
+        save(); updateTags(cat);
+    }
+
+    function renderToggles(mountId, dataSource) {
+        const mount = document.getElementById(mountId);
+        mount.innerHTML = '';
+        for (let key in dataSource) {
+            const btn = document.createElement('button');
+            btn.className = `tog-btn ${dataSource[key].active ? 'active' : ''}`;
+            btn.innerText = key;
+            btn.onclick = () => {
+                dataSource[key].active = !dataSource[key].active;
+                btn.classList.toggle('active');
+                save();
+            };
+            mount.appendChild(btn);
+        }
+    }
+
+    function actionGenerate() {
+        const activeArsenal = Object.keys(state.vault).filter(k => state.vault[k].active);
+        const activeCats = Object.keys(state.cats).filter(k => state.cats[k].active);
+
+        // Filter categories that use tools currently active in the arsenal
+        const possible = activeCats.filter(catKey => {
+            const template = state.cats[catKey].desc;
+            const needed = template.match(/{([\s\w]+)}/g) || [];
+            return needed.every(n => activeArsenal.includes(n.replace(/{|}/g, '')));
+        });
+
+        if (possible.length === 0) {
+            alert("No matching activities for current Arsenal/Category selection.");
+            return;
+        }
+
+        const selectedKey = possible[Math.floor(Math.random()*possible.length)];
+        let decree = `[${selectedKey.toUpperCase()}]\n\n` + state.cats[selectedKey].desc;
+        
+        decree = decree.replace(/{([\s\w]+)}/g, (m, tool) => {
+            const pool = state.vault[tool].items;
+            return `**${pool[Math.floor(Math.random()*pool.length)]}**`;
+        });
+
+        document.getElementById('decree-display').innerHTML = decree.replace(/\n/g, '<br>');
+        document.getElementById('pre-round-ui').style.display = 'none';
+        document.getElementById('active-round-ui').style.display = 'block';
+        startTimer();
+    }
+
+    function startTimer() {
+        let val = 600;
+        const display = document.getElementById('timer-text');
+        if(state.int) clearInterval(state.int);
+        state.int = setInterval(() => {
+            val--;
+            let m = Math.floor(val/60), s = val%60;
+            display.innerText = `${m}:${s<10?'0'+s:s}`;
+            if(val <= 0) complete();
+        }, 1000);
+    }
+
     function complete() {
-        clearInterval(state.timer.int);
+        clearInterval(state.int);
         if(state.rounds.cur >= state.rounds.total) {
-            renderFinalClimax();
+            alert("PROTOCOL CONSUMMATED.");
+            location.reload();
         } else {
             state.rounds.cur++;
             updateStatus();
@@ -18,41 +227,10 @@
         }
     }
 
-    function renderFinalClimax() {
-        const winner = state.cards.r || state.players[0].n;
-        const playArea = document.getElementById('screen-3');
-        playArea.innerHTML = `
-            <div class="winner-banner">PROTOCOL CONSUMMATED</div>
-            <div class="box-section" style="text-align:center; margin-bottom:20px;">
-                <span class="label">The Sovereign Choice</span>
-                <p>${winner} has been awarded the Right of Command. They shall now decide the final roles for the Evening's Climax.</p>
-            </div>
-            
-            <div class="climax-box">
-                <div class="climax-step">
-                    <h3>Phase I: Total Enclosure (60-90 Mins)</h3>
-                    <p>The Master shall use <strong>{The Bindings}</strong> to create a comprehensive web of restraint. The Subject is to be positioned in a fixed, immobile state—wrist to ankle, or spread-eagle. <strong>{The Shadows}</strong> must be applied to erase the world, while <strong>{The Silence}</strong> ensures the Subject's only form of communication is through their body's reaction to the Master's touch.</p>
-                </div>
-
-                <div class="climax-step">
-                    <h3>Phase II: The Crucible (60 Mins)</h3>
-                    <p>Using a rhythmic application of <strong>{The Discipline}</strong>, the Master will mark the Subject's flesh, building a slow, internal heat. This is a trial of endurance. Between strikes, <strong>{The Pleasures}</strong> are to be introduced—remote-controlled or constant—keeping the Subject balanced on the razor's edge of sensory overload.</p>
-                </div>
-
-                <div class="climax-step">
-                    <h3>Phase III: The Final Sovereignty (The Climax)</h3>
-                    <p>The Master dictates the pace of the final release. Every breath and every muscle twitch belongs to the Sovereign. The Subject will remain bound and silenced until the Master reaches their own climax, using the Subject as the ultimate vessel for their satisfaction. Only then may the bindings be loosened for RACK-compliant aftercare.</p>
-                </div>
-            </div>
-
-            <button class="btn" onclick="location.reload()" style="margin-top:20px;">Archive Protocol & Exit</button>
-        `;
-
-        // Inject current arsenal items into the finale text
-        const box = playArea.querySelector('.climax-box');
-        box.innerHTML = box.innerHTML.replace(/{([\s\w]+)}/g, (m, cat) => {
-            const pool = state.vault[cat].items;
-            return `<span style="color:var(--accent)">${pool[Math.floor(Math.random()*pool.length)]}</span>`;
-        });
+    function save() { localStorage.setItem('sov_arsenal', JSON.stringify(state.vault)); }
+    function updateStatus() {
+        document.getElementById('status-bar').innerHTML = `<div style="text-align:center; font-size:0.8rem; color:var(--accent); font-weight:bold;">ROUND ${state.rounds.cur} / ${state.rounds.total}</div>`;
     }
 </script>
+</body>
+</html>
