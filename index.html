@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Grand Finale Fixed</title>
+    <title>SOVEREIGNTY: Final Master Edition</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto: #444; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -14,6 +14,11 @@
         input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; margin-bottom: 10px; }
         .btn { background: var(--crimson); color: white; border: none; padding: 16px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 5px; transition: 0.2s; }
         .btn:active { transform: scale(0.98); }
+        .tog-btn { padding: 10px; font-size: 0.65rem; border-radius: 6px; border: 1px solid #444; background: #111; color: #555; cursor: pointer; text-transform: uppercase; }
+        .tog-btn.active { border-color: var(--accent); color: var(--accent); background: #1a1608; }
+        .item-chip { display: inline-flex; align-items: center; background: #333; padding: 6px 12px; border-radius: 20px; margin: 4px; font-size: 0.8rem; border: 1px solid #444; cursor: pointer; }
+        .item-chip.off { opacity: 0.3; text-decoration: line-through; background: #111; }
+        .remove-x { margin-left: 10px; color: var(--crimson); font-weight: bold; }
         .score-row { display: flex; justify-content: space-between; padding: 12px; background: #000; border-radius: 12px; border: 1px solid #222; text-align: center; margin-bottom: 15px; }
         .role-tag { font-size: 0.6rem; font-weight: bold; color: #444; }
         .master-glow { color: var(--accent) !important; text-shadow: 0 0 5px var(--accent); }
@@ -65,12 +70,11 @@
         <div style="font-size:2rem; color:var(--accent); text-align:center; margin-bottom:10px;">GRAND FINALE</div>
         <div class="box-section" style="text-align:center;"><h2 id="winner-banner" style="color:var(--accent); margin:0;"></h2></div>
         <div class="box-section">
-            <span class="label">The Grand Decree (Consensual Adult/RACK Protocol)</span>
+            <span class="label">The Grand Decree (Adult/RACK Protocol)</span>
             <div id="grand-decree-display" class="grand-decree-text"></div>
             <button class="btn" style="background:#333; font-size:0.7rem;" onclick="generateGrandDecree()">Re-Generate Challenge</button>
         </div>
         <div class="box-section">
-            <span class="label">Final Role Allocation:</span>
             <div style="display:flex; gap:10px;">
                 <button class="btn" style="flex:1; background:var(--success);" id="choice-1" onclick="finalize()"></button>
                 <button class="btn" style="flex:1; background:var(--crimson);" id="choice-2" onclick="finalize()"></button>
@@ -81,34 +85,46 @@
 
 <script>
     const state = {
-        curr: 1, total: 30, lastProtocol: null, lastPromptIdx: null,
+        curr: 1, total: 30, lastProtocol: null,
         players: [{n:"", role:"Master", score:0}, {n:"", role:"Slave", score:0}],
-        vault: {
+        vault: JSON.parse(localStorage.getItem('sov_vault_v29')) || {
             "Restraints": [{n:"Heavy Rope", a:true}], "Gags": [{n:"Ball Gag", a:true}], "Blindfolds": [{n:"Leather Mask", a:true}], 
             "Sensory": [{n:"Ice Blocks", a:true}], "Toys": [{n:"Vibrator", a:true}], "Impact": [{n:"Heavy Flogger", a:true}]
         },
         prompts: {
-            "The Solitary Bind": ["{S}, use the {T} to bind your own wrists behind your back tightly. Kneel and await {M}'s inspection."],
-            "The Threshold of Agony": ["{M} will use {T} to edge {S} to the absolute brink. {S} is forbidden from climaxing until ordered."],
-            "The Veiled Confession": ["With the {T} firmly applied, {S} must whimper a detailed confession of absolute submission."]
+            "The Solitary Bind": ["{S}, use {T} to bind your own wrists behind your back. Kneel and await {M}."],
+            "The Threshold of Agony": ["{M} will use {T} to edge {S} to the brink. No release until ordered."],
+            "The Veiled Confession": ["With {T} applied, {S} must whimper a confession of submission."]
         }
     };
 
     function showStep(n) { document.querySelectorAll('[id^="step-"]').forEach(s=>s.style.display='none'); document.getElementById('step-'+n).style.display='block'; if(n==2) renderInventory(); }
+    
     function renderInventory() {
-        const m = document.getElementById('inventory-editor'); m.innerHTML = '<h3 style="color:var(--accent);text-align:center;font-size:0.8rem">VERIFY ARSENAL</h3>';
+        const m = document.getElementById('inventory-editor'); m.innerHTML = '<h3 style="color:var(--accent);text-align:center;font-size:0.8rem">MANAGE ARSENAL</h3>';
         for(let c in state.vault) {
-            let h = `<div class="box-section"><span class="label">${c}</span>`;
-            state.vault[c].forEach(it => h += `<span style="background:#333; padding:5px; margin:2px; border-radius:5px; display:inline-block; font-size:0.8rem;">${it.n}</span>`);
-            m.innerHTML += h + '</div>';
+            let h = `<div class="box-section"><span class="label">${c}</span><div>`;
+            state.vault[c].forEach((it, i) => {
+                h += `<span class="item-chip ${it.a?'':'off'}" onclick="toggleItem('${c}',${i})">${it.n} <span class="remove-x" onclick="removeItem('${c}',${i}); event.stopPropagation()">×</span></span>`;
+            });
+            h += `</div><div style="display:flex; gap:5px; margin-top:10px;"><input type="text" id="add-${c}" placeholder="New item..." style="margin:0;"><button class="tog-btn active" style="flex:0.4" onclick="addItem('${c}')">ADD</button></div></div>`;
+            m.innerHTML += h;
         }
+    }
+
+    function toggleItem(c, i) { state.vault[c][i].a = !state.vault[c][i].a; renderInventory(); }
+    function removeItem(c, i) { state.vault[c].splice(i, 1); renderInventory(); }
+    function addItem(c) { 
+        const v = document.getElementById('add-'+c).value; 
+        if(v) { state.vault[c].push({n:v, a:true}); renderInventory(); } 
     }
 
     function startSession() {
         state.players[0].n = document.getElementById('p0-name').value;
         state.players[1].n = document.getElementById('p1-name').value;
-        state.total = parseInt(document.getElementById('round-total').value);
-        document.getElementById('panic-label').innerText = document.getElementById('safeword-in').value;
+        state.total = parseInt(document.getElementById('round-total').value) || 30;
+        document.getElementById('panic-label').innerText = document.getElementById('safeword-in').value || "RED";
+        localStorage.setItem('sov_vault_v29', JSON.stringify(state.vault));
         showStep(3); renderGame();
     }
 
@@ -126,15 +142,14 @@
     function generate() {
         const pk = Object.keys(state.prompts);
         state.lastProtocol = pk[Math.floor(Math.random()*pk.length)];
-        state.lastPromptIdx = 0;
         const p = state.prompts[state.lastProtocol][0];
         const m = state.players.find(x=>x.role==='Master'), s = state.players.find(x=>x.role==='Slave');
-        document.getElementById('decree-display').innerHTML = `<strong>${state.lastProtocol}</strong><br><br>${p.replace(/{M}/g, m.n).replace(/{S}/g, s.n).replace(/{T}/g, "Active Arsenal Item")}`;
+        document.getElementById('decree-display').innerHTML = `<strong>${state.lastProtocol}</strong><br><br>${p.replace(/{M}/g, m.n).replace(/{S}/g, s.n).replace(/{T}/g, "Arsenal Item")}`;
         document.getElementById('game-controls').style.display = 'none';
         document.getElementById('decree-view').style.display = 'block';
     }
 
-    function vetoCurrent() { if(confirm("Purge this decree?")) { delete state.prompts[state.lastProtocol]; generate(); } }
+    function vetoCurrent() { if(confirm("Purge decree?")) { delete state.prompts[state.lastProtocol]; generate(); } }
     function triggerSafeword() { state.players.find(p=>p.role==='Slave').score -= 5; resolve('fail'); }
 
     function resolve(type) {
@@ -150,24 +165,23 @@
         const los = state.players.find(p=>p!==win);
         state.win = win; state.los = los;
         document.getElementById('winner-banner').innerText = `${win.n} IS VICTORIOUS`;
-        document.getElementById('choice-1').innerText = `${win.n} (MASTER)`;
-        document.getElementById('choice-2').innerText = `${win.n} (SLAVE)`;
-        generateGrandDecree();
-        showStep(4);
+        document.getElementById('choice-1').innerText = `${win.n} (FINAL MASTER)`;
+        document.getElementById('choice-2').innerText = `${win.n} (FINAL SLAVE)`;
+        generateGrandDecree(); showStep(4);
     }
 
     function generateGrandDecree() {
         const tasks = [
-            "IMMOBILIZATION: {S} is secured using {T1}. No movement permitted.",
-            "SENSORY FOCUS: Apply {T2}. {S} is to be left in darkness for 10 minutes.",
-            "ENDURANCE TEST: {M} delivers 50 strikes with {T3}. {S} must count each.",
-            "EDGING PROTOCOL: Using {T4}, {M} edges {S} 5 times. No release.",
-            "SILENCING: {S} is fitted with {T5} for the duration of the prize.",
-            "MASTER'S REWARD: {S} focuses on {M}'s pleasure until {M} reaches climax.",
-            "FINAL VOW: {S} recites submission under the weight of {T6}."
+            "IMMOBILIZATION: {S} is secured using {T1}. Immobility mandatory.",
+            "SENSORY FOCUS: Apply {T2}. Darkness for 15 minutes.",
+            "ENDURANCE: {M} delivers 50 strikes with {T3}. {S} must count aloud.",
+            "EDGING: Using {T4}, {M} edges {S} 5 times. No release permitted.",
+            "SILENCING: {S} is fitted with {T5} for the duration.",
+            "MASTER'S REWARD: {S} focuses on {M}'s pleasure until {M} climaxes.",
+            "FINAL VOW: {S} recites submission under {T6}."
         ];
         let d = `<strong>FINAL MANDATE:</strong><br><br>`;
-        tasks.forEach((t, i) => {
+        tasks.sort(()=>0.5-Math.random()).forEach((t, i) => {
             d += `${i+1}. ${t.replace('{M}', state.win.n).replace('{S}', state.los.n)
                 .replace('{T1}', state.vault.Restraints[0].n).replace('{T2}', state.vault.Blindfolds[0].n)
                 .replace('{T3}', state.vault.Impact[0].n).replace('{T4}', state.vault.Toys[0].n)
@@ -177,7 +191,7 @@
         document.getElementById('grand-decree-display').innerHTML = d;
     }
 
-    function finalize() { alert("The Grand Decree is in effect."); location.reload(); }
+    function finalize() { alert("Grand Decree Activated."); location.reload(); }
 </script>
 </body>
 </html>
