@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Intercept Build</title>
+    <title>SOVEREIGNTY: Master's Gateway</title>
     <style>
         :root { 
             --accent: #0056b3; 
@@ -26,8 +26,7 @@
         .container { 
             max-width: 750px; width: 100%; 
             background: var(--card); 
-            padding: 35px; 
-            border-radius: 25px; 
+            padding: 35px; border-radius: 25px; 
             border: 4px solid var(--accent); 
             box-shadow: 0 0 70px #000; 
         }
@@ -36,31 +35,26 @@
             text-align: center; text-transform: uppercase; 
             letter-spacing: 10px; color: var(--text); 
             margin-bottom: 35px; font-size: 3.5rem; 
-            border-bottom: 6px solid var(--accent);
-            padding-bottom: 15px;
+            border-bottom: 6px solid var(--accent); padding-bottom: 15px;
         }
 
         .box-section { 
-            background: #000000; 
-            padding: 30px; 
-            margin-bottom: 25px; 
-            border-radius: 15px; 
+            background: #000; padding: 30px; 
+            margin-bottom: 25px; border-radius: 15px; 
             border: 3px solid #333; 
         }
         
         .label { 
-            font-size: 1.3rem; 
-            text-transform: uppercase; font-weight: bold; 
-            color: var(--accent); display: block; 
-            margin-bottom: 15px; letter-spacing: 2px; 
+            font-size: 1.4rem; text-transform: uppercase; 
+            font-weight: bold; color: var(--accent); 
+            display: block; margin-bottom: 15px; letter-spacing: 2px; 
         }
 
-        input[type="text"], input[type="number"], select { 
+        input[type="text"], input[type="number"] { 
             width: 100%; padding: 22px; 
-            border: 3px solid var(--accent); 
-            border-radius: 10px; background: #000; 
-            color: white; box-sizing: border-box; 
-            margin-bottom: 20px; font-size: 1.6rem; 
+            border: 3px solid var(--accent); border-radius: 10px; 
+            background: #000; color: white; 
+            box-sizing: border-box; margin-bottom: 20px; font-size: 1.6rem; 
         }
         
         .btn { 
@@ -68,8 +62,7 @@
             border: 3px solid #FFF; padding: 25px; 
             width: 100%; cursor: pointer; 
             text-transform: uppercase; font-weight: bold; 
-            border-radius: 15px; margin-top: 15px; 
-            font-size: 1.6rem; 
+            border-radius: 15px; margin-top: 15px; font-size: 1.6rem; 
         }
         
         .score-row { 
@@ -78,40 +71,23 @@
             border-radius: 20px; border: 4px solid var(--accent); 
             text-align: center; margin-bottom: 30px; 
         }
-        .p-name { font-weight: bold; font-size: 1.6rem; color: #FFF; margin-bottom: 10px; }
-        .p-score { font-size: 3rem; color: #FFF; font-weight: 900; }
+        .p-name { font-weight: bold; font-size: 1.7rem; color: #FFF; }
+        .p-score { font-size: 3.2rem; color: #FFF; font-weight: 900; }
         
+        .tog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
         .tog-btn { 
-            padding: 20px; font-size: 1.2rem; 
+            padding: 22px; font-size: 1.2rem; 
             border-radius: 12px; border: 3px solid #444; 
             background: #000; color: #777; 
             cursor: pointer; text-transform: uppercase; 
-            font-weight: bold; transition: 0.2s; 
-            text-align: center;
+            font-weight: bold; text-align: center;
         }
         .tog-btn.active { 
             border-color: #FFF; color: #FFF; 
             background: var(--accent); 
         }
 
-        .m-btn { 
-            border-radius: 12px; padding: 20px; 
-            font-size: 1.1rem; font-weight: bold; 
-            text-transform: uppercase; cursor: pointer; 
-            opacity: 0.2; pointer-events: none; border: 3px solid #FFF; 
-        }
-        .m-btn.active-card { opacity: 1; pointer-events: auto; }
-        .r-card { background: var(--crimson); color: #FFF; }
-
-        #decree-display { line-height: 1.8; color: #FFF; font-size: 1.6rem; font-weight: 600; }
-        
-        .item-chip { 
-            display: inline-flex; align-items: center; 
-            background: #1a1a1a; padding: 12px 22px; 
-            border-radius: 40px; margin: 8px; 
-            font-size: 1.4rem; border: 3px solid var(--accent); 
-        }
-        .tag { font-size: 0.9rem; font-weight: 900; background: #FFF; color: #000; padding: 4px 10px; border-radius: 6px; margin-left: 12px; }
+        #decree-display { line-height: 1.8; color: #FFF; font-size: 1.8rem; font-weight: 600; text-align: center; }
     </style>
 </head>
 <body>
@@ -121,146 +97,150 @@
 
     <div id="step-1">
         <div class="box-section">
-            <span class="label">Player 1</span>
+            <span class="label">Master Name</span>
             <input type="text" id="p0-name" value="Dominus">
-            <span class="label">Player 2</span>
+            <span class="label">Slave Name</span>
             <input type="text" id="p1-name" value="Subject">
             <span class="label">Total Rounds</span>
             <input type="number" id="round-total" value="30">
         </div>
-        <button class="btn" onclick="showStep(2)">Configure Arsenal</button>
-    </div>
-
-    <div id="step-2" style="display:none;">
-        <div id="inventory-editor"></div>
-        <button class="btn" style="background:var(--success);" onclick="startSession()">Start Session</button>
+        <button class="btn" onclick="startSession()">Commence Session</button>
     </div>
 
     <div id="step-3" style="display:none;">
-        <div id="round-ui" style="text-align:center; color:var(--accent); margin-bottom:20px; font-weight:900; letter-spacing: 4px; font-size: 1.8rem;"></div>
+        <div id="round-header" style="text-align:center; color:var(--accent); margin-bottom:20px; font-weight:900; letter-spacing: 4px; font-size: 2rem;"></div>
         
         <div class="score-row">
-            <div class="p-block"><div class="label">MASTER</div><div id="n0" class="p-name"></div><div id="s0" class="p-score">0</div></div>
-            <div class="p-block"><div class="label">SLAVE</div><div id="n1" class="p-name"></div><div id="s1" class="p-score">0</div></div>
+            <div class="p-block"><div class="label">MASTER</div><div id="disp-master" class="p-name"></div><div id="score-master" class="p-score">0</div></div>
+            <div class="p-block"><div class="label">SLAVE</div><div id="disp-slave" class="p-name"></div><div id="score-slave" class="p-score">0</div></div>
         </div>
         
-        <div id="round-setup">
+        <div id="round-config">
              <div class="box-section">
-                 <span class="label">Master: Authorize Arsenal for this Decree</span>
-                 <div id="toggle-grid" style="display:grid; grid-template-columns: 1fr; gap:15px;"></div>
+                 <span class="label" id="config-title">ARSENAL AUTHORIZATION</span>
+                 <div id="toggle-grid" class="tog-grid"></div>
              </div>
-             <button class="btn" onclick="generate()">Issue Decree</button>
+             <button class="btn" onclick="generateDecree()">Issue Decree</button>
         </div>
 
         <div id="decree-view" style="display:none;">
             <div class="box-section"><div id="decree-display"></div></div>
             <div style="display:flex; gap:20px;">
-                <button class="btn" style="background:#333; flex:1;" onclick="resolve('fail')">FAIL</button>
-                <button class="btn" style="background:var(--success); flex:1;" onclick="resolve('success')">SUCCESS</button>
+                <button class="btn" style="background:#333; flex:1;" onclick="resolveRound(false)">FAIL</button>
+                <button class="btn" style="background:var(--success); flex:1;" onclick="resolveRound(true)">SUCCESS</button>
             </div>
-            <button id="r-btn" class="m-btn r-card" style="width:100%; margin-top:20px;" onclick="generate()">Red Card: Reroll</button>
         </div>
     </div>
 
     <div id="step-4" style="display:none;">
-        <h1>FINALE</h1>
-        <button class="btn" onclick="location.reload()">New Session</button>
+        <h1>SESSION COMPLETE</h1>
+        <button class="btn" onclick="location.reload()">Reset Vault</button>
     </div>
 </div>
 
 <script>
     const state = {
-        curr: 1, total: 30,
+        curr: 1, 
+        total: 30,
         players: [
-            {n:"", g:"M", role:"Master", score:0},
-            {n:"", g:"F", role:"Slave", score:0}
+            {n:"", role:"Master", score:0, g:"M"},
+            {n:"", role:"Slave", score:0, g:"F"}
         ],
-        vault: JSON.parse(localStorage.getItem('sov_v10_intercept')) || {
-            "The Shackles": [{n:"Handcuffs", a:true, t:"U"}],
-            "The Silence": [{n:"Ball Gag", a:true, t:"U"}],
-            "The Shadows": [{n:"Blindfold", a:true, t:"U"}],
-            "The Discipline": [{n:"Whip", a:true, t:"U"}],
-            "The Senses": [{n:"Ice", a:true, t:"U"}],
-            "The Pleasure": [{n:"Vibrator", a:true, t:"F"}]
+        vault: {
+            "The Shackles": ["Handcuffs", "Rope Ties", "Leg Irons"],
+            "The Silence": ["Ball Gag", "Cleave Gag", "Tape"],
+            "The Shadows": ["Blindfold", "Hood", "Sleep Mask"],
+            "The Discipline": ["Cane", "Paddle", "Whip"],
+            "The Senses": ["Ice", "Feather", "Wand"],
+            "The Pleasure": ["Vibrator", "Stimulator"]
         },
-        roundExcluded: []
+        activeRoundCats: [] // Categories authorized for the current round
     };
-
-    function showStep(n) {
-        document.querySelectorAll('[id^="step-"]').forEach(s => s.style.display = 'none');
-        document.getElementById('step-' + n).style.display = 'block';
-        if (n === 2) renderInventory();
-    }
-
-    function renderInventory() {
-        const container = document.getElementById('inventory-editor');
-        container.innerHTML = '<h2 style="text-align:center;">VAULT</h2>';
-        for (let cat in state.vault) {
-            container.innerHTML += `<div class="box-section"><span class="label">${cat}</span><div id="items-${cat}"></div></div>`;
-            const itemBox = document.getElementById(`items-${cat}`);
-            state.vault[cat].forEach(item => {
-                itemBox.innerHTML += `<span class="item-chip">${item.n} <span class="tag">${item.t}</span></span>`;
-            });
-        }
-    }
 
     function startSession() {
         state.players[0].n = document.getElementById('p0-name').value;
         state.players[1].n = document.getElementById('p1-name').value;
-        state.total = document.getElementById('round-total').value;
-        showStep(3); renderRound();
+        state.total = parseInt(document.getElementById('round-total').value);
+        // Default: All categories enabled for first round
+        state.activeRoundCats = Object.keys(state.vault); 
+        document.getElementById('step-1').style.display = 'none';
+        document.getElementById('step-3').style.display = 'block';
+        renderRound();
     }
 
     function renderRound() {
-        if(state.curr > state.total) return showStep(4);
-        document.getElementById('round-ui').innerText = `ROUND ${state.curr} / ${state.total}`;
-        document.getElementById('n0').innerText = state.players.find(p=>p.role==='Master').n;
-        document.getElementById('n1').innerText = state.players.find(p=>p.role==='Slave').n;
-        document.getElementById('s0').innerText = state.players.find(p=>p.role==='Master').score;
-        document.getElementById('s1').innerText = state.players.find(p=>p.role==='Slave').score;
+        if(state.curr > state.total) {
+            document.getElementById('step-3').style.display = 'none';
+            document.getElementById('step-4').style.display = 'block';
+            return;
+        }
 
+        const master = state.players.find(p => p.role === "Master");
+        const slave = state.players.find(p => p.role === "Slave");
+
+        document.getElementById('round-header').innerText = `ROUND ${state.curr} / ${state.total}`;
+        document.getElementById('disp-master').innerText = master.n;
+        document.getElementById('disp-slave').innerText = slave.n;
+        document.getElementById('score-master').innerText = master.score;
+        document.getElementById('score-slave').innerText = slave.score;
+        document.getElementById('config-title').innerText = `${master.n.toUpperCase()}: AUTHORIZE ARSENAL`;
+
+        // Render Toggles
         const grid = document.getElementById('toggle-grid');
         grid.innerHTML = '';
         Object.keys(state.vault).forEach(cat => {
-            const isActive = !state.roundExcluded.includes(cat);
             const btn = document.createElement('div');
-            btn.className = `tog-btn ${isActive ? 'active' : ''}`;
+            btn.className = `tog-btn ${state.activeRoundCats.includes(cat) ? 'active' : ''}`;
             btn.innerText = cat;
             btn.onclick = () => {
-                if(isActive) state.roundExcluded.push(cat);
-                else state.roundExcluded = state.roundExcluded.filter(c => c !== cat);
+                if(state.activeRoundCats.includes(cat)) {
+                    state.activeRoundCats = state.activeRoundCats.filter(c => c !== cat);
+                } else {
+                    state.activeRoundCats.push(cat);
+                }
                 renderRound();
             };
             grid.appendChild(btn);
         });
     }
 
-    function generate() {
-        const availableCats = Object.keys(state.vault).filter(c => !state.roundExcluded.includes(c));
-        if(availableCats.length === 0) return alert("Master must authorize at least one category.");
+    function generateDecree() {
+        if(state.activeRoundCats.length === 0) {
+            alert("The Master must authorize at least one category for the Decree.");
+            return;
+        }
+
+        const master = state.players.find(p => p.role === "Master");
+        const slave = state.players.find(p => p.role === "Slave");
         
-        const cat = availableCats[Math.floor(Math.random()*availableCats.length)];
-        const sub = state.players.find(p => p.role === 'Slave');
-        const dom = state.players.find(p => p.role === 'Master');
-        const items = state.vault[cat].filter(i => i.t === 'U' || i.t === sub.g);
-        
-        const item = items[Math.floor(Math.random()*items.length)];
-        document.getElementById('decree-display').innerHTML = `<strong>${cat} Protocol</strong><br><br>${dom.n} shall utilize ${item.n} upon ${sub.n}.`;
-        
-        document.getElementById('round-setup').style.display = 'none';
+        const selectedCat = state.activeRoundCats[Math.floor(Math.random() * state.activeRoundCats.length)];
+        const itemList = state.vault[selectedCat];
+        const selectedItem = itemList[Math.floor(Math.random() * itemList.length)];
+
+        document.getElementById('decree-display').innerHTML = `
+            <span style="color:var(--accent); text-transform:uppercase; letter-spacing:2px;">${selectedCat} PROTOCOL</span><br><br>
+            ${master.n} shall apply <strong>${selectedItem}</strong> to ${slave.n}.
+        `;
+
+        document.getElementById('round-config').style.display = 'none';
         document.getElementById('decree-view').style.display = 'block';
-        document.getElementById('r-btn').style.opacity = '1';
-        document.getElementById('r-btn').style.pointerEvents = 'auto';
     }
 
-    function resolve(res) {
-        if(res === 'success') {
-            state.players.forEach(p => p.role = p.role === 'Master' ? 'Slave' : 'Master');
-            state.players.find(p => p.role === 'Master').score++; 
+    function resolveRound(success) {
+        if(success) {
+            // Success: Slave points and role swap
+            state.players.find(p => p.role === "Slave").score++;
+            state.players.forEach(p => p.role = (p.role === "Master" ? "Slave" : "Master"));
+        } else {
+            // Fail: Master keeps control and gets a point
+            state.players.find(p => p.role === "Master").score++;
         }
+
         state.curr++;
-        state.roundExcluded = [];
-        document.getElementById('round-setup').style.display = 'block';
+        // Reset authorized categories for the new round
+        state.activeRoundCats = Object.keys(state.vault); 
+        
+        document.getElementById('round-config').style.display = 'block';
         document.getElementById('decree-view').style.display = 'none';
         renderRound();
     }
