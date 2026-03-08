@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Absolute Protocol</title>
+    <title>SOVEREIGNTY: Absolute Realism</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -93,17 +93,30 @@
     const state = {
         curr: 1, total: 30,
         players: [{n:"", g:"M", role:"Master", score:0}, {n:"", g:"F", role:"Slave", score:0}],
-        vault: JSON.parse(localStorage.getItem('sov_v18')) || {
-            "Restraints": [ {n:"Rope", a:true}, {n:"Cuffs", a:true} ],
-            "Sensory": [ {n:"Blindfold", a:true}, {n:"Hood", a:true} ],
-            "Discipline": [ {n:"Flogger", a:true}, {n:"Cane", a:true} ],
-            "Oral": [ {n:"Ball Gag", a:true}, {n:"Tape", a:true} ]
+        vault: JSON.parse(localStorage.getItem('sov_v19')) || {
+            "Restraints": [ {n:"Rope", a:true}, {n:"Steel Cuffs", a:true}, {n:"Zip Ties", a:true} ],
+            "Gags": [ {n:"Ball Gag", a:true}, {n:"Ring Gag", a:true}, {n:"Bit Gag", a:true} ],
+            "Blindfolds": [ {n:"Silk Scarf", a:true}, {n:"Leather Blindfold", a:true}, {n:"Sleep Mask", a:true} ],
+            "Sensory": [ {n:"Feather", a:true}, {n:"Wartenberg Wheel", a:true}, {n:"Ice Cube", a:true} ],
+            "Toys": [ {n:"Wand", a:true}, {n:"Rabbit", a:true}, {n:"Glass Plug", a:true} ],
+            "Impact": [ {n:"Flogger", a:true}, {n:"Cane", a:true}, {n:"Paddle", a:true} ]
         },
         protocols: {
             "The Solitary Bind": true, "The Wicked Gamble": true, "The Veiled Confession": true,
             "The Silk Labyrinth": true, "The Threshold of Agony": true, "The Flesh Endurance": true,
             "The Great Unshackling": true, "The Velvet Command": true
         }
+    };
+
+    const protocolToCategory = {
+        "The Solitary Bind": "Restraints",
+        "The Wicked Gamble": "Impact",
+        "The Veiled Confession": "Gags",
+        "The Silk Labyrinth": "Restraints",
+        "The Threshold of Agony": "Toys",
+        "The Flesh Endurance": "Restraints",
+        "The Great Unshackling": "Restraints",
+        "The Velvet Command": "Sensory"
     };
 
     const promptLibrary = {
@@ -113,15 +126,15 @@
         ],
         "The Wicked Gamble": [
             "{M} commands {S} to endure 10 heavy strikes from the {T}. If {S} makes a single sound, the count restarts from zero. If {S} remains silent, {M} must provide a rewarding touch.",
-            "{S} must balance the {T} on {SP} tongue for 60 seconds while holding a deep squat. If it falls, {M} will apply a disciplinary penalty of {M}'s choosing."
+            "{M} will strike {S} with the {T} across the thighs. After each hit, {S} must thank {M} clearly. If the gratitude is not sincere, {M} will double the force."
         ],
         "The Veiled Confession": [
-            "{M} will use the {T} to create a heightening sense of discomfort. While bound or stimulated by it, {S} must confess {SP} darkest sexual fantasy that {M} does not yet know.",
-            "Bound tightly by the {T}, {S} must answer: 'What is the one act of submission you fear most, yet secretly desire {M} to force upon you?'"
+            "{M} is to secure the {T} firmly in {S}'s mouth, ensuring all speech is reduced to muffled whimpers. While silenced, {S} must use {SP} hands to describe a secret desire {M} hasn't fulfilled.",
+            "With the {T} preventing any verbal protest, {S} must maintain eye contact with {M} while {M} explains exactly how {S} will be used for the remainder of this round."
         ],
         "The Silk Labyrinth": [
             "{M} is to spend the next 5 minutes intricately wrapping the {T} around {S}'s chest and sensitive points. The focus must be on aesthetic beauty and restrictive pressure.",
-            "{S} will stand perfectly still while {M} uses the {T} to bind {SP} limbs into a decorative but agonizingly rigid pose. {S} must describe the growing restriction."
+            "{S} will stand perfectly still while {M} uses the {T} to bind {SP} limbs into a decorative but agonizingly rigid pose."
         ],
         "The Threshold of Agony": [
             "{M} will use the {T} to bring {S} to the absolute brink of climax. At the moment of no return, {M} will cease all contact. {S} must remain perfectly still in the ache of denial.",
@@ -133,7 +146,7 @@
         ],
         "The Great Unshackling": [
             "{M} will bind {S} with the {T} using maximum complexity. {S} has 120 seconds to struggle and sweat {SP} way out. If {S} fails, {M} leaves {S} bound for the next round.",
-            "Tied securely with the {T}, {S} must attempt to reach a designated object 5 feet away using only {SP} body's undulations. {M} watches the pathetic display."
+            "Tied securely with the {T}, {S} must attempt to reach a designated object 5 feet away using only {SP} body's undulations."
         ],
         "The Velvet Command": [
             "{M} will slowly and methodically trace the {T} over every inch of {S}'s inner thighs and neck. {S} must maintain eye contact and describe the 'electricity' {M} is creating.",
@@ -164,7 +177,7 @@
         state.players[0].n = document.getElementById('p0-name').value || "Dom";
         state.players[1].n = document.getElementById('p1-name').value || "Sub";
         state.total = document.getElementById('round-count').value;
-        localStorage.setItem('sov_v18', JSON.stringify(state.vault));
+        localStorage.setItem('sov_v19', JSON.stringify(state.vault));
         showStep(3);
         renderGame();
     }
@@ -185,13 +198,15 @@
 
     function generate() {
         const activeProtos = Object.keys(state.protocols).filter(k=>state.protocols[k]);
-        const allItems = [];
-        for(let c in state.vault) state.vault[c].forEach(i => { if(i.a) allItems.push(i.n); });
-        
-        if(!activeProtos.length || !allItems.length) return alert("Select protocols and at least one item.");
+        if(!activeProtos.length) return alert("Select at least one protocol.");
         
         const p = activeProtos[Math.floor(Math.random()*activeProtos.length)];
-        const t = allItems[Math.floor(Math.random()*allItems.length)];
+        const requiredCat = protocolToCategory[p];
+        const availableItems = state.vault[requiredCat].filter(i => i.a);
+
+        if(!availableItems.length) return alert(`Please enable at least one item in the '${requiredCat}' category to use the '${p}' protocol.`);
+        
+        const t = availableItems[Math.floor(Math.random()*availableItems.length)].n;
         const m = state.players.find(x=>x.role==='Master');
         const s = state.players.find(x=>x.role==='Slave');
         const pron = s.g==='M'?'his':(s.g==='F'?'her':'their');
