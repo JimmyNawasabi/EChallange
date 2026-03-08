@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SOVEREIGNTY: Complete Arsenal</title>
+    <title>SOVEREIGNTY: v24.0</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
@@ -12,32 +12,35 @@
         .container { max-width: 1000px; width: 100%; background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); box-shadow: 0 0 50px #000; }
         h1 { text-align: center; text-transform: uppercase; letter-spacing: 12px; font-size: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin: 10px 0; }
         
+        /* GRID LAYOUT */
         .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .p-setup { background: #080808; padding: 15px; border-radius: 10px; border: 1px solid #222; position: relative; }
+        .p-setup { background: #080808; padding: 15px; border-radius: 10px; border: 1px solid #222; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; letter-spacing: 2px; }
         
-        /* INVENTORY SCROLL */
-        #inventory-list { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        /* INVENTORY GRID - 8 CATEGORIES */
+        #inventory-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .inv-section { background: #050505; padding: 10px; border: 1px solid #222; border-radius: 8px; }
 
+        /* THEME TOGGLES */
+        .theme-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; background: #0a0a0a; padding: 15px; border-radius: 10px; border: 1px solid #222; }
+        .theme-btn { padding: 10px; background: #111; border: 1px solid #333; border-radius: 4px; font-size: 0.65rem; text-align: center; cursor: pointer; color: #555; font-weight: bold; text-transform: uppercase; }
+        .theme-btn.active { border-color: var(--gold); color: var(--gold); background: #1a1500; }
+
+        /* PLAY STATE */
+        #decree-text { background: #050505; padding: 30px; border-radius: 10px; border-left: 5px solid var(--gold); font-size: 1.1rem; line-height: 1.8; margin: 20px 0; color: #eee; }
+        #timer { font-size: 5rem; color: var(--crimson); font-family: monospace; text-align: center; }
+        .btn-main { background: var(--accent); color: white; padding: 18px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+        .btn-commence { background: var(--gold); color: black; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 10px;}
+        
         .safety-bar { display: flex; gap: 10px; margin-top: 15px; }
         .card { flex: 1; padding: 12px; border-radius: 5px; cursor: pointer; text-align: center; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; border: none; }
         .card-yellow { background: var(--warning); color: #000; }
         .card-red { background: var(--crimson); color: #fff; }
 
-        .theme-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; background: #0a0a0a; padding: 15px; border-radius: 10px; border: 1px solid #222; }
-        .theme-btn { padding: 10px; background: #111; border: 1px solid #333; border-radius: 4px; font-size: 0.65rem; text-align: center; cursor: pointer; color: #555; font-weight: bold; text-transform: uppercase; transition: 0.2s; }
-        .theme-btn.active { border-color: var(--gold); color: var(--gold); background: #1a1500; }
-
-        #decree-text { background: #050505; padding: 30px; border-radius: 10px; border-left: 5px solid var(--gold); font-size: 1.1rem; line-height: 1.8; margin: 20px 0; color: #eee; }
-        #timer { font-size: 5rem; color: var(--crimson); font-family: monospace; text-align: center; text-shadow: 0 0 15px rgba(208,0,0,0.4); }
-        .btn-main { background: var(--accent); color: white; padding: 20px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
-        .btn-commence { background: var(--gold); color: black; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 10px;}
-        
-        input[type="text"] { width: 100%; padding: 10px; background: #000; color: white; border: 1px solid #333; border-radius: 5px; margin-top: 5px; box-sizing: border-box; }
-        .chip { background:#222; padding:3px 8px; border-radius:3px; font-size:0.7rem; display:inline-flex; align-items:center; gap:5px; margin:2px; }
-        .del-item { color: red; cursor: pointer; font-weight: bold; }
-        .gen-btn { flex: 1; padding: 10px; border: 1px solid #333; background: #000; color: #444; cursor: pointer; border-radius: 5px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+        input[type="text"] { width: 100%; padding: 8px; background: #000; color: white; border: 1px solid #333; border-radius: 4px; margin-top: 5px; box-sizing: border-box; }
+        .chip { background:#222; padding:2px 6px; border-radius:3px; font-size:0.65rem; display:inline-flex; align-items:center; gap:4px; margin:2px; border: 1px solid #333; }
+        .del-item { color: var(--crimson); cursor: pointer; }
+        .gen-btn { flex: 1; padding: 8px; border: 1px solid #333; background: #000; color: #444; cursor: pointer; border-radius: 4px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; }
         .gen-btn.active { border-color: var(--accent); color: white; background: #001a35; }
     </style>
 </head>
@@ -51,7 +54,7 @@
             <div class="p-setup">
                 <span class="label">Dominant</span>
                 <input type="text" id="name0" value="Master">
-                <div class="gender-select" style="display:flex; gap:5px; margin-top:10px;">
+                <div style="display:flex; gap:5px; margin-top:10px;">
                     <button class="gen-btn active" id="p0m" onclick="setGender(0,'M')">Male</button>
                     <button class="gen-btn" id="p0f" onclick="setGender(0,'F')">Female</button>
                 </div>
@@ -59,19 +62,16 @@
             <div class="p-setup">
                 <span class="label">Submissive</span>
                 <input type="text" id="name1" value="Slave">
-                <div class="gender-select" style="display:flex; gap:5px; margin-top:10px;">
+                <div style="display:flex; gap:5px; margin-top:10px;">
                     <button class="gen-btn" id="p1m" onclick="setGender(1,'M')">Male</button>
                     <button class="gen-btn active" id="p1f" onclick="setGender(1,'F')">Female</button>
                 </div>
             </div>
         </div>
 
-        <div class="p-setup" style="margin-bottom:20px;">
-            <span class="label">Arsenal Management (The 8 Physical Tools)</span>
-            <div id="inventory-list"></div>
-        </div>
-
-        <button class="btn-main" onclick="startSession()">Finalize Arsenal & Start</button>
+        <span class="label">Inventory (8 Core Categories)</span>
+        <div id="inventory-list"></div>
+        <button class="btn-main" style="margin-top:20px;" onclick="startSession()">Initialize Sovereign Protocol</button>
     </div>
 
     <div id="play-screen" style="display:none;">
@@ -83,21 +83,19 @@
         </div>
 
         <div id="theme-control">
-            <span class="label" style="text-align:center;">Active Decree Protocols (Toggle Before Randomizing)</span>
+            <span class="label" style="text-align:center;">Active Decree Themes (Toggle Inclusion)</span>
             <div class="theme-selector" id="theme-selector"></div>
-            <button class="btn-main" onclick="issueDecree()">Generate Decree</button>
+            <button class="btn-main" onclick="issueDecree()">Generate Random Task</button>
         </div>
         
         <div id="decree-panel" style="display:none;">
             <div id="timer">00:00</div>
             <button class="btn-commence" id="start-t-btn" onclick="startCountdown()">Commence Phase</button>
             <div id="decree-text"></div>
-            
             <div class="safety-bar">
-                <button class="card card-yellow" onclick="safetyProtocol('yellow')">Yellow: Ease Intensity</button>
-                <button class="card card-red" onclick="safetyProtocol('red')">Red: STOP/RESET</button>
+                <button class="card card-yellow" onclick="safetyProtocol('yellow')">Yellow Card</button>
+                <button class="card card-red" onclick="safetyProtocol('red')">Red Card (Reset)</button>
             </div>
-
             <div id="post-commence" style="display:none; gap:10px; margin-top:15px;">
                 <button class="btn-main" style="background:#1a1a1a; flex:1;" onclick="endRound(false)">Forfeit</button>
                 <button class="btn-main" style="background:var(--success); flex:1;" onclick="endRound(true)">Success</button>
@@ -107,40 +105,40 @@
 </div>
 
 <script>
-const DEFAULT_INV = {
-    "Restraints": ["Rope", "Handcuffs"],
-    "Impact": ["Cane", "Paddle"],
-    "Gags": ["Ball Gag", "Duct Tape"],
-    "Shadow": ["Blindfold", "Sleep Mask", "Hood"],
-    "Sensory": ["Wax", "Ice"],
-    "Ache": ["Clamps", "Weights"],
-    "Stillness": ["Posture Collar", "Crotch Rope"],
-    "Quietude": ["Muzzle", "Nipple Clamps"]
-};
+const CATEGORIES = ["Restraints", "Impact", "Gags", "Shadow", "Sensory", "Ache", "Stillness", "Quietude"];
+const DECREE_THEMES = ["Self Bondage", "Truth", "Dare", "Soft and Sexy", "Escape", "Shibari", "Physical Challenge", "Tease and Denial"];
 
-const THEMES = ["Self Bondage", "Truth", "Dare", "Soft and Sexy", "Escape", "Shibari", "Physical Challenge", "Tease and Denial"];
+const DEFAULT_INV = {
+    "Restraints": ["Nylon Rope", "Steel Cuffs"],
+    "Impact": ["Leather Paddle", "Heavy Cane"],
+    "Gags": ["Ball Gag", "Duct Tape"],
+    "Shadow": ["Blindfold", "Leather Hood", "Sleep Mask"],
+    "Sensory": ["Low-temp Wax", "Ice Cubes"],
+    "Ache": ["Nipple Clamps", "Weighted Plug"],
+    "Stillness": ["Posture Collar", "Crotch Rope"],
+    "Quietude": ["Muzzle", "Wooden Bit"]
+};
 
 let state = {
     currRound: 1, history: [],
     p: [{name:"", gender:"M", score:0}, {name:"", gender:"F", score:0}],
-    inv: JSON.parse(localStorage.getItem('sov_inv_v23')) || DEFAULT_INV,
-    activeThemes: [...THEMES],
+    inv: JSON.parse(localStorage.getItem('sov_inv_v24')) || DEFAULT_INV,
+    activeThemes: [...DECREE_THEMES],
     timer: null, activeTime: 0
 };
 
-function save() { localStorage.setItem('sov_inv_v23', JSON.stringify(state.inv)); }
+function save() { localStorage.setItem('sov_inv_v24', JSON.stringify(state.inv)); }
 
 function renderInventory() {
     const list = document.getElementById('inventory-list');
     list.innerHTML = '';
-    Object.keys(state.inv).forEach(cat => {
+    CATEGORIES.forEach(cat => {
+        if(!state.inv[cat]) state.inv[cat] = [];
         const div = document.createElement('div');
         div.className = 'inv-section';
         div.innerHTML = `
             <span style="font-size:0.6rem; color:var(--accent); font-weight:bold;">${cat.toUpperCase()}</span>
-            <div style="margin:5px 0;">
-                ${state.inv[cat].map((it, idx) => `<span class="chip">${it} <span class="del-item" onclick="removeItem('${cat}',${idx})">×</span></span>`).join('')}
-            </div>
+            <div style="margin:5px 0;">${state.inv[cat].map((it, idx) => `<span class="chip">${it} <span class="del-item" onclick="removeItem('${cat}',${idx})">×</span></span>`).join('')}</div>
             <div style="display:flex; gap:5px;"><input type="text" id="add-${cat}" placeholder="Add..."><button onclick="addItem('${cat}')" style="background:var(--accent); color:white; border:none; padding:0 8px;">+</button></div>
         `;
         list.appendChild(div);
@@ -149,7 +147,7 @@ function renderInventory() {
 
 function renderThemes() {
     const sel = document.getElementById('theme-selector');
-    sel.innerHTML = THEMES.map(t => `<div class="theme-btn ${state.activeThemes.includes(t) ? 'active' : ''}" onclick="toggleTheme('${t}')">${t}</div>`).join('');
+    sel.innerHTML = DECREE_THEMES.map(t => `<div class="theme-btn ${state.activeThemes.includes(t) ? 'active' : ''}" onclick="toggleTheme('${t}')">${t}</div>`).join('');
 }
 
 function toggleTheme(t) {
@@ -180,7 +178,7 @@ function updateUI() {
 }
 
 function issueDecree() {
-    if(!state.activeThemes.length) return alert("Select at least one category.");
+    if(!state.activeThemes.length) return alert("Enable at least one theme.");
     let pool = state.activeThemes.filter(t => !state.history.includes(t));
     if(!pool.length) { state.history = []; pool = state.activeThemes; }
     
@@ -189,35 +187,34 @@ function issueDecree() {
     
     const d = state.p[0].name; const s = state.p[1].name;
     const r = (arr) => arr[Math.floor(Math.random()*arr.length)];
-    const tool = (cat) => state.inv[cat] && state.inv[cat].length ? r(state.inv[cat]) : "a chosen implement";
+    const tool = (cat) => (state.inv[cat] && state.inv[cat].length) ? r(state.inv[cat]) : `[Select ${cat}]`;
     
     let text = ""; let time = 600;
 
-    // PROCEDURAL EXPLICIT LOGIC
     switch(theme) {
         case "Self Bondage":
-            text = `${s}, you are to enter total isolation. First, apply the **${tool('Shadow')}** and ensure you are in total darkness. Then, using the **${tool('Restraints')}**, bind your ankles together until they are flush. Force your wrists behind your back and secure them. Finally, cinch the connection between your wrists and ankles into a **Strict Hogtie**. ${d} will verify the tightness.`;
-            time = 1000; break;
+            text = `${s}, apply the **${tool('Shadow')}** immediately. In total darkness, use the **${tool('Restraints')}** to bind your ankles tightly together. Reach behind your back and secure your wrists. Using a secondary line, cinch your wrists to your ankles until you are in a **Strict Hogtie**. You must remain in this arch, blind and bound, for the duration.`;
+            time = 900; break;
         case "Tease and Denial":
-            text = `${s} is to be blindfolded with the **${tool('Shadow')}**. ${d} will use the **${tool('Ache')}** on ${s}'s genitals while simultaneously tracing the **${tool('Sensory')}** across their chest. ${s} must state 'I am nothing but your toy' every time they approach climax. ${d} will then deliver ${r([15,25])} strikes of the **${tool('Impact')}** and deny all release.`;
+            text = `${s} is blindfolded with the **${tool('Shadow')}**. ${d} will use the **${tool('Sensory')}** on ${s}'s chest while the **${tool('Ache')}** is applied to the genitals. ${s} is forbidden from climax. If ${s} makes a noise, ${d} will deliver ${r([10,20])} heavy strikes with the **${tool('Impact')}**. No release is permitted.`;
             time = 1200; break;
         case "Shibari":
-            text = `${d} will apply the **${tool('Shadow')}** to ${s}. In total darkness, ${d} will construct a detailed **${r(['Chest Harness','Futomomo','Spider-web Tie'])}** using the **${tool('Restraints')}**. The rope must bite into the ${r(['shoulders','hips','inner thighs'])}. ${s} must describe the exact moment their breath is restricted by the wraps.`;
+            text = `${d} will use the **${tool('Restraints')}** to construct a **${r(['Chest Harness','Karada-Kote','Crotch Rope'])}** on ${s}. ${s} must be blindfolded with the **${tool('Shadow')}**. As each wrap is tightened, ${s} must describe the physical sensation of the rope biting into their flesh. The tie must be restrictive and aesthetically strict.`;
             time = 1500; break;
         case "Escape":
-            text = `${s} is to be blindfolded with the **${tool('Shadow')}**, gagged with the **${tool('Gags')}**, and fully bound wrist-to-ankle with **${tool('Restraints')}**. You have the timer to struggle free. If the blindfold slips or the gag is loosened before the knots are undone, you forfeit the round and ${d} will use the **${tool('Impact')}**.`;
+            text = `${s} is to be fully sensory-deprived with the **${tool('Shadow')}** and the **${tool('Gags')}**. ${d} will then bind ${s}'s wrists to their ankles with the **${tool('Restraints')}**. You have the timer to struggle out of the knots. If the blindfold is removed before the knots are undone, you forfeit and face the **${tool('Impact')}**.`;
             time = 1200; break;
-        case "Soft and Sexy":
-            text = `${s} is to be placed in the **${tool('Shadow')}**. In the dark, ${d} will use **${tool('Sensory')}** (wax or ice) to trace explicit instructions on ${s}'s skin. ${s} must guess the word being written. For every incorrect guess, the **${tool('Ache')}** is applied for 2 minutes. Focus on the temperature and the touch.`;
-            time = 600; break;
         case "Physical Challenge":
-            text = `${s}, wearing the **${tool('Shadow')}**, must maintain a **${r(['Deep Squat','Wall-Sit','Frog Pose'])}**. While blind, you will be struck at random intervals with the **${tool('Impact')}**. Because you cannot see it coming, you must remain perfectly still. Any flinching resets the timer.`;
+            text = `${s} must maintain a **${r(['Deep Squat','Wall-Sit','High Kneel'])}** while blindfolded with the **${tool('Shadow')}**. While in the dark, ${d} will deliver random, unexpected strikes with the **${tool('Impact')}**. Any flinching or loss of posture resets the timer. Silence is mandatory.`;
             time = 720; break;
+        case "Soft and Sexy":
+            text = `${s} is placed in the **${tool('Shadow')}**. ${d} will use the **${tool('Sensory')}** (wax or ice) to draw explicit symbols on ${s}'s most sensitive skin. ${s} must identify the symbol by touch alone. Failure results in a tight application of the **${tool('Ache')}** for 3 minutes.`;
+            time = 600; break;
         case "Truth":
-            text = `**The Blind Interrogation**. ${s} is blindfolded with the **${tool('Shadow')}**. ${d} will ask ${r([3,5])} questions about ${s}'s ${r(['fantasies','secrets','vulnerabilities'])}. Each answer must be whispered while ${d} uses the **${tool('Sensory')}** on ${s}'s ears. Dishonesty results in a heavy application of the **${tool('Impact')}**.`;
+            text = `**The Interrogation**. ${s} is blindfolded with the **${tool('Shadow')}** and forced to kneel. ${d} will ask 5 questions about ${s}'s deepest **${r(['fetishes','shameful desires','needs'])}**. For every answer lacking detail, ${d} will strike the **${tool('Impact')}** across ${s}'s ${r(['back','thighs'])}.`;
             time = 600; break;
         case "Dare":
-            text = `${s} is dared to be gagged with the **${tool('Gags')}** and blindfolded with the **${tool('Shadow')}**. You will then be led through the house by a leash. If you stumble or make a noise, ${d} will use the **${tool('Impact')}** on your ${r(['buttocks','thighs'])}.`;
+            text = `${s} is dared to be blindfolded with the **${tool('Shadow')}** and gagged with the **${tool('Gags')}**. You will be led through the room by the **${tool('Restraints')}**. If you resist or make a muffled sound, ${d} will use the **${tool('Impact')}** immediately.`;
             time = 450; break;
     }
 
@@ -233,11 +230,11 @@ function issueDecree() {
 function safetyProtocol(type) {
     if(type === 'red') {
         clearInterval(state.timer);
-        alert("PROTOCOL HALTED. RESETTING TO SAFETY.");
+        alert("PROTOCOL HALTED. RESETTING.");
         document.getElementById('theme-control').style.display = 'block';
         document.getElementById('decree-panel').style.display = 'none';
     } else {
-        alert("INTENSITY ADJUSTMENT REQUESTED. Dom: Reduce force or switch tools.");
+        alert("INTENSITY ADJUSTMENT: Dom, ease intensity.");
     }
 }
 
