@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Sovereign Gold Patch</title>
+    <title>SOVEREIGNTY: Sovereign Gold Full Suite</title>
     <style>
-        :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; }
+        :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto-blue: #004a7c; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 600px; width: 100%; background: var(--card); padding: 20px; border-radius: 20px; border: 2px solid #333; box-shadow: 0 0 50px #000; }
         h1 { text-align: center; text-transform: uppercase; letter-spacing: 5px; color: var(--accent); margin-bottom: 20px; }
@@ -26,10 +26,13 @@
         .role-tag { font-size: 0.6rem; font-weight: bold; color: #444; }
         .master-glow { color: var(--accent) !important; text-shadow: 0 0 5px var(--accent); }
         
-        /* CARD SYSTEM RESTORATION */
-        .card-interface { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; }
-        .yellow-card { background: var(--warning) !important; color: #000 !important; font-size: 0.65rem; border: 1px solid #ffd700 !important; border-radius: 8px; padding: 12px; font-weight: bold; cursor: pointer; }
-        .red-card { background: var(--crimson) !important; color: #fff !important; font-size: 0.65rem; border: 2px solid #fff !important; border-radius: 8px; padding: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 0 10px var(--crimson); }
+        /* THE FULL DYNAMIC SUITE */
+        .management-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; }
+        .m-btn { border-radius: 8px; padding: 10px; font-size: 0.6rem; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
+        .y-card { background: var(--warning); color: #000; }
+        .r-card { background: var(--crimson); color: #fff; box-shadow: 0 0 10px var(--crimson); }
+        .v-card { background: var(--veto-blue); color: #fff; }
+        .s-card { background: #fff; color: #000; border: 2px solid var(--crimson); }
         
         .grand-decree-text { font-size: 0.9rem; line-height: 1.8; color: #eee; background: #000; padding: 20px; border-radius: 10px; border: 1px solid var(--accent); max-height: 500px; overflow-y: auto; text-align: justify; font-style: italic; }
     </style>
@@ -55,7 +58,7 @@
                 <button class="g-btn active" onclick="setG(1,'F',this)">Female</button>
                 <button class="g-btn" onclick="setG(1,'NB',this)">NB</button>
             </div>
-            <span class="label">Safeword Protocol</span>
+            <span class="label">Safeword</span>
             <input type="text" id="safeword-in" value="RED">
             <span class="label">Total Rounds</span>
             <input type="number" id="round-total" value="30">
@@ -65,7 +68,7 @@
 
     <div id="step-2" style="display:none;">
         <div id="inventory-editor"></div>
-        <button class="btn" style="background:var(--success); width:100%;" onclick="startSession()">Commence Session</button>
+        <button class="btn" style="background:var(--success); width:100%;" onclick="startSession()">Finalize Protocol</button>
     </div>
 
     <div id="step-3" style="display:none;">
@@ -82,12 +85,13 @@
 
         <div id="decree-view" style="display:none;">
             <div class="box-section"><div id="decree-display" style="line-height:1.6; color:#ddd;"></div></div>
-            
             <div style="display:flex; gap:10px;"><button class="btn" style="background:#333; flex:1;" onclick="resolve('fail')">FAIL</button><button class="btn" style="background:var(--success); flex:1;" onclick="resolve('success')">SUCCESS</button></div>
             
-            <div class="card-interface">
-                <button class="yellow-card" onclick="vetoCurrent()">YELLOW CARD (VETO)</button>
-                <button class="red-card" id="panic-label" onclick="triggerSafeword()"></button>
+            <div class="management-grid">
+                <button class="m-btn y-card" onclick="alert('Yellow Card Logged.')">Yellow Card</button>
+                <button class="m-btn r-card" onclick="triggerSafeword()">Red Card</button>
+                <button class="m-btn v-card" onclick="vetoCurrent()">Veto Decree</button>
+                <button class="m-btn s-card" id="sw-label" onclick="triggerSafeword()"></button>
             </div>
         </div>
     </div>
@@ -97,7 +101,7 @@
         <div class="box-section"><div id="grand-decree-display" class="grand-decree-text"></div></div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <button class="btn" style="background:#222; font-size:0.7rem;" onclick="generateGrandDecree()">Reshape Fate</button>
-            <button class="btn" style="background:var(--success); font-size:0.7rem;" onclick="finalizeWinnerRights()">Finalize Winner Role</button>
+            <button class="btn" style="background:var(--success); font-size:0.7rem;" onclick="finalizeRoles()">Finalize Winner Role</button>
         </div>
         <div id="final-role-selector" style="display:none; margin-top:15px;" class="box-section">
             <span class="label">The Sovereign Victor, choose your role:</span>
@@ -113,7 +117,7 @@
     const state = {
         curr: 1, total: 30, winner: null,
         players: [{n:"", g:"M", role:"Master", score:0}, {n:"", g:"F", role:"Slave", score:0}],
-        vault: JSON.parse(localStorage.getItem('sov_v9_gold')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v10_gold')) || {
             "Restraints": [{n:"Heavy Rope", a:true}], "Gags": [{n:"Ball Gag", a:true}], "Blindfolds": [{n:"Leather Mask", a:true}], 
             "Sensory": [{n:"Ice Blocks", a:true}], "Toys": [{n:"Vibrator", a:true}], "Impact": [{n:"Heavy Flogger", a:true}]
         },
@@ -141,8 +145,8 @@
         state.players[0].n = document.getElementById('p0-name').value || "Dom";
         state.players[1].n = document.getElementById('p1-name').value || "Sub";
         state.total = parseInt(document.getElementById('round-total').value) || 30;
-        document.getElementById('panic-label').innerText = "RED: " + (document.getElementById('safeword-in').value || "RED");
-        localStorage.setItem('sov_v9_gold', JSON.stringify(state.vault));
+        document.getElementById('sw-label').innerText = "SAFEWORD: " + (document.getElementById('safeword-in').value || "RED");
+        localStorage.setItem('sov_v10_gold', JSON.stringify(state.vault));
         showStep(3); renderGame();
     }
 
@@ -180,8 +184,8 @@
         document.getElementById('decree-view').style.display = 'block';
     }
 
-    function vetoCurrent() { if(confirm("Veto this decree and generate another?")) { document.getElementById('game-controls').style.display='block'; document.getElementById('decree-view').style.display='none'; } }
-    function triggerSafeword() { if(confirm("Trigger Safeword protocol? (-5 points to Slave)")) { state.players.find(p=>p.role==='Slave').score -= 5; resolve('fail'); } }
+    function vetoCurrent() { if(confirm("Master Veto: Skip this decree?")) { document.getElementById('game-controls').style.display='block'; document.getElementById('decree-view').style.display='none'; } }
+    function triggerSafeword() { if(confirm("STOP PROTOCOL? (-5 points to Slave)")) { state.players.find(p=>p.role==='Slave').score -= 5; resolve('fail'); } }
 
     function resolve(type) {
         if(type==='success') { state.players.find(p=>p.role==='Slave').score++; state.players.forEach(p=>p.role=p.role==='Master'?'Slave':'Master'); }
@@ -198,13 +202,13 @@
 
     function generateGrandDecree() {
         const scenarios = [
-            `The Victor strips all pretense from the Conquered, securing them with **${getT('Restraints')}**. Bound and blinded by **${getT('Blindfolds')}**, the Conquered enters a void where only the Victor's voice exists. A calculated series of strikes from **${getT('Impact')}** marks their submission. They are brought to the precipice five times using **${getT('Toys')}**, silenced by **${getT('Gags')}** as they beg. The Victor claims a shattering climax through the Conquered's feverish devotion, leaving them in a state of aching denial.`,
-            `The Victor commands the Conquered to kneel, applying **${getT('Gags')}** for total silence. Under the weight of **${getT('Sensory')}**, they endure a slow, beautiful torment while immobilized by **${getT('Restraints')}**. The Victor uses **${getT('Impact')}** to mark their ownership. An exhaustive edging marathon with **${getT('Toys')}** follows, where every twitch is monitored. As the Victor claims their final climax, the Conquered's release remains a prize that may be granted or withheld.`
+            `The Victor strips all pretense from the Conquered, securing them with **${getT('Restraints')}**. Bound and blinded by **${getT('Blindfolds')}**, the Conquered enters a void where only the Victor's voice exists. A series of strikes from **${getT('Impact')}** marks their submission. They are brought to the precipice five times using **${getT('Toys')}**, silenced by **${getT('Gags')}**. The Victor claims a shattering climax, leaving the Conquered in a state of aching denial.`,
+            `The Victor commands the Conquered to kneel, applying **${getT('Gags')}**. Under the weight of **${getT('Sensory')}**, they endure a slow torment while immobilized by **${getT('Restraints')}**. The Victor uses **${getT('Impact')}** to mark ownership. After an edging marathon with **${getT('Toys')}**, the Victor claims their final climax; the Conquered's release is a prize that may be withheld.`
         ];
         document.getElementById('grand-decree-display').innerHTML = scenarios[Math.floor(Math.random()*scenarios.length)];
     }
 
-    function finalizeWinnerRights() {
+    function finalizeRoles() {
         document.getElementById('final-role-selector').style.display = 'block';
         document.getElementById('win-as-dom').innerText = `${state.winner.n} (MASTER)`;
         document.getElementById('win-as-sub').innerText = `${state.winner.n} (SLAVE)`;
