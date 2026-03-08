@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Audited Gold Benchmark</title>
+    <title>SOVEREIGNTY: Gold Benchmark (Zero Regression Build)</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto-blue: #004a7c; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -16,7 +16,7 @@
         input[type="text"], input[type="number"] { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; margin-bottom: 12px; font-size: 1.2rem; }
         
         .gender-grid { display: flex; gap: 10px; margin-bottom: 20px; }
-        .g-btn { flex: 1; padding: 14px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 8px; font-size: 0.85rem; font-weight: bold; }
+        .g-btn { flex: 1; padding: 14px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 8px; font-size: 0.85rem; font-weight: bold; transition: 0.2s; }
         .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
         .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 6px; transition: 0.2s; font-size: 1.2rem; }
@@ -53,7 +53,7 @@
 
     <div id="step-1">
         <div class="box-section">
-            <span class="label">Master Identity</span>
+            <span class="label">Player 1</span>
             <input type="text" id="p0-name" value="Dominus">
             <div class="gender-grid" id="p0-genders">
                 <button class="g-btn active" onclick="updateGender(0,'M',this)">Male</button>
@@ -61,7 +61,7 @@
                 <button class="g-btn" onclick="updateGender(0,'NB',this)">NB</button>
             </div>
 
-            <span class="label">Slave Identity</span>
+            <span class="label">Player 2</span>
             <input type="text" id="p1-name" value="Subject">
             <div class="gender-grid" id="p1-genders">
                 <button class="g-btn" onclick="updateGender(1,'M',this)">Male</button>
@@ -148,7 +148,7 @@
             {n:"", g:"M", role:"Master", score:0, hasYellow:false, hasRed:false},
             {n:"", g:"F", role:"Slave", score:0, hasYellow:false, hasRed:false}
         ],
-        vault: JSON.parse(localStorage.getItem('sov_audited_v1')) || {
+        vault: JSON.parse(localStorage.getItem('sov_audited_v2')) || {
             "Restraints": [{n:"Heavy Rope", a:true}],
             "Gags": [{n:"Ball Gag", a:true}],
             "Impact": [{n:"Leather Flogger", a:true}],
@@ -217,14 +217,13 @@
         document.getElementById('sw-btn').innerText = "SW: " + document.getElementById('safeword-in').value;
         state.players[Math.floor(Math.random()*2)].hasYellow = true;
         state.players[Math.floor(Math.random()*2)].hasRed = true;
-        localStorage.setItem('sov_audited_v1', JSON.stringify(state.vault));
+        localStorage.setItem('sov_audited_v2', JSON.stringify(state.vault));
         showStep(3); 
         renderGame();
     }
 
     function renderGame() {
         if(state.curr > state.total) return triggerFinale();
-        
         document.getElementById('round-ui').innerText = `ROUND ${state.curr} / ${state.total}`;
         state.players.forEach((p, i) => {
             document.getElementById('n' + i).innerText = p.n;
@@ -233,7 +232,6 @@
             document.getElementById('r' + i).className = 'role-tag ' + (p.role === 'Master' ? 'master-glow' : '');
             document.getElementById('inv' + i).innerHTML = (p.hasYellow ? '🟡 ' : '') + (p.hasRed ? '🔴' : '');
         });
-        
         const pm = document.getElementById('proto-mount'); 
         pm.innerHTML = '';
         for(let k in state.protocols) { 
@@ -243,32 +241,19 @@
 
     function generate() {
         const ap = Object.keys(state.protocols).filter(k=>state.protocols[k]);
-        if (ap.length === 0) return alert("Please activate at least one Protocol!");
-        
+        if (ap.length === 0) return alert("Activate at least one Protocol!");
         const protocolName = ap[Math.floor(Math.random()*ap.length)];
-        
-        // Map protocol to required category
-        const cats = { 
-            "The Solitary Bind":"Restraints", "The Wicked Gamble":"Impact", 
-            "The Veiled Confession":"Gags", "The Silk Labyrinth":"Restraints", 
-            "The Threshold of Agony":"Toys", "The Flesh Endurance":"Sensory", 
-            "The Great Unshackling":"Restraints", "The Velvet Command":"Sensory" 
-        };
-        
-        const targetCategory = cats[protocolName];
-        if (!state.vault[targetCategory]) return alert(`Error: Missing category ${targetCategory} in vault!`);
-        
-        const activeItems = state.vault[targetCategory].filter(i=>i.a);
-        if(activeItems.length === 0) return alert(`Activate items in ${targetCategory} to use ${protocolName}!`);
+        const cats = { "The Solitary Bind":"Restraints", "The Wicked Gamble":"Impact", "The Veiled Confession":"Gags", "The Silk Labyrinth":"Restraints", "The Threshold of Agony":"Toys", "The Flesh Endurance":"Sensory", "The Great Unshackling":"Restraints", "The Velvet Command":"Sensory" };
+        const activeItems = state.vault[cats[protocolName]].filter(i=>i.a);
+        if(activeItems.length === 0) return alert(`Activate items in ${cats[protocolName]}!`);
         
         const m = state.players.find(x=>x.role==='Master');
         const s = state.players.find(x=>x.role==='Slave');
         const item = activeItems[Math.floor(Math.random()*activeItems.length)];
         
-        document.getElementById('decree-display').innerHTML = `<strong>${protocolName}</strong><br><br>${protocolName} protocol initiated. <br><br>${m.n} shall utilize <strong>${item.n}</strong> upon ${s.n}. Complete the task to swap roles.`;
+        document.getElementById('decree-display').innerHTML = `<strong>${protocolName}</strong><br><br>${m.n} shall utilize <strong>${item.n}</strong> upon ${s.n}. Complete to swap roles.`;
         document.getElementById('game-controls').style.display = 'none';
         document.getElementById('decree-view').style.display = 'block';
-        
         document.getElementById('y-btn').classList.toggle('active-card', state.players[0].hasYellow || state.players[1].hasYellow);
         document.getElementById('r-btn').classList.toggle('active-card', state.players[0].hasRed || state.players[1].hasRed);
     }
@@ -286,7 +271,7 @@
     
     function safeword() {
         const penalty = Math.floor(Math.random() * 5) + 1;
-        if(confirm("Invoke Safeword? Loss of " + penalty + " points.")) {
+        if(confirm("Safeword? Slave loses " + penalty + " points.")) {
             state.players.find(p => p.role === 'Slave').score -= penalty;
             resolve('fail');
         }
@@ -312,11 +297,7 @@
     }
 
     function generateGrandDecree() {
-        const scenarios = [
-            `The Session has concluded. The Victor claims absolute dominion...`, 
-            `Bound and silenced, the Conquered must now yield entirely to the victor's whim...`
-        ];
-        document.getElementById('grand-decree-display').innerHTML = scenarios[Math.floor(Math.random()*scenarios.length)];
+        document.getElementById('grand-decree-display').innerHTML = `The Session has concluded. ${state.winner.n} claims absolute dominion. The Conquered must yield to the Victor's whim.`;
     }
 
     function finalizeRoles() {
@@ -325,10 +306,7 @@
         document.getElementById('win-as-sub').innerText = `${state.winner.n} (SLAVE)`;
     }
 
-    function endGame(role) { 
-        alert(`Finality reached. ${state.winner.n} assumes the permanent role of ${role}.`); 
-        location.reload(); 
-    }
+    function endGame(role) { alert(`Finality reached. ${state.winner.n} is the permanent ${role}.`); location.reload(); }
 </script>
 </body>
 </html>
