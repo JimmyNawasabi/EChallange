@@ -3,38 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Final Stability Build</title>
+    <title>SOVEREIGNTY: Enhanced Type Build</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto-blue: #004a7c; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .container { max-width: 600px; width: 100%; background: var(--card); padding: 20px; border-radius: 20px; border: 2px solid #333; box-shadow: 0 0 50px #000; }
-        h1 { text-align: center; text-transform: uppercase; letter-spacing: 5px; color: var(--accent); margin-bottom: 20px; }
-        .box-section { background: #1f1f1f; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #333; }
-        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; letter-spacing: 1px; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; margin-bottom: 10px; }
+        .container { max-width: 600px; width: 100%; background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid #333; box-shadow: 0 0 50px #000; }
         
-        .gender-grid { display: flex; gap: 8px; margin-bottom: 15px; }
-        .g-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 8px; font-size: 0.7rem; font-weight: bold; }
+        /* 20% Increase to Header */
+        h1 { text-align: center; text-transform: uppercase; letter-spacing: 6px; color: var(--accent); margin-bottom: 25px; font-size: 2.4rem; }
+        
+        .box-section { background: #1f1f1f; padding: 20px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #333; }
+        
+        /* 20% Increase to Labels and Inputs */
+        .label { font-size: 0.85rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1.2px; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; margin-bottom: 12px; font-size: 1.2rem; }
+        
+        .gender-grid { display: flex; gap: 10px; margin-bottom: 20px; }
+        .g-btn { flex: 1; padding: 14px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 8px; font-size: 0.85rem; font-weight: bold; }
         .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
-        .btn { background: var(--crimson); color: white; border: none; padding: 16px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 5px; transition: 0.2s; }
+        /* 20% Increase to Primary Buttons */
+        .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 6px; transition: 0.2s; font-size: 1.2rem; }
         .btn:active { transform: scale(0.98); }
         
-        .item-chip { display: inline-flex; align-items: center; background: #333; padding: 6px 12px; border-radius: 20px; margin: 4px; font-size: 0.8rem; border: 1px solid #444; cursor: pointer; }
+        .item-chip { display: inline-flex; align-items: center; background: #333; padding: 8px 15px; border-radius: 25px; margin: 5px; font-size: 1rem; border: 1px solid #444; cursor: pointer; }
         .item-chip.off { opacity: 0.3; text-decoration: line-through; background: #111; }
-        .remove-x { margin-left: 10px; color: var(--crimson); font-weight: bold; font-size: 1.1rem; }
+        .remove-x { margin-left: 12px; color: var(--crimson); font-weight: bold; font-size: 1.3rem; }
         
-        .score-row { display: flex; justify-content: space-between; padding: 12px; background: #000; border-radius: 12px; border: 1px solid #222; text-align: center; margin-bottom: 15px; }
-        .role-tag { font-size: 0.6rem; font-weight: bold; color: #444; }
+        .score-row { display: flex; justify-content: space-between; padding: 15px; background: #000; border-radius: 12px; border: 1px solid #222; text-align: center; margin-bottom: 20px; }
+        .role-tag { font-size: 0.75rem; font-weight: bold; color: #444; margin-bottom: 5px; }
         .master-glow { color: var(--accent) !important; text-shadow: 0 0 5px var(--accent); }
         
-        .management-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; }
-        .m-btn { border-radius: 8px; padding: 12px; font-size: 0.65rem; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); opacity: 0.4; }
+        /* Player Name and Score scaling */
+        .p-name { font-weight: bold; font-size: 1.2rem; }
+        .p-score { font-size: 1.8rem; color: var(--accent); }
+        
+        .management-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; border-top: 1px solid #333; padding-top: 18px; }
+        .m-btn { border-radius: 8px; padding: 15px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); opacity: 0.4; }
         .m-btn.active-card { opacity: 1; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
         .y-card { background: var(--warning); color: #000; }
         .r-card { background: var(--crimson); color: #fff; }
         .v-card { background: var(--veto-blue); color: #fff; opacity: 1; }
         .s-card { background: #fff; color: #000; border: 2px solid var(--crimson); opacity: 1; }
+
+        /* Decree Display Scaling */
+        #decree-display { line-height: 1.6; color: #ddd; min-height: 100px; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -61,7 +74,9 @@
             </div>
 
             <span class="label">Global Controls</span>
+            <span class="label" style="color:#666; font-size:0.7rem;">Safeword</span>
             <input type="text" id="safeword-in" value="RED">
+            <span class="label" style="color:#666; font-size:0.7rem;">Rounds</span>
             <input type="number" id="round-total" value="30">
         </div>
         <button class="btn" style="width:100%" onclick="showStep(2)">Configure Arsenal</button>
@@ -73,19 +88,19 @@
     </div>
 
     <div id="step-3" style="display:none;">
-        <div id="round-ui" style="text-align:center; font-size:0.7rem; color:var(--accent); margin-bottom:10px;"></div>
+        <div id="round-ui" style="text-align:center; font-size:0.85rem; color:var(--accent); margin-bottom:10px; font-weight:bold;"></div>
         <div class="score-row">
             <div class="p-block">
                 <div id="r0" class="role-tag">MASTER</div>
-                <div id="n0" style="font-weight:bold;"></div>
-                <div id="s0" style="font-size:1.5rem; color:var(--accent);">0</div>
-                <div id="inv0"></div>
+                <div id="n0" class="p-name"></div>
+                <div id="s0" class="p-score">0</div>
+                <div id="inv0" style="font-size:1.2rem;"></div>
             </div>
             <div class="p-block">
                 <div id="r1" class="role-tag">SLAVE</div>
-                <div id="n1" style="font-weight:bold;"></div>
-                <div id="s1" style="font-size:1.5rem; color:var(--accent);">0</div>
-                <div id="inv1"></div>
+                <div id="n1" class="p-name"></div>
+                <div id="s1" class="p-score">0</div>
+                <div id="inv1" style="font-size:1.2rem;"></div>
             </div>
         </div>
         
@@ -94,8 +109,8 @@
         </div>
 
         <div id="decree-view" style="display:none;">
-            <div class="box-section"><div id="decree-display" style="line-height:1.6; color:#ddd; min-height:80px;"></div></div>
-            <div style="display:flex; gap:10px;">
+            <div class="box-section"><div id="decree-display"></div></div>
+            <div style="display:flex; gap:12px;">
                 <button class="btn" style="background:#333; flex:1;" onclick="resolve('fail')">FAIL</button>
                 <button class="btn" style="background:var(--success); flex:1;" onclick="resolve('success')">SUCCESS</button>
             </div>
@@ -117,7 +132,7 @@
             {n:"", g:"M", role:"Master", score:0, hasYellow:false, hasRed:false},
             {n:"", g:"F", role:"Slave", score:0, hasYellow:false, hasRed:false}
         ],
-        vault: JSON.parse(localStorage.getItem('sov_stable_v3')) || {
+        vault: JSON.parse(localStorage.getItem('sov_stable_v4')) || {
             "Restraints": [{n:"Heavy Rope", a:true}],
             "Gags": [{n:"Ball Gag", a:true}],
             "Impact": [{n:"Leather Flogger", a:true}],
@@ -141,7 +156,7 @@
 
     function renderInventory() {
         const container = document.getElementById('inventory-editor');
-        container.innerHTML = '<h3 style="color:var(--accent);text-align:center;font-size:0.8rem">ARSENAL MANAGEMENT</h3>';
+        container.innerHTML = '<h3 style="color:var(--accent);text-align:center;font-size:1rem;margin-bottom:15px;">ARSENAL MANAGEMENT</h3>';
         for (let category in state.vault) {
             let section = document.createElement('div');
             section.className = 'box-section';
@@ -153,9 +168,9 @@
                          </span>`;
             });
             html += `</div>
-                    <div style="display:flex; gap:5px; margin-top:10px;">
-                        <input type="text" id="input-${category}" placeholder="Add item..." style="margin:0; padding:8px;">
-                        <button class="btn" style="width:60px; padding:0; margin:0; font-size:0.6rem;" onclick="addItem('${category}')">ADD</button>
+                    <div style="display:flex; gap:8px; margin-top:12px;">
+                        <input type="text" id="input-${category}" placeholder="Add..." style="margin:0; padding:10px; font-size:1rem;">
+                        <button class="btn" style="width:80px; padding:0; margin:0; font-size:0.8rem;" onclick="addItem('${category}')">ADD</button>
                     </div>`;
             section.innerHTML = html;
             container.appendChild(section);
@@ -177,13 +192,10 @@
         state.players[0].n = document.getElementById('p0-name').value;
         state.players[1].n = document.getElementById('p1-name').value;
         state.total = parseInt(document.getElementById('round-total').value);
-        document.getElementById('sw-btn').innerText = "SAFEWORD: " + document.getElementById('safeword-in').value;
-        
-        // Randomly assign cards at start
+        document.getElementById('sw-btn').innerText = "SW: " + document.getElementById('safeword-in').value;
         state.players[Math.floor(Math.random()*2)].hasYellow = true;
         state.players[Math.floor(Math.random()*2)].hasRed = true;
-        
-        localStorage.setItem('sov_stable_v3', JSON.stringify(state.vault));
+        localStorage.setItem('sov_stable_v4', JSON.stringify(state.vault));
         showStep(3); 
         renderGame();
     }
@@ -203,43 +215,21 @@
         const categories = Object.keys(state.vault);
         const cat = categories[Math.floor(Math.random() * categories.length)];
         const items = state.vault[cat].filter(i => i.a);
-        
-        if (items.length === 0) {
-            alert("No active items in " + cat + "! Please go back or activate more.");
-            return;
-        }
+        if (items.length === 0) return alert("Activate items in " + cat + "!");
 
         const m = state.players.find(p => p.role === 'Master');
         const s = state.players.find(p => p.role === 'Slave');
         const item = items[Math.floor(Math.random() * items.length)];
 
-        document.getElementById('decree-display').innerHTML = `<strong>${cat} Protocol</strong><br><br>${m.n} shall utilize <strong>${item.n}</strong> upon ${s.n}. Complete the task to earn a point and swap roles.`;
-        
+        document.getElementById('decree-display').innerHTML = `<strong>${cat} Protocol</strong><br><br>${m.n} shall utilize <strong>${item.n}</strong> upon ${s.n}. Complete to swap roles.`;
         document.getElementById('game-controls').style.display = 'none';
         document.getElementById('decree-view').style.display = 'block';
-
-        // Update card button states
-        const yUser = state.players.find(p => p.hasYellow);
-        const rUser = state.players.find(p => p.hasRed);
-        document.getElementById('y-btn').classList.toggle('active-card', true);
-        document.getElementById('r-btn').classList.toggle('active-card', true);
+        document.getElementById('y-btn').classList.add('active-card');
+        document.getElementById('r-btn').classList.add('active-card');
     }
 
-    function useYellow() {
-        if(confirm("Yellow Card: Swap roles immediately and transfer card?")) {
-            state.players.forEach(p => p.role = (p.role === 'Master' ? 'Slave' : 'Master'));
-            transferCard('hasYellow');
-            renderGame();
-            generate();
-        }
-    }
-
-    function useRed() {
-        if(confirm("Red Card: Restart round with a new decree and transfer card?")) {
-            transferCard('hasRed');
-            generate();
-        }
-    }
+    function useYellow() { if(confirm("Swap roles and transfer card?")) { state.players.forEach(p => p.role = (p.role === 'Master' ? 'Slave' : 'Master')); transferCard('hasYellow'); renderGame(); generate(); } }
+    function useRed() { if(confirm("Restart round and transfer card?")) { transferCard('hasRed'); generate(); } }
 
     function transferCard(key) {
         const owner = state.players.find(p => p[key]);
@@ -247,16 +237,10 @@
         owner[key] = false; receiver[key] = true;
     }
 
-    function veto() {
-        if(confirm("Veto this decree?")) {
-            document.getElementById('game-controls').style.display = 'block';
-            document.getElementById('decree-view').style.display = 'none';
-        }
-    }
-
+    function veto() { if(confirm("Veto decree?")) { document.getElementById('game-controls').style.display = 'block'; document.getElementById('decree-view').style.display = 'none'; } }
     function safeword() {
         const penalty = Math.floor(Math.random() * 5) + 1;
-        if(confirm("Invoke Safeword? Slave loses " + penalty + " points.")) {
+        if(confirm("Invoke Safeword? Loss of " + penalty + " points.")) {
             state.players.find(p => p.role === 'Slave').score -= penalty;
             resolve('fail');
         }
