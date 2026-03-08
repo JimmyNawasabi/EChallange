@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Final Protocol</title>
+    <title>SOVEREIGNTY: Intensity Protocol</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
@@ -36,9 +36,12 @@
         .card-r { background: var(--crimson); color: white; }
 
         .btn-main { background: var(--accent); color: white; padding: 18px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
+        .btn-commence { background: var(--gold); color: black; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; margin-bottom: 15px; cursor: pointer; display: block; text-transform: uppercase;}
+        
         #decree-panel { display: none; margin-top: 20px; text-align: center; }
         #decree-text { background: #000; padding: 25px; border-radius: 10px; border: 1px solid #222; font-size: 1.1rem; line-height: 1.6; margin-bottom: 20px; }
-        #timer { font-size: 3rem; color: var(--crimson); font-weight: 100; }
+        #timer { font-size: 3.5rem; color: var(--crimson); font-weight: 100; font-family: monospace; letter-spacing: 5px; margin-bottom: 10px;}
+        .intensity-tag { font-size: 0.7rem; letter-spacing: 2px; color: var(--gold); margin-bottom: 10px; display: block;}
     </style>
 </head>
 <body>
@@ -69,10 +72,9 @@
         <div class="box-section" style="background:#080808; padding:15px; border-radius:10px; border:1px solid #222;">
             <span class="label">Session Protocol: Rounds</span>
             <select id="total-rounds">
-                <option value="4">4 Rounds (Short)</option>
-                <option value="6">6 Rounds (Standard)</option>
-                <option value="10" selected>10 Rounds (Full Session)</option>
-                <option value="20">20 Rounds (Marathon)</option>
+                <option value="4">4 Rounds</option>
+                <option value="10" selected>10 Rounds</option>
+                <option value="20">20 Rounds</option>
             </select>
         </div>
 
@@ -102,10 +104,16 @@
         </div>
 
         <div id="command-center"><button class="btn-main" onclick="issueDecree()">Issue Command</button></div>
+        
         <div id="decree-panel">
-            <div id="timer">03:00</div>
+            <span id="intensity-display" class="intensity-tag"></span>
+            <div id="timer">00:00</div>
+            
+            <button id="commence-btn" class="btn-commence" onclick="startCountdown()">Commence Phase</button>
+            
             <div id="decree-text"></div>
-            <div style="display:flex; gap:10px;">
+            
+            <div id="completion-controls" style="display:none; gap:10px;">
                 <button class="btn-main" style="background:#1a1a1a; flex:1;" onclick="endRound(false)">Fail</button>
                 <button class="btn-main" style="background:var(--success); flex:1;" onclick="endRound(true)">Success</button>
             </div>
@@ -120,26 +128,39 @@
 </div>
 
 <script>
-const HARDWARE = { "Quietude":["Gag","Tape"], "Stillness":["Rope","Cuffs"], "Impact":["Cane","Paddle"], "Ache":["Plug","Vibe"] };
+const HARDWARE = { 
+    "Quietude":{"items":["Gag","Tape"], "time": 300}, 
+    "Stillness":{"items":["Rope","Cuffs"], "time": 600}, 
+    "Impact":{"items":["Cane","Paddle"], "time": 240}, 
+    "Ache":{"items":["Plug","Vibe"], "time": 480},
+    "Sensory":{"items":["Blindfold","Wax"], "time": 180}
+};
+
 let game = {
     currRound: 1, totalRounds: 10,
     p: [{id:0, name:"", role:"Master", gender:"M", score:0, cards:[]}, {id:1, name:"", role:"Slave", gender:"F", score:0, cards:[]}],
     h: JSON.parse(localStorage.getItem('sov_items')) || HARDWARE,
-    activeH: {}, timer: null,
-    db: ["{sub} is silenced with {item}.", "{sub} is bound in {item}.", "{dom} strikes {sub} 20x with {item}.", "{sub} accepts {item} internally."]
+    activeH: {}, timer: null, activeTime: 0,
+    db: [
+        {cat: "Quietude", txt: "{sub} is silenced with {item}. Silence is absolute."},
+        {cat: "Stillness", txt: "{sub} is secured in {item}. No movement permitted."},
+        {cat: "Impact", txt: "{dom} delivers calculated strikes with {item}."},
+        {cat: "Ache", txt: "{sub} accepts {item} internally. Endurance required."},
+        {cat: "Sensory", txt: "{dom} teases {sub}'s senses using {item}."}
+    ]
 };
 
 function init() {
     const cont = document.getElementById('arsenal-list');
     Object.keys(game.h).forEach(cat => {
-        game.activeH[cat] = [...game.h[cat]];
+        game.activeH[cat] = [...game.h[cat].items];
         let div = document.createElement('div');
         div.innerHTML = `<span class="label" style="color:#555; margin-top:5px;">${cat}</span><div class="item-grid" id="grid-${cat}"></div>`;
         cont.appendChild(div);
         render(cat);
     });
 }
-function render(cat) { document.getElementById(`grid-${cat}`).innerHTML = game.h[cat].map(i => `<div class="chip ${game.activeH[cat].includes(i)?'active':''}" onclick="tog('${cat}','${i}')">${i}</div>`).join(''); }
+function render(cat) { document.getElementById(`grid-${cat}`).innerHTML = game.h[cat].items.map(i => `<div class="chip ${game.activeH[cat].includes(i)?'active':''}" onclick="tog('${cat}','${i}')">${i}</div>`).join(''); }
 function tog(cat, i) { let a = game.activeH[cat]; a.includes(i) ? a.splice(a.indexOf(i),1) : a.push(i); render(cat); }
 function setGender(p, g) { game.p[p].gender = g; document.getElementById(`p${p}m`).classList.toggle('active', g === 'M'); document.getElementById(`p${p}f`).classList.toggle('active', g === 'F'); }
 
@@ -180,14 +201,41 @@ function triggerCard(pIdx, type) {
 function issueDecree() {
     const dom = game.p.find(x => x.role === 'Master');
     const sub = game.p.find(x => x.role === 'Slave');
-    let pool = []; Object.keys(game.activeH).forEach(c => pool = pool.concat(game.activeH[c]));
-    let txt = game.db[Math.floor(Math.random()*game.db.length)];
-    let item = pool[Math.floor(Math.random()*pool.length)] || "Master's Choice";
-    document.getElementById('decree-text').innerHTML = txt.replace(/{item}/g, `<strong>${item}</strong>`).replace(/{dom}/g, dom.name).replace(/{sub}/g, sub.name);
+    
+    let decree = game.db[Math.floor(Math.random()*game.db.length)];
+    let items = game.activeH[decree.cat];
+    let item = items[Math.floor(Math.random()*items.length)] || "Master's Choice";
+    
+    game.activeTime = game.h[decree.cat].time;
+    
+    document.getElementById('intensity-display').innerText = `${decree.cat.toUpperCase()} PROTOCOL: ${Math.floor(game.activeTime/60)} MIN`;
+    document.getElementById('timer').innerText = formatTime(game.activeTime);
+    document.getElementById('decree-text').innerHTML = decree.txt.replace(/{item}/g, `<strong>${item}</strong>`).replace(/{dom}/g, dom.name).replace(/{sub}/g, sub.name);
+    
     document.getElementById('command-center').style.display = 'none';
     document.getElementById('decree-panel').style.display = 'block';
-    let t = 180; clearInterval(game.timer);
-    game.timer = setInterval(() => { t--; document.getElementById('timer').innerText = `${Math.floor(t/60)}:${(t%60).toString().padStart(2,'0')}`; if(t<=0) endRound(false); }, 1000);
+    document.getElementById('commence-btn').style.display = 'block';
+    document.getElementById('completion-controls').style.display = 'none';
+}
+
+function startCountdown() {
+    document.getElementById('commence-btn').style.display = 'none';
+    document.getElementById('completion-controls').style.display = 'flex';
+    
+    let t = game.activeTime;
+    clearInterval(game.timer);
+    game.timer = setInterval(() => {
+        t--;
+        document.getElementById('timer').innerText = formatTime(t);
+        if(t <= 0) {
+            clearInterval(game.timer);
+            alert("TIME EXPIRED.");
+        }
+    }, 1000);
+}
+
+function formatTime(s) {
+    return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
 }
 
 function endRound(win) { if(win) game.p.find(x => x.role === 'Slave').score++; game.currRound++; swap(); }
