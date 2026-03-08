@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Arsenal Edition</title>
+    <title>SOVEREIGNTY: Persistent Arsenal</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
@@ -13,30 +13,36 @@
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; font-size: 0.85rem; }
         .container { max-width: 900px; width: 100%; background: var(--card); padding: 20px; border-radius: 20px; border: 3px solid var(--accent); box-shadow: 0 0 50px #000; }
         h1 { text-align: center; text-transform: uppercase; letter-spacing: 12px; font-size: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin: 15px 0;}
-        .box-section { background: #000; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #333; }
+        
+        .box-section { background: #000; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #333; position: relative; }
         .label { font-size: 0.8rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 2px; }
-        input, textarea, select { width: 100%; padding: 10px; border: 1px solid var(--accent); border-radius: 4px; background: #000; color: white; font-size: 1rem; box-sizing: border-box; font-family: inherit; }
         
-        /* Arsenal Grid Styles */
-        .arsenal-cat { margin-bottom: 15px; border-left: 2px solid var(--accent); padding-left: 10px; }
-        .item-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
-        .item-chip { padding: 6px 12px; border: 1px solid #444; background: #111; color: #666; cursor: pointer; border-radius: 20px; font-size: 0.7rem; text-transform: uppercase; }
-        .item-chip.active { border-color: var(--accent); color: #fff; background: #001a35; }
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid var(--accent); border-radius: 4px; background: #000; color: white; font-size: 1rem; box-sizing: border-box; }
         
-        .add-row { display: flex; gap: 5px; margin-top: 10px; }
-        .btn-add { background: #222; border: 1px solid #444; color: white; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        /* Arsenal Management */
+        .arsenal-cat { margin-bottom: 20px; border-left: 3px solid #222; padding-left: 15px; transition: border-color 0.3s; }
+        .arsenal-cat:hover { border-color: var(--accent); }
+        .item-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
         
-        .btn { background: var(--accent); color: white; border: 1px solid #FFF; padding: 14px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 8px; font-size: 0.9rem; margin-top: 10px; transition: all 0.3s;}
+        .item-chip { padding: 6px 14px; border: 1px solid #333; background: #0a0a0a; color: #555; cursor: pointer; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; transition: all 0.2s; }
+        .item-chip.active { border-color: var(--accent); color: #fff; background: #001a35; box-shadow: 0 0 5px var(--accent); }
+        
+        .add-row { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-add { background: #1a1a1a; border: 1px solid #444; color: #fff; padding: 0 15px; cursor: pointer; border-radius: 4px; }
+        .btn-add:hover { background: var(--accent); }
+
+        .btn { background: var(--accent); color: white; border: 1px solid #FFF; padding: 14px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 8px; font-size: 0.9rem; margin-top: 10px; }
         .btn:hover { background: #004494; box-shadow: 0 0 15px var(--accent); }
         
         .score-row { display: flex; justify-content: space-between; padding: 15px; background: #0a0a0a; border: 1px solid var(--accent); border-radius: 12px; text-align: center; margin-bottom: 20px; }
         .p-score { font-size: 2.5rem; font-weight: 200; color: var(--accent); }
-        .tog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .tog-btn { padding: 10px; border: 1px solid #333; background: #000; color: #555; cursor: pointer; border-radius: 4px; font-size: 0.7rem; text-transform: uppercase; font-weight: bold; text-align: center; }
-        .tog-btn.active { border-color: var(--accent); color: #FFF; background: #001a35; }
-        #timer-box { font-size: 3rem; font-weight: 100; color: var(--crimson); text-align: center; margin-bottom: 10px; letter-spacing: 5px; }
-        .safe-word { background: transparent !important; border: 1px solid var(--crimson) !important; color: var(--crimson) !important; margin-top: 25px !important; }
-        #decree-text { font-size: 1rem; line-height: 1.6; text-align: justify; color: #ccc; }
+        
+        #timer-box { font-size: 3.5rem; font-weight: 100; color: var(--crimson); text-align: center; letter-spacing: 5px; }
+        #decree-text { font-size: 1.1rem; line-height: 1.7; color: #ccc; }
+        .grand-display { border: 2px solid var(--gold); padding: 25px; background: #050500; display: none; }
+        
+        .purge-btn { position: absolute; right: 15px; top: 15px; background: none; border: 1px solid var(--crimson); color: var(--crimson); font-size: 0.6rem; padding: 2px 5px; cursor: pointer; opacity: 0.5; }
+        .purge-btn:hover { opacity: 1; background: var(--crimson); color: #fff; }
     </style>
 </head>
 <body>
@@ -47,142 +53,131 @@
     <div id="setup-view">
         <div class="box-section">
             <span class="label">Participants</span>
-            <div class="tog-grid">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 <input type="text" id="p0-name" value="Master">
                 <input type="text" id="p1-name" value="Slave">
             </div>
             <br>
-            <span class="label">Session Rounds: <input type="number" id="max-rounds" value="10" style="width: 60px; display:inline;"></span>
+            <span class="label">Total Rounds: <input type="number" id="max-rounds" value="10" style="width: 70px; display:inline;"></span>
         </div>
 
         <div class="box-section">
-            <span class="label">Arsenal Configuration</span>
-            <div id="arsenal-manager"></div>
-        </div>
-
-        <div class="box-section">
-            <span class="label" style="color: var(--gold);">Custom Protocol Architect</span>
-            <select id="custom-cat"></select>
-            <textarea id="custom-desc" placeholder="Enter detailed decree. Use {sub}, {dom}, and {item} tags."></textarea>
-            <button class="btn" style="background: #222; font-size:0.7rem; padding:8px;" onclick="addCustomDecree()">Inject Protocol</button>
+            <button class="purge-btn" onclick="purgeMemory()">Purge Memory</button>
+            <span class="label">Arsenal Configuration (Persistent)</span>
+            <div id="arsenal-container"></div>
         </div>
         
-        <button class="btn" onclick="beginSession()">Initialize Session</button>
+        <button class="btn" onclick="beginSession()">Engage Protocol</button>
     </div>
 
     <div id="game-view" style="display:none;">
         <div id="round-header" style="text-align:center; color:var(--accent); letter-spacing: 3px; margin-bottom: 10px;"></div>
         <div class="score-row">
-            <div style="flex:1;"><div class="label">DOMINANT</div><div id="dom-display"></div></div>
-            <div style="flex:1;"><div class="label">SUBMISSIVE</div><div id="sub-display"></div><div id="sub-score" class="p-score">0</div></div>
+            <div style="flex:1;"><div class="label">DOMINANT</div><div id="dom-display" style="font-size:1.2rem;"></div></div>
+            <div style="flex:1;"><div class="label">SUBMISSIVE</div><div id="sub-display" style="font-size:1.2rem;"></div><div id="sub-score" class="p-score">0</div></div>
         </div>
+        
         <div id="action-panel">
-            <div class="box-section">
-                <span class="label">Active Protocols</span>
-                <div id="decree-grid" class="tog-grid"></div>
-            </div>
-            <button class="btn" onclick="generateDecree()">Issue Command</button>
+            <button class="btn" onclick="generateDecree()">Issue Decree</button>
         </div>
+
         <div id="decree-active" style="display:none;">
             <div id="timer-box">00:00</div>
             <div class="box-section"><div id="decree-text"></div></div>
-            <button class="btn" style="background:var(--success);" onclick="finalize(true)">SUCCESS</button>
-            <button class="btn" style="background:#1a1a1a;" onclick="finalize(false)">FAIL</button>
-            <button class="btn safe-word" onclick="triggerSafeWord()">FORFEIT: SAFE WORD</button>
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="background:#1a1a1a; flex:1;" onclick="finalize(false)">FAIL</button>
+                <button class="btn" style="background:var(--success); flex:1;" onclick="finalize(true)">SUCCESS</button>
+            </div>
         </div>
     </div>
 
-    <div id="grand-view" style="display:none; text-align:center; border: 2px solid var(--gold); padding:20px; background: #0a0a00;">
+    <div id="grand-view" class="grand-display">
         <h1 style="color:var(--gold); border:none;">GRAND DECREE</h1>
-        <p id="winner-announcement" style="font-size:1.2rem;"></p>
-        <div id="grand-options" style="text-align:left; line-height:1.6;"></div>
+        <p id="winner-announcement" style="font-size:1.3rem; color: #fff;"></p>
+        <div id="grand-options" style="text-align:left;"></div>
     </div>
 </div>
 
 <script>
-const state = {
+const DEFAULT_HARDWARE = {
+    "The Quietude": ["Ball Gag", "Ring Gag", "Medical Tape"],
+    "The Stillness": ["Hogtie Rope", "Steel Cuffs", "Spreader Bar"],
+    "The Shadows": ["Leather Hood", "Silk Scarf", "Blindfold"],
+    "The Percussion": ["Heavy Flogger", "Cane", "Glass Paddle"],
+    "The Intrusion": ["Anal Plug", "Vibrator", "Internal Probe"],
+    "The Nuance": ["Ice Cubes", "Clothespins", "Hot Wax"]
+};
+
+let state = {
     round: 1, total: 10, timer: null,
     players: [{n:"", role:"Master", score:0}, {n:"", role:"Slave", score:0}],
-    hardware: {
-        "The Quietude": ["Ball Gag", "Ring Gag", "Medical Tape"],
-        "The Stillness": ["Hogtie Rope", "Steel Cuffs", "Spreader Bar"],
-        "The Shadows": ["Leather Hood", "Silk Scarf", "Blindfold"],
-        "The Percussion": ["Heavy Flogger", "Cane", "Glass Paddle"],
-        "The Intrusion": ["Anal Plug", "Vibrator", "Internal Probe"],
-        "The Nuance": ["Ice Cubes", "Clothespins", "Hot Wax"]
-    },
-    // Track which items are active
-    activeHardware: {}, 
+    hardware: JSON.parse(localStorage.getItem('sov_hardware')) || DEFAULT_HARDWARE,
+    activeSelection: {}, 
     db: {
-        "Self-Bondage": [`{sub} must use {item:The Stillness} to secure their ankles, then apply {item:The Quietude}. Kneel and wait for {dom} to secure your wrists.`],
-        "The Infinite Ache": [`Focus: <strong>Strict Denial</strong>. {dom} will use {item:The Intrusion} to bring {sub} to the absolute edge. At the point of no return, {item:The Nuance} is applied to shock the senses. <strong>No climax.</strong>`],
-        "Physical Challenge": [`{sub} holds a stress position. {dom} applies 15 strokes of {item:The Percussion}, alternating with {item:The Nuance}.`],
-        "Shibari": [`{dom} executes a floor bind with {item:The Stillness}. Once immobile, {sub} is masked with {item:The Shadows} and left in isolation.`],
-        "Truth": [`{sub} is bound. {dom} asks a question. Silence or a lie results in {item:The Percussion}. Honesty is rewarded with {item:The Nuance}.`],
-        "Soft & Sexy": [`{dom} uses {item:The Shadows} to blindfold {sub}. Use {item:The Nuance} to trace the body before {item:The Intrusion} is used for teasing.`],
-        "Escape": [`{dom} binds {sub} with {item:The Stillness}. You have the timer to escape. Failure is a -1 point penalty.`],
-        "Dare": [`{sub} must endure 2 minutes of {item:The Intrusion} while {dom} applies {item:The Nuance} to the neck and chest. Absolute silence.`]
+        "The Quietude": ["{sub} is to be effectively silenced. {dom} will apply {item} and ensure a perfect seal for the remainder of this phase."],
+        "The Stillness": ["{sub} must be rendered immobile. {dom} will execute a strict bind using {item}. Any struggle is noted and punished."],
+        "The Shadows": ["{sub} is to be deprived of sight. {dom} will apply {item}. In the darkness, {sub} must identify three different sensations from The Nuance."],
+        "The Percussion": ["{sub} will receive 20 calculated strikes from {item}. {dom} decides the rhythm. Absolute stillness is required."],
+        "The Intrusion": ["{sub} is to accept {item} internally. Once placed, {dom} will focus on The Nuance until the timer expires."],
+        "The Nuance": ["{dom} will use {item} to explore {sub}'s most sensitive zones. You must remain silent or face The Percussion."],
+        "The Infinite Ache": ["Strict Denial. {dom} will use {item:The Intrusion} to bring {sub} to the edge 3 times. {item:The Percussion} is used to reset the urge. No climax."],
+        "Self-Bondage": ["{sub} must use {item:The Stillness} to lock their own ankles and {item:The Quietude} to silence themselves before presenting to {dom}."]
     }
 };
 
 function init() {
-    const manager = document.getElementById('arsenal-manager');
-    const sel = document.getElementById('custom-cat');
-    const decGrid = document.getElementById('decree-grid');
-
+    const container = document.getElementById('arsenal-container');
     Object.keys(state.hardware).forEach(cat => {
-        state.activeHardware[cat] = [...state.hardware[cat]];
+        state.activeSelection[cat] = [...state.hardware[cat]];
         
         let section = document.createElement('div');
         section.className = 'arsenal-cat';
-        section.innerHTML = `<span class="label">${cat}</span><div class="item-grid" id="items-${cat.replace(/\s/g, '')}"></div>
-        <div class="add-row"><input type="text" id="add-input-${cat.replace(/\s/g, '')}" placeholder="New item..."><button class="btn-add" onclick="addNewItem('${cat}')">+</button></div>`;
-        manager.appendChild(section);
-        
-        updateItemChips(cat);
-        sel.innerHTML += `<option value="${cat}">${cat}</option>`;
-        decGrid.innerHTML += `<div class="tog-btn active" onclick="this.classList.toggle('active')">${cat}</div>`;
+        section.id = `cat-${cat.replace(/\s/g, '')}`;
+        renderCategory(cat, section);
+        container.appendChild(section);
     });
 }
 
-function updateItemChips(cat) {
-    const grid = document.getElementById(`items-${cat.replace(/\s/g, '')}`);
-    grid.innerHTML = '';
-    state.hardware[cat].forEach(item => {
-        const chip = document.createElement('div');
-        chip.className = `item-chip ${state.activeHardware[cat].includes(item) ? 'active' : ''}`;
-        chip.innerText = item;
-        chip.onclick = () => {
-            if(state.activeHardware[cat].includes(item)) {
-                state.activeHardware[cat] = state.activeHardware[cat].filter(i => i !== item);
-            } else {
-                state.activeHardware[cat].push(item);
-            }
-            chip.classList.toggle('active');
-        };
-        grid.appendChild(chip);
-    });
+function renderCategory(cat, element) {
+    element.innerHTML = `
+        <span class="label">${cat}</span>
+        <div class="item-grid">
+            ${state.hardware[cat].map(item => `
+                <div class="item-chip ${state.activeSelection[cat].includes(item) ? 'active' : ''}" 
+                     onclick="toggleItem('${cat}', '${item}')">${item}</div>
+            `).join('')}
+        </div>
+        <div class="add-row">
+            <input type="text" id="input-${cat.replace(/\s/g, '')}" placeholder="Add custom ${cat}...">
+            <button class="btn-add" onclick="addItem('${cat}')">+</button>
+        </div>
+    `;
 }
 
-function addNewItem(cat) {
-    const input = document.getElementById(`add-input-${cat.replace(/\s/g, '')}`);
+function toggleItem(cat, item) {
+    const index = state.activeSelection[cat].indexOf(item);
+    if (index > -1) state.activeSelection[cat].splice(index, 1);
+    else state.activeSelection[cat].push(item);
+    renderCategory(cat, document.getElementById(`cat-${cat.replace(/\s/g, '')}`));
+}
+
+function addItem(cat) {
+    const input = document.getElementById(`input-${cat.replace(/\s/g, '')}`);
     const val = input.value.trim();
-    if(val && !state.hardware[cat].includes(val)) {
+    if (val && !state.hardware[cat].includes(val)) {
         state.hardware[cat].push(val);
-        state.activeHardware[cat].push(val);
+        state.activeSelection[cat].push(val);
+        localStorage.setItem('sov_hardware', JSON.stringify(state.hardware));
+        renderCategory(cat, document.getElementById(`cat-${cat.replace(/\s/g, '')}`));
         input.value = '';
-        updateItemChips(cat);
     }
 }
 
-function addCustomDecree() {
-    const cat = document.getElementById('custom-cat').value;
-    const desc = document.getElementById('custom-desc').value;
-    if(!desc) return;
-    if(!state.db[cat]) state.db[cat] = [];
-    state.db[cat].push(desc);
-    document.getElementById('custom-desc').value = "";
-    alert("Custom Decree Injected.");
+function purgeMemory() {
+    if (confirm("Reset Arsenal to factory defaults?")) {
+        localStorage.removeItem('sov_hardware');
+        location.reload();
+    }
 }
 
 function beginSession() {
@@ -191,35 +186,36 @@ function beginSession() {
     state.total = parseInt(document.getElementById('max-rounds').value);
     document.getElementById('setup-view').style.display = 'none';
     document.getElementById('game-view').style.display = 'block';
-    render();
+    renderUI();
 }
 
-function render() {
+function renderUI() {
     const dom = state.players.find(p => p.role === "Master");
     const sub = state.players.find(p => p.role === "Slave");
-    document.getElementById('round-header').innerText = `PROTOCOL: ${state.round} / ${state.total}`;
+    document.getElementById('round-header').innerText = `PHASE: ${state.round} / ${state.total}`;
     document.getElementById('dom-display').innerText = dom.n.toUpperCase();
     document.getElementById('sub-display').innerText = sub.n.toUpperCase();
     document.getElementById('sub-score').innerText = sub.score;
 }
 
 function generateDecree() {
-    const activeProtocols = Array.from(document.querySelectorAll('#decree-grid .tog-btn.active')).map(b => b.innerText);
-    const cat = activeProtocols[Math.floor(Math.random() * activeProtocols.length)];
+    const cats = Object.keys(state.db);
+    const cat = cats[Math.floor(Math.random() * cats.length)];
     const dom = state.players.find(p => p.role === "Master").n;
     const sub = state.players.find(p => p.role === "Slave").n;
     
     let rawText = state.db[cat][Math.floor(Math.random() * state.db[cat].length)];
     
-    // Process {item:CategoryName} tags
-    let text = rawText.replace(/{item:([^}]+)}/g, (match, category) => {
-        const pool = state.activeHardware[category] || ["a random tool"];
+    // Replace {item} or {item:Category}
+    let text = rawText.replace(/{item(?::([^}]+))?}/g, (match, specificCat) => {
+        const targetCat = specificCat || cat;
+        const pool = state.activeSelection[targetCat] || ["an unspecified tool"];
         return `<strong>${pool[Math.floor(Math.random() * pool.length)]}</strong>`;
     });
     
     text = text.replace(/{dom}/g, dom).replace(/{sub}/g, sub);
 
-    document.getElementById('decree-text').innerHTML = `<strong>${cat.toUpperCase()}</strong><br><br>${text}`;
+    document.getElementById('decree-text').innerHTML = `<strong style="color:var(--accent); font-size:1.4rem;">${cat.toUpperCase()}</strong><br><br>${text}`;
     document.getElementById('action-panel').style.display = 'none';
     document.getElementById('decree-active').style.display = 'block';
     startTimer(180);
@@ -231,25 +227,19 @@ function startTimer(s) {
     state.timer = setInterval(() => {
         t--;
         document.getElementById('timer-box').innerText = `${Math.floor(t/60)}:${(t%60).toString().padStart(2,'0')}`;
-        if(t <= 0) finalize(false);
+        if (t <= 0) finalize(false);
     }, 1000);
 }
 
 function finalize(success) {
     clearInterval(state.timer);
-    if(success) state.players.find(p => p.role === "Slave").score++;
-    if(state.round >= state.total) return showGrand();
+    if (success) state.players.find(p => p.role === "Slave").score++;
+    if (state.round >= state.total) return showGrand();
     state.players.forEach(p => p.role = (p.role === "Master" ? "Slave" : "Master"));
     state.round++;
     document.getElementById('action-panel').style.display = 'block';
     document.getElementById('decree-active').style.display = 'none';
-    render();
-}
-
-function triggerSafeWord() {
-    const s = state.players.find(p => p.role === "Slave");
-    if(s.score < 1) return alert("System Lock: Insufficient points.");
-    s.score -= 5; finalize(false);
+    renderUI();
 }
 
 function showGrand() {
@@ -258,10 +248,11 @@ function showGrand() {
     const winner = state.players[0].score >= state.players[1].score ? state.players[0] : state.players[1];
     document.getElementById('winner-announcement').innerText = `${winner.n.toUpperCase()} HAS ACHIEVED SOVEREIGNTY.`;
     document.getElementById('grand-options').innerHTML = `
-        <div class="box-section"><strong>I. THE RITUAL OF CLIMAX:</strong> Winner chooses roles. Submissive is bound and gagged. 45-min session of extreme impact/internal work. <strong>Master climax permitted only at the end.</strong></div>
-        <div class="box-section"><strong>II. THE TOTAL ECLIPSE:</strong> 60 mins sensory deprivation for loser. Winner uses all assets at whim.</div>
+        <div class="box-section"><strong>THE RITUAL OF RELEASE:</strong> 45 minutes of intensive protocol. Master may climax only at the conclusion.</div>
+        <div class="box-section"><strong>THE TOTAL ECLIPSE:</strong> 60 minutes of sensory deprivation and impact.</div>
     `;
 }
+
 init();
 </script>
 </body>
