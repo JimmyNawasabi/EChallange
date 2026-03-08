@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sovereignty: The Master's Command</title>
+    <title>SOVEREIGNTY: Hardened Protocol</title>
     <style>
         :root { 
             --accent: #d4af37; --bg: #0a0a0a; --card: #161616;
@@ -12,77 +12,75 @@
         }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
         .container { max-width: 550px; width: 100%; background: var(--card); padding: 25px; border-radius: 30px; border: 2px solid #333; box-shadow: 0 0 50px #000; }
-        h1 { text-align: center; text-transform: uppercase; letter-spacing: 6px; color: var(--accent); margin: 0; font-size: 1.5rem; }
+        h1 { text-align: center; text-transform: uppercase; letter-spacing: 6px; color: var(--accent); margin: 0; }
         .box-section { background: #1f1f1f; padding: 15px; margin-bottom: 12px; border-radius: 15px; border: 1px solid #333; }
-        .label { font-size: 0.65rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; letter-spacing: 1px; }
+        .label { font-size: 0.65rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; }
         
-        /* UI Controls */
+        /* UI Elements */
         input[type="text"] { width: 100%; padding: 10px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; }
-        .btn { background: var(--crimson); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; letter-spacing: 1px; margin-top: 10px; }
+        .btn { background: var(--crimson); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 10px; }
         .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
         .tog-btn { padding: 8px; font-size: 0.6rem; border-radius: 6px; border: 1px solid #333; background: #111; color: #555; cursor: pointer; text-transform: uppercase; font-weight: bold; }
         .tog-btn.active { border-color: var(--accent); color: var(--accent); background: #1a1608; }
         
         /* Dashboard */
-        .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; background: #000; border-radius: 15px; }
+        .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; background: #000; border-radius: 15px; border: 1px solid #222; }
         .p-block { text-align: center; flex: 1; }
         .role-tag { font-size: 0.55rem; font-weight: 900; letter-spacing: 1px; color: #666; }
-        .master-glow { color: var(--accent) !important; text-shadow: 0 0 10px var(--accent); }
-        .score-num { font-size: 1.8rem; font-weight: bold; margin: 2px 0; }
+        .master-glow { color: var(--accent) !important; text-shadow: 0 0 8px var(--accent); }
+        .score-num { font-size: 1.8rem; font-weight: bold; }
         
-        /* Card Display */
-        .card-dock { display: flex; justify-content: center; gap: 4px; height: 20px; }
+        /* Card Visuals */
+        .card-dock { display: flex; justify-content: center; gap: 4px; height: 20px; margin-top: 5px; }
         .mini-card { width: 12px; height: 18px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.2); }
-        .card-y { background: var(--yellow); }
-        .card-r { background: var(--red); }
+        .card-yellow { background: var(--yellow); }
+        .card-red { background: var(--red); }
         
-        /* The Decree Display */
-        .decree-box { font-size: 1rem; line-height: 1.6; color: #ddd; border-left: 4px solid var(--crimson); padding-left: 15px; margin: 15px 0; }
-        
+        .decree-box { font-size: 1rem; line-height: 1.6; color: #ddd; border-left: 4px solid var(--accent); padding-left: 15px; margin: 15px 0; }
         .step { display: none; }
         .active { display: block !important; }
-        
-        /* Vault Editor Overlay */
-        #vault-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; display: none; padding: 20px; box-sizing: border-box; overflow-y: auto; }
-        .tag { display: inline-block; background: #333; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; margin: 2px; }
-        .tag span { color: var(--red); margin-left: 5px; cursor: pointer; }
+
+        /* Vault Overlay */
+        #vault-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: none; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .vault-tag { display: inline-block; background: #333; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; margin: 2px; border: 1px solid #444; }
+        .vault-tag span { color: #ff4500; margin-left: 8px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="vault-overlay">
-    <h2 style="color:var(--accent)">ARSENAL VAULT</h2>
+    <h2 style="color:var(--accent); text-align:center;">ARSENAL VAULT</h2>
     <div id="vault-editor-content"></div>
-    <button class="btn" onclick="closeVault()">Save & Close Vault</button>
+    <button class="btn" onclick="closeVault()">Save & Exit Vault</button>
 </div>
 
 <div class="container">
     <h1>SOVEREIGNTY</h1>
-    <p style="text-align:center; font-size:0.6rem; color:#666; margin-top:-5px;">Competitive Power Exchange</p>
+    <p style="text-align:center; font-size:0.6rem; color:#666; margin-bottom: 20px;">The Command Protocol</p>
 
     <div id="screen-setup" class="step active">
         <div class="box-section">
             <span class="label">Player 1</span>
-            <input type="text" id="p1-name" placeholder="Name...">
+            <input type="text" id="p1-name" placeholder="Enter Name...">
         </div>
         <div class="box-section">
             <span class="label">Player 2</span>
-            <input type="text" id="p2-name" placeholder="Name...">
+            <input type="text" id="p2-name" placeholder="Enter Name...">
         </div>
-        <button class="btn" onclick="startGame()">Begin Struggle</button>
+        <button class="btn" onclick="startGame()">Start Session</button>
     </div>
 
     <div id="screen-game" class="step">
         <div class="score-row">
-            <div class="p-block">
-                <div id="p0-role" class="role-tag">SLAVE</div>
+            <div id="p-block-0" class="p-block">
+                <div id="p0-role" class="role-tag">MASTER</div>
                 <div id="p0-name-label" style="font-weight:bold;">P1</div>
                 <div id="p0-score" class="score-num">0</div>
                 <div id="p0-cards" class="card-dock"></div>
             </div>
             <div style="font-weight:900; color:#333;">VS</div>
-            <div class="p-block">
-                <div id="p1-role" class="role-tag">MASTER</div>
+            <div id="p-block-1" class="p-block">
+                <div id="p1-role" class="role-tag">SLAVE</div>
                 <div id="p1-name-label" style="font-weight:bold;">P2</div>
                 <div id="p1-score" class="score-num">0</div>
                 <div id="p1-cards" class="card-dock"></div>
@@ -91,29 +89,31 @@
 
         <div id="master-controls">
             <div class="box-section">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span class="label">Round Configuration</span>
-                    <button onclick="openVault()" style="font-size:0.6rem; background:none; border:1px solid var(--accent); color:var(--accent); cursor:pointer; padding:2px 5px; border-radius:4px;">Edit Vault Items</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+                    <span class="label">Session Config</span>
+                    <button onclick="openVault()" style="background:none; border:1px solid var(--accent); color:var(--accent); font-size:0.6rem; padding:2px 8px; cursor:pointer; border-radius:4px;">Edit Vault</button>
                 </div>
-                <span class="label" style="margin-top:10px; color:#666;">Active Arsenal Sets:</span>
+                
+                <span class="label" style="color:#666;">Include Arsenal:</span>
                 <div class="toggle-grid" id="arsenal-toggle-mount"></div>
-                <span class="label" style="color:#666;">Active Decree Types:</span>
+                
+                <span class="label" style="color:#666;">Decree Categories:</span>
                 <div class="toggle-grid" id="category-toggle-mount"></div>
             </div>
             <button class="btn" onclick="generateDecree()">Generate Decree</button>
         </div>
 
-        <div id="active-decree-ui" style="display:none;">
+        <div id="active-round-ui" style="display:none;">
             <div class="box-section">
                 <div id="decree-display" class="decree-box"></div>
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <button id="y-btn" class="tog-btn" style="flex:1; background:var(--yellow); color:black;" onclick="useCard('yellow')">Use Yellow</button>
-                    <button id="r-btn" class="tog-btn" style="flex:1; background:var(--red); color:white;" onclick="useCard('red')">Use Red</button>
+                <div style="display:flex; gap:10px; margin-top:15px;">
+                    <button id="y-btn" class="tog-btn" style="flex:1; background:var(--yellow); color:black;" onclick="useCard('yellow')">Yellow Card</button>
+                    <button id="r-btn" class="tog-btn" style="flex:1; background:var(--red); color:white;" onclick="useCard('red')">Red Card</button>
                 </div>
             </div>
             <div style="display:flex; gap:10px;">
-                <button class="btn" style="background:#444; flex:1;" onclick="submitOutcome(false)">FAIL (Retain Role)</button>
-                <button class="btn" style="background:var(--success); flex:1;" onclick="submitOutcome(true)">SUCCESS (Role Swap)</button>
+                <button class="btn" style="background:#444; flex:1;" onclick="resolveRound(false)">FAIL</button>
+                <button class="btn" style="background:var(--success); flex:1;" onclick="resolveRound(true)">SUCCESS</button>
             </div>
         </div>
     </div>
@@ -122,10 +122,10 @@
 <script>
     const state = {
         players: [
-            { n: "", role: "Slave", score: 0, cards: [] },
-            { n: "", role: "Master", score: 0, cards: [] }
+            { n: "", role: "Master", score: 0, cards: [] },
+            { n: "", role: "Slave", score: 0, cards: [] }
         ],
-        vault: JSON.parse(localStorage.getItem('sov_vault_v3')) || {
+        vault: JSON.parse(localStorage.getItem('sov_vault_core')) || {
             "The Bindings": { items: ["Rope", "Cuffs"], active: true },
             "The Shadows": { items: ["Blindfold"], active: true },
             "The Discipline": { items: ["Flogger", "Cane"], active: true },
@@ -142,17 +142,16 @@
     function startGame() {
         state.players[0].n = document.getElementById('p1-name').value || "P1";
         state.players[1].n = document.getElementById('p2-name').value || "P2";
-        state.players[1].cards = ['yellow', 'red']; // Master starts with cards
-        nav('screen-game');
-        refreshDashboard();
+        // Randomly assign one card to each at start
+        state.players[0].cards = ['yellow'];
+        state.players[1].cards = ['red'];
+        
+        document.getElementById('screen-setup').classList.remove('active');
+        document.getElementById('screen-game').classList.add('active');
+        refreshUI();
     }
 
-    function nav(id) {
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
-
-    function refreshDashboard() {
+    function refreshUI() {
         state.players.forEach((p, i) => {
             document.getElementById(`p${i}-name-label`).innerText = p.n;
             document.getElementById(`p${i}-score`).innerText = p.score;
@@ -161,14 +160,13 @@
             rTag.className = 'role-tag' + (p.role === 'Master' ? ' master-glow' : '');
             
             const cardDock = document.getElementById(`p${i}-cards`);
-            cardDock.innerHTML = p.cards.map(c => `<div class="mini-card card-${c[0]}"></div>`).join('');
+            cardDock.innerHTML = p.cards.map(c => `<div class="mini-card card-${c}"></div>`).join('');
         });
 
-        // Update Toggles
         renderToggles('arsenal-toggle-mount', state.vault, true);
         renderToggles('category-toggle-mount', state.cats, false);
 
-        // Card button availability
+        // Check card availability for Master
         const mIdx = state.players.findIndex(p => p.role === 'Master');
         document.getElementById('y-btn').style.opacity = state.players[mIdx].cards.includes('yellow') ? "1" : "0.2";
         document.getElementById('r-btn').style.opacity = state.players[mIdx].cards.includes('red') ? "1" : "0.2";
@@ -185,9 +183,10 @@
     function toggleData(key, isVault) {
         if(isVault) state.vault[key].active = !state.vault[key].active;
         else state.cats[key] = !state.cats[key];
-        refreshDashboard();
+        refreshUI();
     }
 
+    // VAULT LOGIC
     function openVault() {
         const mount = document.getElementById('vault-editor-content');
         mount.innerHTML = '';
@@ -195,35 +194,35 @@
             mount.innerHTML += `
                 <div class="box-section">
                     <span class="label">${cat}</span>
-                    <div>${state.vault[cat].items.map((it, i) => `<span class="tag">${it}<span onclick="vaultRemove('${cat}',${i})">✕</span></span>`).join('')}</div>
-                    <div style="display:flex; margin-top:5px;"><input type="text" id="in-${cat.replace(/\s/g,'')}" placeholder="New tool..."><button onclick="vaultAdd('${cat}')">Add</button></div>
+                    <div style="margin-bottom:8px;">${state.vault[cat].items.map((it, i) => `<span class="vault-tag">${it}<span onclick="vaultRemove('${cat}',${i})">✕</span></span>`).join('')}</div>
+                    <div style="display:flex; gap:5px;"><input type="text" id="add-in-${cat.replace(/\s/g,'')}" placeholder="New tool..."><button class="tog-btn active" style="padding:0 10px;" onclick="vaultAdd('${cat}')">Add</button></div>
                 </div>`;
         }
         document.getElementById('vault-overlay').style.display = 'block';
     }
 
     function vaultAdd(cat) {
-        const input = document.getElementById(`in-${cat.replace(/\s/g,'')}`);
+        const input = document.getElementById(`add-in-${cat.replace(/\s/g,'')}`);
         if(input.value) { state.vault[cat].items.push(input.value); vaultSave(); openVault(); }
     }
     function vaultRemove(cat, i) { state.vault[cat].items.splice(i, 1); vaultSave(); openVault(); }
-    function vaultSave() { localStorage.setItem('sov_vault_v3', JSON.stringify(state.vault)); }
-    function closeVault() { document.getElementById('vault-overlay').style.display = 'none'; refreshDashboard(); }
+    function vaultSave() { localStorage.setItem('sov_vault_core', JSON.stringify(state.vault)); }
+    function closeVault() { document.getElementById('vault-overlay').style.display = 'none'; refreshUI(); }
 
     function generateDecree() {
         const mIdx = state.players.findIndex(p => p.role === 'Master');
         const sIdx = mIdx === 0 ? 1 : 0;
         
         const activeCats = Object.keys(state.cats).filter(k => state.cats[k]);
-        const cat = activeCats[Math.floor(Math.random() * activeCats.length)];
+        const catName = activeCats[Math.floor(Math.random() * activeCats.length)];
         
-        const activeTools = Object.keys(state.vault).filter(v => state.vault[v].active && state.vault[v].items.length > 0);
-        const toolSet = activeTools[Math.floor(Math.random() * activeTools.length)];
+        const activeSets = Object.keys(state.vault).filter(v => state.vault[v].active && state.vault[v].items.length > 0);
+        const toolSet = activeSets[Math.floor(Math.random() * activeSets.length)];
         const tool = state.vault[toolSet].items[Math.floor(Math.random() * state.vault[toolSet].items.length)];
 
-        document.getElementById('decree-display').innerHTML = `<strong>${cat}:</strong><br>${state.players[mIdx].n} commands ${state.players[sIdx].n} to endure a task involving the <u>${tool}</u>. Complete it to earn a chance at Sovereignty.`;
+        document.getElementById('decree-display').innerHTML = `<strong>${catName}:</strong><br>${state.players[mIdx].n} commands ${state.players[sIdx].n} to submit to a challenge involving <u>${tool}</u>.`;
         document.getElementById('master-controls').style.display = 'none';
-        document.getElementById('active-decree-ui').style.display = 'block';
+        document.getElementById('active-round-ui').style.display = 'block';
     }
 
     function useCard(type) {
@@ -233,12 +232,12 @@
         if(cIdx > -1) {
             state.players[mIdx].cards.splice(cIdx, 1);
             state.players[sIdx].cards.push(type);
-            alert(`CARD ISSUED! ${type.toUpperCase()} penalty applied. Card transferred to ${state.players[sIdx].n}.`);
-            refreshDashboard();
+            alert(`CARD TRANSFERRED: ${type.toUpperCase()} used. ${state.players[sIdx].n} now holds this power.`);
+            refreshUI();
         }
     }
 
-    function submitOutcome(success) {
+    function resolveRound(success) {
         const mIdx = state.players.findIndex(p => p.role === 'Master');
         const sIdx = mIdx === 0 ? 1 : 0;
 
@@ -246,15 +245,15 @@
             state.players[sIdx].score++;
             state.players[0].role = (state.players[0].role === 'Master' ? 'Slave' : 'Master');
             state.players[1].role = (state.players[1].role === 'Master' ? 'Slave' : 'Master');
-            alert("SUCCESS. Roles have been REVERSED.");
+            alert("SUCCESS! Roles have been REVERSED.");
         } else {
             state.players[mIdx].score++;
-            alert("FAILURE. Sovereignty remains unchanged.");
+            alert("FAILURE. The Master retains sovereignty.");
         }
 
         document.getElementById('master-controls').style.display = 'block';
-        document.getElementById('active-decree-ui').style.display = 'none';
-        refreshDashboard();
+        document.getElementById('active-round-ui').style.display = 'none';
+        refreshUI();
     }
 </script>
 </body>
