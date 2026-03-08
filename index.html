@@ -28,6 +28,12 @@
         .chip { padding: 5px 12px; border: 1px solid #333; background: #0a0a0a; color: #555; cursor: pointer; border-radius: 4px; font-size: 0.7rem; }
         .chip.active { border-color: var(--accent); color: white; background: #001a35; }
         
+        /* Add Item Input Style */
+        .add-item-row { display: flex; gap: 5px; margin-top: 8px; }
+        .add-item-row input { margin: 0; padding: 8px; font-size: 0.75rem; flex: 1; }
+        .add-btn { background: #222; color: #fff; border: 1px solid #444; width: 40px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .add-btn:hover { background: var(--accent); border-color: #fff; }
+
         .p-box { flex: 1; padding: 15px; background: #080808; border: 1px solid #222; border-radius: 12px; text-align: center; }
         .p-box.active-dom { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,86,179,0.2); }
         .card-inv { display: flex; justify-content: center; gap: 10px; margin-top: 10px; height: 45px; }
@@ -139,7 +145,7 @@ const HARDWARE = {
 let game = {
     currRound: 1, totalRounds: 10,
     p: [{id:0, name:"", role:"Master", gender:"M", score:0, cards:[]}, {id:1, name:"", role:"Slave", gender:"F", score:0, cards:[]}],
-    h: JSON.parse(localStorage.getItem('sov_items')) || HARDWARE,
+    h: JSON.parse(localStorage.getItem('sov_items_v6')) || HARDWARE,
     activeH: {}, timer: null, activeTime: 0,
     db: [
         {cat: "Quietude", txt: "{sub} is silenced with {item}. Silence is absolute."},
@@ -152,17 +158,60 @@ let game = {
 
 function init() {
     const cont = document.getElementById('arsenal-list');
+    cont.innerHTML = ''; // Clear for re-renders
     Object.keys(game.h).forEach(cat => {
-        game.activeH[cat] = [...game.h[cat].items];
+        // Populate active hardware if not already set
+        if (!game.activeH[cat]) game.activeH[cat] = [...game.h[cat].items];
+        
         let div = document.createElement('div');
-        div.innerHTML = `<span class="label" style="color:#555; margin-top:5px;">${cat}</span><div class="item-grid" id="grid-${cat}"></div>`;
+        div.className = "box-section";
+        div.style.marginBottom = "15px";
+        div.innerHTML = `
+            <span class="label" style="color:#555;">${cat}</span>
+            <div class="item-grid" id="grid-${cat}"></div>
+            <div class="add-item-row">
+                <input type="text" id="add-input-${cat}" placeholder="Add new ${cat} item...">
+                <button class="add-btn" onclick="addNewItem('${cat}')">+</button>
+            </div>
+        `;
         cont.appendChild(div);
         render(cat);
     });
 }
-function render(cat) { document.getElementById(`grid-${cat}`).innerHTML = game.h[cat].items.map(i => `<div class="chip ${game.activeH[cat].includes(i)?'active':''}" onclick="tog('${cat}','${i}')">${i}</div>`).join(''); }
-function tog(cat, i) { let a = game.activeH[cat]; a.includes(i) ? a.splice(a.indexOf(i),1) : a.push(i); render(cat); }
-function setGender(p, g) { game.p[p].gender = g; document.getElementById(`p${p}m`).classList.toggle('active', g === 'M'); document.getElementById(`p${p}f`).classList.toggle('active', g === 'F'); }
+
+function render(cat) { 
+    document.getElementById(`grid-${cat}`).innerHTML = game.h[cat].items.map(i => `
+        <div class="chip ${game.activeH[cat].includes(i)?'active':''}" onclick="tog('${cat}','${i}')">${i}</div>
+    `).join(''); 
+}
+
+function tog(cat, i) { 
+    let a = game.activeH[cat]; 
+    a.includes(i) ? a.splice(a.indexOf(i),1) : a.push(i); 
+    render(cat); 
+}
+
+function addNewItem(cat) {
+    const input = document.getElementById(`add-input-${cat}`);
+    const val = input.value.trim();
+    if (val) {
+        // Add to permanent storage
+        game.h[cat].items.push(val);
+        // Add to current active selection
+        game.activeH[cat].push(val);
+        // Update LocalStorage
+        localStorage.setItem('sov_items_v6', JSON.stringify(game.h));
+        // Clear input and re-render
+        input.value = '';
+        render(cat);
+    }
+}
+
+function setGender(p, g) { 
+    game.p[p].gender = g; 
+    document.getElementById(`p${p}m`).classList.toggle('active', g === 'M'); 
+    document.getElementById(`p${p}f`).classList.toggle('active', g === 'F'); 
+}
 
 function startSession() {
     game.p[0].name = document.getElementById('name0').value;
@@ -202,13 +251,18 @@ function issueDecree() {
     const dom = game.p.find(x => x.role === 'Master');
     const sub = game.p.find(x => x.role === 'Slave');
     
-    let decree = game.db[Math.floor(Math.random()*game.db.length)];
-    let items = game.activeH[decree.cat];
-    let item = items[Math.floor(Math.random()*items.length)] || "Master's Choice";
+    // Select categories that actually have active items
+    let validCats = Object.keys(game.activeH).filter(cat => game.activeH[cat].length > 0);
+    let chosenCat = validCats[Math.floor(Math.random() * validCats.length)];
     
-    game.activeTime = game.h[decree.cat].time;
+    // Find the matching template
+    let decree = game.db.find(d => d.cat === chosenCat);
+    let items = game.activeH[chosenCat];
+    let item = items[Math.floor(Math.random()*items.length)];
     
-    document.getElementById('intensity-display').innerText = `${decree.cat.toUpperCase()} PROTOCOL: ${Math.floor(game.activeTime/60)} MIN`;
+    game.activeTime = game.h[chosenCat].time;
+    
+    document.getElementById('intensity-display').innerText = `${chosenCat.toUpperCase()} PROTOCOL: ${Math.floor(game.activeTime/60)} MIN`;
     document.getElementById('timer').innerText = formatTime(game.activeTime);
     document.getElementById('decree-text').innerHTML = decree.txt.replace(/{item}/g, `<strong>${item}</strong>`).replace(/{dom}/g, dom.name).replace(/{sub}/g, sub.name);
     
