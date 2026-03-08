@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: High-Vibe Audited Build</title>
+    <title>SOVEREIGNTY: Master's Command Build</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto-blue: #004a7c; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -30,6 +30,9 @@
         .p-name { font-weight: bold; font-size: 1.2rem; }
         .p-score { font-size: 1.8rem; color: var(--accent); }
         
+        .tog-btn { padding: 15px; font-size: 0.85rem; border-radius: 8px; border: 1px solid #444; background: #111; color: #555; cursor: pointer; text-transform: uppercase; font-weight: bold; transition: 0.2s; }
+        .tog-btn.active { border-color: var(--accent); color: var(--accent); background: #1a1608; box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.1); }
+
         .m-btn { border-radius: 8px; padding: 15px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; cursor: pointer; opacity: 0.3; pointer-events: none; border: 1px solid #333; }
         .m-btn.active-card { opacity: 1; pointer-events: auto; }
         .y-card { background: var(--warning); color: #000; }
@@ -72,15 +75,20 @@
     </div>
 
     <div id="step-3" style="display:none;">
-        <div id="round-ui" style="text-align:center; color:var(--accent); margin-bottom:10px; font-weight:bold;"></div>
+        <div id="round-ui" style="text-align:center; color:var(--accent); margin-bottom:10px; font-weight:bold; letter-spacing: 2px;"></div>
         <div class="score-row">
             <div class="p-block"><div id="r0" class="role-tag">MASTER</div><div id="n0" class="p-name"></div><div id="s0" class="p-score">0</div><div id="inv0"></div></div>
             <div class="p-block"><div id="r1" class="role-tag">SLAVE</div><div id="n1" class="p-name"></div><div id="s1" class="p-score">0</div><div id="inv1"></div></div>
         </div>
+        
         <div id="game-controls">
-             <div class="box-section"><span class="label">Active Protocols</span><div id="proto-mount" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;"></div></div>
+             <div class="box-section">
+                 <span class="label" id="master-toggle-label">MASTER'S ARSENAL CONTROL</span>
+                 <div id="proto-mount" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;"></div>
+             </div>
              <button class="btn" style="width:100%" onclick="generate()">Command Decree</button>
         </div>
+
         <div id="decree-view" style="display:none;">
             <div class="box-section"><div id="decree-display"></div></div>
             <div style="display:flex; gap:12px;">
@@ -108,7 +116,7 @@
             {n:"", g:"M", role:"Master", score:0, hasYellow:false, hasRed:false},
             {n:"", g:"F", role:"Slave", score:0, hasYellow:false, hasRed:false}
         ],
-        vault: JSON.parse(localStorage.getItem('sov_v5_final')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v6_final')) || {
             "The Shackles": [{n:"Handcuffs", a:true, t:"U"}],
             "The Silence": [{n:"Ball Gag", a:true, t:"U"}],
             "The Shadows": [{n:"Silk Scarf", a:true, t:"U"}],
@@ -116,20 +124,21 @@
             "The Senses": [{n:"Ice Cube", a:true, t:"U"}],
             "The Pleasure": [{n:"Magic Wand", a:true, t:"F"}]
         },
-        protocols: { 
-            "The Solitary Bind": true, "The Wicked Gamble": true, 
-            "The Veiled Confession": true, "The Silk Labyrinth": true, 
-            "The Threshold of Agony": true, "The Flesh Endurance": true 
+        // Track category active status globally
+        activeCats: {
+            "The Shackles": true, "The Silence": true, "The Shadows": true,
+            "The Discipline": true, "The Senses": true, "The Pleasure": true
         }
     };
 
-    const protoMap = {
-        "The Solitary Bind": "The Shackles",
-        "The Wicked Gamble": "The Discipline",
-        "The Veiled Confession": "The Silence",
-        "The Silk Labyrinth": "The Shadows",
-        "The Threshold of Agony": "The Pleasure",
-        "The Flesh Endurance": "The Senses"
+    // Maps categories to their "Protocol Name" for decree generation
+    const protoNames = {
+        "The Shackles": "The Solitary Bind",
+        "The Silence": "The Veiled Confession",
+        "The Shadows": "The Silk Labyrinth",
+        "The Discipline": "The Wicked Gamble",
+        "The Senses": "The Flesh Endurance",
+        "The Pleasure": "The Threshold of Agony"
     };
 
     function updateGender(pIdx, g, btn) {
@@ -181,36 +190,56 @@
         state.players[1].n = document.getElementById('p1-name').value;
         state.total = parseInt(document.getElementById('round-total').value);
         state.players[0].hasYellow = true; state.players[1].hasRed = true;
-        localStorage.setItem('sov_v5_final', JSON.stringify(state.vault));
+        localStorage.setItem('sov_v6_final', JSON.stringify(state.vault));
         showStep(3); renderGame();
     }
 
     function renderGame() {
         if(state.curr > state.total) return showStep(4);
+        
+        const dom = state.players.find(p => p.role === 'Master');
         document.getElementById('round-ui').innerText = `ROUND ${state.curr} / ${state.total}`;
+        document.getElementById('master-toggle-label').innerText = `${dom.n.toUpperCase()}'S ARSENAL CONTROL`;
+
         state.players.forEach((p, i) => {
             document.getElementById('n'+i).innerText = p.n;
             document.getElementById('s'+i).innerText = p.score;
             document.getElementById('r'+i).innerText = p.role;
             document.getElementById('inv'+i).innerHTML = (p.hasYellow ? '🟡 ' : '') + (p.hasRed ? '🔴' : '');
         });
-        const pm = document.getElementById('proto-mount'); pm.innerHTML = '';
-        Object.keys(state.protocols).forEach(k => {
-            pm.innerHTML += `<button class="tog-btn ${state.protocols[k]?'active':''}" style="padding:10px; border-radius:5px; margin:2px;" onclick="state.protocols['${k}']=!state.protocols['${k}']; renderGame()">${k}</button>`;
+
+        const pm = document.getElementById('proto-mount'); 
+        pm.innerHTML = '';
+        Object.keys(state.activeCats).forEach(catName => {
+            pm.innerHTML += `
+                <button class="tog-btn ${state.activeCats[catName]?'active':''}" 
+                        onclick="state.activeCats['${catName}']=!state.activeCats['${catName}']; renderGame()">
+                    ${catName}
+                </button>`;
         });
     }
 
     function generate() {
-        const ap = Object.keys(state.protocols).filter(k => state.protocols[k]);
-        const pName = ap[Math.floor(Math.random()*ap.length)];
+        const ap = Object.keys(state.activeCats).filter(k => state.activeCats[k]);
+        if(ap.length === 0) return alert("Master must enable at least one Category!");
+
+        const catChoice = ap[Math.floor(Math.random()*ap.length)];
         const sub = state.players.find(p => p.role === 'Slave');
         const dom = state.players.find(p => p.role === 'Master');
-        const items = state.vault[protoMap[pName]].filter(i => i.a && (i.t === 'U' || i.t === sub.g));
         
-        if(items.length === 0) return alert(`No ${sub.g} compatible items in ${protoMap[pName]}!`);
+        // Gender filter + Enabled filter
+        const items = state.vault[catChoice].filter(i => i.a && (i.t === 'U' || i.t === sub.g));
+        
+        if(items.length === 0) return alert(`${dom.n}, there are no gear options for a ${sub.g} in ${catChoice}. Enable more items or change the sub's gender.`);
         
         const item = items[Math.floor(Math.random()*items.length)];
-        document.getElementById('decree-display').innerHTML = `<strong>${pName}</strong><br><br>${dom.n} shall apply <strong>${item.n}</strong> to ${sub.n}. Success results in a role swap.`;
+        const protocol = protoNames[catChoice];
+
+        document.getElementById('decree-display').innerHTML = `
+            <strong>${protocol}</strong><br><br>
+            ${dom.n} shall apply <strong>${item.n}</strong> from <em>${catChoice}</em> to ${sub.n}. 
+            Success results in a role swap.`;
+            
         document.getElementById('game-controls').style.display = 'none';
         document.getElementById('decree-view').style.display = 'block';
         document.getElementById('y-btn').classList.toggle('active-card', state.players.some(p => p.hasYellow));
