@@ -2,55 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SOVEREIGNTY: Master Interface</title>
+    <title>SOVEREIGNTY: Physical Inventory</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
-            --text: #FFF; --crimson: #d00000; --success: #008000; --gold: #ffd700; --safety: #ff4500;
+            --text: #FFF; --crimson: #d00000; --success: #008000; --gold: #ffd700;
         }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .container { max-width: 900px; width: 100%; background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); box-shadow: 0 0 50px #000; }
-        h1 { text-align: center; text-transform: uppercase; letter-spacing: 12px; font-size: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin: 15px 0;}
+        .container { max-width: 900px; width: 100%; background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); }
+        h1 { text-align: center; text-transform: uppercase; letter-spacing: 12px; font-size: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 15px; }
         
+        /* PLAYER SETUP */
         .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         .p-setup { background: #080808; padding: 15px; border-radius: 10px; border: 1px solid #222; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; letter-spacing: 2px; }
-        
         input { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 5px; background: #000; color: white; margin-bottom: 10px; box-sizing: border-box; }
         
-        /* GENDER SELECT */
         .gender-select { display: flex; gap: 5px; margin-bottom: 10px; }
-        .gen-btn { flex: 1; padding: 10px; border: 1px solid #333; background: #000; color: #444; cursor: pointer; border-radius: 5px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; transition: 0.3s; }
+        .gen-btn { flex: 1; padding: 10px; border: 1px solid #333; background: #000; color: #444; cursor: pointer; border-radius: 5px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
         .gen-btn.active { border-color: var(--accent); color: white; background: #001a35; }
 
-        /* ARSENAL & TOGGLES */
-        .arsenal-box { background: #000; padding: 20px; border-radius: 10px; border: 1px solid #333; margin-top: 15px; }
-        .category-block { background: #080808; padding: 15px; border-radius: 12px; border: 1px solid #222; margin-bottom: 15px; }
-        .cat-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; padding-bottom: 10px; margin-bottom: 10px; }
-        .cat-name { font-weight: bold; font-size: 0.9rem; text-transform: uppercase; color: var(--gold); }
+        /* INVENTORY HEADERS */
+        .inventory-section { background: #000; padding: 20px; border-radius: 10px; border: 1px solid #333; margin-top: 15px; }
+        .inv-category { background: #080808; padding: 15px; border-radius: 12px; border: 1px solid #222; margin-bottom: 15px; }
+        .inv-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; padding-bottom: 10px; margin-bottom: 10px; }
+        .inv-title { font-weight: bold; font-size: 0.9rem; text-transform: uppercase; color: var(--gold); }
         
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 20px; }
         .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        .item-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
-        .chip { padding: 5px 12px; border: 1px solid #333; background: #111; color: #aaa; border-radius: 4px; font-size: 0.7rem; }
+        .chip-container { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+        .chip { padding: 5px 12px; border: 1px solid #333; background: #111; color: #fff; border-radius: 4px; font-size: 0.7rem; }
         
         .add-row { display: flex; gap: 5px; }
         .add-row input { margin: 0; padding: 8px; font-size: 0.75rem; flex: 1; border-color: #222; }
-        .add-btn { background: #1a1a1a; color: var(--accent); border: 1px solid var(--accent); width: 40px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .add-btn { background: #1a1a1a; color: var(--gold); border: 1px solid var(--gold); width: 40px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        /* PLAY STATE */
+        /* PLAY UI */
         .p-box { flex: 1; padding: 15px; background: #080808; border: 1px solid #222; border-radius: 12px; text-align: center; }
-        .active-dom { border-color: var(--accent); box-shadow: 0 0 15px rgba(0,86,179,0.2); }
-        #decree-panel { display: none; margin-top: 20px; }
-        #decree-text { background: #050505; padding: 25px; border-radius: 10px; border-left: 4px solid var(--accent); font-size: 1.1rem; line-height: 1.6; text-align: left; margin-bottom: 20px; }
-        #timer { font-size: 3.5rem; color: var(--crimson); font-family: monospace; margin-bottom: 10px; text-align: center; }
+        .active-dom { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,86,179,0.2); }
+        #decree-text { background: #050505; padding: 25px; border-radius: 10px; border-left: 4px solid var(--accent); font-size: 1.1rem; line-height: 1.6; text-align: left; margin-top: 20px; }
+        #timer { font-size: 4rem; color: var(--crimson); font-family: monospace; text-align: center; }
         
-        .btn-main { background: var(--accent); color: white; padding: 18px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; margin-top: 10px; letter-spacing: 2px; }
+        .btn-main { background: var(--accent); color: white; padding: 20px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; margin-top: 10px; letter-spacing: 2px; }
         .btn-commence { background: var(--gold); color: black; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase;}
     </style>
 </head>
@@ -61,57 +59,46 @@
 
     <div id="setup-screen">
         <div class="setup-grid">
-            <div class="p-setup" id="setup0">
+            <div class="p-setup">
                 <span class="label">Dominant</span>
                 <input type="text" id="name0" value="Master">
                 <div class="gender-select">
-                    <button class="gen-btn active" onclick="setGender(0,'M', this)">Male</button>
-                    <button class="gen-btn" onclick="setGender(0,'F', this)">Female</button>
+                    <button class="gen-btn active" id="p0m" onclick="setGender(0,'M')">Male</button>
+                    <button class="gen-btn" id="p0f" onclick="setGender(0,'F')">Female</button>
                 </div>
             </div>
-            <div class="p-setup" id="setup1">
+            <div class="p-setup">
                 <span class="label">Submissive</span>
                 <input type="text" id="name1" value="Slave">
                 <div class="gender-select">
-                    <button class="gen-btn" onclick="setGender(1,'M', this)">Male</button>
-                    <button class="gen-btn active" onclick="setGender(1,'F', this)">Female</button>
+                    <button class="gen-btn" id="p1m" onclick="setGender(1,'M')">Male</button>
+                    <button class="gen-btn active" id="p1f" onclick="setGender(1,'F')">Female</button>
                 </div>
             </div>
         </div>
         
-        <div class="arsenal-box">
-            <span class="label" style="margin-bottom: 15px;">Protocol & Arsenal Management</span>
-            <div id="category-list"></div>
+        <div class="inventory-section">
+            <span class="label" style="margin-bottom: 15px;">Physical Inventory Management</span>
+            <div id="inventory-list"></div>
         </div>
 
-        <button class="btn-main" onclick="startSession()">Initialize Session</button>
+        <button class="btn-main" onclick="startSession()">Lock Inventory & Start</button>
     </div>
 
     <div id="play-screen" style="display:none;">
-        <div id="round-disp" style="text-align:center; color:var(--accent); margin-bottom:10px; letter-spacing: 2px; font-weight: bold;"></div>
+        <div id="round-disp" style="text-align:center; color:var(--accent); margin-bottom:10px; letter-spacing: 2px;"></div>
         <div style="display:flex; gap:10px; margin-bottom:20px;">
-            <div id="box0" class="p-box">
-                <div class="label">DOMINANT</div>
-                <div id="disp-name0" style="font-weight:bold;"></div>
-                <div id="score0" style="font-size:1.5rem; color:var(--accent);">0</div>
-            </div>
-            <div id="box1" class="p-box">
-                <div class="label">SUBMISSIVE</div>
-                <div id="disp-name1" style="font-weight:bold;"></div>
-                <div id="score1" style="font-size:1.5rem; color:var(--accent);">0</div>
-            </div>
+            <div id="box0" class="p-box"><div class="label">DOMINANT</div><div id="disp-name0" style="font-weight:bold;"></div><div id="score0" style="font-size:1.5rem;">0</div></div>
+            <div id="box1" class="p-box"><div class="label">SUBMISSIVE</div><div id="disp-name1" style="font-weight:bold;"></div><div id="score1" style="font-size:1.5rem;">0</div></div>
         </div>
 
         <div id="command-center"><button class="btn-main" onclick="issueDecree()">Generate Decree</button></div>
         
-        <div id="decree-panel">
+        <div id="decree-panel" style="display:none;">
             <div id="timer">00:00</div>
-            <div id="pre-commence" style="text-align: center;">
-                <button class="btn-commence" onclick="startCountdown()">Commence Phase</button>
-                <button onclick="issueDecree()" style="background:none; border:none; color:var(--gold); cursor:pointer; font-size:0.7rem; text-transform:uppercase; margin-top:10px; text-decoration:underline;">Veto / Reroll</button>
-            </div>
+            <button class="btn-commence" id="start-t-btn" onclick="startCountdown()">Commence Phase</button>
             <div id="decree-text"></div>
-            <div id="post-commence" style="display:none; gap:10px;">
+            <div id="post-commence" style="display:none; gap:10px; margin-top:20px;">
                 <button class="btn-main" style="background:#1a1a1a; flex:1;" onclick="endRound(false)">Forfeit (-1)</button>
                 <button class="btn-main" style="background:var(--success); flex:1;" onclick="endRound(true)">Success (+1)</button>
             </div>
@@ -124,30 +111,30 @@ let state = {
     currRound: 1, lastCat: "",
     p: [{name:"", gender:"M", score:0}, {name:"", gender:"F", score:0}],
     h: {
-        "Stillness": {items: ["Rope", "Cuffs"], time: 900, enabled: true},
-        "Impact": {items: ["Cane", "Paddle"], time: 480, enabled: true},
-        "Quietude": {items: ["Ball Gag", "Tape"], time: 600, enabled: true},
-        "Ache": {items: ["Plug", "Clamps"], time: 720, enabled: true},
-        "Shadow": {items: ["Blindfold", "Hood"], time: 600, enabled: true},
-        "Sensory": {items: ["Wax", "Ice"], time: 300, enabled: true}
+        "Restraints": {items: ["Rope", "Cuffs"], time: 900, enabled: true},
+        "Impact Tools": {items: ["Cane", "Paddle"], time: 480, enabled: true},
+        "Gags": {items: ["Ball Gag", "Tape"], time: 600, enabled: true},
+        "Internal Items": {items: ["Plug", "Vibrator"], time: 720, enabled: true},
+        "Shadow (Blindfolds)": {items: ["Blindfold", "Hood"], time: 600, enabled: true},
+        "Sensory Items": {items: ["Wax", "Ice", "Wheel"], time: 300, enabled: true}
     },
     timer: null
 };
 
-function renderSetup() {
-    const list = document.getElementById('category-list');
+function renderInventory() {
+    const list = document.getElementById('inventory-list');
     list.innerHTML = '';
     Object.keys(state.h).forEach(cat => {
         const div = document.createElement('div');
-        div.className = 'category-block';
+        div.className = 'inv-category';
         div.innerHTML = `
-            <div class="cat-header">
-                <span class="cat-name">${cat}</span>
+            <div class="inv-header">
+                <span class="inv-title">${cat}</span>
                 <label class="switch"><input type="checkbox" ${state.h[cat].enabled?'checked':''} onchange="state.h['${cat}'].enabled=this.checked"><span class="slider"></span></label>
             </div>
-            <div class="item-grid">${state.h[cat].items.map(i => `<span class="chip">${i}</span>`).join('')}</div>
+            <div class="chip-container">${state.h[cat].items.map(i => `<span class="chip">${i}</span>`).join('')}</div>
             <div class="add-row">
-                <input type="text" id="in-${cat}" placeholder="Add new ${cat} tool...">
+                <input type="text" id="in-${cat.replace(/\s/g, '')}" placeholder="Add new item...">
                 <button class="add-btn" onclick="addItem('${cat}')">+</button>
             </div>
         `;
@@ -155,18 +142,18 @@ function renderSetup() {
     });
 }
 
-function setGender(pIdx, g, btn) {
-    state.p[pIdx].gender = g;
-    const btns = btn.parentElement.querySelectorAll('.gen-btn');
-    btns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+function setGender(p, g) {
+    state.p[p].gender = g;
+    document.getElementById(`p${p}m`).classList.toggle('active', g==='M');
+    document.getElementById(`p${p}f`).classList.toggle('active', g==='F');
 }
 
 function addItem(cat) {
-    const val = document.getElementById(`in-${cat}`).value;
+    const id = `in-${cat.replace(/\s/g, '')}`;
+    const val = document.getElementById(id).value;
     if(val) {
         state.h[cat].items.push(val);
-        renderSetup();
+        renderInventory();
     }
 }
 
@@ -182,9 +169,9 @@ function refreshUI() {
     document.getElementById('round-disp').innerText = `PHASE ${state.currRound}`;
     document.getElementById('disp-name0').innerText = state.p[0].name.toUpperCase();
     document.getElementById('score0').innerText = state.p[0].score;
-    document.getElementById('box0').classList.add('active-dom');
     document.getElementById('disp-name1').innerText = state.p[1].name.toUpperCase();
     document.getElementById('score1').innerText = state.p[1].score;
+    document.getElementById('box0').classList.add('active-dom');
 }
 
 function issueDecree() {
@@ -194,28 +181,25 @@ function issueDecree() {
     state.lastCat = cat;
     
     const item = state.h[cat].items[Math.floor(Math.random()*state.h[cat].items.length)];
-    const dom = state.p[0].name;
-    const sub = state.p[1].name;
+    const dom = state.p[0].name; const sub = state.p[1].name;
     
-    // Quick Generator Logic
     let desc = "";
-    if(cat==="Shadow") desc = `${dom} must secure <strong>${item}</strong> over ${sub}'s eyes. Lead them to a chair. ${sub} must sit and describe every sound they hear for the duration. Silence from ${dom} is mandatory.`;
-    else if(cat==="Impact") desc = `${sub} must bend over a surface. ${dom} will deliver 25 strikes with <strong>${item}</strong>. ${sub} must count each one. If they fail to count, reset the clock.`;
-    else if(cat==="Stillness") desc = `${dom} is to bind ${sub}'s wrists to their ankles using <strong>${item}</strong>. ${sub} must remain in this curled position without rolling over.`;
-    else desc = `${dom} will use <strong>${item}</strong> on ${sub} with increasing frequency. ${sub} is forbidden from moving or vocalizing without permission.`;
+    if(cat.includes("Shadow")) desc = `${dom} will use <strong>${item}</strong> to eliminate ${sub}'s sight. ${sub} must remain standing. Any movement is a forfeit.`;
+    else if(cat.includes("Impact")) desc = `${sub} must bend over. ${dom} delivers rhythmic strikes with <strong>${item}</strong>. ${sub} counts each impact.`;
+    else if(cat.includes("Restraints")) desc = `${dom} secures ${sub}'s limbs with <strong>${item}</strong>. No struggle is permitted.`;
+    else desc = `${dom} utilizes <strong>${item}</strong> on ${sub}. Total obedience is required.`;
 
     document.getElementById('decree-text').innerHTML = desc;
     document.getElementById('timer').innerText = formatTime(state.h[cat].time);
     state.activeTime = state.h[cat].time;
-    
     document.getElementById('command-center').style.display = 'none';
     document.getElementById('decree-panel').style.display = 'block';
-    document.getElementById('pre-commence').style.display = 'block';
     document.getElementById('post-commence').style.display = 'none';
+    document.getElementById('start-t-btn').style.display = 'block';
 }
 
 function startCountdown() {
-    document.getElementById('pre-commence').style.display = 'none';
+    document.getElementById('start-t-btn').style.display = 'none';
     document.getElementById('post-commence').style.display = 'flex';
     let t = state.activeTime;
     clearInterval(state.timer);
@@ -227,8 +211,7 @@ function startCountdown() {
 
 function endRound(win) {
     if(win) state.p[1].score++; else state.p[1].score--;
-    state.currRound++;
-    state.p.reverse();
+    state.currRound++; state.p.reverse();
     clearInterval(state.timer);
     document.getElementById('command-center').style.display = 'block';
     document.getElementById('decree-panel').style.display = 'none';
@@ -237,7 +220,7 @@ function endRound(win) {
 
 function formatTime(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
 
-renderSetup();
+renderInventory();
 </script>
 </body>
 </html>
