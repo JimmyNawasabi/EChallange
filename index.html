@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Absolute Protocol Fix</title>
+    <title>SOVEREIGNTY: Card Registry Edition</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -26,7 +26,10 @@
         .score-row { display: flex; justify-content: space-between; padding: 12px; background: #000; border-radius: 12px; border: 1px solid #222; text-align: center; margin-bottom: 15px; }
         .role-tag { font-size: 0.6rem; font-weight: bold; color: #444; }
         .master-glow { color: var(--accent) !important; text-shadow: 0 0 5px var(--accent); }
-        .panic-btn { background: linear-gradient(45deg, #800, #f00) !important; border: 2px solid #fff !important; margin-top: 20px; box-shadow: 0 0 15px rgba(255,0,0,0.4); }
+        .status-tag { font-size: 0.6rem; margin-top: 4px; padding: 2px 6px; border-radius: 4px; display: none; text-transform: uppercase; }
+        .yellow-active { background: var(--warning); color: black; display: block; }
+        .red-active { background: var(--crimson); color: white; display: block; }
+        .panic-btn { background: linear-gradient(45deg, #800, #f00) !important; border: 2px solid #fff !important; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -57,8 +60,18 @@
     <div id="step-3" style="display:none;">
         <div id="round-ui" style="text-align:center; font-size:0.7rem; color:var(--accent); margin-bottom:10px;"></div>
         <div class="score-row">
-            <div class="p-block"><div id="r0" class="role-tag">MASTER</div><div id="n0"></div><div id="s0" style="font-size:1.5rem;">0</div></div>
-            <div class="p-block"><div id="r1" class="role-tag">SLAVE</div><div id="n1"></div><div id="s1" style="font-size:1.5rem;">0</div></div>
+            <div class="p-block">
+                <div id="r0" class="role-tag">MASTER</div>
+                <div id="n0"></div>
+                <div id="s0" style="font-size:1.5rem;">0</div>
+                <div id="stat0" class="status-tag"></div>
+            </div>
+            <div class="p-block">
+                <div id="r1" class="role-tag">SLAVE</div>
+                <div id="n1"></div>
+                <div id="s1" style="font-size:1.5rem;">0</div>
+                <div id="stat1" class="status-tag"></div>
+            </div>
         </div>
 
         <div id="game-controls">
@@ -84,8 +97,11 @@
 <script>
     const state = {
         curr: 1, total: 30, safeword: "RED",
-        players: [{n:"", g:"M", role:"Master", score:0}, {n:"", g:"F", role:"Slave", score:0}],
-        vault: JSON.parse(localStorage.getItem('sov_v22')) || {
+        players: [
+            {n:"", g:"M", role:"Master", score:0, card:null}, 
+            {n:"", g:"F", role:"Slave", score:0, card:null}
+        ],
+        vault: JSON.parse(localStorage.getItem('sov_v23')) || {
             "Restraints": [ {n:"Rope", a:true}, {n:"Steel Cuffs", a:true} ],
             "Gags": [ {n:"Ball Gag", a:true}, {n:"Tape", a:true} ],
             "Blindfolds": [ {n:"Leather Blindfold", a:true}, {n:"Silk Scarf", a:true} ],
@@ -123,7 +139,7 @@
         state.players[0].n = document.getElementById('p0-name').value || "Dom";
         state.players[1].n = document.getElementById('p1-name').value || "Sub";
         state.safeword = document.getElementById('safeword-in').value.toUpperCase() || "RED";
-        localStorage.setItem('sov_v22', JSON.stringify(state.vault));
+        localStorage.setItem('sov_v23', JSON.stringify(state.vault));
         document.getElementById('panic-label').innerText = `SAFEWORD: ${state.safeword}`;
         showStep(3);
         renderGame();
@@ -136,6 +152,13 @@
             document.getElementById('s'+i).innerText = p.score;
             document.getElementById('r'+i).innerText = p.role;
             document.getElementById('r'+i).className = 'role-tag ' + (p.role==='Master'?'master-glow':'');
+            
+            // Render Card status
+            const stat = document.getElementById('stat'+i);
+            stat.className = 'status-tag';
+            if(p.card === 'YELLOW') { stat.innerText = 'Yellow Card'; stat.classList.add('yellow-active'); }
+            else if(p.card === 'RED') { stat.innerText = 'Red Card'; stat.classList.add('red-active'); }
+            else { stat.style.display = 'none'; }
         });
         const pm = document.getElementById('proto-mount'); pm.innerHTML = '';
         for(let k in state.protocols) { pm.innerHTML += `<button class="tog-btn ${state.protocols[k]?'active':''}" onclick="state.protocols['${k}']=!state.protocols['${k}']; renderGame()">${k}</button>`; }
@@ -144,19 +167,21 @@
     function triggerSafeword() {
         const subIdx = state.players.findIndex(p => p.role === 'Slave');
         state.players[subIdx].score = Math.max(0, state.players[subIdx].score - 5);
-        alert(`PROTOCOL ABORTED: ${state.safeword} was called.\n${state.players[subIdx].n} penalized 5 points.\nRoles remain unchanged.`);
+        state.players[subIdx].card = null; // Clear cards on panic
+        alert(`${state.safeword} CALLED.\n${state.players[subIdx].n} penalized 5 points.\nResetting current decree...`);
         document.getElementById('game-controls').style.display = 'block';
         document.getElementById('decree-view').style.display = 'none';
         renderGame();
     }
 
     function triggerCard(type) {
+        const subIdx = state.players.findIndex(p => p.role === 'Slave');
+        state.players[subIdx].card = type;
         if(type === 'YELLOW') {
-            const subIdx = state.players.findIndex(p => p.role === 'Slave');
             state.players[subIdx].score = Math.max(0, state.players[subIdx].score - 1);
-            alert("YELLOW CARD: Warning Issued. (-1 Point)");
+            alert("YELLOW CARD assigned to Slave. (-1 Point)");
         } else {
-            alert("RED CARD: Critical Failure. Point awarded to Master.");
+            alert("RED CARD assigned. Round awarded to Master.");
             resolve('fail');
         }
         renderGame();
@@ -168,7 +193,7 @@
         const p = ap[Math.floor(Math.random()*ap.length)];
         const cat = protoToCat[p];
         const items = state.vault[cat].filter(i=>i.a);
-        if(!items.length) return alert(`Enable at least one item in ${cat}`);
+        if(!items.length) return alert(`Enable an item in ${cat}`);
         const t = items[Math.floor(Math.random()*items.length)].n;
         const m = state.players.find(x=>x.role==='Master'), s = state.players.find(x=>x.role==='Slave');
         const pron = s.g==='M'?'his':(s.g==='F'?'her':'their');
@@ -190,6 +215,7 @@
     }
 
     function resolve(type) {
+        state.players.forEach(p => p.card = null); // Clear cards on round end
         if(type === 'success') {
             state.players.find(p=>p.role==='Slave').score++;
             state.players.forEach(p => p.role = p.role==='Master'?'Slave':'Master');
