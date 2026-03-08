@@ -166,8 +166,9 @@
         for (let cat in state.vault) {
             const div = document.createElement('div');
             div.className = 'box-section';
-            div.innerHTML = `<span class="label">${cat}</span><div class="tag-cloud" id="tags-${cat.replace(/\s+/g, '')}"></div>
-                             <div class="add-row"><input type="text" id="in-${cat.replace(/\s+/g, '')}" placeholder="Custom..."><button class="add-btn" onclick="addItem('${cat}')">+</button></div>`;
+            const safeId = cat.replace(/\s+/g, '');
+            div.innerHTML = `<span class="label">${cat}</span><div class="tag-cloud" id="tags-${safeId}"></div>
+                             <div class="add-row"><input type="text" id="in-${safeId}" placeholder="Custom..."><button class="add-btn" onclick="addItem('${cat}')">+</button></div>`;
             mount.appendChild(div);
             updateTags(cat);
         }
