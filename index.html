@@ -101,7 +101,7 @@
         <div id="active-round">
             <div id="pre-round"><button class="btn" onclick="generateDecree()">Generate Decree</button></div>
             <div id="round-content" style="display:none;">
-                <div class="box-section" id="active-trial-text" style="min-height: 120px; text-align: center; font-weight: bold;"></div>
+                <div class="box-section" id="active-trial-text" style="min-height: 120px; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; line-height: 1.4;"></div>
                 <div class="timer-big" id="clock">10:00</div>
                 
                 <div class="card-grid">
@@ -119,11 +119,24 @@
 <script>
     let players = [{n:"", g:"M"}, {n:"", g:"F"}], curR = 1, maxR = 30, timer, timeLeft;
     let cardHolders = { yellow: "", red: "" };
+    
+    // REINSTATED ARSENAL CATEGORIES
     let vault = {
-        "Restraints": ["Rope", "Cuffs"],
-        "Blindfolds": ["Sleep Mask", "Silk Scarf"],
-        "Sensation": ["Ice", "Feather"]
+        "Restraints": ["Rope", "Cuffs", "Tape", "Zipties"],
+        "Blindfolds": ["Silk Scarf", "Sleep Mask", "Hood", "Tape"],
+        "Sensation": ["Ice", "Feather", "Wand", "Paddle", "Whip", "Clamps"]
     };
+
+    // REINSTATED TRIAL ACTIVITIES
+    const activities = [
+        "The Subject must be restrained using {Restraints}. The Master will apply sensation with {Sensation} for the duration.",
+        "The Subject is to be blindfolded with {Blindfolds} and must guess which {Sensation} is being used.",
+        "The Master commands absolute stillness. If the Subject moves, the timer restarts.",
+        "The Subject must describe the feeling of {Sensation} in explicit detail while restrained by {Restraints}.",
+        "The Master chooses an item from {Sensation}. The Subject must endure it while blindfolded by {Blindfolds}.",
+        "A test of endurance: The Master uses {Restraints} and {Sensation} at a rhythm of their choosing.",
+        "The Subject is denied {Blindfolds} and must watch as the Master prepares the {Sensation}."
+    ];
 
     function setGender(p, g) {
         players[p-1].g = g;
@@ -146,7 +159,6 @@
     }
 
     function distributeCards() {
-        // Randomly assign each card to either index 0 or index 1
         cardHolders.yellow = players[Math.floor(Math.random() * 2)].n;
         cardHolders.red = players[Math.floor(Math.random() * 2)].n;
     }
@@ -200,7 +212,19 @@
     }
 
     function generateDecree() {
-        document.getElementById('active-trial-text').innerText = "Command: Proceed with the trial as directed by the Master.";
+        let text = activities[Math.floor(Math.random() * activities.length)];
+        
+        // Replace placeholders with active items from vault
+        text = text.replace(/{(\w+)}/g, (match, cat) => {
+            const items = vault[cat] || [];
+            const activeItems = items.filter((_, i) => {
+                const cloud = document.getElementById(`cloud-${cat}`);
+                return cloud ? cloud.children[i].classList.contains('on') : true;
+            });
+            return activeItems.length > 0 ? activeItems[Math.floor(Math.random() * activeItems.length)] : "[Nothing Available]";
+        });
+
+        document.getElementById('active-trial-text').innerText = text;
         document.getElementById('pre-round').style.display = 'none';
         document.getElementById('round-content').style.display = 'block';
         timeLeft = 600; startTimer();
