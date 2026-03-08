@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Gold Benchmark (Zero Regression Build)</title>
+    <title>SOVEREIGNTY: Gender-Locked Arsenal Build</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto-blue: #004a7c; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -13,7 +13,7 @@
         .box-section { background: #1f1f1f; padding: 20px; margin-bottom: 15px; border-radius: 12px; border: 1px solid #333; }
         
         .label { font-size: 0.85rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1.2px; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; margin-bottom: 12px; font-size: 1.2rem; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; margin-bottom: 12px; font-size: 1.2rem; }
         
         .gender-grid { display: flex; gap: 10px; margin-bottom: 20px; }
         .g-btn { flex: 1; padding: 14px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 8px; font-size: 0.85rem; font-weight: bold; transition: 0.2s; }
@@ -26,6 +26,7 @@
         
         .item-chip { display: inline-flex; align-items: center; background: #333; padding: 8px 15px; border-radius: 25px; margin: 5px; font-size: 1rem; border: 1px solid #444; cursor: pointer; }
         .item-chip.off { opacity: 0.3; text-decoration: line-through; background: #111; }
+        .tag { font-size: 0.6rem; font-weight: bold; background: var(--accent); color: black; padding: 2px 5px; border-radius: 4px; margin-left: 8px; }
         .remove-x { margin-left: 12px; color: var(--crimson); font-weight: bold; font-size: 1.3rem; }
         
         .score-row { display: flex; justify-content: space-between; padding: 15px; background: #000; border-radius: 12px; border: 1px solid #222; text-align: center; margin-bottom: 20px; }
@@ -148,12 +149,13 @@
             {n:"", g:"M", role:"Master", score:0, hasYellow:false, hasRed:false},
             {n:"", g:"F", role:"Slave", score:0, hasYellow:false, hasRed:false}
         ],
-        vault: JSON.parse(localStorage.getItem('sov_audited_v2')) || {
-            "Restraints": [{n:"Heavy Rope", a:true}],
-            "Gags": [{n:"Ball Gag", a:true}],
-            "Impact": [{n:"Leather Flogger", a:true}],
-            "Sensory": [{n:"Silk Blindfold", a:true}],
-            "Toys": [{n:"Vibrator", a:true}]
+        // Updated vault structure with gender tags (t: 'M', 'F', or 'U')
+        vault: JSON.parse(localStorage.getItem('sov_audited_v3')) || {
+            "Restraints": [{n:"Heavy Rope", a:true, t:"U"}],
+            "Gags": [{n:"Ball Gag", a:true, t:"U"}],
+            "Impact": [{n:"Leather Flogger", a:true, t:"U"}],
+            "Sensory": [{n:"Silk Blindfold", a:true, t:"U"}],
+            "Toys": [{n:"Vibrator", a:true, t:"U"}]
         },
         protocols: { 
             "The Solitary Bind": true, "The Wicked Gamble": true, 
@@ -185,14 +187,19 @@
             let html = `<span class="label">${category}</span><div>`;
             state.vault[category].forEach((item, idx) => {
                 html += `<span class="item-chip ${item.a ? '' : 'off'}" onclick="toggleItem('${category}',${idx})">
-                            ${item.n} 
+                            ${item.n} <span class="tag">${item.t}</span>
                             <span class="remove-x" onclick="removeItem('${category}',${idx}); event.stopPropagation()">×</span>
                          </span>`;
             });
             html += `</div>
-                    <div style="display:flex; gap:8px; margin-top:12px;">
+                    <div style="display:grid; grid-template-columns: 2fr 1fr 60px; gap:8px; margin-top:12px;">
                         <input type="text" id="input-${category}" placeholder="Add..." style="margin:0; padding:10px; font-size:1rem;">
-                        <button class="btn" style="width:80px; padding:0; margin:0; font-size:0.8rem;" onclick="addItem('${category}')">ADD</button>
+                        <select id="tag-${category}" style="margin:0; padding:10px; font-size:1rem;">
+                            <option value="U">Unisex</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                        </select>
+                        <button class="btn" style="width:100%; padding:0; margin:0; font-size:0.8rem;" onclick="addItem('${category}')">ADD</button>
                     </div>`;
             section.innerHTML = html;
             container.appendChild(section);
@@ -203,8 +210,9 @@
     function removeItem(cat, idx) { state.vault[cat].splice(idx, 1); renderInventory(); }
     function addItem(cat) {
         const input = document.getElementById('input-' + cat);
+        const tag = document.getElementById('tag-' + cat).value;
         if (input.value.trim()) {
-            state.vault[cat].push({ n: input.value.trim(), a: true });
+            state.vault[cat].push({ n: input.value.trim(), a: true, t: tag });
             input.value = '';
             renderInventory();
         }
@@ -217,7 +225,7 @@
         document.getElementById('sw-btn').innerText = "SW: " + document.getElementById('safeword-in').value;
         state.players[Math.floor(Math.random()*2)].hasYellow = true;
         state.players[Math.floor(Math.random()*2)].hasRed = true;
-        localStorage.setItem('sov_audited_v2', JSON.stringify(state.vault));
+        localStorage.setItem('sov_audited_v3', JSON.stringify(state.vault));
         showStep(3); 
         renderGame();
     }
@@ -244,11 +252,18 @@
         if (ap.length === 0) return alert("Activate at least one Protocol!");
         const protocolName = ap[Math.floor(Math.random()*ap.length)];
         const cats = { "The Solitary Bind":"Restraints", "The Wicked Gamble":"Impact", "The Veiled Confession":"Gags", "The Silk Labyrinth":"Restraints", "The Threshold of Agony":"Toys", "The Flesh Endurance":"Sensory", "The Great Unshackling":"Restraints", "The Velvet Command":"Sensory" };
-        const activeItems = state.vault[cats[protocolName]].filter(i=>i.a);
-        if(activeItems.length === 0) return alert(`Activate items in ${cats[protocolName]}!`);
         
         const m = state.players.find(x=>x.role==='Master');
         const s = state.players.find(x=>x.role==='Slave');
+        
+        // GENDER FILTER LOGIC
+        const activeItems = state.vault[cats[protocolName]].filter(i => {
+            const isComp = (i.t === 'U' || i.t === s.g);
+            return i.a && isComp;
+        });
+
+        if(activeItems.length === 0) return alert(`No ${s.g} or Unisex items active in ${cats[protocolName]} for ${s.n}!`);
+        
         const item = activeItems[Math.floor(Math.random()*activeItems.length)];
         
         document.getElementById('decree-display').innerHTML = `<strong>${protocolName}</strong><br><br>${m.n} shall utilize <strong>${item.n}</strong> upon ${s.n}. Complete to swap roles.`;
