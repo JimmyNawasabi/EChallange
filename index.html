@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOVEREIGNTY: Ultimate Protocol</title>
+    <style>
+        :root { 
+            --accent: #0056b3; --bg: #000; --card: #121212; 
+            --text: #FFF; --crimson: #d00000; --success: #008000; --gold: #ffd700;
+        }
+
+        body { 
+            background: var(--bg); color: var(--text); 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            margin: 0; padding: 10px; display: flex; justify-content: center; 
+            font-size: 0.9rem; /* Reduced font size 20% */
+        }
+
+        .container { 
+            max-width: 900px; width: 100%; background: var(--card); 
+            padding: 20px; border-radius: 20px; border: 3px solid var(--accent); 
+            box-shadow: 0 0 50px #000; 
+        }
+        
+        h1 { text-align: center; text-transform: uppercase; letter-spacing: 8px; font-size: 2.2rem; border-bottom: 4px solid var(--accent); padding-bottom: 10px; margin: 10px 0;}
+
+        .box-section { background: #000; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 2px solid #333; }
+        
+        .label { font-size: 0.9rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; }
+
+        input, select { width: 100%; padding: 10px; border: 2px solid var(--accent); border-radius: 8px; background: #000; color: white; font-size: 1rem; box-sizing: border-box; }
+        
+        .btn { background: var(--accent); color: white; border: 2px solid #FFF; padding: 12px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 12px; font-size: 1rem; margin-top: 8px;}
+
+        .score-row { display: flex; justify-content: space-between; padding: 10px; background: #111; border: 3px solid var(--accent); border-radius: 15px; text-align: center; margin-bottom: 15px; }
+        .p-score { font-size: 2.5rem; font-weight: 900; color: var(--accent); }
+
+        .card-zone { display: flex; justify-content: center; gap: 10px; margin-top: 5px; }
+        .card { width: 40px; height: 60px; border-radius: 5px; border: 1px solid white; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; opacity: 0.3; font-size: 0.8rem;}
+        .card.active { opacity: 1; box-shadow: 0 0 10px currentColor; }
+        .card-y { background: var(--gold); color: black; }
+        .card-r { background: var(--crimson); color: white; }
+
+        .tog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .tog-btn { padding: 8px; border: 2px solid #444; background: #000; color: #777; cursor: pointer; border-radius: 8px; font-size: 0.75rem; text-transform: uppercase; font-weight: bold;}
+        .tog-btn.active { border-color: #FFF; color: #FFF; background: var(--accent); }
+
+        #timer-box { font-size: 2.8rem; font-weight: 900; color: var(--crimson); text-align: center; margin-bottom: 5px; font-variant-numeric: tabular-nums; }
+        .safe-word { background: var(--crimson) !important; border-color: white !important; margin-top: 15px !important; }
+        
+        #decree-text { font-size: 1rem; line-height: 1.4; text-align: left; border-left: 3px solid var(--accent); padding-left: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>SOVEREIGNTY</h1>
+
+    <div id="step-1">
+        <div class="box-section">
+            <span class="label">Dominant Identity</span>
+            <input type="text" id="p0-name" value="Master">
+            <div class="tog-grid" style="margin-top:5px;">
+                <button type="button" id="p0-m" class="tog-btn active" onclick="setGender(0,'M')">Male</button>
+                <button type="button" id="p0-f" class="tog-btn" onclick="setGender(0,'F')">Female</button>
+            </div>
+            <br>
+            <span class="label">Submissive Identity</span>
+            <input type="text" id="p1-name" value="Slave">
+            <div class="tog-grid" style="margin-top:5px;">
+                <button type="button" id="p1-m" class="tog-btn" onclick="setGender(1,'M')">Male</button>
+                <button type="button" id="p1-f" class="tog-btn active" onclick="setGender(1,'F')">Female</button>
+            </div>
+        </div>
+        
+        <div class="box-section">
+            <span class="label">Inventory (Hardware) Toggles</span>
+            <div id="inv-setup" class="tog-grid"></div>
+        </div>
+        
+        <button class="btn" onclick="beginGame()">Engage Protocols</button>
+    </div>
+
+    <div id="step-2" style="display:none;">
+        <div id="round-header" style="text-align:center; color:var(--accent); font-weight:900; font-size: 1.2rem; margin-bottom: 10px;"></div>
+        
+        <div class="score-row">
+            <div style="flex:1;"><div class="label">MASTER</div><div id="m-name"></div><div class="card-zone" id="m-cards"></div></div>
+            <div style="flex:1;"><div class="label">SLAVE</div><div id="s-name"></div><div id="s-score" class="p-score">0</div><div class="card-zone" id="s-cards"></div></div>
+        </div>
+
+        <div id="master-panel">
+            <div class="box-section">
+                <span class="label">Active Decree Protocols</span>
+                <div id="decree-grid" class="tog-grid"></div>
+            </div>
+            <button class="btn" onclick="generateDecree()">Generate Decree</button>
+        </div>
+
+        <div id="decree-view" style="display:none;">
+            <div id="timer-box">00:00</div>
+            <div class="box-section"><div id="decree-text"></div></div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn" style="background:#333; flex:1;" onclick="resolve(false)">FAILURE</button>
+                <button class="btn" style="background:var(--success); flex:1;" onclick="resolve(true)">SUCCESS</button>
+            </div>
+            <button id="sw-btn" class="btn safe-word" onclick="triggerSafeWord()">RED LINE: SAFE WORD (-5 PTS)</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const state = {
+        curr: 1, total: 20, timer: null,
+        players: [{n:"", role:"Master", score:0, g:"M", cards:[]}, {n:"", role:"Slave", score:0, g:"F", cards:[]}],
+        hardware: {
+            "Gags": ["Ball Gag", "Spider Gag", "Ring Gag", "Muzzle", "Medical Tape"],
+            "Restraints": ["Hogtie Rope", "Steel Cuffs", "Spreader Bar", "Zip Ties", "Leather Wrist Straps"],
+            "Blindfolds": ["Leather Hood", "Silk Scarf", "Blackout Goggles"],
+            "Impact": ["Heavy Flogger", "Cane", "Paddle", "Dragon Tail", "Riding Crop"],
+            "Toys": ["Large Anal Plug", "Vibrator", "Wand", "Dildo", "Glass Plug"],
+            "Sensations": ["Ice Cubes", "Wartenberg Wheel", "Metal Clothespins", "Hot Wax", "Feather Tickler"]
+        },
+        protocols: ["Self-Bondage", "Truth", "Dare", "Soft & Sexy", "Escape", "Shibari", "Physical Challenge", "Master's Pleasure"]
+    };
+
+    function init() {
+        const invGrid = document.getElementById('inv-setup');
+        Object.keys(state.hardware).forEach(h => {
+            const b = document.createElement('div'); b.className = 'tog-btn active'; b.innerText = h;
+            b.onclick = () => b.classList.toggle('active'); invGrid.appendChild(b);
+        });
+        const decGrid = document.getElementById('decree-grid');
+        state.protocols.forEach(p => {
+            const b = document.createElement('div'); b.className = 'tog-btn active'; b.innerText = p;
+            b.onclick = () => b.classList.toggle('active'); decGrid.appendChild(b);
+        });
+    }
+
+    function setGender(p, g) {
+        state.players[p].g = g;
+        document.getElementById(`p${p}-m`).classList.toggle('active', g === 'M');
+        document.getElementById(`p${p}-f`).classList.toggle('active', g === 'F');
+    }
+
+    function beginGame() {
+        state.players[0].n = document.getElementById('p0-name').value;
+        state.players[1].n = document.getElementById('p1-name').value;
+        state.players[0].cards = [Math.random() > 0.5 ? 'Y' : 'R'];
+        state.players[1].cards = [state.players[0].cards[0] === 'Y' ? 'R' : 'Y'];
+        document.getElementById('step-1').style.display = 'none';
+        document.getElementById('step-2').style.display = 'block';
+        renderRound();
+    }
+
+    function renderRound() {
+        const m = state.players.find(p => p.role === "Master");
+        const s = state.players.find(p => p.role === "Slave");
+        document.getElementById('round-header').innerText = `PROTOCOL ${state.curr}`;
+        document.getElementById('m-name').innerText = m.n; 
+        document.getElementById('s-name').innerText = s.n;
+        document.getElementById('s-score').innerText = s.score;
+        renderCards('m-cards', m); renderCards('s-cards', s);
+    }
+
+    function renderCards(id, p) {
+        const z = document.getElementById(id); z.innerHTML = '';
+        p.cards.forEach(c => {
+            const d = document.createElement('div'); d.className = `card active card-${c.toLowerCase()}`;
+            d.innerText = c; z.appendChild(d);
+        });
+    }
+
+    function generateDecree() {
+        const activeProtocols = Array.from(document.querySelectorAll('#decree-grid .tog-btn.active')).map(b => b.innerText);
+        const activeInv = Array.from(document.querySelectorAll('#inv-setup .tog-btn.active')).map(b => b.innerText);
+        const cat = activeProtocols[Math.floor(Math.random() * activeProtocols.length)];
+        
+        let text = "";
+        const getItem = (type) => {
+            const pool = state.hardware[type] || ["Custom Item"];
+            return pool[Math.floor(Math.random()*pool.length)];
+        };
+
+        const sub = state.players.find(p => p.role === "Slave").n;
+        const dom = state.players.find(p => p.role === "Master").n;
+
+        // HIGH-PROTOCOL DESCRIPTIVE GENERATOR
+        const templates = {
+            "Self-Bondage": `Take the ${getItem('Restraints')} and secure your own ankles tightly. Pull the rope up to your waist and secure your wrists behind your back in a forced-arch position. Apply the ${getItem('Gags')} and crawl to ${dom} for a strict inspection.`,
+            "Shibari": `${dom}, utilize the ${getItem('Restraints')} to construct a high-tension chest harness. Ensure the lines bite into ${sub}'s skin. Once secured, use the remaining length to tether ${sub}'s neck to their own wrists in a forced-posture bind.`,
+            "Physical Challenge": `The Subject must hold a deep stress-kneeling position with the ${getItem('Restraints')} binding their wrists to their heels. ${dom} will apply the ${getItem('Impact')} for 10 sharp strokes to the glutes, followed by a slow, dragging sensation with the ${getItem('Sensations')} to test their stillness.`,
+            "Soft & Sexy": `${dom} will blindfold ${sub} with the ${getItem('Blindfolds')}. Use the ${getItem('Sensations')} to trace the inner thighs and neck meticulously. Transition into heavy stimulation using the ${getItem('Toys')} while whispering explicit commands into ${sub}'s ear.`,
+            "Truth": `With ${sub} bound by ${getItem('Restraints')}, ${dom} will apply the ${getItem('Impact')} lightly to the sensitive zones. After each stroke, ${sub} must truthfully confess a deep submissive urge. Any hesitation results in a harder strike with the ${getItem('Impact')}.`,
+            "Escape": `Master will use the ${getItem('Restraints')} to bind ${sub} in a strict hogtie. ${sub} is then gagged with the ${getItem('Gags')}. You have the duration of the timer to successfully escape. If you fail, ${dom} earns a free penalty strike.`,
+            "Dare": `I dare ${sub} to endure 2 minutes of the ${getItem('Toys')} on its highest setting while ${dom} applies the ${getItem('Sensations')} to the nipples. You must remain perfectly silent; if you vocalize, the timer resets to the beginning.`,
+            "Master's Pleasure": `${dom} takes full command. Use the ${getItem('Restraints')} to spread ${sub} wide. Apply the ${getItem('Gags')} to ensure total silence, then alternate between the ${getItem('Impact')} and the ${getItem('Toys')} at your own sadistic pace.`
+        };
+
+        text = templates[cat] || "Master's Choice: Execute a custom protocol using available hardware.";
+        document.getElementById('decree-text').innerHTML = `<strong style="color:var(--accent);">${cat.toUpperCase()}</strong><br><br>${text}`;
+        document.getElementById('master-panel').style.display = 'none';
+        document.getElementById('decree-view').style.display = 'block';
+        startTimer(cat === "Shibari" || cat === "Escape" ? 300 : 120);
+    }
+
+    function triggerSafeWord() {
+        const s = state.players.find(p => p.role === "Slave");
+        if(s.score < 1) return alert("System Lock: Minimum 1 point required to invoke Safe Word.");
+        s.score = Math.max(0, s.score - 5);
+        alert("SAFE WORD ACTIVATED. 5 Point Penalty. Roles Swapping.");
+        resolve(false);
+    }
+
+    function startTimer(s) {
+        state.timeLeft = s;
+        clearInterval(state.timer);
+        state.timer = setInterval(() => {
+            state.timeLeft--;
+            document.getElementById('timer-box').innerText = `${Math.floor(state.timeLeft/60)}:${(state.timeLeft%60).toString().padStart(2,'0')}`;
+            if(state.timeLeft <= 0) resolve(false);
+        }, 1000);
+    }
+
+    function resolve(success) {
+        clearInterval(state.timer);
+        if(success) state.players.find(p => p.role === "Slave").score++;
+        
+        // MANDATORY ROLE SWAP
+        state.players.forEach(p => p.role = (p.role === "Master" ? "Slave" : "Master"));
+        state.curr++;
+        
+        document.getElementById('master-panel').style.display = 'block';
+        document.getElementById('decree-view').style.display = 'none';
+        renderRound();
+    }
+
+    init();
+</script>
+</body>
+</html>
