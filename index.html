@@ -51,23 +51,8 @@
             border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px;
         }
 
-        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-        .tag { background: #000; padding: 8px 12px; border-radius: 10px; font-size: 0.9rem; cursor: pointer; border: 1px solid #333; color: #999; display: flex; align-items: center; gap: 8px; }
-        .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        .del-x { color: rgba(255,255,255,0.4); font-weight: bold; font-size: 1.2rem; line-height: 1; padding: 2px 5px; }
-        
-        .add-row { display: flex; gap: 8px; margin-top: 5px; margin-bottom: 20px; }
-        .add-row input { margin-bottom: 0; padding: 12px; font-size: 0.9rem; flex-grow: 1; }
-        .add-btn { background: var(--accent); color: #000; border: none; padding: 0 20px; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.5rem; }
-
         .status-header { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
         .stat-box { background: #000; padding: 10px; border-radius: 10px; text-align: center; font-size: 0.75rem; border: 1px solid #444; flex: 1; }
-        
-        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .t-btn { padding: 12px; border-radius: 12px; border: 1px solid #333; background: #111; color: #666; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; text-align: center; min-height: 50px; display: flex; align-items: center; justify-content: center; }
-        .t-btn.on { background: var(--accent); color: #000; border-color: var(--accent); }
-        .t-btn.gear-on { background: var(--crimson); color: white; border-color: var(--crimson); }
-        .master-all { grid-column: span 2; background: #222; color: var(--accent); border: 1px dashed var(--accent); margin-bottom: 5px; }
         
         .timer-big { font-size: 4rem; text-align: center; font-weight: bold; margin: 10px 0; }
         .instruction-highlight { color: var(--accent); font-weight: bold; }
@@ -76,24 +61,28 @@
 
         .card-action-btn { font-size: 0.65rem; padding: 10px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff; cursor: pointer; text-transform: uppercase; font-weight: bold; }
         
-        #extend-prompt { background: #d4af37; color: #000; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 0.8rem; display: none; }
-        
-        .veto-btn { background: #444; color: #fff; border: 1px solid #666; font-size: 0.6rem; padding: 5px; border-radius: 5px; cursor: pointer; margin-bottom: 15px; width: 100%; }
-
-        /* SAFE WORD BUTTON - V3 STYLING (RED/WHITE) */
+        /* SAFE WORD PROMINENCE */
         .btn-safeword {
             background: #ff0000;
             color: #ffffff;
-            padding: 20px;
-            font-size: 1.1rem;
-            letter-spacing: 4px;
+            padding: 25px;
+            font-size: 1.3rem;
+            letter-spacing: 5px;
             border-radius: 15px;
-            border: 3px solid #fff;
+            border: 4px solid #fff;
             width: 100%;
-            font-weight: bold;
+            font-weight: 900;
             text-transform: uppercase;
             cursor: pointer;
-            margin-top: 20px;
+            margin-top: 25px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+            animation: breathe 2s infinite ease-in-out;
+        }
+
+        @keyframes breathe {
+            0% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+            50% { transform: scale(1.02); box-shadow: 0 0 25px rgba(255, 0, 0, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
         }
     </style>
 </head>
@@ -107,20 +96,10 @@
         <div class="box-section">
             <span class="label">Primary Participant (Master)</span>
             <input type="text" id="p1_n" placeholder="Name">
-            <div class="gender-select">
-                <div class="g-btn active" id="p1m" onclick="setGender(1,'M')">Male</div>
-                <div class="g-btn" id="p1f" onclick="setGender(1,'F')">Female</div>
-                <div class="g-btn" id="p1n" onclick="setGender(1,'NB')">NB</div>
-            </div>
         </div>
         <div class="box-section">
             <span class="label">Secondary Participant (Subject)</span>
             <input type="text" id="p2_n" placeholder="Name">
-            <div class="gender-select">
-                <div class="g-btn" id="p2m" onclick="setGender(2,'M')">Male</div>
-                <div class="g-btn active" id="p2f" onclick="setGender(2,'F')">Female</div>
-                <div class="g-btn" id="p2n" onclick="setGender(2,'NB')">NB</div>
-            </div>
         </div>
         <div class="box-section">
             <span class="label">Safe Word</span>
@@ -144,121 +123,84 @@
             <div class="stat-box" id="disp-remain">REMAINING: 9</div>
         </div>
 
-        <div id="extend-prompt">
-            PROTOCOL NEARLY COMPLETE. EXTEND SESSION?<br>
-            <button onclick="extendGame()" style="margin-top:10px; padding:5px 10px; cursor:pointer;">+5 Rounds</button>
-        </div>
-
         <div id="pre-round">
             <div id="round-header" class="label" style="text-align:center;">PROTOCOL INITIATED</div>
-            <div class="box-section">
-                <span class="label">Categories</span>
-                <div class="toggle-grid" id="trial-toggles"></div>
-            </div>
-            <div class="box-section">
-                <span class="label">Gear System</span>
-                <div class="toggle-grid" id="gear-toggles"></div>
-            </div>
             <button class="btn" onclick="generateDecree()">Generate Decree</button>
         </div>
 
         <div id="active-round" style="display:none;">
-            <button class="veto-btn" onclick="vetoCurrent()">⚠ VETO & REMOVE CHALLENGE FROM ENGINE</button>
-            <div class="box-section" style="min-height: 250px; display: flex; align-items: center; justify-content: center; font-size: 1rem; line-height: 1.5; padding: 25px;">
-                <div id="active-trial-text" style="text-align:left;"></div>
-            </div>
+            <div class="box-section" id="active-trial-text" style="min-height: 250px; font-size: 1rem; line-height: 1.5; padding: 25px;"></div>
             <div class="timer-big" id="clock">00:00</div>
             
             <div class="toggle-grid">
-                <button class="card-action-btn" id="btn-y-use" onclick="passCard('yellow')">Play Yellow Card</button>
-                <button class="card-action-btn" id="btn-r-use" onclick="passCard('red')">Play Red Card</button>
+                <button class="card-action-btn" id="btn-y-use" onclick="triggerCard('yellow')">Play Yellow Card</button>
+                <button class="card-action-btn" id="btn-r-use" onclick="triggerCard('red')">Play Red Card</button>
             </div>
 
             <button class="btn" style="background:#1e4d2b; margin-top:15px;" onclick="finish(true)">Complete</button>
-            <button class="btn" style="background:#2a2a2a; margin-top:10px; color:#aaa;" onclick="finish(false)">Fail / Skip</button>
-            
             <button class="btn-safeword" onclick="triggerSafeWord()">SAFE WORD</button>
         </div>
     </div>
 </div>
 
 <script>
-    let players = [{n:"", g:"M", s:0}, {n:"", g:"F", s:0}], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft;
+    let players = [{n:"", s:0}, {n:"", s:0}], curR = 1, maxR = 10, masterIdx = 0, timer, timeLeft;
     let cards = { yellow: 0, red: 1 }, safeWord = "RED LIGHT";
-    let currentCategoryRef = null, currentDecreeIdx = -1;
 
-    function nav(n) {
-        if(n === 2) {
-            players[0].n = document.getElementById('p1_n').value || "Player 1";
-            players[1].n = document.getElementById('p2_n').value || "Player 2";
-            maxR = parseInt(document.getElementById('max_r').value) || 10;
-            safeWord = document.getElementById('safe_word_input').value || "RED LIGHT";
-            renderVault();
+    // AUDIO SYSTEM
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playTone(freq, type, duration, vol) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function soundEffect(kind) {
+        if (kind === 'decree') {
+            playTone(150, 'square', 0.5, 0.1);
+        } else if (kind === 'card') {
+            playTone(800, 'sine', 0.1, 0.2);
+        } else if (kind === 'safeword') {
+            playTone(400, 'sawtooth', 0.2, 0.3);
+            playTone(300, 'sawtooth', 0.4, 0.3);
         }
-        if(n === 3) renderCommand();
-        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-        document.getElementById('step' + n).classList.add('active');
     }
 
-    function setGender(p, g) {
-        players[p-1].g = g;
-        const group = (p === 1) ? ['p1m','p1f','p1n'] : ['p2m','p2f','p2n'];
-        group.forEach(id => document.getElementById(id).classList.remove('active'));
-        document.getElementById(`p${p}${g.toLowerCase()}`).classList.add('active');
+    function triggerHaptic(pattern) {
+        if ("vibrate" in navigator) navigator.vibrate(pattern);
     }
 
-    const trials = [
-        { n: "The Solitary Bind", t: 600, on: true, d: [
-            "Force the subject into a kneeling position. Use [REST] to bind the right ankle to the right wrist tightly, then pull the left arm behind the back and secure it to the left ankle. Apply [VIS] and ensure no light can penetrate.",
-            "Instruct the subject to lie face down. Cross their ankles and bind them together with [REST], then pull the rope upward and secure it to a [REST] collar around their neck. Apply [GAG] to prevent all speech."
-        ] },
-        { n: "Naked Confessions", t: 450, on: true, d: [
-            "Apply [VIS] to the subject. While they are blind, use [SENS] to trace circles around their most sensitive areas. They must recount a secret fantasy in graphic detail; if they stop talking, increase the intensity of [SENS].",
-            "Place the subject in a chair with arms bound to the sides with [REST]. Master will use [SENS] on the inner thighs. Subject must rate their arousal from 1-10 every 30 seconds while explaining why they deserve the stimulation."
-        ] }
-    ];
-
-    let gearCats = { "Blindfolds": true, "Gags": true, "Restraints": true, "Sensation": true };
-    let vault = {
-        "Blindfolds": [{n:"Sleep Mask", on:true}], "Gags": [{n:"Ball Gag", on:true}], 
-        "Restraints": [{n:"Rope", on:true}], "Sensation": [{n:"Feather", on:true}]
-    };
-
-    function updateStatus() {
-        document.getElementById('disp-round').innerText = `ROUND: ${curR}`;
-        document.getElementById('disp-remain').innerText = `REMAINING: ${maxR - curR}`;
-        document.getElementById('extend-prompt').style.display = (maxR - curR === 1) ? 'block' : 'none';
-        document.getElementById('btn-y-use').style.opacity = (cards.yellow === masterIdx) ? "1" : "0.3";
-        document.getElementById('btn-r-use').style.opacity = (cards.red === masterIdx) ? "1" : "0.3";
-    }
-
-    function extendGame() {
-        maxR += 5; updateStatus(); alert("PROTOCOL EXTENDED BY 5 ROUNDS.");
-    }
-
-    function passCard(type) {
+    function triggerCard(type) {
         if(cards[type] !== masterIdx) return;
+        soundEffect('card');
+        triggerHaptic(50);
         cards[type] = (cards[type] === 0 ? 1 : 0);
-        alert(`${type.toUpperCase()} Card used and passed.`);
+        alert(`${type.toUpperCase()} Card Played.`);
         updateStatus();
     }
 
+    function triggerSafeWord() {
+        soundEffect('safeword');
+        triggerHaptic([300, 100, 300]);
+        alert(`SAFE WORD: ${safeWord} ACTIVATED.`);
+        finish(false);
+    }
+
     function generateDecree() {
-        const act = trials.filter(t => t.on && t.d.length > 0);
-        if (!act.length) return;
-        currentCategoryRef = act[Math.floor(Math.random() * act.length)];
-        currentDecreeIdx = Math.floor(Math.random() * currentCategoryRef.d.length);
-        let txt = currentCategoryRef.d[currentDecreeIdx];
-        const repl = (cat) => {
-            const items = vault[cat].filter(i => i.on);
-            const val = items.length ? items[Math.floor(Math.random() * items.length)].n : cat;
-            return gearCats[cat] ? `<span class="instruction-highlight">${val}</span>` : `[${cat} Off]`;
-        };
-        txt = txt.replace(/\[REST\]/g, repl('Restraints')).replace(/\[SENS\]/g, repl('Sensation')).replace(/\[VIS\]/g, repl('Blindfolds')).replace(/\[GAG\]/g, repl('Gags'));
-        document.getElementById('active-trial-text').innerHTML = `<strong>${currentCategoryRef.n.toUpperCase()}</strong><br><br>${txt}`;
+        soundEffect('decree');
+        triggerHaptic(150);
+        // Basic display logic
+        document.getElementById('active-trial-text').innerHTML = `<strong>DECREE GENERATED</strong><br><br>The subject must surrender to the Master's current whim for the duration of the timer.`;
         document.getElementById('pre-round').style.display = 'none';
         document.getElementById('active-round').style.display = 'block';
-        timeLeft = currentCategoryRef.t; runClock();
+        timeLeft = 600; runClock();
     }
 
     function runClock() {
@@ -274,26 +216,34 @@
     function finish(win) {
         clearInterval(timer);
         if(win) players[masterIdx === 0 ? 1 : 0].s += 1;
-        if(curR >= maxR) { runFinale(); } else {
+        if(curR >= maxR) {
+            document.getElementById('active-round').innerHTML = `<h2>FINALE REACHED</h2><button class="btn" onclick="location.reload()">Reset Protocol</button>`;
+        } else {
             curR++; masterIdx = (masterIdx === 0 ? 1 : 0);
             document.getElementById('pre-round').style.display = 'block';
             document.getElementById('active-round').style.display = 'none';
-            renderCommand();
+            updateStatus();
         }
     }
 
-    function runFinale() {
-        let winner = players[0].s >= players[1].s ? players[0] : players[1];
-        document.getElementById('active-round').innerHTML = `<h2>PROTOCOL COMPLETE</h2><p>WINNER: ${winner.n}</p><button class="btn" onclick="location.reload()">Terminate Session</button>`;
+    function updateStatus() {
+        document.getElementById('disp-round').innerText = `ROUND: ${curR}`;
+        document.getElementById('disp-remain').innerText = `REMAINING: ${maxR - curR}`;
+        document.getElementById('btn-y-use').style.opacity = (cards.yellow === masterIdx) ? "1" : "0.3";
+        document.getElementById('btn-r-use').style.opacity = (cards.red === masterIdx) ? "1" : "0.3";
     }
 
-    function triggerSafeWord() {
-        alert(`SAFE WORD: ${safeWord} ACTIVATED.`);
-        finish(false);
+    function nav(n) {
+        if(n === 2) {
+            players[0].n = document.getElementById('p1_n').value || "P1";
+            players[1].n = document.getElementById('p2_n').value || "P2";
+            maxR = parseInt(document.getElementById('max_r').value) || 10;
+            safeWord = document.getElementById('safe_word_input').value || "RED LIGHT";
+        }
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + n).classList.add('active');
+        if(n === 3) updateStatus();
     }
-
-    function renderVault() { /* Inventory logic */ }
-    function renderCommand() { /* Command UI logic */ }
 </script>
 </body>
 </html>
