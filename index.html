@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Gold Edition Stable</title>
+    <title>SOVEREIGNTY: Gold Stability Patch</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -26,10 +26,11 @@
         .role-tag { font-size: 0.6rem; font-weight: bold; color: #444; }
         .master-glow { color: var(--accent) !important; text-shadow: 0 0 5px var(--accent); }
         
-        /* CARD VISIBILITY FIX */
-        .mgmt-row { display: flex; gap: 10px; margin-top: 15px; width: 100%; }
-        .yellow-card { flex: 1; background: var(--warning) !important; color: #000 !important; font-size: 0.65rem; border: 2px solid #ffd700 !important; padding: 12px !important; }
-        .red-card { flex: 1; background: var(--crimson) !important; color: #fff !important; font-size: 0.65rem; border: 2px solid #fff !important; padding: 12px !important; box-shadow: 0 0 10px var(--crimson); }
+        /* THE VISIBILITY FIX */
+        #decree-view { display: none; flex-direction: column; }
+        .mgmt-row { display: flex !important; gap: 10px; margin-top: 15px; visibility: visible !important; opacity: 1 !important; }
+        .yellow-card { flex: 1; background: var(--warning) !important; color: #000 !important; font-size: 0.65rem; border: 2px solid #ffd700 !important; padding: 12px !important; border-radius: 8px; }
+        .red-card { flex: 1; background: var(--crimson) !important; color: #fff !important; font-size: 0.65rem; border: 2px solid #fff !important; padding: 12px !important; border-radius: 8px; box-shadow: 0 0 10px var(--crimson); }
         
         .grand-decree-text { font-size: 0.9rem; line-height: 1.8; color: #eee; background: #000; padding: 20px; border-radius: 10px; border: 1px solid var(--accent); max-height: 500px; overflow-y: auto; text-align: justify; font-style: italic; }
     </style>
@@ -78,9 +79,10 @@
              <div class="box-section"><span class="label">Active Protocols</span><div id="proto-mount" style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;"></div></div>
              <button class="btn" style="width:100%" onclick="generate()">Command Decree</button>
         </div>
-        <div id="decree-view" style="display:none;">
+        <div id="decree-view">
             <div class="box-section"><div id="decree-display" style="line-height:1.6; color:#ddd;"></div></div>
             <div style="display:flex; gap:10px;"><button class="btn" style="background:#333; flex:1;" onclick="resolve('fail')">FAIL</button><button class="btn" style="background:var(--success); flex:1;" onclick="resolve('success')">SUCCESS</button></div>
+            
             <div class="mgmt-row">
                 <button class="btn yellow-card" onclick="vetoCurrent()">YELLOW CARD (VETO)</button>
                 <button class="btn red-card" id="panic-label" onclick="triggerSafeword()"></button>
@@ -95,10 +97,10 @@
         </div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <button class="btn" style="background:#222; font-size:0.7rem;" onclick="generateGrandDecree()">Reshape Fate</button>
-            <button class="btn" style="background:var(--success); font-size:0.7rem;" onclick="finalizeRoles()">Finalize Roles</button>
+            <button class="btn" style="background:var(--success); font-size:0.7rem;" onclick="finalizeRoles()">Finalize Winner Role</button>
         </div>
         <div id="final-role-selector" style="display:none; margin-top:15px;" class="box-section">
-            <span class="label">Victor's Final Choice:</span>
+            <span class="label">Winner's Choice:</span>
             <div style="display:flex; gap:10px;">
                 <button class="btn" style="flex:1; background:var(--accent); color:black;" id="win-as-dom" onclick="endGame('Master')"></button>
                 <button class="btn" style="flex:1; background:#444;" id="win-as-sub" onclick="endGame('Slave')"></button>
@@ -109,23 +111,13 @@
 
 <script>
     const state = {
-        curr: 1, total: 30,
+        curr: 1, total: 30, winner: null,
         players: [{n:"", g:"M", role:"Master", score:0}, {n:"", g:"F", role:"Slave", score:0}],
-        vault: JSON.parse(localStorage.getItem('sov_v6_final')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v7_stable')) || {
             "Restraints": [{n:"Heavy Rope", a:true}], "Gags": [{n:"Ball Gag", a:true}], "Blindfolds": [{n:"Leather Mask", a:true}], 
             "Sensory": [{n:"Ice Blocks", a:true}], "Toys": [{n:"Vibrator", a:true}], "Impact": [{n:"Heavy Flogger", a:true}]
         },
-        protocols: { "The Solitary Bind": true, "The Wicked Gamble": true, "The Veiled Confession": true, "The Silk Labyrinth": true, "The Threshold of Agony": true, "The Flesh Endurance": true, "The Great Unshackling": true, "The Velvet Command": true },
-        prompts: {
-            "The Solitary Bind": ["{S}, use {T} to bind your own wrists. Kneel and await {M}."],
-            "The Wicked Gamble": ["{M} delivers 10 strikes with {T}. {S} must remain silent."],
-            "The Veiled Confession": ["With {T} applied, {S} whispers a confession of submission."],
-            "The Silk Labyrinth": ["{M} binds {S} into a harness using {T}."],
-            "The Threshold of Agony": ["{M} edges {S} using {T}. No release permitted."],
-            "The Flesh Endurance": ["{S} holds a stress position under the weight of {T}."],
-            "The Great Unshackling": ["{M} secures {S} with {T}. {S} must struggle for 2 mins."],
-            "The Velvet Command": ["{M} traces {T} across {S}'s skin slowly."]
-        }
+        protocols: { "The Solitary Bind": true, "The Wicked Gamble": true, "The Veiled Confession": true, "The Silk Labyrinth": true, "The Threshold of Agony": true, "The Flesh Endurance": true, "The Great Unshackling": true, "The Velvet Command": true }
     };
 
     function setG(i, v, b) { state.players[i].g = v; Array.from(b.parentElement.children).forEach(x=>x.classList.remove('active')); b.classList.add('active'); }
@@ -149,8 +141,8 @@
         state.players[0].n = document.getElementById('p0-name').value || "Dom";
         state.players[1].n = document.getElementById('p1-name').value || "Sub";
         state.total = parseInt(document.getElementById('round-total').value) || 30;
-        document.getElementById('panic-label').innerText = "RED: " + (document.getElementById('safeword-in').value || "RED");
-        localStorage.setItem('sov_v6_final', JSON.stringify(state.vault));
+        document.getElementById('panic-label').innerText = "SAFEWORD: " + (document.getElementById('safeword-in').value || "RED");
+        localStorage.setItem('sov_v7_stable', JSON.stringify(state.vault));
         showStep(3); renderGame();
     }
 
@@ -173,13 +165,23 @@
         const cats = { "The Solitary Bind":"Restraints", "The Wicked Gamble":"Impact", "The Veiled Confession":"Gags", "The Silk Labyrinth":"Restraints", "The Threshold of Agony":"Toys", "The Flesh Endurance":"Restraints", "The Great Unshackling":"Restraints", "The Velvet Command":"Sensory" };
         const items = state.vault[cats[p]].filter(i=>i.a);
         const m = state.players.find(x=>x.role==='Master'), s = state.players.find(x=>x.role==='Slave');
-        document.getElementById('decree-display').innerHTML = `<strong>${p}</strong><br><br>` + state.prompts[p][0].replace(/{M}/g, m.n).replace(/{S}/g, s.n).replace(/{T}/g, `<strong>${items[0].n}</strong>`);
+        const prompts = {
+            "The Solitary Bind": "{S}, use {T} to bind your own wrists. Kneel and await {M}.",
+            "The Wicked Gamble": "{M} delivers 10 strikes with {T}. {S} must remain silent.",
+            "The Veiled Confession": "With {T} applied, {S} whispers a confession of submission.",
+            "The Silk Labyrinth": "{M} binds {S} into a harness using {T}.",
+            "The Threshold of Agony": "{M} edges {S} using {T}. No release permitted.",
+            "The Flesh Endurance": "{S} holds a stress position under the weight of {T}.",
+            "The Great Unshackling": "{M} secures {S} with {T}. {S} must struggle for 2 mins.",
+            "The Velvet Command": "{M} traces {T} across {S}'s skin slowly."
+        };
+        document.getElementById('decree-display').innerHTML = `<strong>${p}</strong><br><br>` + prompts[p].replace(/{M}/g, m.n).replace(/{S}/g, s.n).replace(/{T}/g, `<strong>${items[0].n}</strong>`);
         document.getElementById('game-controls').style.display = 'none';
-        document.getElementById('decree-view').style.display = 'block';
+        document.getElementById('decree-view').style.display = 'flex';
     }
 
-    function vetoCurrent() { if(confirm("Purge decree?")) { document.getElementById('game-controls').style.display='block'; document.getElementById('decree-view').style.display='none'; } }
-    function triggerSafeword() { if(confirm("Trigger Red Card? (-5 pts)")) { state.players.find(p=>p.role==='Slave').score -= 5; resolve('fail'); } }
+    function vetoCurrent() { if(confirm("Veto this decree?")) { document.getElementById('game-controls').style.display='block'; document.getElementById('decree-view').style.display='none'; } }
+    function triggerSafeword() { if(confirm("Trigger Safeword? (-5 pts)")) { state.players.find(p=>p.role==='Slave').score -= 5; resolve('fail'); } }
 
     function resolve(type) {
         if(type==='success') { state.players.find(p=>p.role==='Slave').score++; state.players.forEach(p=>p.role=p.role==='Master'?'Slave':'Master'); }
@@ -196,8 +198,8 @@
 
     function generateGrandDecree() {
         const scenarios = [
-            `The air thickens for the final curtain. The Victor strips all pretense from the Conquered, securing them with **${getT('Restraints')}**. Bound and blinded by **${getT('Blindfolds')}**, the Conquered enters a void where only the Victor's voice exists. A calculated series of strikes from **${getT('Impact')}** maps their submission. They are brought to the precipice five times using **${getT('Toys')}**, silenced by **${getT('Gags')}** as they beg. The Victor claims a shattering climax through the Conquered's feverish devotion, leaving them in a state of aching denial.`,
-            `The Victor commands the Conquered to kneel, applying **${getT('Gags')}** for total silence. Under the weight of **${getT('Sensory')}**, they endure a slow, beautiful torment while immobilized by **${getT('Restraints')}**. The Victor uses **${getT('Impact')}** to mark their ownership. An exhaustive edging marathon with **${getT('Toys')}** follows, where every twitch is monitored. As the Victor claims their final climax, the Conquered's release remains a prize that may be granted or withheld.`
+            `The Victor strips all pretense from the Conquered, securing them with **${getT('Restraints')}**. Bound and blinded by **${getT('Blindfolds')}**, the Conquered enters a void where only the Victor's voice exists. A series of strikes from **${getT('Impact')}** marks their submission. They are brought to the precipice five times using **${getT('Toys')}**, silenced by **${getT('Gags')}**. The Victor claims a shattering climax, leaving the Conquered in a state of aching denial.`,
+            `The Victor commands the Conquered to kneel, applying **${getT('Gags')}**. Under the weight of **${getT('Sensory')}**, they endure a slow torment while immobilized by **${getT('Restraints')}**. The Victor uses **${getT('Impact')}** to mark ownership. After an edging marathon with **${getT('Toys')}**, the Victor claims their final climax; the Conquered's release is a prize that may be withheld.`
         ];
         document.getElementById('grand-decree-display').innerHTML = scenarios[Math.floor(Math.random()*scenarios.length)];
     }
