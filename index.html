@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Grand Finale Edition</title>
+    <title>SOVEREIGNTY: Standard 30 Edition</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto: #444; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -50,8 +50,8 @@
             <div class="gender-grid"><button class="g-btn" onclick="setG(1,'M',this)">Male</button><button class="g-btn active" onclick="setG(1,'F',this)">Female</button><button class="g-btn" onclick="setG(1,'NB',this)">NB</button></div>
             <span class="label">Safeword</span>
             <input type="text" id="safeword-in" value="RED">
-            <span class="label">Total Rounds</span>
-            <input type="number" id="round-total" value="10" min="1">
+            <span class="label">Total Rounds (Default: 30)</span>
+            <input type="number" id="round-total" value="30" min="1">
         </div>
         <button class="btn" style="width:100%" onclick="showStep(2)">Next: Configure Arsenal</button>
     </div>
@@ -113,9 +113,9 @@
 
 <script>
     const state = {
-        curr: 1, total: 10, safeword: "RED", lastProtocol: null, lastPromptIdx: null,
+        curr: 1, total: 30, safeword: "RED", lastProtocol: null, lastPromptIdx: null,
         players: [{n:"", g:"M", role:"Master", score:0, card:null}, {n:"", g:"F", role:"Slave", score:0, card:null}],
-        vault: JSON.parse(localStorage.getItem('sov_v26')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v27')) || {
             "Restraints": [ {n:"Rope", a:true}, {n:"Steel Cuffs", a:true} ],
             "Gags": [ {n:"Ball Gag", a:true}, {n:"Tape", a:true} ],
             "Blindfolds": [ {n:"Leather Blindfold", a:true}, {n:"Silk Scarf", a:true} ],
@@ -158,9 +158,9 @@
     function startSession() {
         state.players[0].n = document.getElementById('p0-name').value || "Dom";
         state.players[1].n = document.getElementById('p1-name').value || "Sub";
-        state.safeword = document.getElementById('safeword-in').value.toUpperCase();
-        state.total = parseInt(document.getElementById('round-total').value);
-        localStorage.setItem('sov_v26', JSON.stringify(state.vault));
+        state.safeword = document.getElementById('safeword-in').value.toUpperCase() || "RED";
+        state.total = parseInt(document.getElementById('round-total').value) || 30;
+        localStorage.setItem('sov_v27', JSON.stringify(state.vault));
         document.getElementById('panic-label').innerText = `${state.safeword}`;
         showStep(3);
         renderGame();
