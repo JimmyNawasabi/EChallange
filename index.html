@@ -57,12 +57,12 @@
             <span class="label">Total Rounds</span>
             <input type="number" id="round-total" value="30">
         </div>
-        <button class="btn" style="width:100%" onclick="showStep(2)">Next: Arsenal</button>
+        <button class="btn" onclick="showStep(2)">Next: Arsenal</button>
     </div>
 
     <div id="step-2" style="display:none;">
         <div id="inventory-editor"></div>
-        <button class="btn" style="background:var(--success); width:100%;" onclick="startSession()">Begin Protocol</button>
+        <button class="btn" style="background:var(--success);" onclick="startSession()">Begin Protocol</button>
     </div>
 
     <div id="step-3" style="display:none;">
@@ -71,7 +71,10 @@
             <div class="p-block"><div id="r0" class="role-tag">MASTER</div><div id="n0"></div><div id="s0" style="font-size:1.5rem;">0</div></div>
             <div class="p-block"><div id="r1" class="role-tag">SLAVE</div><div id="n1"></div><div id="s1" style="font-size:1.5rem;">0</div></div>
         </div>
-        <div id="game-controls"><button class="btn" style="width:100%" onclick="generate()">Command Decree</button></div>
+        <div id="game-controls">
+             <div class="box-section"><span class="label">Active Protocols</span><div id="proto-mount" style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;"></div></div>
+             <button class="btn" onclick="generate()">Command Decree</button>
+        </div>
         <div id="decree-view" style="display:none;">
             <div class="box-section"><div id="decree-display" style="line-height:1.6; color:#ddd;"></div></div>
             <div style="display:flex; gap:10px;"><button class="btn" style="background:#333; flex:1;" onclick="resolve('fail')">FAIL</button><button class="btn" style="background:var(--success); flex:1;" onclick="resolve('success')">SUCCESS</button></div>
@@ -83,7 +86,7 @@
         <div style="font-size:2rem; color:var(--accent); text-align:center; margin-bottom:10px;">GRAND FINALE</div>
         <div class="box-section" style="text-align:center;"><h2 id="winner-banner" style="color:var(--accent); margin:0;"></h2></div>
         <div class="box-section">
-            <span class="label">The Grand Decree (Adult/RACK Protocol)</span>
+            <span class="label">The Grand Decree (Adult RACK Protocol)</span>
             <div id="grand-decree-display" class="grand-decree-text"></div>
             <button class="btn" style="background:#333; font-size:0.7rem;" onclick="generateGrandDecree()">Re-Generate Finale</button>
         </div>
@@ -98,47 +101,50 @@
 
 <script>
     const state = {
-        curr: 1, total: 30, lastProtocol: null,
+        curr: 1, total: 30, lastProtocol: null, lastPromptIdx: null,
         players: [{n:"", g:"M", role:"Master", score:0}, {n:"", g:"F", role:"Slave", score:0}],
-        vault: JSON.parse(localStorage.getItem('sov_v30')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v31')) || {
             "Restraints": [{n:"Heavy Rope", a:true}], "Gags": [{n:"Ball Gag", a:true}], "Blindfolds": [{n:"Leather Mask", a:true}], 
             "Sensory": [{n:"Ice Blocks", a:true}], "Toys": [{n:"Vibrator", a:true}], "Impact": [{n:"Heavy Flogger", a:true}]
         },
+        protocols: { "The Solitary Bind": true, "The Wicked Gamble": true, "The Veiled Confession": true, "The Silk Labyrinth": true, "The Threshold of Agony": true, "The Flesh Endurance": true, "The Great Unshackling": true, "The Velvet Command": true },
         prompts: {
-            "The Solitary Bind": ["{S}, use {T} to bind your own wrists behind your back. Kneel and await {M}."],
-            "The Threshold of Agony": ["{M} will use {T} to edge {S} to the brink. No release until ordered."],
-            "The Veiled Confession": ["With {T} applied, {S} must whimper a confession of submission."]
+            "The Solitary Bind": ["{S}, use {T} to bind your own wrists behind your back. Kneel and await {M}'s command."],
+            "The Wicked Gamble": ["{M} will use {T} for 10 heavy impact strikes. {S} must remain silent or the count resets."],
+            "The Veiled Confession": ["With {T} applied, {S} must whimper a confession of submission to {M}."],
+            "The Silk Labyrinth": ["{M} will bind {S} into a restrictive harness using {T}. Focus on the aesthetic pressure."],
+            "The Threshold of Agony": ["{M} will use {T} to edge {S} to the absolute brink. Climax is forbidden."],
+            "The Flesh Endurance": ["{S} must hold a stress position while supporting the weight of {T}."],
+            "The Great Unshackling": ["{M} secures {S} with {T}. {S} has 2 minutes to struggle free or face a penalty."],
+            "The Velvet Command": ["{M} traces {T} slowly across {S}'s skin. {S} must describe every sensation."]
         }
     };
+
+    const protoToCat = { "The Solitary Bind":"Restraints", "The Wicked Gamble":"Impact", "The Veiled Confession":"Gags", "The Silk Labyrinth":"Restraints", "The Threshold of Agony":"Toys", "The Flesh Endurance":"Restraints", "The Great Unshackling":"Restraints", "The Velvet Command":"Sensory" };
 
     function setG(i, v, b) { state.players[i].g = v; Array.from(b.parentElement.children).forEach(x=>x.classList.remove('active')); b.classList.add('active'); }
     function showStep(n) { document.querySelectorAll('[id^="step-"]').forEach(s=>s.style.display='none'); document.getElementById('step-'+n).style.display='block'; if(n==2) renderInventory(); }
     
     function renderInventory() {
-        const m = document.getElementById('inventory-editor'); m.innerHTML = '<h3 style="color:var(--accent);text-align:center;font-size:0.8rem">ARSENAL CONFIGURATION</h3>';
+        const m = document.getElementById('inventory-editor'); m.innerHTML = '<h3 style="color:var(--accent);text-align:center;font-size:0.8rem">ARSENAL</h3>';
         for(let c in state.vault) {
             let h = `<div class="box-section"><span class="label">${c}</span><div>`;
-            state.vault[c].forEach((it, i) => {
-                h += `<span class="item-chip ${it.a?'':'off'}" onclick="toggleItem('${c}',${i})">${it.n} <span class="remove-x" onclick="removeItem('${c}',${i}); event.stopPropagation()">×</span></span>`;
-            });
-            h += `</div><div style="display:flex; gap:5px; margin-top:10px;"><input type="text" id="add-${c}" placeholder="New item..." style="margin:0;"><button class="tog-btn active" style="flex:0.4" onclick="addItem('${c}')">ADD</button></div></div>`;
+            state.vault[c].forEach((it, i) => { h += `<span class="item-chip ${it.a?'':'off'}" onclick="toggleItem('${c}',${i})">${it.n} <span class="remove-x" onclick="removeItem('${c}',${i}); event.stopPropagation()">×</span></span>`; });
+            h += `</div><div style="display:flex; gap:5px; margin-top:10px;"><input type="text" id="add-${c}" placeholder="New..." style="margin:0;"><button class="tog-btn active" onclick="addItem('${c}')">ADD</button></div></div>`;
             m.innerHTML += h;
         }
     }
 
     function toggleItem(c, i) { state.vault[c][i].a = !state.vault[c][i].a; renderInventory(); }
     function removeItem(c, i) { state.vault[c].splice(i, 1); renderInventory(); }
-    function addItem(c) { 
-        const v = document.getElementById('add-'+c).value; 
-        if(v) { state.vault[c].push({n:v, a:true}); renderInventory(); } 
-    }
+    function addItem(c) { const v = document.getElementById('add-'+c).value; if(v) { state.vault[c].push({n:v, a:true}); renderInventory(); } }
 
     function startSession() {
-        state.players[0].n = document.getElementById('p0-name').value || "Master";
-        state.players[1].n = document.getElementById('p1-name').value || "Slave";
+        state.players[0].n = document.getElementById('p0-name').value || "Dom";
+        state.players[1].n = document.getElementById('p1-name').value || "Sub";
         state.total = parseInt(document.getElementById('round-total').value) || 30;
         document.getElementById('panic-label').innerText = document.getElementById('safeword-in').value || "RED";
-        localStorage.setItem('sov_v30', JSON.stringify(state.vault));
+        localStorage.setItem('sov_v31', JSON.stringify(state.vault));
         showStep(3); renderGame();
     }
 
@@ -151,26 +157,31 @@
             document.getElementById('r'+i).innerText = p.role;
             document.getElementById('r'+i).className = 'role-tag ' + (p.role==='Master'?'master-glow':'');
         });
+        const pm = document.getElementById('proto-mount'); pm.innerHTML = '';
+        for(let k in state.protocols) { pm.innerHTML += `<button class="tog-btn ${state.protocols[k]?'active':''}" onclick="state.protocols['${k}']=!state.protocols['${k}']; renderGame()">${k}</button>`; }
     }
 
     function generate() {
-        const pk = Object.keys(state.prompts);
-        state.lastProtocol = pk[Math.floor(Math.random()*pk.length)];
-        const p = state.prompts[state.lastProtocol][0];
+        const ap = Object.keys(state.protocols).filter(k=>state.protocols[k]);
+        if(!ap.length) return alert("Select a protocol.");
+        const p = ap[Math.floor(Math.random()*ap.length)];
+        const cat = protoToCat[p];
+        const items = state.vault[cat].filter(i=>i.a);
+        if(!items.length) return alert(`Active ${cat} required.`);
         const m = state.players.find(x=>x.role==='Master'), s = state.players.find(x=>x.role==='Slave');
-        document.getElementById('decree-display').innerHTML = `<strong>${state.lastProtocol}</strong><br><br>${p.replace(/{M}/g, m.n).replace(/{S}/g, s.n).replace(/{T}/g, "Arsenal Item")}`;
+        const pron = s.g==='M'?'his':(s.g==='F'?'her':'their');
+        state.lastProtocol = p; state.lastPromptIdx = 0;
+        document.getElementById('decree-display').innerHTML = `<strong>${p}</strong><br><br>` + state.prompts[p][0].replace(/{M}/g, m.n).replace(/{S}/g, s.n).replace(/{SP}/g, pron).replace(/{T}/g, `<strong>${items[Math.floor(Math.random()*items.length)].n}</strong>`);
         document.getElementById('game-controls').style.display = 'none';
         document.getElementById('decree-view').style.display = 'block';
     }
 
-    function vetoCurrent() { if(confirm("Purge decree?")) { delete state.prompts[state.lastProtocol]; generate(); } }
+    function vetoCurrent() { if(confirm("Purge decree?")) { state.prompts[state.lastProtocol].splice(state.lastPromptIdx,1); generate(); } }
     function triggerSafeword() { state.players.find(p=>p.role==='Slave').score -= 5; resolve('fail'); }
 
     function resolve(type) {
-        if(type==='success') { 
-            state.players.find(p=>p.role==='Slave').score++; 
-            state.players.forEach(p=>p.role=p.role==='Master'?'Slave':'Master');
-        } else state.players.find(p=>p.role==='Master').score++;
+        if(type==='success') { state.players.find(p=>p.role==='Slave').score++; state.players.forEach(p=>p.role=p.role==='Master'?'Slave':'Master'); }
+        else state.players.find(p=>p.role==='Master').score++;
         state.curr++; document.getElementById('game-controls').style.display='block'; document.getElementById('decree-view').style.display='none'; renderGame();
     }
 
@@ -185,27 +196,19 @@
     }
 
     function generateGrandDecree() {
-        const tasks = [
-            "RESTRICT: {S} is to be immobilized with {T1}. Immobility mandatory.",
-            "ISOLATE: Apply {T2}. Darkness for 15 minutes of quiet contemplation.",
-            "DISCIPLINE: {M} delivers 50 strikes with {T3}. {S} must count each set.",
-            "DENY: Using {T4}, {M} edges {S} 5 times. Climax is strictly forbidden.",
-            "SILENCE: {S} is fitted with {T5} until the finale concludes.",
-            "REWARD: {S} focuses exclusively on {M}'s pleasure until {M} climaxes.",
-            "DEVOTION: {S} recites a vow of submission while bearing the weight of {T6}."
-        ];
-        let d = `<strong>THE GRAND DECREE PROTOCOL:</strong><br><br>`;
+        const tasks = ["IMMOBILIZE: {S} is secured with {T1}.","ISOLATE: Apply {T2}. Darkness for 15 min.","DISCIPLINE: {M} delivers 50 strikes with {T3}.","EDGE: Use {T4} to edge {S} 5 times. No release.","SILENCE: {S} wears {T5} throughout.","REWARD: {S} pleasures {M} until climax.","DEVOTION: {S} recites vows under {T6}."];
+        let d = `<strong>FINAL MANDATE:</strong><br><br>`;
         tasks.sort(()=>0.5-Math.random()).forEach((t, i) => {
             d += `${i+1}. ${t.replace('{M}', state.win.n).replace('{S}', state.los.n)
                 .replace('{T1}', state.vault.Restraints[0].n).replace('{T2}', state.vault.Blindfolds[0].n)
                 .replace('{T3}', state.vault.Impact[0].n).replace('{T4}', state.vault.Toys[0].n)
                 .replace('{T5}', state.vault.Gags[0].n).replace('{T6}', state.vault.Sensory[0].n)}<br><br>`;
         });
-        d += `<strong>CONCLUSION:</strong> {M} achieves climax. {S} remains denied.`;
+        d += `<strong>CONCLUSION:</strong> {M} achieves climax. {S} is denied.`;
         document.getElementById('grand-decree-display').innerHTML = d;
     }
 
-    function finalize() { alert("Grand Decree Activated. The session concludes."); location.reload(); }
+    function finalize() { alert("Grand Decree Activated."); location.reload(); }
 </script>
 </body>
 </html>
