@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SOVEREIGNTY: Absolute Protocol</title>
+    <title>SOVEREIGNTY: Randomization Engine</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
@@ -18,35 +18,33 @@
         
         input, select { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 5px; background: #000; color: white; margin-bottom: 10px; box-sizing: border-box; }
         
-        .gender-select { display: flex; gap: 5px; }
-        .gen-btn { flex: 1; padding: 10px; border: 1px solid #333; background: #000; color: #444; cursor: pointer; border-radius: 5px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
-        .gen-btn.active { border-color: var(--accent); color: white; background: #001a35; }
-
         .arsenal-box { background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-top: 15px; }
-        .item-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
-        .chip { padding: 5px 12px; border: 1px solid #333; background: #0a0a0a; color: #555; cursor: pointer; border-radius: 4px; font-size: 0.7rem; }
+        .cat-toggle-row { display: flex; align-items: center; justify-content: space-between; background: #080808; padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #222; }
+        .cat-name { font-weight: bold; font-size: 0.8rem; text-transform: uppercase; }
+        
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .item-grid { display: flex; flex-wrap: wrap; gap: 6px; margin: 5px 0 10px 0; }
+        .chip { padding: 4px 10px; border: 1px solid #333; background: #0a0a0a; color: #555; cursor: pointer; border-radius: 4px; font-size: 0.65rem; }
         .chip.active { border-color: var(--accent); color: white; background: #001a35; }
         
-        .add-item-row { display: flex; gap: 5px; margin-top: 8px; }
-        .add-item-row input { margin: 0; padding: 8px; font-size: 0.75rem; flex: 1; }
-        .add-btn { background: #222; color: #fff; border: 1px solid #444; width: 40px; border-radius: 5px; cursor: pointer; }
-
-        .p-box { flex: 1; padding: 15px; background: #080808; border: 1px solid #222; border-radius: 12px; text-align: center; }
-        .p-box.active-dom { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,86,179,0.3); }
-        .card-inv { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
-        .card { width: 30px; height: 45px; border: 1px solid #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border-radius: 3px;}
-        .card-y { background: var(--gold); color: black; }
-        .card-r { background: var(--crimson); color: white; }
-
         .btn-main { background: var(--accent); color: white; padding: 20px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; margin-top: 10px; letter-spacing: 2px; }
         .btn-commence { background: var(--gold); color: black; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; margin-bottom: 10px; cursor: pointer; text-transform: uppercase;}
         .btn-veto { background: #1a1a1a; color: var(--gold); border: 1px solid var(--gold); padding: 8px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 15px;}
         .btn-safeword { background: var(--safety); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 20px; }
 
+        .p-box { flex: 1; padding: 15px; background: #080808; border: 1px solid #222; border-radius: 12px; text-align: center; }
+        .p-box.active-dom { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,86,179,0.3); }
+
         #decree-panel { display: none; margin-top: 20px; text-align: center; }
         #decree-text { background: #000; padding: 30px; border-radius: 15px; border: 1px solid #333; font-size: 1.1rem; line-height: 1.8; margin-bottom: 20px; text-align: left; border-left: 5px solid var(--accent); }
         #timer { font-size: 4rem; color: var(--crimson); font-weight: 100; font-family: monospace; letter-spacing: 8px; margin-bottom: 10px;}
-        .intensity-tag { font-size: 0.8rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 15px; display: block; text-transform: uppercase;}
     </style>
 </head>
 <body>
@@ -59,52 +57,43 @@
             <div class="p-setup">
                 <span class="label">Dominant</span>
                 <input type="text" id="name0" value="Master">
-                <div class="gender-select">
-                    <button class="gen-btn active" id="p0m" onclick="setGender(0,'M')">Male</button>
-                    <button class="gen-btn" id="p0f" onclick="setGender(0,'F')">Female</button>
-                </div>
             </div>
             <div class="p-setup">
                 <span class="label">Submissive</span>
                 <input type="text" id="name1" value="Slave">
-                <div class="gender-select">
-                    <button class="gen-btn" id="p1m" onclick="setGender(1,'M')">Male</button>
-                    <button class="gen-btn active" id="p1f" onclick="setGender(1,'F')">Female</button>
-                </div>
             </div>
         </div>
-        <div class="box-section" style="background:#080808; padding:15px; border-radius:10px; border:1px solid #222;">
-            <span class="label">Session Protocol: Rounds</span>
-            <select id="total-rounds"><option value="4">4 Rounds</option><option value="10" selected>10 Rounds</option><option value="20">20 Rounds</option></select>
+        
+        <div class="arsenal-box">
+            <span class="label">Category Configuration & Inventory</span>
+            <div id="arsenal-list"></div>
         </div>
-        <div class="arsenal-box"><span class="label">Full Arsenal Setup</span><div id="arsenal-list"></div></div>
-        <button class="btn-main" onclick="startSession()">Initialize Session</button>
+
+        <button class="btn-main" onclick="startSession()">Commence Protocol</button>
     </div>
 
     <div id="play-screen" style="display:none;">
         <div id="round-disp" style="text-align:center; color:var(--accent); margin-bottom:10px; letter-spacing: 2px;"></div>
         <div style="display:flex; gap:10px; margin-bottom:20px;">
             <div id="box0" class="p-box">
-                <div class="label" id="role0">DOMINANT</div>
+                <div class="label">DOMINANT</div>
                 <div id="disp-name0" style="font-weight:bold;"></div>
                 <div id="score0" style="font-size:1.5rem; color:var(--accent);">0</div>
-                <div id="inv0" class="card-inv"></div>
             </div>
             <div id="box1" class="p-box">
-                <div class="label" id="role1">SUBMISSIVE</div>
+                <div class="label">SUBMISSIVE</div>
                 <div id="disp-name1" style="font-weight:bold;"></div>
                 <div id="score1" style="font-size:1.5rem; color:var(--accent);">0</div>
-                <div id="inv1" class="card-inv"></div>
             </div>
         </div>
 
         <div id="command-center"><button class="btn-main" onclick="issueDecree()">Generate Decree</button></div>
         
         <div id="decree-panel">
-            <span id="intensity-display" class="intensity-tag"></span>
+            <span id="intensity-display" style="color:var(--gold); font-size:0.8rem; letter-spacing:2px; display:block; margin-bottom:10px;"></span>
             <div id="timer">00:00</div>
             <div id="pre-commence-controls">
-                <button id="commence-btn" class="btn-commence" onclick="startCountdown()">Commence Protocol</button>
+                <button class="btn-commence" onclick="startCountdown()">Commence Protocol</button>
                 <button class="btn-veto" onclick="triggerVeto()">Master's Veto (Purge Decree)</button>
             </div>
             <div id="decree-text"></div>
@@ -117,128 +106,98 @@
             </div>
         </div>
     </div>
-
-    <div id="win-screen" style="display:none; text-align:center;">
-        <h1 style="color:var(--gold); border:none;">SESSION COMPLETE</h1>
-        <p id="winner-text" style="font-size:1.5rem;"></p>
-        <button class="btn-main" onclick="location.reload()">Return to Setup</button>
-    </div>
 </div>
 
 <script>
 const HARDWARE = { 
-    "Stillness":{"items":["Rope","Cuffs","Chain"], "time": 900}, 
-    "Impact":{"items":["Cane","Paddle","Flogger"], "time": 480}, 
-    "Quietude":{"items":["Ball Gag","Tape","Ring Gag"], "time": 600}, 
-    "Ache":{"items":["Internal Plug","Vibrator","Clamps"], "time": 720},
-    "Shadow":{"items":["Blindfold","Hood","Blackout Mask"], "time": 600},
-    "Sensory":{"items":["Hot Wax","Ice cubes","Wartenberg Wheel"], "time": 300}
+    "Stillness":{"items":["Rope","Cuffs","Chain"], "time": 900, "enabled": true}, 
+    "Impact":{"items":["Cane","Paddle","Flogger"], "time": 480, "enabled": true}, 
+    "Quietude":{"items":["Ball Gag","Tape","Ring Gag"], "time": 600, "enabled": true}, 
+    "Ache":{"items":["Internal Plug","Vibrator","Clamps"], "time": 720, "enabled": true},
+    "Shadow":{"items":["Blindfold","Hood","Blackout Mask"], "time": 600, "enabled": true},
+    "Sensory":{"items":["Hot Wax","Ice cubes","Wheel"], "time": 300, "enabled": true}
 };
 
+// Simplified descriptive templates for logic verification
 const TEMPLATES = {
-    "Stillness": [
-        "{dom} is to secure {sub}’s wrists behind the back tightly using {item}. Once bound, anchor the {item} to the ankles and pull {sub} into a strict hogtie position. {sub} must remain balanced on their stomach, unable to touch the floor with hands or feet.",
-        "{sub} must be placed in a kneeling position. {dom} will use {item} to bind the thighs to the calves and then secure the wrists to a point above {sub}'s head. {sub} is to remain perfectly immobile; any shift in weight is a failure of discipline."
-    ],
-    "Impact": [
-        "{sub} is to bend over the edge of the furniture, exposing the target area fully. {dom} will deliver 30 measured, rhythmic strikes with {item}. {sub} must count each strike out loud. If {sub} loses count, the count resets to zero.",
-        "{dom} will secure {sub} in a standing spread-eagle position. {dom} will then use {item} to strike the inner thighs and buttocks in a 'cross-hatch' pattern. {sub} is to maintain a submissive posture without flinching."
-    ],
-    "Quietude": [
-        "{dom} will inspect {sub}'s mouth before applying {item} firmly. The straps must be notched to the tightest setting. {sub} is to maintain eye contact with {dom} while breathing only through the nose.",
-        "{sub} is to be silenced using {item}. Once applied, {dom} will secure a secondary layer of binding to ensure no muffled sounds escape. {sub} will then spend the phase in total silence."
-    ],
-    "Ache": [
-        "{dom} will prepare {sub} for {item}. {sub} is to accept the internal depth of the device slowly. Once seated, {sub} must remain in a deep squat. {sub} is to feel the constant presence of {item} without seeking relief.",
-        "Apply {item} to {sub}’s sensitive nerve endings. {sub} must keep their hands behind their head and remain still. {dom} will strictly monitor for over-arousal; climax is a forfeit of the round."
-    ],
-    "Shadow": [
-        "{dom} will apply {item} to {sub}, ensuring absolute total darkness. {sub} is to be led to the center of the room and left standing. {dom} will circle {sub} in total silence. {sub} must remain perfectly still, reacting only to the psychological weight of the darkness.",
-        "{sub} is to be blinded by {item} and seated. {dom} will then secure {sub}'s hands to the chair. {dom} will describe exactly what they intend to do in future rounds, utilizing {sub}'s heightened hearing to build mental submission.",
-        "Using {item}, {dom} will strip {sub} of their sight. {sub} must be placed on all fours. {dom} will move around the room, making various noises. {sub} must track {dom}’s position by sound alone, turning their head toward the source."
-    ],
-    "Sensory": [
-        "{sub} is to be blindfolded. {dom} will use {item} to create a path of sensation across {sub}’s torso. {sub} is to be kept in a state of high anticipation, never knowing where the next touch will land.",
-        "Temperature play: {dom} will use {item} to shock {sub}’s system, alternating with body heat. {sub} is to describe the sensation in one-word responses. The focus is on the psychological transition."
-    ]
+    "Stillness": ["{dom} is to secure {sub}’s wrists behind the back tightly using {item}. Once bound, anchor to the ankles and pull {sub} into a strict hogtie position."],
+    "Impact": ["{sub} is to bend over fully, exposing the target area. {dom} will deliver 30 measured, rhythmic strikes with {item}. {sub} must count each strike out loud."],
+    "Quietude": ["{dom} will inspect {sub}'s mouth before applying {item} firmly. Straps notched to the tightest setting. {sub} must breathe only through the nose."],
+    "Ache": ["{dom} will prepare {sub} for {item}. {sub} is to accept the internal depth slowly and remain in a deep squat. Climax is forbidden."],
+    "Shadow": ["{dom} will apply {item} ensuring total darkness. {sub} is led to the center and left standing. {dom} circles in total silence."],
+    "Sensory": ["{sub} is blindfolded. {dom} uses {item} to create a path of sensation across the torso. Focus on the transition between comfort and intensity."]
 };
 
 let game = {
-    currRound: 1, totalRounds: 10,
-    p: [{id:0, name:"", role:"Master", score:0, cards:[]}, {id:1, name:"", role:"Slave", score:0, cards:[]}],
-    h: JSON.parse(localStorage.getItem('sov_v11_items')) || HARDWARE,
-    activeH: {}, timer: null, activeTime: 0,
-    activePool: {}
+    currRound: 1, lastCategory: "",
+    p: [{name:"", score:0}, {name:"", score:0}],
+    h: HARDWARE, activePool: JSON.parse(JSON.stringify(TEMPLATES)),
+    timer: null, activeTime: 0
 };
 
 function init() {
     const cont = document.getElementById('arsenal-list');
     cont.innerHTML = '';
     Object.keys(game.h).forEach(cat => {
-        game.activeH[cat] = [...game.h[cat].items];
         let div = document.createElement('div');
-        div.style.marginBottom = "15px";
-        div.innerHTML = `<span class="label" style="color:#555;">${cat}</span><div class="item-grid" id="grid-${cat}"></div>
-            <div class="add-item-row"><input type="text" id="add-${cat}" placeholder="Add..."><button class="add-btn" onclick="addItem('${cat}')">+</button></div>`;
+        div.className = 'cat-toggle-row';
+        div.innerHTML = `<span class="cat-name">${cat}</span>
+            <label class="switch"><input type="checkbox" id="tog-${cat}" ${game.h[cat].enabled?'checked':''} onchange="toggleCat('${cat}')"><span class="slider"></span></label>`;
         cont.appendChild(div);
-        renderItems(cat);
+        
+        let itemDiv = document.createElement('div');
+        itemDiv.className = 'item-grid';
+        itemDiv.innerHTML = game.h[cat].items.map(i => `<div class="chip active">${i}</div>`).join('');
+        cont.appendChild(itemDiv);
     });
 }
-function renderItems(cat) { document.getElementById(`grid-${cat}`).innerHTML = game.h[cat].items.map(i => `<div class="chip ${game.activeH[cat].includes(i)?'active':''}" onclick="tog('${cat}','${i}')">${i}</div>`).join(''); }
-function tog(cat, i) { let a = game.activeH[cat]; a.includes(i) ? a.splice(a.indexOf(i),1) : a.push(i); renderItems(cat); }
-function addItem(cat) { let v = document.getElementById(`add-${cat}`).value; if(v){ game.h[cat].items.push(v); game.activeH[cat].push(v); localStorage.setItem('sov_v11_items', JSON.stringify(game.h)); document.getElementById(`add-${cat}`).value=''; renderItems(cat); } }
-function setGender(p, g) { document.getElementById(`p${p}m`).classList.toggle('active', g === 'M'); document.getElementById(`p${p}f`).classList.toggle('active', g === 'F'); }
+
+function toggleCat(cat) { game.h[cat].enabled = document.getElementById(`tog-${cat}`).checked; }
 
 function startSession() {
-    game.p[0].name = document.getElementById('name0').value; game.p[1].name = document.getElementById('name1').value;
-    game.totalRounds = parseInt(document.getElementById('total-rounds').value);
-    game.activePool = JSON.parse(JSON.stringify(TEMPLATES));
-    if(Math.random() > 0.5) { game.p[0].cards = ['Y']; game.p[1].cards = ['R']; } else { game.p[0].cards = ['R']; game.p[1].cards = ['Y']; }
-    document.getElementById('setup-screen').style.display = 'none'; document.getElementById('play-screen').style.display = 'block';
+    game.p[0].name = document.getElementById('name0').value; 
+    game.p[1].name = document.getElementById('name1').value;
+    document.getElementById('setup-screen').style.display = 'none'; 
+    document.getElementById('play-screen').style.display = 'block';
     refresh();
 }
 
 function refresh() {
-    if(game.currRound > game.totalRounds) {
-        document.getElementById('play-screen').style.display = 'none'; document.getElementById('win-screen').style.display = 'block';
-        let winner = game.p.sort((a,b) => b.score - a.score)[0];
-        document.getElementById('winner-text').innerText = `${winner.name} IS SOVEREIGN`;
-        return;
-    }
-    document.getElementById('round-disp').innerText = `PHASE ${game.currRound} / ${game.totalRounds}`;
+    document.getElementById('round-disp').innerText = `PHASE ${game.currRound}`;
     game.p.forEach((p, i) => {
         document.getElementById(`disp-name${i}`).innerText = p.name.toUpperCase();
-        document.getElementById(`role${i}`).innerText = i===0 ? "DOMINANT" : "SUBMISSIVE";
         document.getElementById(`score${i}`).innerText = p.score;
         document.getElementById(`box${i}`).className = `p-box ${i===0?'active-dom':''}`;
-        document.getElementById(`inv${i}`).innerHTML = p.cards.map(c => `<div class="card card-${c==='Y'?'y':'r'}" onclick="triggerCard(${i},'${c}')">${c}</div>`).join('');
     });
 }
 
 function issueDecree() {
-    const dom = game.p[0]; const sub = game.p[1];
-    let cats = Object.keys(game.activeH).filter(c => game.activeH[c].length > 0 && game.activePool[c] && game.activePool[c].length > 0);
-    if(cats.length === 0) { game.activePool = JSON.parse(JSON.stringify(TEMPLATES)); cats = Object.keys(game.activeH).filter(c => game.activeH[c].length > 0); }
-    let chosenCat = cats[Math.floor(Math.random() * cats.length)];
-    let templateIdx = Math.floor(Math.random() * game.activePool[chosenCat].length);
-    let raw = game.activePool[chosenCat][templateIdx];
-    let item = game.activeH[chosenCat][Math.floor(Math.random()*game.activeH[chosenCat].length)];
+    // 1. Get enabled categories that are NOT the last category used
+    let validCats = Object.keys(game.h).filter(c => game.h[c].enabled && c !== game.lastCategory);
+    
+    // Safety: If only one category is enabled, we have to allow it
+    if (validCats.length === 0) validCats = Object.keys(game.h).filter(c => game.h[c].enabled);
+    
+    let chosenCat = validCats[Math.floor(Math.random() * validCats.length)];
+    game.lastCategory = chosenCat; // Store for next round
+
+    let pool = game.activePool[chosenCat];
+    let templateIdx = Math.floor(Math.random() * pool.length);
+    let raw = pool[templateIdx];
+    let item = game.h[chosenCat].items[Math.floor(Math.random()*game.h[chosenCat].items.length)];
+    
     game.activeTime = game.h[chosenCat].time;
     document.getElementById('intensity-display').innerText = `${chosenCat.toUpperCase()} PROTOCOL: ${Math.floor(game.activeTime/60)} MIN`;
     document.getElementById('timer').innerText = formatTime(game.activeTime);
-    document.getElementById('decree-text').innerHTML = raw.replace(/{item}/g, `<strong>${item}</strong>`).replace(/{dom}/g, dom.name).replace(/{sub}/g, sub.name);
-    game.currentDecreeInfo = { cat: chosenCat, idx: templateIdx };
+    document.getElementById('decree-text').innerHTML = raw.replace(/{item}/g, `<strong>${item}</strong>`).replace(/{dom}/g, game.p[0].name).replace(/{sub}/g, game.p[1].name);
+    
     document.getElementById('command-center').style.display = 'none';
     document.getElementById('decree-panel').style.display = 'block';
     document.getElementById('pre-commence-controls').style.display = 'block';
     document.getElementById('completion-controls').style.display = 'none';
 }
 
-function triggerVeto() {
-    game.activePool[game.currentDecreeInfo.cat].splice(game.currentDecreeInfo.idx, 1);
-    alert("Purged. Discarding this protocol template.");
-    issueDecree();
-}
+function triggerVeto() { issueDecree(); }
 
 function startCountdown() {
     document.getElementById('pre-commence-controls').style.display = 'none';
@@ -247,27 +206,28 @@ function startCountdown() {
     clearInterval(game.timer);
     game.timer = setInterval(() => {
         t--; document.getElementById('timer').innerText = formatTime(t);
-        if(t <= 0) { clearInterval(game.timer); alert("PROTOCOL TIME EXPIRED."); }
+        if(t <= 0) { clearInterval(game.timer); }
     }, 1000);
 }
 
 function triggerSafeword() {
     game.p[1].score = Math.max(0, game.p[1].score - 5);
     clearInterval(game.timer);
-    alert(`SAFEWORD. Protocol halted. Score penalized.`);
     document.getElementById('command-center').style.display = 'block';
     document.getElementById('decree-panel').style.display = 'none';
     refresh();
 }
 
-function triggerCard(pIdx, type) {
-    const other = pIdx === 0 ? 1 : 0;
-    if(type === 'Y') { alert("ROLE SWAP."); swap(); }
-    else { alert("RED CARD: Forfeit."); game.currRound++; swap(); }
+function endRound(win) {
+    if(win) game.p[1].score++;
+    game.currRound++;
+    game.p.reverse(); // Role swap logic preserved
+    clearInterval(game.timer);
+    document.getElementById('command-center').style.display = 'block';
+    document.getElementById('decree-panel').style.display = 'none';
+    refresh();
 }
 
-function endRound(win) { if(win) game.p[1].score++; game.currRound++; swap(); }
-function swap() { clearInterval(game.timer); game.p.reverse(); document.getElementById('command-center').style.display = 'block'; document.getElementById('decree-panel').style.display = 'none'; refresh(); }
 function formatTime(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
 
 init();
