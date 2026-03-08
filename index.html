@@ -3,107 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Absolute Restoration</title>
+    <title>SOVEREIGNTY: The Complete Protocol</title>
     <style>
-        :root { 
-            --accent: #d4af37; --bg: #0a0a0a; --card: #161616;
-            --text: #ffffff; --crimson: #a00000; --success: #1e4d2b;
-        }
+        :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
-        .container { max-width: 600px; width: 100%; background: var(--card); padding: 20px; border-radius: 20px; border: 2px solid #333; box-shadow: 0 0 50px #000; position: relative; }
+        .container { max-width: 600px; width: 100%; background: var(--card); padding: 20px; border-radius: 20px; border: 2px solid #333; box-shadow: 0 0 50px #000; }
         h1 { text-align: center; text-transform: uppercase; letter-spacing: 5px; color: var(--accent); margin-bottom: 20px; }
-        
         .box-section { background: #1f1f1f; padding: 15px; margin-bottom: 12px; border-radius: 12px; border: 1px solid #333; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; letter-spacing: 1px; }
-        
-        /* INPUTS & GENDER */
         input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; margin-bottom: 10px; }
         .gender-grid { display: flex; gap: 8px; margin-bottom: 15px; }
-        .g-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 8px; font-size: 0.75rem; font-weight: bold; }
+        .g-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 8px; font-size: 0.7rem; font-weight: bold; }
         .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
-        
-        /* CORE GRIDS */
-        .btn { background: var(--crimson); color: white; border: none; padding: 16px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 5px; }
-        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
-        .tog-btn { padding: 12px 5px; font-size: 0.65rem; border-radius: 6px; border: 1px solid #333; background: #111; color: #555; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+        .btn { background: var(--crimson); color: white; border: none; padding: 16px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 5px; width: 100%; }
+        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .tog-btn { padding: 10px; font-size: 0.65rem; border-radius: 6px; border: 1px solid #444; background: #111; color: #555; cursor: pointer; text-transform: uppercase; }
         .tog-btn.active { border-color: var(--accent); color: var(--accent); background: #1a1608; }
-        
-        /* SCORE HUB */
+        .item-chip { display: inline-flex; align-items: center; background: #333; padding: 4px 10px; border-radius: 20px; margin: 3px; font-size: 0.8rem; border: 1px solid #444; }
+        .item-chip.off { opacity: 0.4; text-decoration: line-through; }
+        .remove-x { margin-left: 8px; color: var(--crimson); font-weight: bold; cursor: pointer; }
         .score-row { display: flex; justify-content: space-between; padding: 12px; background: #000; border-radius: 12px; border: 1px solid #222; text-align: center; margin-bottom: 15px; }
-        .role-tag { font-size: 0.6rem; font-weight: 900; color: #444; letter-spacing: 1px; }
-        .master-glow { color: var(--accent) !important; text-shadow: 0 0 8px var(--accent); }
-
-        /* THE MISSING VAULT OVERLAY */
-        #vault-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.99); z-index: 9999; display: none; padding: 25px; box-sizing: border-box; overflow-y: auto; }
-        .vault-card { border: 1px solid var(--accent); padding: 15px; margin-bottom: 15px; border-radius: 12px; }
-        .tag-pill { background: #333; color: #fff; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 10px; margin: 4px; }
-        .tag-x { color: var(--crimson); cursor: pointer; font-weight: bold; font-size: 1.2rem; }
+        .role-tag { font-size: 0.6rem; font-weight: bold; color: #444; }
+        .master-glow { color: var(--accent) !important; }
     </style>
 </head>
 <body>
 
-<div id="vault-overlay">
-    <h2 style="color:var(--accent); text-align:center; letter-spacing: 5px;">ARSENAL VAULT</h2>
-    <div id="vault-content"></div>
-    <button class="btn" style="background: var(--success); margin-top: 20px;" onclick="closeVault()">Save & Sync Arsenal</button>
-</div>
-
 <div class="container">
     <h1>SOVEREIGNTY</h1>
 
-    <div id="screen-setup">
+    <div id="step-1">
         <div class="box-section">
-            <span class="label">Initial Master Name</span>
-            <input type="text" id="p0-name-in" placeholder="Identity 1...">
-            <div class="gender-grid">
+            <span class="label">Initial Master</span>
+            <input type="text" id="p0-name" placeholder="Name...">
+            <div class="gender-grid" id="g0">
                 <button class="g-btn active" onclick="setG(0,'M',this)">Male</button>
                 <button class="g-btn" onclick="setG(0,'F',this)">Female</button>
                 <button class="g-btn" onclick="setG(0,'NB',this)">NB</button>
             </div>
-
-            <span class="label">Initial Slave Name</span>
-            <input type="text" id="p1-name-in" placeholder="Identity 2...">
-            <div class="gender-grid">
+            <span class="label">Initial Slave</span>
+            <input type="text" id="p1-name" placeholder="Name...">
+            <div class="gender-grid" id="g1">
                 <button class="g-btn" onclick="setG(1,'M',this)">Male</button>
                 <button class="g-btn active" onclick="setG(1,'F',this)">Female</button>
                 <button class="g-btn" onclick="setG(1,'NB',this)">NB</button>
             </div>
         </div>
-
         <div class="box-section">
-            <span class="label">Session Rounds</span>
-            <input type="number" id="rounds-in" value="30">
+            <span class="label">Rounds</span>
+            <input type="number" id="round-count" value="30">
         </div>
-        <button class="btn" onclick="startSession()">Initialize Protocol</button>
+        <button class="btn" onclick="showStep(2)">Next: Configure Arsenal</button>
     </div>
 
-    <div id="screen-game" style="display:none;">
-        <div id="round-indicator" style="text-align:center; font-size:0.7rem; color:var(--accent); margin-bottom:10px; font-weight:bold;">ROUND 1 / 30</div>
+    <div id="step-2" style="display:none;">
+        <h3 style="color:var(--accent); text-align:center; font-size:0.8rem;">ARSENAL PREPARATIONS</h3>
+        <div id="inventory-editor"></div>
+        <button class="btn" style="background:var(--success)" onclick="startSession()">Begin Protocol</button>
+    </div>
 
-        <div class="box-section" style="border: 1px solid var(--accent);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <span class="label" style="margin:0;">Active Arsenal Sets</span>
-                <button class="btn" style="width:auto; margin:0; padding:5px 12px; font-size:0.6rem;" onclick="openVault()">Manage Items</button>
-            </div>
-            <div id="arsenal-mount" class="toggle-grid"></div>
-        </div>
-
+    <div id="step-3" style="display:none;">
+        <div id="round-ui" style="text-align:center; font-size:0.7rem; color:var(--accent); margin-bottom:10px;"></div>
         <div class="score-row">
-            <div class="p-block"><div id="p0-role" class="role-tag">MASTER</div><div id="p0-name-ui" style="font-weight:bold;">-</div><div id="p0-score" style="font-size:1.5rem;">0</div></div>
-            <div class="p-block" style="border-left:1px solid #222;"><div id="p1-role" class="role-tag">SLAVE</div><div id="p1-name-ui" style="font-weight:bold;">-</div><div id="p1-score" style="font-size:1.5rem;">0</div></div>
+            <div class="p-block"><div id="r0" class="role-tag">MASTER</div><div id="n0"></div><div id="s0" style="font-size:1.5rem;">0</div></div>
+            <div class="p-block"><div id="r1" class="role-tag">SLAVE</div><div id="n1"></div><div id="s1" style="font-size:1.5rem;">0</div></div>
         </div>
-
-        <div id="master-controls">
+        
+        <div id="game-controls">
             <div class="box-section">
                 <span class="label">Active Protocols</span>
-                <div id="protocol-mount" class="toggle-grid"></div>
+                <div class="toggle-grid" id="proto-mount"></div>
             </div>
             <button class="btn" onclick="generate()">Command Decree</button>
         </div>
 
-        <div id="active-view" style="display:none;">
-            <div class="box-section" id="decree-display" style="font-size:1.1rem; line-height:1.6; border-left:4px solid var(--accent); padding-left:15px; color:#eee;">
-            </div>
+        <div id="decree-view" style="display:none;">
+            <div class="box-section" id="decree-text" style="line-height:1.6; border-left:4px solid var(--accent); padding-left:15px;"></div>
             <div style="display:flex; gap:10px;">
                 <button class="btn" style="background:#333; flex:1;" onclick="resolve(false)">FAIL</button>
                 <button class="btn" style="background:var(--success); flex:1;" onclick="resolve(true)">SUCCESS</button>
@@ -116,102 +91,106 @@
     const state = {
         curr: 1, total: 30,
         players: [{n:"", g:"M", role:"Master", score:0}, {n:"", g:"F", role:"Slave", score:0}],
-        vault: JSON.parse(localStorage.getItem('sov_vault_v16')) || {
-            "Restraints": { active: true, items: ["Rope", "Handcuffs"] },
-            "Sensory": { active: true, items: ["Blindfold", "Hood"] },
-            "Discipline": { active: true, items: ["Flogger", "Cane"] },
-            "Oral": { active: true, items: ["Ball Gag", "Tape"] }
+        vault: JSON.parse(localStorage.getItem('sov_v17')) || {
+            "Restraints": [ {n:"Rope", a:true}, {n:"Cuffs", a:true} ],
+            "Sensory": [ {n:"Blindfold", a:true}, {n:"Hood", a:true} ],
+            "Discipline": [ {n:"Flogger", a:true}, {n:"Cane", a:true} ],
+            "Oral": [ {n:"Ball Gag", a:true}, {n:"Tape", a:true} ]
         },
         protocols: {
-            "The Solitary Bind": { active: true, prompts: ["{S} must use the {T} to secure {SP} own wrists behind {SP} back."] },
-            "The Wicked Gamble": { active: true, prompts: ["{M} issues a dare involving the {T}. Silence is mandatory."] },
-            "The Veiled Confession": { active: true, prompts: ["Using the {T}, {M} extracts a truth from {S}."] },
-            "The Silk Labyrinth": { active: true, prompts: ["{M} performs a decorative bind on {S} using {T}."] },
-            "The Threshold of Agony": { active: true, prompts: ["{M} edges {S} using the {T} until told to stop."] },
-            "The Flesh Endurance": { active: true, prompts: ["{S} holds a stress position while balanced by {T}."] },
-            "The Great Unshackling": { active: true, prompts: ["{M} binds {S} with {T}. {S} has 3 minutes to escape."] },
-            "The Velvet Command": { active: true, prompts: ["{M} traces {T} along {S}'s body slowly."] }
+            "The Solitary Bind": true, "The Wicked Gamble": true, "The Veiled Confession": true,
+            "The Silk Labyrinth": true, "The Threshold of Agony": true, "The Flesh Endurance": true,
+            "The Great Unshackling": true, "The Velvet Command": true
         }
     };
 
     function setG(i, v, b) { state.players[i].g = v; Array.from(b.parentElement.children).forEach(x=>x.classList.remove('active')); b.classList.add('active'); }
 
-    function startSession() {
-        state.players[0].n = document.getElementById('p0-name-in').value || "Dom";
-        state.players[1].n = document.getElementById('p1-name-in').value || "Sub";
-        state.total = parseInt(document.getElementById('rounds-in').value) || 30;
-        document.getElementById('screen-setup').style.display = 'none';
-        document.getElementById('screen-game').style.display = 'block';
-        render();
+    function showStep(n) {
+        document.getElementById('step-1').style.display = n==1?'block':'none';
+        document.getElementById('step-2').style.display = n==2?'block':'none';
+        document.getElementById('step-3').style.display = n==3?'block':'none';
+        if(n==2) renderInventory();
     }
 
-    function render() {
-        document.getElementById('round-indicator').innerText = `ROUND ${state.curr} / ${state.total}`;
-        state.players.forEach((p, i) => {
-            document.getElementById(`p${i}-name-ui`).innerText = p.n;
-            document.getElementById(`p${i}-score`).innerText = p.score;
-            const r = document.getElementById(`p${i}-role`); r.innerText = p.role;
-            r.className = 'role-tag' + (p.role === 'Master' ? ' master-glow' : '');
-        });
-
-        // Forced Arsenal Render
-        const aM = document.getElementById('arsenal-mount'); aM.innerHTML = '';
-        for(let k in state.vault) {
-            aM.innerHTML += `<button class="tog-btn ${state.vault[k].active?'active':''}" onclick="state.vault['${k}'].active=!state.vault['${k}'].active; render()">${k}</button>`;
-        }
-
-        // Forced Protocol Render
-        const pM = document.getElementById('protocol-mount'); pM.innerHTML = '';
-        for(let k in state.protocols) {
-            pM.innerHTML += `<button class="tog-btn ${state.protocols[k].active?'active':''}" onclick="state.protocols['${k}'].active=!state.protocols['${k}'].active; render()">${k}</button>`;
-        }
-    }
-
-    /* VAULT OVERLAY LOGIC (THE MISSING PIECE) */
-    function openVault() {
-        const vc = document.getElementById('vault-content'); vc.innerHTML = '';
+    function renderInventory() {
+        const mount = document.getElementById('inventory-editor'); mount.innerHTML = '';
         for(let cat in state.vault) {
-            vc.innerHTML += `
-                <div class="vault-card">
-                    <span class="label">${cat}</span>
-                    <div style="margin-bottom:10px;">${state.vault[cat].items.map((t,i)=>`<span class="tag-pill">${t} <span class="tag-x" onclick="vRem('${cat}',${i})">×</span></span>`).join('')}</div>
-                    <div style="display:flex; gap:5px;"><input type="text" id="add-${cat}" placeholder="Add tool..." style="margin:0;"><button class="tog-btn active" style="flex:0.3; padding:0 15px;" onclick="vAdd('${cat}')">ADD</button></div>
-                </div>`;
+            let html = `<div class="box-section"><span class="label">${cat}</span><div>`;
+            state.vault[cat].forEach((item, i) => {
+                html += `<span class="item-chip ${item.a?'':'off'}" onclick="toggleItem('${cat}',${i})">${item.n} <span class="remove-x" onclick="removeItem('${cat}',${i}); event.stopPropagation()">×</span></span>`;
+            });
+            html += `</div><div style="display:flex; gap:5px; margin-top:10px;"><input type="text" id="in-${cat}" placeholder="Add..." style="margin:0;"><button class="tog-btn active" style="flex:0.3" onclick="addItem('${cat}')">ADD</button></div></div>`;
+            mount.innerHTML += html;
         }
-        document.getElementById('vault-overlay').style.display = 'block';
     }
-    function vAdd(c){ const v=document.getElementById('add-'+c).value; if(v){state.vault[c].items.push(v); openVault();}}
-    function vRem(c,i){ state.vault[c].items.splice(i,1); openVault();}
-    function closeVault(){ localStorage.setItem('sov_vault_v16', JSON.stringify(state.vault)); document.getElementById('vault-overlay').style.display='none'; render();}
+
+    function toggleItem(c, i) { state.vault[c][i].a = !state.vault[c][i].a; renderInventory(); }
+    function removeItem(c, i) { state.vault[c].splice(i, 1); renderInventory(); }
+    function addItem(c) { const val = document.getElementById('in-'+c).value; if(val){ state.vault[c].push({n:val, a:true}); renderInventory(); } }
+
+    function startSession() {
+        state.players[0].n = document.getElementById('p0-name').value || "Dom";
+        state.players[1].n = document.getElementById('p1-name').value || "Sub";
+        state.total = document.getElementById('round-count').value;
+        localStorage.setItem('sov_v17', JSON.stringify(state.vault));
+        showStep(3);
+        renderGame();
+    }
+
+    function renderGame() {
+        document.getElementById('round-ui').innerText = `ROUND ${state.curr} / ${state.total}`;
+        state.players.forEach((p, i) => {
+            document.getElementById('n'+i).innerText = p.n;
+            document.getElementById('s'+i).innerText = p.score;
+            document.getElementById('r'+i).innerText = p.role;
+            document.getElementById('r'+i).className = 'role-tag ' + (p.role==='Master'?'master-glow':'');
+        });
+        const pm = document.getElementById('proto-mount'); pm.innerHTML = '';
+        for(let k in state.protocols) {
+            pm.innerHTML += `<button class="tog-btn ${state.protocols[k]?'active':''}" onclick="state.protocols['${k}']=!state.protocols['${k}']; renderGame()">${k}</button>`;
+        }
+    }
 
     function generate() {
-        const pK = Object.keys(state.protocols).filter(k=>state.protocols[k].active);
-        const vK = Object.keys(state.vault).filter(k=>state.vault[k].active && state.vault[k].items.length);
-        if(!pK.length || !vK.length) return alert("Select at least one Protocol and Arsenal set.");
+        const activeProtos = Object.keys(state.protocols).filter(k=>state.protocols[k]);
+        const allItems = [];
+        for(let c in state.vault) state.vault[c].forEach(i => { if(i.a) allItems.push(i.n); });
         
-        const selP = pK[Math.floor(Math.random()*pK.length)];
-        const selV = vK[Math.floor(Math.random()*vK.length)];
-        const tool = state.vault[selV].items[Math.floor(Math.random()*state.vault[selV].items.length)];
+        if(!activeProtos.length || !allItems.length) return alert("Select protocols and at least one item.");
         
-        const mIdx = state.players.findIndex(p=>p.role==='Master');
-        const sIdx = mIdx===0?1:0;
-        const pron = state.players[sIdx].g === 'M' ? 'his' : (state.players[sIdx].g === 'F' ? 'her' : 'their');
-        
-        const txt = state.protocols[selP].prompts[0].replace(/{M}/g, state.players[mIdx].n).replace(/{S}/g, state.players[sIdx].n).replace(/{SP}/g, pron).replace(/{T}/g, `<strong>${tool}</strong>`);
-        
-        document.getElementById('decree-display').innerHTML = `<small style="color:var(--accent)">${selP}</small><br><br>${txt}`;
-        document.getElementById('master-controls').style.display='none';
-        document.getElementById('active-view').style.display='block';
+        const p = activeProtos[Math.floor(Math.random()*activeProtos.length)];
+        const t = allItems[Math.floor(Math.random()*allItems.length)];
+        const m = state.players.find(x=>x.role==='Master');
+        const s = state.players.find(x=>x.role==='Slave');
+        const pron = s.g==='M'?'his':(s.g==='F'?'her':'their');
+
+        const prompts = {
+            "The Solitary Bind": "{S} must use the {T} to bind {SP} own wrists behind {SP} back.",
+            "The Wicked Gamble": "{M} dares {S} to endure the {T} for 2 minutes without making a sound.",
+            "The Veiled Confession": "Bound by the {T}, {S} must answer one question from {M} with total honesty.",
+            "The Silk Labyrinth": "{M} uses the {T} to create a decorative harness on {S}.",
+            "The Threshold of Agony": "{M} brings {S} to the edge using the {T}, then commands stillness.",
+            "The Flesh Endurance": "{S} must hold a plank while the {T} is placed on {SP} back. Don't let it fall.",
+            "The Great Unshackling": "{M} ties {S} with {T}. {S} has 90 seconds to escape.",
+            "The Velvet Command": "{M} traces the {T} over {S}'s most sensitive areas slowly."
+        };
+
+        document.getElementById('decree-text').innerHTML = `<strong>${p}</strong><br><br>` + prompts[p].replace(/{M}/g, m.n).replace(/{S}/g, s.n).replace(/{SP}/g, pron).replace(/{T}/g, `<strong>${t}</strong>`);
+        document.getElementById('game-controls').style.display = 'none';
+        document.getElementById('decree-view').style.display = 'block';
     }
 
     function resolve(success) {
         if(success) {
-            state.players[0].role = (state.players[0].role === 'Master' ? 'Slave' : 'Master');
-            state.players[1].role = (state.players[1].role === 'Master' ? 'Slave' : 'Master');
-            state.players[state.players.findIndex(p=>p.role==='Master')].score++;
+            const subIdx = state.players.findIndex(p=>p.role==='Slave');
+            state.players[subIdx].score++;
+            state.players.forEach(p => p.role = p.role==='Master'?'Slave':'Master');
+        } else {
+            state.players.find(p=>p.role==='Master').score++;
         }
-        if(state.curr >= state.total) { alert("Session Complete."); location.reload(); }
-        else { state.curr++; document.getElementById('master-controls').style.display='block'; document.getElementById('active-view').style.display='none'; render(); }
+        if(state.curr >= state.total) { alert("Sovereignty Established."); location.reload(); }
+        else { state.curr++; document.getElementById('game-controls').style.display='block'; document.getElementById('decree-view').style.display='none'; renderGame(); }
     }
 </script>
 </body>
