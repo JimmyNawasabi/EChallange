@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Gold Benchmark</title>
+    <title>SOVEREIGNTY: Gold Benchmark (Restored Arsenal)</title>
     <style>
         :root { --accent: #d4af37; --bg: #0a0a0a; --card: #161616; --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --warning: #b38f00; --veto-blue: #004a7c; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -18,6 +18,7 @@
         .tog-btn.active { border-color: var(--accent); color: var(--accent); background: #1a1608; }
         .item-chip { display: inline-flex; align-items: center; background: #333; padding: 6px 12px; border-radius: 20px; margin: 4px; font-size: 0.8rem; border: 1px solid #444; cursor: pointer; }
         .item-chip.off { opacity: 0.3; text-decoration: line-through; background: #111; }
+        .remove-x { margin-left: 10px; color: var(--crimson); font-weight: bold; }
         .score-row { display: flex; justify-content: space-between; padding: 12px; background: #000; border-radius: 12px; border: 1px solid #222; text-align: center; margin-bottom: 15px; }
         .role-tag { font-size: 0.6rem; font-weight: bold; color: #444; }
         .master-glow { color: var(--accent) !important; text-shadow: 0 0 5px var(--accent); }
@@ -112,7 +113,7 @@
     const state = {
         curr: 1, total: 30, winner: null,
         players: [{n:"", role:"Master", score:0, hasYellow:false, hasRed:false}, {n:"", role:"Slave", score:0, hasYellow:false, hasRed:false}],
-        vault: JSON.parse(localStorage.getItem('sov_v11')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v11_restored')) || {
             "Restraints": [{n:"Heavy Rope", a:true}], "Gags": [{n:"Ball Gag", a:true}], "Blindfolds": [{n:"Leather Mask", a:true}], 
             "Sensory": [{n:"Ice Blocks", a:true}], "Toys": [{n:"Vibrator", a:true}], "Impact": [{n:"Heavy Flogger", a:true}]
         },
@@ -125,22 +126,24 @@
         const m = document.getElementById('inventory-editor'); m.innerHTML = '<h3 style="color:var(--accent);text-align:center;font-size:0.8rem">ARSENAL</h3>';
         for(let c in state.vault) {
             let h = `<div class="box-section"><span class="label">${c}</span><div>`;
-            state.vault[c].forEach((it, i) => { h += `<span class="item-chip ${it.a?'':'off'}" onclick="toggleItem('${c}',${i})">${it.n}</span>`; });
-            h += `</div></div>`; m.innerHTML += h;
+            state.vault[c].forEach((it, i) => { h += `<span class="item-chip ${it.a?'':'off'}" onclick="toggleItem('${c}',${i})">${it.n} <span class="remove-x" onclick="removeItem('${c}',${i}); event.stopPropagation()">×</span></span>`; });
+            h += `</div><div style="display:flex; gap:5px; margin-top:10px;"><input type="text" id="add-${c}" placeholder="New..." style="margin:0;"><button class="tog-btn active" onclick="addItem('${c}')">ADD</button></div></div>`;
+            m.innerHTML += h;
         }
     }
 
     function toggleItem(c, i) { state.vault[c][i].a = !state.vault[c][i].a; renderInventory(); }
+    function removeItem(c, i) { state.vault[c].splice(i, 1); renderInventory(); }
+    function addItem(c) { const v = document.getElementById('add-'+c).value; if(v) { state.vault[c].push({n:v, a:true}); renderInventory(); } }
 
     function startSession() {
         state.players[0].n = document.getElementById('p0-name').value;
         state.players[1].n = document.getElementById('p1-name').value;
         state.total = parseInt(document.getElementById('round-total').value);
         document.getElementById('sw-btn').innerText = "SAFEWORD: " + document.getElementById('safeword-in').value;
-        
         state.players[Math.floor(Math.random()*2)].hasYellow = true;
         state.players[Math.floor(Math.random()*2)].hasRed = true;
-        
+        localStorage.setItem('sov_v11_restored', JSON.stringify(state.vault));
         showStep(3); renderGame();
     }
 
@@ -162,10 +165,11 @@
         const ap = Object.keys(state.protocols).filter(k=>state.protocols[k]);
         const p = ap[Math.floor(Math.random()*ap.length)];
         const cats = { "The Solitary Bind":"Restraints", "The Wicked Gamble":"Impact", "The Veiled Confession":"Gags", "The Silk Labyrinth":"Restraints", "The Threshold of Agony":"Toys", "The Flesh Endurance":"Restraints", "The Great Unshackling":"Restraints", "The Velvet Command":"Sensory" };
-        const items = state.vault[cats[p]].filter(i=>i.a);
-        const m = state.players.find(x=>x.role==='Master'), s = state.players.find(x=>x.role==='Slave');
+        const activeItems = state.vault[cats[p]].filter(i=>i.a);
+        if(activeItems.length === 0) return alert("Activate items in " + cats[p] + " first!");
         
-        document.getElementById('decree-display').innerHTML = `<strong>${p}</strong><br><br>${p} Protocol initiated between ${m.n} and ${s.n} using <strong>${items[0].n}</strong>.`;
+        const m = state.players.find(x=>x.role==='Master'), s = state.players.find(x=>x.role==='Slave');
+        document.getElementById('decree-display').innerHTML = `<strong>${p}</strong><br><br>${p} Protocol initiated between ${m.n} and ${s.n} using <strong>${activeItems[0].n}</strong>.`;
         document.getElementById('game-controls').style.display = 'none';
         document.getElementById('decree-view').style.display = 'block';
         
@@ -176,23 +180,23 @@
     function useYellow() {
         if(confirm("Use Yellow Card? Roles will swap and card will transfer.")) {
             state.players.forEach(p => p.role = p.role === 'Master' ? 'Slave' : 'Master');
-            const owner = state.players.find(p=>p.hasYellow);
-            const receiver = state.players.find(p=>!p.hasYellow);
-            owner.hasYellow = false; receiver.hasYellow = true;
-            renderGame(); generate(); 
+            transferCard('hasYellow'); renderGame(); generate(); 
         }
     }
 
     function useRed() {
         if(confirm("Use Red Card? Decree stops, round restarts, card transfers.")) {
-            const owner = state.players.find(p=>p.hasRed);
-            const receiver = state.players.find(p=>!p.hasRed);
-            owner.hasRed = false; receiver.hasRed = true;
-            generate();
+            transferCard('hasRed'); generate();
         }
     }
 
-    function veto() { if(confirm("Veto: Skip and delete this decree from session?")) { document.getElementById('game-controls').style.display='block'; document.getElementById('decree-view').style.display='none'; } }
+    function transferCard(key) {
+        const owner = state.players.find(p=>p[key]);
+        const receiver = state.players.find(p=>!p[key]);
+        owner[key] = false; receiver[key] = true;
+    }
+
+    function veto() { if(confirm("Veto: Skip this decree?")) { document.getElementById('game-controls').style.display='block'; document.getElementById('decree-view').style.display='none'; } }
 
     function safeword() {
         const loss = Math.floor(Math.random() * 5) + 1;
