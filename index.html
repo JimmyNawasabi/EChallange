@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Hardened Identity Protocol</title>
+    <title>SOVEREIGNTY: Final Protocol</title>
     <style>
         :root { 
             --accent: #d4af37; --bg: #0a0a0a; --card: #161616;
@@ -19,7 +19,7 @@
         input[type="text"] { width: 100%; padding: 10px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; }
         .btn { background: var(--crimson); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 10px; }
         
-        /* Gender Selection */
+        /* Gender Selection Buttons */
         .gender-grid { display: flex; gap: 5px; margin-top: 8px; }
         .g-btn { flex: 1; padding: 8px; background: #111; border: 1px solid #444; color: #555; cursor: pointer; border-radius: 6px; font-size: 0.6rem; font-weight: bold; text-transform: uppercase; }
         .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
@@ -61,38 +61,38 @@
 
     <div id="screen-setup" class="step active">
         <div class="box-section">
-            <span class="label">Dominant Identity</span>
+            <span class="label">Identity 1 (Initial Master)</span>
             <input type="text" id="p0-name-in" placeholder="Name...">
             <div class="gender-grid" id="g0-box">
-                <button class="g-btn active" onclick="setGender(0,'M',this)">Male</button>
-                <button class="g-btn" onclick="setGender(0,'F',this)">Female</button>
-                <button class="g-btn" onclick="setGender(0,'NB',this)">NB</button>
+                <button class="g-btn active" data-val="M" onclick="selectGender(0,'M',this)">Male</button>
+                <button class="g-btn" data-val="F" onclick="selectGender(0,'F',this)">Female</button>
+                <button class="g-btn" data-val="NB" onclick="selectGender(0,'NB',this)">NB</button>
             </div>
         </div>
         <div class="box-section">
-            <span class="label">Submissive Identity</span>
+            <span class="label">Identity 2 (Initial Slave)</span>
             <input type="text" id="p1-name-in" placeholder="Name...">
             <div class="gender-grid" id="g1-box">
-                <button class="g-btn" onclick="setGender(1,'M',this)">Male</button>
-                <button class="g-btn active" onclick="setGender(1,'F',this)">Female</button>
-                <button class="g-btn" onclick="setGender(1,'NB',this)">NB</button>
+                <button class="g-btn" data-val="M" onclick="selectGender(1,'M',this)">Male</button>
+                <button class="g-btn active" data-val="F" onclick="selectGender(1,'F',this)">Female</button>
+                <button class="g-btn" data-val="NB" onclick="selectGender(1,'NB',this)">NB</button>
             </div>
         </div>
-        <button class="btn" onclick="initSession()">Initialize Protocol</button>
+        <button class="btn" onclick="initSession()">Initialize Identities</button>
     </div>
 
     <div id="screen-game" class="step">
         <div class="score-row">
             <div class="p-block">
                 <div id="p0-role" class="role-tag">MASTER</div>
-                <div id="p0-name-ui" style="font-weight:bold;">P1</div>
+                <div id="p0-name-ui" style="font-weight:bold;">Name</div>
                 <div id="p0-score" class="score-num">0</div>
                 <div id="p0-cards" class="card-dock"></div>
             </div>
             <div style="font-weight:900; color:#333;">VS</div>
             <div class="p-block">
                 <div id="p1-role" class="role-tag">SLAVE</div>
-                <div id="p1-name-ui" style="font-weight:bold;">P2</div>
+                <div id="p1-name-ui" style="font-weight:bold;">Name</div>
                 <div id="p1-score" class="score-num">0</div>
                 <div id="p1-cards" class="card-dock"></div>
             </div>
@@ -101,12 +101,12 @@
         <div id="master-view">
             <div class="box-section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <span class="label">Session Parameters</span>
+                    <span class="label">Power Parameters</span>
                     <button onclick="openVault()" style="background:none; border:1px solid var(--accent); color:var(--accent); font-size:0.5rem; padding:2px 5px; cursor:pointer;">Edit Arsenal</button>
                 </div>
-                <span class="label" style="color:#555;">Arsenal Toggles:</span>
+                <span class="label" style="color:#555;">Active Tools:</span>
                 <div class="toggle-grid" id="arsenal-mount"></div>
-                <span class="label" style="color:#555;">Mode Toggles:</span>
+                <span class="label" style="color:#555;">Protocols:</span>
                 <div class="toggle-grid" id="category-mount"></div>
             </div>
             <button class="btn" onclick="fireDecree()">Command Decree</button>
@@ -121,8 +121,8 @@
                 </div>
             </div>
             <div style="display:flex; gap:10px;">
-                <button class="btn" style="background:#444; flex:1;" onclick="roundEnd(false)">FAIL</button>
-                <button class="btn" style="background:var(--success); flex:1;" onclick="roundEnd(true)">SUCCESS</button>
+                <button class="btn" style="background:#444; flex:1;" onclick="roundEnd(false)">FAIL (Retain Role)</button>
+                <button class="btn" style="background:var(--success); flex:1;" onclick="roundEnd(true)">SUCCESS (Swap Role)</button>
             </div>
         </div>
     </div>
@@ -134,7 +134,7 @@
             { n: "", g: "M", role: "Master", score: 0, cards: ['yellow'] },
             { n: "", g: "F", role: "Slave", score: 0, cards: ['red'] }
         ],
-        vault: JSON.parse(localStorage.getItem('sov_vault_v4')) || {
+        vault: JSON.parse(localStorage.getItem('sov_v5_vault')) || {
             "The Bindings": { items: ["Rope", "Cuffs"], active: true },
             "The Shadows": { items: ["Blindfold"], active: true },
             "The Discipline": { items: ["Flogger"], active: true },
@@ -143,15 +143,17 @@
         cats: { "The Solitary Bind": true, "The Geometric Cage": true, "The Agony of Nearness": true, "The Hidden Truths": true }
     };
 
-    function setGender(idx, val, btn) {
+    function selectGender(idx, val, btn) {
         state.players[idx].g = val;
         btn.parentElement.querySelectorAll('.g-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
     }
 
     function initSession() {
-        state.players[0].n = document.getElementById('p0-name-in').value || "Dominant";
-        state.players[1].n = document.getElementById('p1-name-in').value || "Submissive";
+        state.players[0].n = document.getElementById('p0-name-in').value || "Dom";
+        state.players[1].n = document.getElementById('p1-name-in').value || "Sub";
+        localStorage.setItem('sov_v5_identity', JSON.stringify(state.players));
+        
         document.getElementById('screen-setup').classList.remove('active');
         document.getElementById('screen-game').classList.add('active');
         refresh();
@@ -193,7 +195,6 @@
         const sIdx = mIdx === 0 ? 1 : 0;
         const sub = state.players[sIdx];
         
-        // Gender logic
         const gMap = { M: { p: 'he', o: 'him', s: 'his' }, F: { p: 'she', o: 'her', s: 'her' }, NB: { p: 'they', o: 'them', s: 'their' } };
         const pro = gMap[sub.g];
 
@@ -204,7 +205,7 @@
         const toolSet = activeTools[Math.floor(Math.random() * activeTools.length)];
         const tool = state.vault[toolSet].items[Math.floor(Math.random() * state.vault[toolSet].items.length)];
 
-        document.getElementById('decree-text').innerHTML = `<strong>${cat}</strong><br>${state.players[mIdx].n} commands ${sub.n} to submit to the <u>${tool}</u>. ${pro.p[0].toUpperCase()}${pro.p.slice(1)} must not resist until ${pro.s} sovereignty is surrendered.`;
+        document.getElementById('decree-text').innerHTML = `<strong>${cat}</strong><br>${state.players[mIdx].n} commands ${sub.n} to use the <u>${tool}</u>. ${pro.p[0].toUpperCase()}${pro.p.slice(1)} must submit until ${pro.s} resistance is gone.`;
         
         document.getElementById('master-view').style.display = 'none';
         document.getElementById('active-decree-view').style.display = 'block';
@@ -227,12 +228,13 @@
         const sIdx = mIdx === 0 ? 1 : 0;
         if(success) {
             state.players[sIdx].score++;
-            state.players[0].role = (state.players[0].role === 'Master' ? 'Slave' : 'Master');
-            state.players[1].role = (state.players[1].role === 'Master' ? 'Slave' : 'Master');
-            alert("SWAP: Sovereignty Reclaimed.");
+            const p0r = state.players[0].role;
+            state.players[0].role = (p0r === 'Master' ? 'Slave' : 'Master');
+            state.players[1].role = (p0r === 'Master' ? 'Master' : 'Slave');
+            alert("SUCCESS! Roles Swapped.");
         } else {
             state.players[mIdx].score++;
-            alert("STAY: Sovereignty Retained.");
+            alert("FAILURE. Master stays Master.");
         }
         document.getElementById('master-view').style.display = 'block';
         document.getElementById('active-decree-view').style.display = 'none';
@@ -242,13 +244,13 @@
     function openVault() {
         const mount = document.getElementById('vault-editor-content'); mount.innerHTML = '';
         for(let c in state.vault) {
-            mount.innerHTML += `<div class="box-section"><span class="label">${c}</span><div>${state.vault[c].items.map((it,i) => `<span class="vault-tag">${it}<span onclick="vRem('${c}',${i})">✕</span></span>`).join('')}</div><input type="text" id="v-add-${c.replace(/\s/g,'')}"><button onclick="vAdd('${c}')">Add</button></div>`;
+            mount.innerHTML += `<div class="box-section"><span class="label">${c}</span><div>${state.vault[c].items.map((it,i) => `<span class="vault-tag">${it}<span onclick="vRem('${c}',${i})">✕</span></span>`).join('')}</div><div style="display:flex; gap:5px; margin-top:5px;"><input type="text" id="v-add-${c.replace(/\s/g,'')}"><button class="tog-btn active" onclick="vAdd('${c}')">Add</button></div></div>`;
         }
         document.getElementById('vault-overlay').style.display = 'block';
     }
     function vAdd(c) { const i = document.getElementById(`v-add-${c.replace(/\s/g,'')}`); if(i.value) { state.vault[c].items.push(i.value); vSave(); openVault(); } }
     function vRem(c, i) { state.vault[c].items.splice(i, 1); vSave(); openVault(); }
-    function vSave() { localStorage.setItem('sov_vault_v4', JSON.stringify(state.vault)); }
+    function vSave() { localStorage.setItem('sov_v5_vault', JSON.stringify(state.vault)); }
     function closeVault() { document.getElementById('vault-overlay').style.display = 'none'; refresh(); }
 </script>
 </body>
