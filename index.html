@@ -7,7 +7,7 @@
     <style>
         :root { 
             --accent: #d4af37; --bg: #0a0a0a; --card: #161616;
-            --text: #ffffff; --crimson: #a00000; --success: #1e4d2b; --off: #2a2a2a;
+            --text: #ffffff; --crimson: #a00000; --success: #1e4d2b;
         }
 
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
@@ -18,25 +18,31 @@
         .box-section { background: #1f1f1f; padding: 20px; margin-bottom: 20px; border-radius: 20px; border: 1px solid #333; }
         .label { font-size: 0.75rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 15px; }
         
-        input[type="text"], input[type="number"] { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 12px; background: #000; color: white; font-size: 1.1rem; box-sizing: border-box; margin-bottom: 15px; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 12px; background: #000; color: white; font-size: 1.1rem; box-sizing: border-box; margin-bottom: 10px; }
 
-        .gender-select { display: flex; gap: 10px; margin-bottom: 5px; }
-        .g-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #444; background: #111; color: #666; cursor: pointer; text-align: center; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
+        /* GENDER SELECTOR FIXED */
+        .gender-select { display: flex; gap: 10px; margin-bottom: 15px; }
+        .g-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #444; background: #111; color: #666; cursor: pointer; text-align: center; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; }
         .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
         .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px; }
         
-        /* INVENTORY ARSENAL */
-        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-        .tag { background: #000; padding: 8px 12px; border-radius: 10px; font-size: 0.9rem; cursor: pointer; border: 1px solid #333; color: #999; }
+        /* ARSENAL TAGS & CUSTOM INPUT */
+        .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .tag { background: #000; padding: 8px 12px; border-radius: 10px; font-size: 0.85rem; cursor: pointer; border: 1px solid #333; color: #999; }
         .tag.on { background: var(--crimson); color: white; border-color: var(--crimson); }
+        .add-row { display: flex; gap: 8px; }
+        .add-row input { margin-bottom: 0; flex-grow: 1; padding: 10px; font-size: 0.8rem; }
+        .add-btn { background: var(--accent); border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
         .status-header { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
         .stat-box { background: #000; padding: 10px; border-radius: 10px; text-align: center; font-size: 0.75rem; border: 1px solid #444; flex: 1; }
         
-        .timer-big { font-size: 4rem; text-align: center; font-weight: bold; margin: 10px 0; }
+        .timer-big { font-size: 4rem; text-align: center; font-weight: bold; margin: 10px 0; color: var(--accent); }
         .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .card-btn { background: #2a2a2a; color: white; border: 1px solid #444; padding: 12px; border-radius: 10px; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; font-weight: bold; }
+        .card-btn.yellow:hover { border-color: yellow; color: yellow; }
+        .card-btn.red:hover { border-color: red; color: red; }
 
         .step { display: none; }
         .active { display: block !important; }
@@ -61,6 +67,7 @@
             <div class="gender-select">
                 <div class="g-btn active" id="p1m" onclick="setGender(1,'M')">Male</div>
                 <div class="g-btn" id="p1f" onclick="setGender(1,'F')">Female</div>
+                <div class="g-btn" id="p1n" onclick="setGender(1,'NB')">NB</div>
             </div>
         </div>
         <div class="box-section">
@@ -69,6 +76,7 @@
             <div class="gender-select">
                 <div class="g-btn" id="p2m" onclick="setGender(2,'M')">Male</div>
                 <div class="g-btn active" id="p2f" onclick="setGender(2,'F')">Female</div>
+                <div class="g-btn" id="p2n" onclick="setGender(2,'NB')">NB</div>
             </div>
         </div>
         <div class="box-section">
@@ -89,44 +97,35 @@
             <div class="stat-box" id="disp-remain">REMAINING: 29</div>
         </div>
 
-        <div id="extend-prompt" style="background:var(--accent); color:#000; padding:15px; border-radius:15px; text-align:center; margin-bottom:15px; font-weight:bold; display:none;">
-            PROTOCOL NEARLY COMPLETE.<br>
-            <button onclick="extendGameCustom()" style="margin-top:10px; padding:8px 15px; cursor:pointer; background:#000; color:#fff; border:none; border-radius:10px; font-weight:bold;">EXTEND PROTOCOL</button>
-        </div>
-
-        <div id="game-ui">
+        <div id="active-round">
             <div id="pre-round">
                 <button class="btn" onclick="generateDecree()">Generate Decree</button>
             </div>
-
-            <div id="active-round" style="display:none;">
-                <div class="box-section" id="active-trial-text" style="min-height: 150px; font-weight: bold; text-align: center;"></div>
+            <div id="round-content" style="display:none;">
+                <div class="box-section" id="active-trial-text" style="min-height: 120px; text-align: center; font-weight: bold;"></div>
                 <div class="timer-big" id="clock">10:00</div>
-                
                 <div class="card-grid">
-                    <button class="card-btn" onclick="playCard('YELLOW')">Yellow Card</button>
-                    <button class="card-btn" onclick="playCard('RED')">Red Card</button>
+                    <button class="card-btn yellow" onclick="playCard('YELLOW')">Yellow Card</button>
+                    <button class="card-btn red" onclick="playCard('RED')">Red Card</button>
                 </div>
-                
-                <button class="btn" style="background:#1e4d2b;" onclick="finishRound()">Complete</button>
+                <button class="btn" style="background:var(--success);" onclick="finishRound()">Complete Round</button>
             </div>
+            <button class="btn-safeword" onclick="triggerSafeWord()" style="margin-top:20px;">SAFE WORD</button>
         </div>
-        
-        <button class="btn-safeword" onclick="triggerSafeWord()" style="margin-top:20px;">SAFE WORD</button>
     </div>
 </div>
 
 <script>
     let players = [{n:"", g:"M"}, {n:"", g:"F"}], curR = 1, maxR = 30, timer, timeLeft;
     let vault = {
-        "Restraints": ["Rope", "Cuffs", "Tape", "Spreader Bar"],
-        "Blindfolds": ["Silk Mask", "Hood", "Scarf"],
-        "Sensation": ["Ice", "Feather", "Wand", "Paddle"]
+        "Restraints": ["Rope", "Cuffs"],
+        "Blindfolds": ["Sleep Mask", "Silk Scarf"],
+        "Sensation": ["Ice", "Feather"]
     };
 
     function setGender(p, g) {
         players[p-1].g = g;
-        const group = (p === 1) ? ['p1m','p1f'] : ['p2m','p2f'];
+        const group = (p === 1) ? ['p1m','p1f', 'p1n'] : ['p2m','p2f', 'p2n'];
         group.forEach(id => document.getElementById(id).classList.remove('active'));
         document.getElementById(`p${p}${g.toLowerCase()}`).classList.add('active');
     }
@@ -149,38 +148,45 @@
         for (let cat in vault) {
             let box = document.createElement('div');
             box.className = 'box-section';
-            box.innerHTML = `<span class="label" style="color:#666">${cat}</span>`;
-            let cloud = document.createElement('div');
-            cloud.className = 'tag-cloud';
-            vault[cat].forEach(item => {
-                let tag = document.createElement('div');
-                tag.className = 'tag on';
-                tag.innerText = item;
-                tag.onclick = () => tag.classList.toggle('on');
-                cloud.appendChild(tag);
-            });
-            box.appendChild(cloud);
+            box.innerHTML = `<span class="label" style="color:#666">${cat}</span><div class="tag-cloud" id="cloud-${cat}"></div>
+                             <div class="add-row"><input type="text" id="in-${cat}" placeholder="Custom..."><button class="add-btn" onclick="addCustom('${cat}')">+</button></div>`;
             target.appendChild(box);
+            updateCloud(cat);
+        }
+    }
+
+    function updateCloud(cat) {
+        const cloud = document.getElementById(`cloud-${cat}`);
+        cloud.innerHTML = '';
+        vault[cat].forEach(item => {
+            let tag = document.createElement('div');
+            tag.className = 'tag on';
+            tag.innerText = item;
+            tag.onclick = () => tag.classList.toggle('on');
+            cloud.appendChild(tag);
+        });
+    }
+
+    function addCustom(cat) {
+        const input = document.getElementById(`in-${cat}`);
+        if (input.value.trim()) {
+            vault[cat].push(input.value.trim());
+            input.value = '';
+            updateCloud(cat);
         }
     }
 
     function updateStatus() {
         document.getElementById('disp-round').innerText = `ROUND: ${curR}`;
         document.getElementById('disp-remain').innerText = `REMAINING: ${Math.max(0, maxR - curR)}`;
-        document.getElementById('extend-prompt').style.display = (maxR - curR === 1) ? 'block' : 'none';
     }
 
     function generateDecree() {
-        const trials = [
-            "The Subject must surrender to a sensory trial chosen by the Master.",
-            "The Master commands absolute stillness for the duration of the clock.",
-            "Use one item from the Restraints category to secure the Subject."
-        ];
-        document.getElementById('active-trial-text').innerText = trials[Math.floor(Math.random() * trials.length)];
+        const trials = ["Sensory focus for 10 minutes.", "Absolute stillness command.", "Arsenal choice: Master's whim."];
+        document.getElementById('active-trial-text').innerText = trials[Math.floor(Math.random()*trials.length)];
         document.getElementById('pre-round').style.display = 'none';
-        document.getElementById('active-round').style.display = 'block';
-        timeLeft = 600; 
-        startTimer();
+        document.getElementById('round-content').style.display = 'block';
+        timeLeft = 600; startTimer();
     }
 
     function startTimer() {
@@ -195,7 +201,7 @@
 
     function playCard(type) {
         if(type === 'YELLOW') {
-            alert("YELLOW CARD: Roles Swapped. Task Restarts.");
+            alert("YELLOW CARD: Roles Swapped for this Round.");
             generateDecree(); 
         } else {
             alert("RED CARD: Round Skipped.");
@@ -205,31 +211,15 @@
 
     function finishRound() {
         clearInterval(timer);
-        if(curR >= maxR) {
-            alert("PROTOCOL COMPLETE.");
-            location.reload();
-        } else {
-            curR++;
-            updateStatus();
+        if(curR >= maxR) { alert("PROTOCOL COMPLETE."); location.reload(); }
+        else {
+            curR++; updateStatus();
             document.getElementById('pre-round').style.display = 'block';
-            document.getElementById('active-round').style.display = 'none';
+            document.getElementById('round-content').style.display = 'none';
         }
     }
 
-    function extendGameCustom() {
-        let extra = prompt("How many additional rounds?", "5");
-        let num = parseInt(extra);
-        if(!isNaN(num) && num > 0) {
-            maxR += num;
-            updateStatus();
-            alert(`EXTENDED BY ${num} ROUNDS.`);
-        }
-    }
-
-    function triggerSafeWord() {
-        alert("SAFE WORD DETECTED. SYSTEM RESET.");
-        location.reload();
-    }
+    function triggerSafeWord() { alert("SAFE WORD ACTIVATED."); location.reload(); }
 </script>
 </body>
 </html>
