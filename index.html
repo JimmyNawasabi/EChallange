@@ -3,115 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Arsenal Restored</title>
+    <title>SOVEREIGNTY: Final Protocol</title>
     <style>
         :root { 
             --accent: #d4af37; --bg: #0a0a0a; --card: #161616;
             --text: #ffffff; --crimson: #a00000; --success: #1e4d2b;
             --yellow: #ffd700; --red: #ff4500;
         }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; display: flex; justify-content: center; }
-        .container { max-width: 600px; width: 100%; background: var(--card); padding: 25px; border-radius: 30px; border: 2px solid #333; box-shadow: 0 0 50px #000; }
-        h1 { text-align: center; text-transform: uppercase; letter-spacing: 8px; color: var(--accent); margin: 0; }
-        .box-section { background: #1f1f1f; padding: 15px; margin-bottom: 12px; border-radius: 15px; border: 1px solid #333; }
-        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 10px; letter-spacing: 1px; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #444; border-radius: 8px; background: #000; color: white; box-sizing: border-box; }
-        .btn { background: var(--crimson); color: white; border: none; padding: 18px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 12px; margin-top: 10px; letter-spacing: 2px; }
-        .gender-grid { display: flex; gap: 8px; margin-top: 8px; }
-        .g-btn { flex: 1; padding: 10px; background: #111; border: 1px solid #444; color: #666; cursor: pointer; border-radius: 8px; font-size: 0.7rem; font-weight: bold; }
-        .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
-        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .tog-btn { padding: 12px 8px; font-size: 0.65rem; border-radius: 8px; border: 1px solid #333; background: #111; color: #555; cursor: pointer; text-transform: uppercase; font-weight: bold; line-height: 1.2; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .container { max-width: 600px; width: 100%; background: var(--card); padding: 20px; border-radius: 20px; border: 2px solid #333; box-shadow: 0 0 50px #000; }
+        h1 { text-align: center; text-transform: uppercase; letter-spacing: 5px; color: var(--accent); margin-bottom: 20px; }
+        .box-section { background: #1f1f1f; padding: 15px; margin-bottom: 10px; border-radius: 12px; border: 1px solid #333; }
+        .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; letter-spacing: 1px; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 10px; border: 1px solid #444; border-radius: 6px; background: #000; color: white; box-sizing: border-box; margin-bottom: 10px; }
+        .btn { background: var(--crimson); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 10px; margin-top: 5px; }
+        .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+        .tog-btn { padding: 10px 5px; font-size: 0.65rem; border-radius: 6px; border: 1px solid #333; background: #111; color: #555; cursor: pointer; text-transform: uppercase; font-weight: bold; }
         .tog-btn.active { border-color: var(--accent); color: var(--accent); background: #1a1608; }
-        .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #000; border-radius: 20px; border: 1px solid #222; }
-        .p-block { text-align: center; flex: 1; }
-        .role-tag { font-size: 0.6rem; font-weight: 900; color: #444; letter-spacing: 2px; }
-        .master-glow { color: var(--accent) !important; text-shadow: 0 0 10px var(--accent); }
-        .score-num { font-size: 2rem; font-weight: bold; margin: 5px 0; }
-        .card-dock { display: flex; justify-content: center; gap: 5px; height: 25px; }
-        .mini-card { width: 15px; height: 22px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.1); }
-        .card-y { background: var(--yellow); }
-        .card-r { background: var(--red); }
-        .decree-box { font-size: 1.1rem; line-height: 1.8; color: #eee; border-left: 5px solid var(--accent); padding-left: 20px; margin: 20px 0; background: rgba(255,255,255,0.03); padding-top: 15px; padding-bottom: 15px; }
-        .step { display: none; }
-        .active { display: block !important; }
-        #vault-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; display: none; padding: 30px; box-sizing: border-box; overflow-y: auto; }
-        .vault-item-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-        .tag { background: #333; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; display: flex; align-items: center; gap: 5px; }
-        .tag-del { color: var(--crimson); cursor: pointer; font-weight: bold; }
+        .score-row { display: flex; justify-content: space-between; margin-bottom: 15px; padding: 10px; background: #000; border-radius: 12px; border: 1px solid #222; text-align: center; }
+        .p-block { flex: 1; }
+        .role-tag { font-size: 0.6rem; font-weight: bold; color: #444; letter-spacing: 1px; }
+        .master-glow { color: var(--accent) !important; }
+        .decree-box { font-size: 1rem; line-height: 1.6; color: #eee; border-left: 4px solid var(--accent); padding-left: 15px; margin: 15px 0; background: rgba(255,255,255,0.02); padding-top: 10px; padding-bottom: 10px; }
+        #vault-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: none; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .tag { background: #333; color: white; padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 4px; display: inline-block; margin-bottom: 4px; }
     </style>
 </head>
 <body>
 
 <div id="vault-overlay">
-    <h2 style="color:var(--accent); text-align:center;">INVENTORY MANAGEMENT</h2>
+    <h2 style="color:var(--accent); text-align:center;">VAULT INVENTORY</h2>
     <div id="vault-editor-content"></div>
-    <button class="btn" onclick="closeVault()">Save & Close Vault</button>
+    <button class="btn" onclick="closeVault()">Save Arsenal & Close</button>
 </div>
 
 <div class="container">
     <h1>SOVEREIGNTY</h1>
 
-    <div id="screen-setup" class="step active">
+    <div id="screen-setup" style="display:block;">
         <div class="box-section">
-            <span class="label">Identity 1 (Master)</span>
-            <input type="text" id="p0-name-in" placeholder="Enter Name...">
-            <div class="gender-grid">
-                <button class="g-btn active" onclick="setG(0,'M',this)">Male</button>
-                <button class="g-btn" onclick="setG(0,'F',this)">Female</button>
-                <button class="g-btn" onclick="setG(0,'NB',this)">NB</button>
-            </div>
+            <span class="label">Initial Master</span>
+            <input type="text" id="p0-name-in" placeholder="Name...">
+            <span class="label">Initial Slave</span>
+            <input type="text" id="p1-name-in" placeholder="Name...">
+            <span class="label">Rounds (Default 30)</span>
+            <input type="number" id="rounds-in" value="30">
         </div>
-        <div class="box-section">
-            <span class="label">Identity 2 (Slave)</span>
-            <input type="text" id="p1-name-in" placeholder="Enter Name...">
-            <div class="gender-grid">
-                <button class="g-btn" onclick="setG(1,'M',this)">Male</button>
-                <button class="g-btn active" onclick="setG(1,'F',this)">Female</button>
-                <button class="g-btn" onclick="setG(1,'NB',this)">NB</button>
-            </div>
-        </div>
-        <div class="box-section">
-            <span class="label">Session Length (Rounds)</span>
-            <input type="number" id="rounds-in" value="30" min="1">
-        </div>
-        <button class="btn" onclick="startSession()">Initialize Protocol</button>
+        <button class="btn" onclick="startSession()">Start Protocol</button>
     </div>
 
-    <div id="screen-game" class="step">
-        <div id="round-counter" style="text-align:center; font-size:0.7rem; color:#666; margin-bottom:10px; text-transform:uppercase;">Round 1 of 30</div>
+    <div id="screen-game" style="display:none;">
+        <div id="round-counter" style="text-align:center; font-size:0.7rem; color:#666; margin-bottom:5px;">ROUND 1 / 30</div>
         
         <div class="score-row">
-            <div class="p-block"><div id="p0-role" class="role-tag">MASTER</div><div id="p0-name-ui" style="font-weight:bold;">-</div><div id="p0-score" class="score-num">0</div><div id="p0-cards" class="card-dock"></div></div>
-            <div class="p-block"><div id="p1-role" class="role-tag">SLAVE</div><div id="p1-name-ui" style="font-weight:bold;">-</div><div id="p1-score" class="score-num">0</div><div id="p1-cards" class="card-dock"></div></div>
+            <div class="p-block"><div id="p0-role" class="role-tag">MASTER</div><div id="p0-name-ui"></div><div id="p0-score" style="font-size:1.5rem;">0</div></div>
+            <div class="p-block"><div id="p1-role" class="role-tag">SLAVE</div><div id="p1-name-ui"></div><div id="p1-score" style="font-size:1.5rem;">0</div></div>
         </div>
 
         <div id="master-controls">
             <div class="box-section">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <span class="label">Active Inventory (Toggles)</span>
-                    <button onclick="openVault()" style="background:none; border:1px solid var(--accent); color:var(--accent); font-size:0.55rem; padding:3px 6px; cursor:pointer; font-weight:bold; border-radius:4px;">Edit Items</button>
+                <div style="display:flex; justify-content:space-between;">
+                    <span class="label">Active Arsenal Sets</span>
+                    <span onclick="openVault()" style="color:var(--accent); font-size:0.6rem; cursor:pointer;">[EDIT VAULT]</span>
                 </div>
                 <div class="toggle-grid" id="arsenal-mount"></div>
                 
                 <span class="label">Active Protocols</span>
                 <div class="toggle-grid" id="protocol-mount"></div>
             </div>
-            <button class="btn" onclick="generateDecree()">Generate Decree</button>
+            <button class="btn" onclick="generate()">Command Decree</button>
         </div>
 
-        <div id="active-round-view" style="display:none;">
+        <div id="active-view" style="display:none;">
             <div class="box-section">
                 <div id="decree-display" class="decree-box"></div>
-                <div style="display:flex; gap:10px;">
-                    <button class="tog-btn" style="flex:1.2; border-color:var(--crimson); color:var(--crimson);" onclick="vetoCurrent()">Veto & Purge</button>
-                    <button id="y-btn" class="tog-btn" style="flex:1; background:var(--yellow); color:black;" onclick="triggerCard('yellow')">Yellow</button>
-                    <button id="r-btn" class="tog-btn" style="flex:1; background:var(--red); color:white;" onclick="triggerCard('red')">Red</button>
-                </div>
             </div>
             <div style="display:flex; gap:10px;">
-                <button class="btn" style="background:#333; flex:1;" onclick="roundResolve(false)">FAIL</button>
-                <button class="btn" style="background:var(--success); flex:1;" onclick="roundResolve(true)">SUCCESS</button>
+                <button class="btn" style="background:#333;" onclick="resolve(false)">FAIL</button>
+                <button class="btn" style="background:var(--success);" onclick="resolve(true)">SUCCESS</button>
             </div>
         </div>
     </div>
@@ -119,117 +88,87 @@
 
 <script>
     const state = {
-        currentRound: 1,
-        totalRounds: 30,
-        players: [{ n: "", g: "M", role: "Master", score: 0, cards: ['yellow'] }, { n: "", g: "F", role: "Slave", score: 0, cards: ['red'] }],
-        vault: JSON.parse(localStorage.getItem('sov_v11_vault')) || {
-            "Restraints": { items: ["Rope", "Handcuffs", "Ankle Cuffs"], active: true },
-            "Sensory": { items: ["Blindfold", "Hood"], active: true },
-            "Discipline": { items: ["Flogger", "Cane", "Paddle"], active: true },
-            "Oral": { items: ["Ball Gag", "Tape"], active: true }
+        curr: 1, total: 30,
+        players: [{n:"", role:"Master", score:0, g:"M"}, {n:"", role:"Slave", score:0, g:"F"}],
+        vault: JSON.parse(localStorage.getItem('sov_vault_v12')) || {
+            "Restraints": { active: true, items: ["Rope", "Cuffs"] },
+            "Sensory": { active: true, items: ["Blindfold", "Hood"] },
+            "Discipline": { active: true, items: ["Flogger", "Cane"] },
+            "Oral": { active: true, items: ["Ball Gag", "Tape"] }
         },
         protocols: {
-            "The Solitary Bind": { label: "Self Bondage", active: true, prompts: ["{S} is commanded to take the {T} and bind {SP} own wrists behind {SP} back, then secure the line to {SP} ankles in a tight, straining arch."] },
-            "The Wicked Gamble": { label: "Dare", active: true, prompts: ["{M} issues a dare: {S} must perform a risk-laden task with the {T} while remaining silent. Failure grants {M} a card."] },
-            "The Veiled Confession": { label: "Truth", active: true, prompts: ["Under the weight of the {T}, {S} must confess a truth. Any deception results in {M} tightening the protocol."] },
-            "The Silk Labyrinth": { label: "Shibari", active: true, prompts: ["{M} must use the {T} to create a restrictive Takate Kote on {S}, focusing on tension and chest exposure."] },
-            "The Threshold of Agony": { label: "Edging/Denial", active: true, prompts: ["{M} uses the {T} to bring {S} to the edge three times. Each time, release is forbidden and absolute stillness is required."] },
-            "The Flesh Endurance": { label: "Physical Challenge", active: true, prompts: ["{S} must hold a rigid stress position while the {T} is applied or balanced. Trembling results in a reset of the timer."] },
-            "The Great Unshackling": { label: "Escape", active: true, prompts: ["{M} binds {S} with the {T}. {S} has 3 minutes to struggle free without breaking the tool. Failure means total submission."] },
-            "The Velvet Command": { label: "Soft & Sexy", active: true, prompts: ["{M} will slowly trace the {T} along {S}'s most sensitive lines. {S} must describe the sensation with submissive reverence."] }
+            "The Solitary Bind": { label: "Self Bondage", active: true, prompts: ["{S} must use the {T} to secure {SP} own wrists behind {SP} back, then connect to {SP} ankles."] },
+            "The Wicked Gamble": { label: "Dare", active: true, prompts: ["{M} issues a high-stakes dare: {S} must use the {T} to prove absolute obedience."] },
+            "The Veiled Confession": { label: "Truth", active: true, prompts: ["Bound by the {T}, {S} must confess a truth {M} demands to hear."] },
+            "The Silk Labyrinth": { label: "Shibari", active: true, prompts: ["{M} performs a complex harness on {S} using the {T}, focusing on tension."] },
+            "The Threshold of Agony": { label: "Edging/Denial", active: true, prompts: ["{M} uses the {T} to bring {S} to the peak 3 times, then denies release."] },
+            "The Flesh Endurance": { label: "Physical Challenge", active: true, prompts: ["{S} must hold a rigid stress position while {M} applies the {T}."] },
+            "The Great Unshackling": { label: "Escape", active: true, prompts: ["{M} binds {S} with the {T}. {S} has 3 minutes to struggle free."] },
+            "The Velvet Command": { label: "Soft & Sexy", active: true, prompts: ["{M} traces the {T} along {S}'s body. {S} must describe the sensation."] }
         }
     };
 
-    function setG(i, v, b) { state.players[i].g = v; Array.from(b.parentElement.children).forEach(x => x.classList.remove('active')); b.classList.add('active'); }
-    
     function startSession() {
-        state.players[0].n = document.getElementById('p0-name-in').value || "Dom";
-        state.players[1].n = document.getElementById('p1-name-in').value || "Sub";
-        state.totalRounds = parseInt(document.getElementById('rounds-in').value) || 30;
-        document.getElementById('screen-setup').classList.remove('active');
-        document.getElementById('screen-game').classList.add('active');
-        updateUI();
+        state.players[0].n = document.getElementById('p0-name-in').value || "Master";
+        state.players[1].n = document.getElementById('p1-name-in').value || "Slave";
+        state.total = document.getElementById('rounds-in').value || 30;
+        document.getElementById('screen-setup').style.display = 'none';
+        document.getElementById('screen-game').style.display = 'block';
+        render();
     }
 
-    function updateUI() {
-        document.getElementById('round-counter').innerText = `Round ${state.currentRound} of ${state.totalRounds}`;
+    function render() {
+        document.getElementById('round-counter').innerText = `ROUND ${state.curr} / ${state.total}`;
         state.players.forEach((p, i) => {
             document.getElementById(`p${i}-name-ui`).innerText = p.n;
             document.getElementById(`p${i}-score`).innerText = p.score;
-            const rt = document.getElementById(`p${i}-role`);
-            rt.innerText = p.role; rt.className = 'role-tag' + (p.role === 'Master' ? ' master-glow' : '');
-            document.getElementById(`p${i}-cards`).innerHTML = p.cards.map(c => `<div class="mini-card card-${c[0]}"></div>`).join('');
+            document.getElementById(`p${i}-role`).className = 'role-tag' + (p.role === 'Master' ? ' master-glow' : '');
+            document.getElementById(`p${i}-role`).innerText = p.role;
         });
-        
         const vM = document.getElementById('arsenal-mount'); vM.innerHTML = '';
-        for (let k in state.vault) vM.innerHTML += `<button class="tog-btn ${state.vault[k].active?'active':''}" onclick="state.vault['${k}'].active=!state.vault['${k}'].active; updateUI()">${k}</button>`;
-        
+        for(let k in state.vault) vM.innerHTML += `<button class="tog-btn ${state.vault[k].active?'active':''}" onclick="state.vault['${k}'].active=!state.vault['${k}'].active; render()">${k}</button>`;
         const pM = document.getElementById('protocol-mount'); pM.innerHTML = '';
-        for (let k in state.protocols) pM.innerHTML += `<button class="tog-btn ${state.protocols[k].active?'active':''}" onclick="state.protocols['${k}'].active=!state.protocols['${k}'].active; updateUI()">${k}<br><span style="opacity:0.5; font-size:0.5rem;">[${state.protocols[k].label}]</span></button>`;
-        
-        const mIdx = state.players.findIndex(p => p.role === 'Master');
-        document.getElementById('y-btn').style.opacity = state.players[mIdx].cards.includes('yellow') ? "1" : "0.2";
-        document.getElementById('r-btn').style.opacity = state.players[mIdx].cards.includes('red') ? "1" : "0.2";
+        for(let k in state.protocols) pM.innerHTML += `<button class="tog-btn ${state.protocols[k].active?'active':''}" onclick="state.protocols['${k}'].active=!state.protocols['${k}'].active; render()">${k}</button>`;
     }
 
     function openVault() {
-        const m = document.getElementById('vault-editor-content'); m.innerHTML = '';
+        const c = document.getElementById('vault-editor-content'); c.innerHTML = '';
         for(let cat in state.vault) {
-            m.innerHTML += `<div class="box-section"><span class="label">${cat}</span><div class="vault-item-row">${state.vault[cat].items.map((t,i) => `<div class="tag">${t} <span class="tag-del" onclick="vRem('${cat}',${i})">✕</span></div>`).join('')}</div><div style="display:flex; gap:5px;"><input type="text" id="add-${cat}" placeholder="New Item..."><button class="tog-btn active" style="padding:5px 15px;" onclick="vAdd('${cat}')">Add</button></div></div>`;
+            c.innerHTML += `<div class="box-section"><span class="label">${cat}</span><div>${state.vault[cat].items.map((t,i)=>`<span class="tag">${t} <span onclick="vRem('${cat}',${i})" style="color:red">✕</span></span>`).join('')}</div><input type="text" id="in-${cat}"><button onclick="vAdd('${cat}')">Add</button></div>`;
         }
         document.getElementById('vault-overlay').style.display = 'block';
     }
-    function vAdd(c) { const v = document.getElementById(`add-${c}`).value; if(v){ state.vault[c].items.push(v); openVault(); } }
-    function vRem(c, i) { state.vault[c].items.splice(i, 1); openVault(); }
-    function closeVault() { localStorage.setItem('sov_v11_vault', JSON.stringify(state.vault)); document.getElementById('vault-overlay').style.display = 'none'; updateUI(); }
+    function vAdd(c){ const v=document.getElementById('in-'+c).value; if(v){state.vault[c].items.push(v); openVault();}}
+    function vRem(c,i){ state.vault[c].items.splice(i,1); openVault();}
+    function closeVault(){ localStorage.setItem('sov_vault_v12', JSON.stringify(state.vault)); document.getElementById('vault-overlay').style.display='none'; render();}
 
-    function generateDecree() {
-        const actP = Object.keys(state.protocols).filter(k => state.protocols[k].active);
-        const actV = Object.keys(state.vault).filter(k => state.vault[k].active && state.vault[k].items.length > 0);
-        if(!actP.length || !actV.length) return alert("Select at least one Protocol and one Arsenal Set.");
-        
-        state.currentCat = actP[Math.floor(Math.random() * actP.length)];
-        const pool = state.protocols[state.currentCat].prompts;
-        state.currentIdx = Math.floor(Math.random() * pool.length);
-        const toolSet = actV[Math.floor(Math.random() * actV.length)];
-        const tool = state.vault[toolSet].items[Math.floor(Math.random() * state.vault[toolSet].items.length)];
-
-        const mIdx = state.players.findIndex(p => p.role === 'Master');
-        const sIdx = mIdx === 0 ? 1 : 0;
+    function generate() {
+        const pks = Object.keys(state.protocols).filter(k=>state.protocols[k].active);
+        const vks = Object.keys(state.vault).filter(k=>state.vault[k].active && state.vault[k].items.length);
+        if(!pks.length || !vks.length) return alert("Select a Protocol and Arsenal set.");
+        const pK = pks[Math.floor(Math.random()*pks.length)];
+        const tool = state.vault[vks[Math.floor(Math.random()*vks.length)]].items[0];
+        const mIdx = state.players.findIndex(p=>p.role==='Master');
+        const sIdx = mIdx===0?1:0;
         const sub = state.players[sIdx];
-        const gM = { M: { p: 'he', o: 'him', s: 'his' }, F: { p: 'she', o: 'her', s: 'her' }, NB: { p: 'they', o: 'them', s: 'their' } }[sub.g];
-        
-        const txt = pool[state.currentIdx].replace(/{M}/g, state.players[mIdx].n).replace(/{S}/g, sub.n).replace(/{SP}/g, gM.s).replace(/{T}/g, `<strong>${tool}</strong>`);
-        document.getElementById('decree-display').innerHTML = `<small style="color:var(--accent)">PROTOCOL: ${state.currentCat}</small><br><br>${txt}`;
-        document.getElementById('master-controls').style.display = 'none';
-        document.getElementById('active-round-view').style.display = 'block';
+        const pron = sub.g==='M'?{s:'his'}:{s:'her'};
+        const txt = state.protocols[pK].prompts[0].replace(/{M}/g, state.players[mIdx].n).replace(/{S}/g, sub.n).replace(/{SP}/g, pron.s).replace(/{T}/g, `<strong>${tool}</strong>`);
+        document.getElementById('decree-display').innerHTML = `<strong>${pK}</strong><br><br>${txt}`;
+        document.getElementById('master-controls').style.display='none';
+        document.getElementById('active-view').style.display='block';
     }
 
-    function vetoCurrent() {
-        state.protocols[state.currentCat].prompts.splice(state.currentIdx, 1);
-        if(state.protocols[state.currentCat].prompts.length === 0) state.protocols[state.currentCat].prompts.push("Reset library to continue.");
-        generateDecree();
-    }
-
-    function triggerCard(c) {
-        const mIdx = state.players.findIndex(p => p.role === 'Master');
-        const sIdx = mIdx === 0 ? 1 : 0;
-        const ci = state.players[mIdx].cards.indexOf(c);
-        if(ci > -1) { state.players[mIdx].cards.splice(ci, 1); state.players[sIdx].cards.push(c); updateUI(); }
-    }
-
-    function roundResolve(success) {
-        const mIdx = state.players.findIndex(p => p.role === 'Master');
-        const sIdx = mIdx === 0 ? 1 : 0;
-        if(success) {
+    function resolve(s) {
+        const mIdx = state.players.findIndex(p=>p.role==='Master');
+        const sIdx = mIdx===0?1:0;
+        if(s) {
             state.players[sIdx].score++;
             const p0r = state.players[0].role;
-            state.players[0].role = (p0r === 'Master' ? 'Slave' : 'Master');
-            state.players[1].role = (p0r === 'Master' ? 'Master' : 'Slave');
+            state.players[0].role = p0r==='Master'?'Slave':'Master';
+            state.players[1].role = p0r==='Master'?'Master':'Slave';
         } else state.players[mIdx].score++;
-        
-        if(state.currentRound >= state.totalRounds) { alert("Protocol Complete."); location.reload(); }
-        else { state.currentRound++; document.getElementById('master-controls').style.display = 'block'; document.getElementById('active-round-view').style.display = 'none'; updateUI(); }
+        if(state.curr >= state.total) { alert("Complete."); location.reload(); }
+        else { state.curr++; document.getElementById('master-controls').style.display='block'; document.getElementById('active-view').style.display='none'; render(); }
     }
 </script>
 </body>
