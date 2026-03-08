@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOVEREIGNTY: Intensity Protocol</title>
+    <title>SOVEREIGNTY: Judicial Engine</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
-            --text: #FFF; --crimson: #d00000; --success: #008000; --gold: #ffd700;
+            --text: #FFF; --crimson: #d00000; --success: #008000; --gold: #ffd700; --safety: #ff4500;
         }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
         .container { max-width: 800px; width: 100%; background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); box-shadow: 0 0 40px #000; }
@@ -28,13 +28,11 @@
         .chip { padding: 5px 12px; border: 1px solid #333; background: #0a0a0a; color: #555; cursor: pointer; border-radius: 4px; font-size: 0.7rem; }
         .chip.active { border-color: var(--accent); color: white; background: #001a35; }
         
-        /* Add Item Input Style */
         .add-item-row { display: flex; gap: 5px; margin-top: 8px; }
         .add-item-row input { margin: 0; padding: 8px; font-size: 0.75rem; flex: 1; }
         .add-btn { background: #222; color: #fff; border: 1px solid #444; width: 40px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .add-btn:hover { background: var(--accent); border-color: #fff; }
 
-        .p-box { flex: 1; padding: 15px; background: #080808; border: 1px solid #222; border-radius: 12px; text-align: center; }
+        .p-box { flex: 1; padding: 15px; background: #080808; border: 1px solid #222; border-radius: 12px; text-align: center; position: relative; }
         .p-box.active-dom { border-color: var(--accent); box-shadow: 0 0 20px rgba(0,86,179,0.2); }
         .card-inv { display: flex; justify-content: center; gap: 10px; margin-top: 10px; height: 45px; }
         .card { width: 30px; height: 45px; border-radius: 3px; border: 1px solid #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
@@ -42,8 +40,10 @@
         .card-r { background: var(--crimson); color: white; }
 
         .btn-main { background: var(--accent); color: white; padding: 18px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; margin-top: 10px; }
-        .btn-commence { background: var(--gold); color: black; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; margin-bottom: 15px; cursor: pointer; display: block; text-transform: uppercase;}
-        
+        .btn-commence { background: var(--gold); color: black; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; margin-bottom: 10px; cursor: pointer; display: block; text-transform: uppercase;}
+        .btn-veto { background: #222; color: var(--gold); border: 1px solid var(--gold); padding: 8px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 15px; font-weight: bold;}
+        .btn-safeword { background: var(--safety); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 15px; }
+
         #decree-panel { display: none; margin-top: 20px; text-align: center; }
         #decree-text { background: #000; padding: 25px; border-radius: 10px; border: 1px solid #222; font-size: 1.1rem; line-height: 1.6; margin-bottom: 20px; }
         #timer { font-size: 3.5rem; color: var(--crimson); font-weight: 100; font-family: monospace; letter-spacing: 5px; margin-bottom: 10px;}
@@ -74,21 +74,11 @@
                 </div>
             </div>
         </div>
-
         <div class="box-section" style="background:#080808; padding:15px; border-radius:10px; border:1px solid #222;">
-            <span class="label">Session Protocol: Rounds</span>
-            <select id="total-rounds">
-                <option value="4">4 Rounds</option>
-                <option value="10" selected>10 Rounds</option>
-                <option value="20">20 Rounds</option>
-            </select>
+            <span class="label">Rounds</span>
+            <select id="total-rounds"><option value="4">4 Rounds</option><option value="10" selected>10 Rounds</option><option value="20">20 Rounds</option></select>
         </div>
-
-        <div class="arsenal-box">
-            <span class="label">Arsenal / Hardware</span>
-            <div id="arsenal-list"></div>
-        </div>
-
+        <div class="arsenal-box"><span class="label">Hardware</span><div id="arsenal-list"></div></div>
         <button class="btn-main" onclick="startSession()">Initialize Protocol</button>
     </div>
 
@@ -115,13 +105,19 @@
             <span id="intensity-display" class="intensity-tag"></span>
             <div id="timer">00:00</div>
             
-            <button id="commence-btn" class="btn-commence" onclick="startCountdown()">Commence Phase</button>
+            <div id="pre-commence-controls">
+                <button id="commence-btn" class="btn-commence" onclick="startCountdown()">Commence Phase</button>
+                <button class="btn-veto" onclick="triggerVeto()">Master's Veto (Discard & New Decree)</button>
+            </div>
             
             <div id="decree-text"></div>
             
-            <div id="completion-controls" style="display:none; gap:10px;">
-                <button class="btn-main" style="background:#1a1a1a; flex:1;" onclick="endRound(false)">Fail</button>
-                <button class="btn-main" style="background:var(--success); flex:1;" onclick="endRound(true)">Success</button>
+            <div id="completion-controls" style="display:none; flex-direction:column; gap:10px;">
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-main" style="background:#1a1a1a; flex:1;" onclick="endRound(false)">Fail</button>
+                    <button class="btn-main" style="background:var(--success); flex:1;" onclick="endRound(true)">Success</button>
+                </div>
+                <button class="btn-safeword" onclick="triggerSafeword()">SAFEWORD (End Task / -5 Points)</button>
             </div>
         </div>
     </div>
@@ -129,7 +125,7 @@
     <div id="win-screen" style="display:none; text-align:center;">
         <h1 style="color:var(--gold); border:none;">SESSION COMPLETE</h1>
         <p id="winner-text" style="font-size:1.5rem;"></p>
-        <button class="btn-main" onclick="location.reload()">New Session</button>
+        <button class="btn-main" onclick="location.reload()">New Protocol</button>
     </div>
 </div>
 
@@ -145,8 +141,8 @@ const HARDWARE = {
 let game = {
     currRound: 1, totalRounds: 10,
     p: [{id:0, name:"", role:"Master", gender:"M", score:0, cards:[]}, {id:1, name:"", role:"Slave", gender:"F", score:0, cards:[]}],
-    h: JSON.parse(localStorage.getItem('sov_items_v6')) || HARDWARE,
-    activeH: {}, timer: null, activeTime: 0,
+    h: JSON.parse(localStorage.getItem('sov_v8_items')) || HARDWARE,
+    activeH: {}, timer: null, activeTime: 0, currentDecreeIdx: -1,
     db: [
         {cat: "Quietude", txt: "{sub} is silenced with {item}. Silence is absolute."},
         {cat: "Stillness", txt: "{sub} is secured in {item}. No movement permitted."},
@@ -158,75 +154,33 @@ let game = {
 
 function init() {
     const cont = document.getElementById('arsenal-list');
-    cont.innerHTML = ''; // Clear for re-renders
+    cont.innerHTML = '';
     Object.keys(game.h).forEach(cat => {
-        // Populate active hardware if not already set
-        if (!game.activeH[cat]) game.activeH[cat] = [...game.h[cat].items];
-        
+        game.activeH[cat] = [...game.h[cat].items];
         let div = document.createElement('div');
-        div.className = "box-section";
         div.style.marginBottom = "15px";
-        div.innerHTML = `
-            <span class="label" style="color:#555;">${cat}</span>
-            <div class="item-grid" id="grid-${cat}"></div>
-            <div class="add-item-row">
-                <input type="text" id="add-input-${cat}" placeholder="Add new ${cat} item...">
-                <button class="add-btn" onclick="addNewItem('${cat}')">+</button>
-            </div>
-        `;
+        div.innerHTML = `<span class="label" style="color:#555;">${cat}</span><div class="item-grid" id="grid-${cat}"></div>
+            <div class="add-item-row"><input type="text" id="add-${cat}" placeholder="Add..."><button class="add-btn" onclick="addItem('${cat}')">+</button></div>`;
         cont.appendChild(div);
-        render(cat);
+        renderItems(cat);
     });
 }
-
-function render(cat) { 
-    document.getElementById(`grid-${cat}`).innerHTML = game.h[cat].items.map(i => `
-        <div class="chip ${game.activeH[cat].includes(i)?'active':''}" onclick="tog('${cat}','${i}')">${i}</div>
-    `).join(''); 
-}
-
-function tog(cat, i) { 
-    let a = game.activeH[cat]; 
-    a.includes(i) ? a.splice(a.indexOf(i),1) : a.push(i); 
-    render(cat); 
-}
-
-function addNewItem(cat) {
-    const input = document.getElementById(`add-input-${cat}`);
-    const val = input.value.trim();
-    if (val) {
-        // Add to permanent storage
-        game.h[cat].items.push(val);
-        // Add to current active selection
-        game.activeH[cat].push(val);
-        // Update LocalStorage
-        localStorage.setItem('sov_items_v6', JSON.stringify(game.h));
-        // Clear input and re-render
-        input.value = '';
-        render(cat);
-    }
-}
-
-function setGender(p, g) { 
-    game.p[p].gender = g; 
-    document.getElementById(`p${p}m`).classList.toggle('active', g === 'M'); 
-    document.getElementById(`p${p}f`).classList.toggle('active', g === 'F'); 
-}
+function renderItems(cat) { document.getElementById(`grid-${cat}`).innerHTML = game.h[cat].items.map(i => `<div class="chip ${game.activeH[cat].includes(i)?'active':''}" onclick="tog('${cat}','${i}')">${i}</div>`).join(''); }
+function tog(cat, i) { let a = game.activeH[cat]; a.includes(i) ? a.splice(a.indexOf(i),1) : a.push(i); renderItems(cat); }
+function addItem(cat) { let v = document.getElementById(`add-${cat}`).value; if(v){ game.h[cat].items.push(v); game.activeH[cat].push(v); localStorage.setItem('sov_v8_items', JSON.stringify(game.h)); renderItems(cat); } }
+function setGender(p, g) { game.p[p].gender = g; document.getElementById(`p${p}m`).classList.toggle('active', g === 'M'); document.getElementById(`p${p}f`).classList.toggle('active', g === 'F'); }
 
 function startSession() {
-    game.p[0].name = document.getElementById('name0').value;
-    game.p[1].name = document.getElementById('name1').value;
+    game.p[0].name = document.getElementById('name0').value; game.p[1].name = document.getElementById('name1').value;
     game.totalRounds = parseInt(document.getElementById('total-rounds').value);
     if(Math.random() > 0.5) { game.p[0].cards = ['Y']; game.p[1].cards = ['R']; } else { game.p[0].cards = ['R']; game.p[1].cards = ['Y']; }
-    document.getElementById('setup-screen').style.display = 'none';
-    document.getElementById('play-screen').style.display = 'block';
+    document.getElementById('setup-screen').style.display = 'none'; document.getElementById('play-screen').style.display = 'block';
     refresh();
 }
 
 function refresh() {
     if(game.currRound > game.totalRounds) {
-        document.getElementById('play-screen').style.display = 'none';
-        document.getElementById('win-screen').style.display = 'block';
+        document.getElementById('play-screen').style.display = 'none'; document.getElementById('win-screen').style.display = 'block';
         let winner = game.p.sort((a,b) => b.score - a.score)[0];
         document.getElementById('winner-text').innerText = `${winner.name} IS SOVEREIGN`;
         return;
@@ -241,59 +195,64 @@ function refresh() {
     });
 }
 
+function issueDecree() {
+    const dom = game.p.find(x => x.role === 'Master');
+    const sub = game.p.find(x => x.role === 'Slave');
+    let validCats = Object.keys(game.activeH).filter(cat => game.activeH[cat].length > 0);
+    let chosenCat = validCats[Math.floor(Math.random() * validCats.length)];
+    game.currentDecreeIdx = game.db.findIndex(d => d.cat === chosenCat);
+    let decree = game.db[game.currentDecreeIdx];
+    let item = game.activeH[chosenCat][Math.floor(Math.random()*game.activeH[chosenCat].length)];
+    game.activeTime = game.h[chosenCat].time;
+    document.getElementById('intensity-display').innerText = `${chosenCat.toUpperCase()} PROTOCOL: ${Math.floor(game.activeTime/60)} MIN`;
+    document.getElementById('timer').innerText = formatTime(game.activeTime);
+    document.getElementById('decree-text').innerHTML = decree.txt.replace(/{item}/g, `<strong>${item}</strong>`).replace(/{dom}/g, dom.name).replace(/{sub}/g, sub.name);
+    document.getElementById('command-center').style.display = 'none';
+    document.getElementById('decree-panel').style.display = 'block';
+    document.getElementById('pre-commence-controls').style.display = 'block';
+    document.getElementById('completion-controls').style.display = 'none';
+}
+
+function triggerVeto() {
+    if(game.db.length > 1) {
+        game.db.splice(game.currentDecreeIdx, 1); // Remove from database for this session
+        alert("Vetoed. Decree discarded from session database.");
+        issueDecree();
+    } else {
+        alert("Cannot veto: only one decree type remains.");
+    }
+}
+
+function startCountdown() {
+    document.getElementById('pre-commence-controls').style.display = 'none';
+    document.getElementById('completion-controls').style.display = 'flex';
+    let t = game.activeTime;
+    clearInterval(game.timer);
+    game.timer = setInterval(() => {
+        t--; document.getElementById('timer').innerText = formatTime(t);
+        if(t <= 0) { clearInterval(game.timer); alert("TIME EXPIRED."); }
+    }, 1000);
+}
+
+function triggerSafeword() {
+    const sub = game.p.find(x => x.role === 'Slave');
+    sub.score = Math.max(0, sub.score - 5);
+    clearInterval(game.timer);
+    alert(`SAFEWORD TRIGGERED. ${sub.name} loses 5 points. Role remains unchanged.`);
+    document.getElementById('command-center').style.display = 'block';
+    document.getElementById('decree-panel').style.display = 'none';
+    refresh();
+}
+
 function triggerCard(pIdx, type) {
     const other = pIdx === 0 ? 1 : 0;
     if(type === 'Y') { alert("YELLOW CARD: Role Swap."); game.p[other].cards.push('Y'); game.p[pIdx].cards = game.p[pIdx].cards.filter(c => c !== 'Y'); swap(); }
     else { alert("RED CARD: Forfeit Round."); game.p[other].cards.push('R'); game.p[pIdx].cards = game.p[pIdx].cards.filter(c => c !== 'R'); game.currRound++; swap(); }
 }
 
-function issueDecree() {
-    const dom = game.p.find(x => x.role === 'Master');
-    const sub = game.p.find(x => x.role === 'Slave');
-    
-    // Select categories that actually have active items
-    let validCats = Object.keys(game.activeH).filter(cat => game.activeH[cat].length > 0);
-    let chosenCat = validCats[Math.floor(Math.random() * validCats.length)];
-    
-    // Find the matching template
-    let decree = game.db.find(d => d.cat === chosenCat);
-    let items = game.activeH[chosenCat];
-    let item = items[Math.floor(Math.random()*items.length)];
-    
-    game.activeTime = game.h[chosenCat].time;
-    
-    document.getElementById('intensity-display').innerText = `${chosenCat.toUpperCase()} PROTOCOL: ${Math.floor(game.activeTime/60)} MIN`;
-    document.getElementById('timer').innerText = formatTime(game.activeTime);
-    document.getElementById('decree-text').innerHTML = decree.txt.replace(/{item}/g, `<strong>${item}</strong>`).replace(/{dom}/g, dom.name).replace(/{sub}/g, sub.name);
-    
-    document.getElementById('command-center').style.display = 'none';
-    document.getElementById('decree-panel').style.display = 'block';
-    document.getElementById('commence-btn').style.display = 'block';
-    document.getElementById('completion-controls').style.display = 'none';
-}
-
-function startCountdown() {
-    document.getElementById('commence-btn').style.display = 'none';
-    document.getElementById('completion-controls').style.display = 'flex';
-    
-    let t = game.activeTime;
-    clearInterval(game.timer);
-    game.timer = setInterval(() => {
-        t--;
-        document.getElementById('timer').innerText = formatTime(t);
-        if(t <= 0) {
-            clearInterval(game.timer);
-            alert("TIME EXPIRED.");
-        }
-    }, 1000);
-}
-
-function formatTime(s) {
-    return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
-}
-
 function endRound(win) { if(win) game.p.find(x => x.role === 'Slave').score++; game.currRound++; swap(); }
 function swap() { clearInterval(game.timer); game.p.forEach(x => x.role = x.role === 'Master' ? 'Slave' : 'Master'); document.getElementById('command-center').style.display = 'block'; document.getElementById('decree-panel').style.display = 'none'; refresh(); }
+function formatTime(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
 
 init();
 </script>
