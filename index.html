@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SOVEREIGNTY: Protocol Restored</title>
+    <title>SOVEREIGNTY: Complete Arsenal</title>
     <style>
         :root { 
             --accent: #0056b3; --bg: #000; --card: #121212; 
@@ -12,29 +12,31 @@
         .container { max-width: 1000px; width: 100%; background: var(--card); padding: 25px; border-radius: 20px; border: 2px solid var(--accent); box-shadow: 0 0 50px #000; }
         h1 { text-align: center; text-transform: uppercase; letter-spacing: 12px; font-size: 2rem; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin: 10px 0; }
         
-        /* PLAYER BOXES */
         .setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         .p-setup { background: #080808; padding: 15px; border-radius: 10px; border: 1px solid #222; position: relative; }
         .label { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--accent); display: block; margin-bottom: 8px; letter-spacing: 2px; }
         
-        /* SAFETY CARDS */
+        /* INVENTORY SCROLL */
+        #inventory-list { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .inv-section { background: #050505; padding: 10px; border: 1px solid #222; border-radius: 8px; }
+
         .safety-bar { display: flex; gap: 10px; margin-top: 15px; }
-        .card { flex: 1; padding: 10px; border-radius: 5px; cursor: pointer; text-align: center; font-weight: bold; text-transform: uppercase; font-size: 0.7rem; border: none; }
+        .card { flex: 1; padding: 12px; border-radius: 5px; cursor: pointer; text-align: center; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; border: none; }
         .card-yellow { background: var(--warning); color: #000; }
         .card-red { background: var(--crimson); color: #fff; }
 
-        /* THEME TOGGLES */
         .theme-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; background: #0a0a0a; padding: 15px; border-radius: 10px; border: 1px solid #222; }
-        .theme-btn { padding: 8px; background: #111; border: 1px solid #333; border-radius: 4px; font-size: 0.6rem; text-align: center; cursor: pointer; color: #555; font-weight: bold; text-transform: uppercase; transition: 0.2s; }
+        .theme-btn { padding: 10px; background: #111; border: 1px solid #333; border-radius: 4px; font-size: 0.65rem; text-align: center; cursor: pointer; color: #555; font-weight: bold; text-transform: uppercase; transition: 0.2s; }
         .theme-btn.active { border-color: var(--gold); color: var(--gold); background: #1a1500; }
 
-        /* PLAY STATE */
         #decree-text { background: #050505; padding: 30px; border-radius: 10px; border-left: 5px solid var(--gold); font-size: 1.1rem; line-height: 1.8; margin: 20px 0; color: #eee; }
         #timer { font-size: 5rem; color: var(--crimson); font-family: monospace; text-align: center; text-shadow: 0 0 15px rgba(208,0,0,0.4); }
         .btn-main { background: var(--accent); color: white; padding: 20px; width: 100%; cursor: pointer; border: none; border-radius: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
         .btn-commence { background: var(--gold); color: black; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 10px;}
         
         input[type="text"] { width: 100%; padding: 10px; background: #000; color: white; border: 1px solid #333; border-radius: 5px; margin-top: 5px; box-sizing: border-box; }
+        .chip { background:#222; padding:3px 8px; border-radius:3px; font-size:0.7rem; display:inline-flex; align-items:center; gap:5px; margin:2px; }
+        .del-item { color: red; cursor: pointer; font-weight: bold; }
         .gen-btn { flex: 1; padding: 10px; border: 1px solid #333; background: #000; color: #444; cursor: pointer; border-radius: 5px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
         .gen-btn.active { border-color: var(--accent); color: white; background: #001a35; }
     </style>
@@ -65,11 +67,11 @@
         </div>
 
         <div class="p-setup" style="margin-bottom:20px;">
-            <span class="label">Arsenal Management (Physical Tools)</span>
+            <span class="label">Arsenal Management (The 8 Physical Tools)</span>
             <div id="inventory-list"></div>
         </div>
 
-        <button class="btn-main" onclick="startSession()">Finalize Arsenal</button>
+        <button class="btn-main" onclick="startSession()">Finalize Arsenal & Start</button>
     </div>
 
     <div id="play-screen" style="display:none;">
@@ -81,9 +83,9 @@
         </div>
 
         <div id="theme-control">
-            <span class="label" style="text-align:center;">Select Active Decree Categories</span>
+            <span class="label" style="text-align:center;">Active Decree Protocols (Toggle Before Randomizing)</span>
             <div class="theme-selector" id="theme-selector"></div>
-            <button class="btn-main" onclick="issueDecree()">Generate Random Task</button>
+            <button class="btn-main" onclick="issueDecree()">Generate Decree</button>
         </div>
         
         <div id="decree-panel" style="display:none;">
@@ -106,11 +108,14 @@
 
 <script>
 const DEFAULT_INV = {
-    "Restraints": ["Rope", "Handcuffs", "Ankle Cuffs", "Zip Ties"],
-    "Impact": ["Cane", "Paddle", "Flogger", "Hand"],
-    "Gags": ["Ball Gag", "Duct Tape", "Panties"],
-    "Sensory": ["Wax", "Ice", "Wartenberg Wheel"],
-    "Ache": ["Clamps", "Weights", "Plug"]
+    "Restraints": ["Rope", "Handcuffs"],
+    "Impact": ["Cane", "Paddle"],
+    "Gags": ["Ball Gag", "Duct Tape"],
+    "Shadow": ["Blindfold", "Sleep Mask", "Hood"],
+    "Sensory": ["Wax", "Ice"],
+    "Ache": ["Clamps", "Weights"],
+    "Stillness": ["Posture Collar", "Crotch Rope"],
+    "Quietude": ["Muzzle", "Nipple Clamps"]
 };
 
 const THEMES = ["Self Bondage", "Truth", "Dare", "Soft and Sexy", "Escape", "Shibari", "Physical Challenge", "Tease and Denial"];
@@ -118,25 +123,25 @@ const THEMES = ["Self Bondage", "Truth", "Dare", "Soft and Sexy", "Escape", "Shi
 let state = {
     currRound: 1, history: [],
     p: [{name:"", gender:"M", score:0}, {name:"", gender:"F", score:0}],
-    inv: JSON.parse(localStorage.getItem('sov_inv_v22')) || DEFAULT_INV,
+    inv: JSON.parse(localStorage.getItem('sov_inv_v23')) || DEFAULT_INV,
     activeThemes: [...THEMES],
     timer: null, activeTime: 0
 };
 
-function save() { localStorage.setItem('sov_inv_v22', JSON.stringify(state.inv)); }
+function save() { localStorage.setItem('sov_inv_v23', JSON.stringify(state.inv)); }
 
 function renderInventory() {
     const list = document.getElementById('inventory-list');
     list.innerHTML = '';
     Object.keys(state.inv).forEach(cat => {
         const div = document.createElement('div');
-        div.style.marginBottom = '10px';
+        div.className = 'inv-section';
         div.innerHTML = `
             <span style="font-size:0.6rem; color:var(--accent); font-weight:bold;">${cat.toUpperCase()}</span>
-            <div style="display:flex; flex-wrap:wrap; gap:5px; margin:5px 0;">
-                ${state.inv[cat].map((it, idx) => `<span class="chip" style="background:#222; padding:3px 8px; border-radius:3px; font-size:0.7rem;">${it} <span onclick="removeItem('${cat}',${idx})" style="color:red; cursor:pointer;">×</span></span>`).join('')}
+            <div style="margin:5px 0;">
+                ${state.inv[cat].map((it, idx) => `<span class="chip">${it} <span class="del-item" onclick="removeItem('${cat}',${idx})">×</span></span>`).join('')}
             </div>
-            <div style="display:flex; gap:5px;"><input type="text" id="add-${cat}" placeholder="Add tool..."><button onclick="addItem('${cat}')" style="background:var(--accent); color:white; border:none; padding:0 10px;">+</button></div>
+            <div style="display:flex; gap:5px;"><input type="text" id="add-${cat}" placeholder="Add..."><button onclick="addItem('${cat}')" style="background:var(--accent); color:white; border:none; padding:0 8px;">+</button></div>
         `;
         list.appendChild(div);
     });
@@ -155,7 +160,7 @@ function toggleTheme(t) {
 
 function addItem(cat) { const v = document.getElementById(`add-${cat}`).value; if(v){state.inv[cat].push(v); save(); renderInventory();} }
 function removeItem(cat, idx) { state.inv[cat].splice(idx, 1); save(); renderInventory(); }
-function setGender(p, g) { state.p[p].gender = g; document.querySelectorAll(`.p-setup:nth-child(${p+1}) .gen-btn`).forEach(b => b.classList.remove('active')); event.target.classList.add('active'); }
+function setGender(p, g) { state.p[p].gender = g; const btns = event.target.parentNode.querySelectorAll('.gen-btn'); btns.forEach(b => b.classList.remove('active')); event.target.classList.add('active'); }
 
 function startSession() {
     state.p[0].name = document.getElementById('name0').value;
@@ -172,8 +177,6 @@ function updateUI() {
     document.getElementById('score0').innerText = state.p[0].score;
     document.getElementById('disp-name1').innerText = state.p[1].name.toUpperCase();
     document.getElementById('score1').innerText = state.p[1].score;
-    document.getElementById('box0').style.borderColor = (state.currRound % 2 !== 0) ? 'var(--accent)' : '#222';
-    document.getElementById('box1').style.borderColor = (state.currRound % 2 === 0) ? 'var(--accent)' : '#222';
 }
 
 function issueDecree() {
@@ -186,36 +189,36 @@ function issueDecree() {
     
     const d = state.p[0].name; const s = state.p[1].name;
     const r = (arr) => arr[Math.floor(Math.random()*arr.length)];
-    const tool = (cat) => state.inv[cat] && state.inv[cat].length ? r(state.inv[cat]) : "a selected tool";
+    const tool = (cat) => state.inv[cat] && state.inv[cat].length ? r(state.inv[cat]) : "a chosen implement";
     
     let text = ""; let time = 600;
 
     // PROCEDURAL EXPLICIT LOGIC
     switch(theme) {
         case "Self Bondage":
-            text = `${s}, take the **${tool('Restraints')}**. You are to tightly tie your ankles together until the skin indents. Then, force your wrists behind your back and bind them. Finally, use a secondary line to pull the ankle-bind to the wrist-bind into a **Strict Hogtie**. You must remain in this arch for the duration.`;
-            time = 900; break;
+            text = `${s}, you are to enter total isolation. First, apply the **${tool('Shadow')}** and ensure you are in total darkness. Then, using the **${tool('Restraints')}**, bind your ankles together until they are flush. Force your wrists behind your back and secure them. Finally, cinch the connection between your wrists and ankles into a **Strict Hogtie**. ${d} will verify the tightness.`;
+            time = 1000; break;
         case "Tease and Denial":
-            text = `${d} will apply the **${tool('Ache')}** to ${s}'s most sensitive area. ${s} will then be brought to the absolute edge of climax. When at the limit, ${d} will stop all pleasure and deliver ${r([10,20])} heavy strikes with the **${tool('Impact')}**. Climax is forbidden.`;
+            text = `${s} is to be blindfolded with the **${tool('Shadow')}**. ${d} will use the **${tool('Ache')}** on ${s}'s genitals while simultaneously tracing the **${tool('Sensory')}** across their chest. ${s} must state 'I am nothing but your toy' every time they approach climax. ${d} will then deliver ${r([15,25])} strikes of the **${tool('Impact')}** and deny all release.`;
             time = 1200; break;
         case "Shibari":
-            text = `${d} will use the **${tool('Restraints')}** to construct a deep **${r(['Chest Harness','Crotch Rope','Thigh Wrap'])}**. The rope must be cinched so tightly it restricts movement. ${s} must remain still and describe the physical 'bite' of the cord.`;
+            text = `${d} will apply the **${tool('Shadow')}** to ${s}. In total darkness, ${d} will construct a detailed **${r(['Chest Harness','Futomomo','Spider-web Tie'])}** using the **${tool('Restraints')}**. The rope must bite into the ${r(['shoulders','hips','inner thighs'])}. ${s} must describe the exact moment their breath is restricted by the wraps.`;
             time = 1500; break;
         case "Escape":
-            text = `${s} is to be fully immobilized with **${tool('Restraints')}** and **${tool('Gags')}**. Wrist-to-Ankle, mouth sealed with ${r(['Tape','a Ball Gag'])}. You have the timer to struggle free. If you fail, the session continues while you remain bound.`;
+            text = `${s} is to be blindfolded with the **${tool('Shadow')}**, gagged with the **${tool('Gags')}**, and fully bound wrist-to-ankle with **${tool('Restraints')}**. You have the timer to struggle free. If the blindfold slips or the gag is loosened before the knots are undone, you forfeit the round and ${d} will use the **${tool('Impact')}**.`;
             time = 1200; break;
-        case "Physical Challenge":
-            text = `${s} must maintain a **${r(['Deep Squat','Plank','Wall-Sit'])}** while **${tool('Ache')}** or **${tool('Sensory')}** is applied. Every tremor in your muscles is met with a strike from the **${tool('Impact')}**. Hold until the timer expires.`;
-            time = 600; break;
         case "Soft and Sexy":
-            text = `${s} is blindfolded. ${d} uses **${tool('Sensory')}** (wax/ice) to trace highly explicit paths between ${s}'s thighs and chest. ${s} must identify the sensation. Failure to identify correctly leads to more **${tool('Impact')}**.`;
-            time = 480; break;
+            text = `${s} is to be placed in the **${tool('Shadow')}**. In the dark, ${d} will use **${tool('Sensory')}** (wax or ice) to trace explicit instructions on ${s}'s skin. ${s} must guess the word being written. For every incorrect guess, the **${tool('Ache')}** is applied for 2 minutes. Focus on the temperature and the touch.`;
+            time = 600; break;
+        case "Physical Challenge":
+            text = `${s}, wearing the **${tool('Shadow')}**, must maintain a **${r(['Deep Squat','Wall-Sit','Frog Pose'])}**. While blind, you will be struck at random intervals with the **${tool('Impact')}**. Because you cannot see it coming, you must remain perfectly still. Any flinching resets the timer.`;
+            time = 720; break;
         case "Truth":
-            text = `**The Interrogation**. ${s} must answer ${r([3,5])} explicit questions about ${r(['submission','desire','shame'])}. For every answer that lacks detail, ${d} will use the **${tool('Impact')}** on ${s}'s ${r(['inner thighs','back'])}.`;
+            text = `**The Blind Interrogation**. ${s} is blindfolded with the **${tool('Shadow')}**. ${d} will ask ${r([3,5])} questions about ${s}'s ${r(['fantasies','secrets','vulnerabilities'])}. Each answer must be whispered while ${d} uses the **${tool('Sensory')}** on ${s}'s ears. Dishonesty results in a heavy application of the **${tool('Impact')}**.`;
             time = 600; break;
         case "Dare":
-            text = `${s} is dared to ${r(['beg for a heavy strike','remain gagged for the next 2 rounds','present for 40 strikes of the '+tool('Impact')])}. No hesitation is allowed.`;
-            time = 300; break;
+            text = `${s} is dared to be gagged with the **${tool('Gags')}** and blindfolded with the **${tool('Shadow')}**. You will then be led through the house by a leash. If you stumble or make a noise, ${d} will use the **${tool('Impact')}** on your ${r(['buttocks','thighs'])}.`;
+            time = 450; break;
     }
 
     document.getElementById('decree-text').innerHTML = `<strong>PROTOCOL: ${theme.toUpperCase()}</strong><br><br>${text}`;
