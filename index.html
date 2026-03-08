@@ -37,7 +37,6 @@
         .status-header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 15px; }
         .stat-box { background: #000; padding: 10px; border-radius: 10px; text-align: center; font-size: 0.7rem; border: 1px solid #444; flex: 1; min-width: 40%; }
         
-        /* Master Toggle Styling */
         .master-toggles { background: #000; padding: 15px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #d4af37; }
         .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .tog-btn { padding: 8px; font-size: 0.65rem; border-radius: 8px; border: 1px solid #333; background: #111; color: #555; cursor: pointer; text-transform: uppercase; font-weight: bold; }
@@ -54,7 +53,6 @@
             background: #ff0000 !important; color: #ffffff !important; padding: 25px; font-size: 1.5rem; letter-spacing: 5px; border-radius: 15px;
             box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); animation: pulse-red 1.5s infinite; border: 4px solid #ffffff; width: 100%; font-weight: 900; cursor: pointer; text-transform: uppercase;
         }
-        @keyframes pulse-red { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -98,7 +96,7 @@
         <div class="status-header" id="status-bar"></div>
 
         <div class="master-toggles">
-            <span class="label" style="margin-bottom:8px;">Arsenal Lockdown (Toggle Before Decree)</span>
+            <span class="label" style="margin-bottom:8px;">Arsenal Lockdown (Toggle Categories)</span>
             <div class="toggle-grid" id="toggle-mount"></div>
         </div>
 
@@ -125,19 +123,18 @@
         cards: { y:"", r:"" },
         timer: { val: 600, int: null },
         vault: {
-            "Restraints": { items: ["Rope", "Cuffs", "Tape"], active: true },
+            "Restraints": { items: ["Rope", "Cuffs", "Tape", "Zipties"], active: true },
             "Blindfolds": { items: ["Sleep Mask", "Silk Scarf", "Hood"], active: true },
             "Impact": { items: ["Paddle", "Crop", "Cane"], active: true },
-            "Sensation": { items: ["Ice", "Feather", "Wand"], active: true },
-            "Mouth": { items: ["Tape", "Ball Gag", "Cleave Gag"], active: true },
-            "Weight": { items: ["Chains", "Heavy Blanket"], active: true }
+            "Gags": { items: ["Ball Gag", "Cleave Gag", "Tape", "Bit Gag"], active: true },
+            "Toys": { items: ["Wand", "Plug", "Remote Toy"], active: true }
         },
         activities: [
-            "The Subject is to be thoroughly immobilized. Secure their wrists to their ankles tightly using {Restraints}, forcing a deep crouch. Once fixed, apply {Mouth} over the lips so no sound can escape. The Master shall then use {Sensation} to explore the Subject's vulnerability.",
-            "Complete sensory isolation is required. Secure {Blindfolds} firmly, ensuring no light reaches the eyes. The Master will then use {Restraints} to bind the Subject's limbs to a fixed point. For the duration, {Sensation} will be applied in a rhythmic, relentless pattern.",
-            "The Master commands absolute silence. Wrap {Mouth} multiple times around the Subject's head. Bind the Subject's hands behind their back with {Restraints} until the skin is taut. The Master will then deliver controlled strikes with {Impact} at intervals determined by the timer.",
-            "Using {Restraints}, the Master will bind the Subject in a stress position. The Subject must endure the pressure of {Weight} placed upon their chest while {Sensation} is used to tease their senses. Any movement will result in the Master adding more {Weight}.",
-            "The Subject's voice is to be taken. Apply {Mouth} securely. Use {Restraints} to ensure the Subject cannot reach their face or struggle. The Master will then utilize {Sensation} and {Impact} to create a landscape of contrasting feelings across the Subject's body."
+            "Immobilization Protocol: Secure the Subject's wrists to their ankles tightly using {Restraints}, forcing them into a submissive crouch. Once fixed, apply {Gags} securely so that no sound can escape. The Master shall then use {Toys} to dominate the Subject's focus.",
+            "Complete Sensory Deprivation: Firmly apply {Blindfolds} to ensure total darkness. Use {Restraints} to bind the Subject's limbs in a spread-eagle position. While the Subject is helpless, {Toys} will be used relentlessly until the timer reaches its halfway mark.",
+            "Silence and Discipline: Bind the Subject's hands behind their back with {Restraints} until the skin is taut. Seal their mouth with {Gags}. The Master will then deliver controlled, stinging strikes with {Impact} at intervals dictated by the pulse of the timer.",
+            "Stress Endurance: Using {Restraints}, bind the Subject in a challenging stress position. Insert or apply {Toys} to keep the Subject on the edge of pleasure and pain. {Gags} must be worn to ensure all protests are muffled into silence.",
+            "The Possession: Secure {Blindfolds} so the Subject is lost in the dark. Apply {Gags} to take their voice. The Master will then use {Impact} to mark the flesh and {Toys} to invade the senses, asserting total sovereignty over the slave."
         ]
     };
 
@@ -221,14 +218,13 @@
     }
 
     function actionGenerate() {
-        // Filter tasks that only use active categories
         const activeCats = Object.keys(state.vault).filter(k => state.vault[k].active);
         const possible = state.activities.filter(a => {
             const matches = a.match(/{(\w+)}/g) || [];
             return matches.every(m => activeCats.includes(m.replace(/{|}/g, '')));
         });
 
-        let decree = possible.length > 0 ? possible[Math.floor(Math.random()*possible.length)] : "The Master shall dictate the trial manually.";
+        let decree = possible.length > 0 ? possible[Math.floor(Math.random()*possible.length)] : "The Master shall dictate the trial manually based on the current active arsenal.";
         
         decree = decree.replace(/{(\w+)}/g, (m, cat) => {
             const pool = state.vault[cat].items;
