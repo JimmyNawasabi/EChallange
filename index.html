@@ -20,6 +20,10 @@
         
         input[type="text"], input[type="number"] { width: 100%; padding: 15px; border: 1px solid #444; border-radius: 12px; background: #000; color: white; font-size: 1.1rem; box-sizing: border-box; margin-bottom: 10px; }
 
+        .gender-select { display: flex; gap: 10px; margin-bottom: 15px; }
+        .g-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #444; background: #111; color: #666; cursor: pointer; text-align: center; font-weight: bold; text-transform: uppercase; font-size: 0.75rem; }
+        .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
         .btn { background: var(--crimson); color: white; border: none; padding: 20px; width: 100%; cursor: pointer; text-transform: uppercase; font-weight: bold; border-radius: 15px; font-size: 1.1rem; letter-spacing: 2px; }
         
         .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
@@ -45,10 +49,26 @@
     <div class="subtitle">The Command Protocol</div>
 
     <div id="screen-1" class="step active">
-        <input type="text" id="p1-name" placeholder="Master Name">
-        <input type="text" id="p2-name" placeholder="Subject Name">
         <div class="box-section">
-            <span class="label">Rounds</span>
+            <span class="label">Primary (Master)</span>
+            <input type="text" id="p1-name" placeholder="Master Name">
+            <div class="gender-select">
+                <div class="g-btn active" onclick="setG(1,'M')">Male</div>
+                <div class="g-btn" onclick="setG(1,'F')">Female</div>
+                <div class="g-btn" onclick="setG(1,'NB')">NB</div>
+            </div>
+        </div>
+        <div class="box-section">
+            <span class="label">Secondary (Subject)</span>
+            <input type="text" id="p2-name" placeholder="Subject Name">
+            <div class="gender-select">
+                <div class="g-btn" onclick="setG(2,'M')">Male</div>
+                <div class="g-btn active" onclick="setG(2,'F')">Female</div>
+                <div class="g-btn" onclick="setG(2,'NB')">NB</div>
+            </div>
+        </div>
+        <div class="box-section">
+            <span class="label">Total Rounds</span>
             <input type="number" id="rounds-total" value="30">
         </div>
         <button class="btn" onclick="nav(2)">Initialize Arsenal</button>
@@ -60,7 +80,7 @@
     </div>
 
     <div id="screen-3" class="step">
-        <div class="status-header" id="status-bar" style="margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;"></div>
+        <div class="status-header" id="status-bar" style="margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; display:flex; justify-content: space-around;"></div>
         
         <div class="box-section" style="padding:15px;">
             <span class="label">The Arsenal (Tools)</span>
@@ -89,25 +109,36 @@
     };
 
     const decreeCats = {
-        "The Solitary Knot": { active: true, desc: "Subject must use {The Bindings} to secure themselves in a manner where they cannot escape without the Master's intervention. Once bound, they must wait in {The Shadows}." },
-        "The Devotion Test": { active: true, desc: "A dare of absolute submission. The Subject must allow the Master to apply {The Discipline} to a sensitive area while wearing {The Silence}." },
-        "The Unveiling": { active: true, desc: "Truth protocol. While bound by {The Bindings}, the Subject must confess a deep desire. Failure to satisfy the Master leads to a strike of {The Discipline}." },
-        "The Intricate Art": { active: true, desc: "The Master shall use {The Bindings} to create a complex Shibari harness. The Subject must remain perfectly still, their breath muffled by {The Silence}." },
-        "The Cruel Edge": { active: true, desc: "A trial of denial. The Master uses {The Pleasures} to bring the Subject to the brink, then abruptly stops, leaving them in {The Shadows} to thrum with unspent heat." },
-        "The Mortal Trial": { active: true, desc: "A physical challenge. The Subject must maintain a stress position while wearing {The Bindings}, enduring the weight of their own body and {The Discipline}." },
-        "The Great Escape": { active: true, desc: "The Master secures {The Bindings} with purposeful complexity. The Subject has until the timer ends to free themselves while blind by {The Shadows}." },
-        "The Tender Mercy": { active: true, desc: "Soft and sexy. The Master removes {The Silence} and uses {The Pleasures} with a gentle touch, focusing on slow, building intimacy." }
+        "The Solitary Knot": { active: true, desc: "{Subject} must use {The Bindings} to secure themselves in a manner where they cannot escape without {Master}'s intervention. Once bound, they must wait in {The Shadows}." },
+        "The Devotion Test": { active: true, desc: "A dare of absolute submission. {Subject} must allow {Master} to apply {The Discipline} to a sensitive area while wearing {The Silence}." },
+        "The Unveiling": { active: true, desc: "Truth protocol. While bound by {The Bindings}, {Subject} must confess a deep desire to {Master}. Failure to satisfy leads to a strike of {The Discipline}." },
+        "The Intricate Art": { active: true, desc: "{Master} shall use {The Bindings} to create a complex Shibari harness on {Subject}. They must remain perfectly still, their breath muffled by {The Silence}." },
+        "The Cruel Edge": { active: true, desc: "A trial of denial. {Master} uses {The Pleasures} to bring {Subject} to the brink, then abruptly stops, leaving them in {The Shadows}." },
+        "The Mortal Trial": { active: true, desc: "A physical challenge. {Subject} must maintain a stress position while wearing {The Bindings}, enduring the weight of {The Discipline} as {Master} sees fit." },
+        "The Great Escape": { active: true, desc: "{Master} secures {The Bindings} with purposeful complexity. {Subject} has until the timer ends to free themselves while blind by {The Shadows}." },
+        "The Tender Mercy": { active: true, desc: "Soft and sexy. {Master} removes {The Silence} and uses {The Pleasures} with a gentle touch on {Subject}, focusing on slow, building intimacy." }
     };
 
     const state = {
+        players: [{n:"", g:"M"}, {n:"", g:"F"}],
         rounds: { cur: 1, total: 30 },
-        vault: JSON.parse(localStorage.getItem('sov_arsenal')) || defaultArsenal,
+        vault: JSON.parse(localStorage.getItem('sov_arsenal_v3')) || defaultArsenal,
         cats: decreeCats
     };
+
+    function setG(p, g) {
+        state.players[p-1].g = g;
+        const btns = document.querySelectorAll(`#screen-1 .box-section:nth-child(${p}) .g-btn`);
+        btns.forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+    }
 
     function nav(n) {
         if (n === 2) renderVault();
         if (n === 3) {
+            state.players[0].n = document.getElementById('p1-name').value || "Master";
+            state.players[1].n = document.getElementById('p2-name').value || "Subject";
+            state.rounds.total = parseInt(document.getElementById('rounds-total').value) || 30;
             renderToggles('arsenal-mount', state.vault);
             renderToggles('category-mount', state.cats);
             updateStatus();
@@ -118,13 +149,13 @@
 
     function renderVault() {
         const mount = document.getElementById('vault-mount');
-        mount.innerHTML = '<span class="label">Seductive Tool Management</span>';
+        mount.innerHTML = '<span class="label">Arsenal Storage Management</span>';
         for (let cat in state.vault) {
             const safeId = cat.replace(/\s+/g, '');
             const div = document.createElement('div');
             div.className = 'box-section';
             div.innerHTML = `<span class="label">${cat}</span><div class="tag-cloud" id="tags-${safeId}"></div>
-                             <div class="add-row"><input type="text" id="in-${safeId}" placeholder="New..."><button onclick="addItem('${cat}')" class="add-btn">+</button></div>`;
+                             <div class="add-row"><input type="text" id="in-${safeId}" placeholder="Add item..."><button onclick="addItem('${cat}')" class="add-btn">+</button></div>`;
             mount.appendChild(div);
             updateTags(cat);
         }
@@ -166,7 +197,6 @@
             btn.onclick = () => {
                 dataSource[key].active = !dataSource[key].active;
                 btn.classList.toggle('active');
-                save();
             };
             mount.appendChild(btn);
         }
@@ -176,23 +206,27 @@
         const activeArsenal = Object.keys(state.vault).filter(k => state.vault[k].active);
         const activeCats = Object.keys(state.cats).filter(k => state.cats[k].active);
 
-        // Filter categories that use tools currently active in the arsenal
         const possible = activeCats.filter(catKey => {
             const template = state.cats[catKey].desc;
-            const needed = template.match(/{([\s\w]+)}/g) || [];
+            const needed = template.match(/{The [\w\s]+}/g) || [];
             return needed.every(n => activeArsenal.includes(n.replace(/{|}/g, '')));
         });
 
         if (possible.length === 0) {
-            alert("No matching activities for current Arsenal/Category selection.");
-            return;
+            alert("No matching activities for current selection."); return;
         }
 
         const selectedKey = possible[Math.floor(Math.random()*possible.length)];
         let decree = `[${selectedKey.toUpperCase()}]\n\n` + state.cats[selectedKey].desc;
         
-        decree = decree.replace(/{([\s\w]+)}/g, (m, tool) => {
-            const pool = state.vault[tool].items;
+        // Inject Names
+        decree = decree.replace(/{Master}/g, state.players[0].n);
+        decree = decree.replace(/{Subject}/g, state.players[1].n);
+        
+        // Inject Arsenal Items
+        decree = decree.replace(/{The ([\s\w]+)}/g, (m, tool) => {
+            const key = "The " + tool;
+            const pool = state.vault[key].items;
             return `**${pool[Math.floor(Math.random()*pool.length)]}**`;
         });
 
@@ -216,10 +250,8 @@
 
     function complete() {
         clearInterval(state.int);
-        if(state.rounds.cur >= state.rounds.total) {
-            alert("PROTOCOL CONSUMMATED.");
-            location.reload();
-        } else {
+        if(state.rounds.cur >= state.rounds.total) { alert("PROTOCOL COMPLETE."); location.reload(); }
+        else {
             state.rounds.cur++;
             updateStatus();
             document.getElementById('pre-round-ui').style.display = 'block';
@@ -227,9 +259,13 @@
         }
     }
 
-    function save() { localStorage.setItem('sov_arsenal', JSON.stringify(state.vault)); }
+    function save() { localStorage.setItem('sov_arsenal_v3', JSON.stringify(state.vault)); }
     function updateStatus() {
-        document.getElementById('status-bar').innerHTML = `<div style="text-align:center; font-size:0.8rem; color:var(--accent); font-weight:bold;">ROUND ${state.rounds.cur} / ${state.rounds.total}</div>`;
+        document.getElementById('status-bar').innerHTML = `
+            <div style="color:var(--accent); font-weight:bold;">M: ${state.players[0].n}</div>
+            <div style="color:var(--accent); font-weight:bold;">ROUND ${state.rounds.cur}/${state.rounds.total}</div>
+            <div style="color:var(--accent); font-weight:bold;">S: ${state.players[1].n}</div>
+        `;
     }
 </script>
 </body>
