@@ -37,12 +37,12 @@
             margin-bottom: 15px;
         }
 
-        /* GENDER SELECTOR STYLING */
+        /* GENDER SELECTOR - RESTORED & ENHANCED */
         .gender-select { display: flex; gap: 10px; margin-bottom: 5px; }
         .g-btn { 
             flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #444; 
-            background: #111; color: #666; cursor: pointer; text-align: center; 
-            font-weight: bold; text-transform: uppercase; font-size: 0.8rem;
+            background: #111; color: #888; cursor: pointer; text-align: center; 
+            font-weight: bold; text-transform: uppercase; font-size: 0.75rem;
             transition: all 0.2s ease;
         }
         .g-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
@@ -60,8 +60,7 @@
         .step { display: none; }
         .active { display: block !important; }
 
-        .card-action-btn { font-size: 0.65rem; padding: 10px; margin-top: 10px; border-radius: 8px; border: 1px solid #444; background: #1a1a1a; color: #fff; cursor: pointer; text-transform: uppercase; font-weight: bold; }
-        
+        /* SAFE WORD BUTTON - RED BG / WHITE TEXT */
         .btn-safeword {
             background: #ff0000;
             color: #ffffff;
@@ -122,13 +121,23 @@
         <button class="btn" onclick="nav(2)">Access the Arsenal</button>
     </div>
 
+    <div id="step2" class="step">
+        <div class="box-section" id="vault-inject">
+            <span class="label">Arsenal Configuration</span>
+            <p style="font-size:0.8rem; color:#666;">Restoring inventory presets...</p>
+        </div>
+        <button class="btn" onclick="nav(3)">Lock Arsenal & Begin</button>
+    </div>
+
     <div id="step3" class="step">
         <div class="status-header">
             <div class="stat-box" id="disp-round">ROUND: 1</div>
             <div class="stat-box" id="disp-remain">REMAINING: 9</div>
         </div>
         <div id="active-round">
-            <div class="box-section" id="active-trial-text" style="min-height: 250px;"></div>
+            <div class="box-section" id="active-trial-text" style="min-height: 250px;">
+                <p style="text-align:center;">Protocol standby. Press Generate.</p>
+            </div>
             <div class="timer-big" id="clock">00:00</div>
             <button class="btn-safeword" onclick="triggerSafeWord()">SAFE WORD</button>
         </div>
@@ -145,25 +154,38 @@
     function setGender(p, g) {
         players[p-1].g = g;
         const group = (p === 1) ? ['p1m','p1f','p1n'] : ['p2m','p2f','p2n'];
-        group.forEach(id => document.getElementById(id).classList.remove('active'));
-        document.getElementById(`p${p}${g.toLowerCase()}`).classList.add('active');
+        group.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.classList.remove('active');
+        });
+        const activeBtn = document.getElementById(`p${p}${g.toLowerCase()}`);
+        if(activeBtn) activeBtn.classList.add('active');
         
-        // Sensory feedback for selection
-        if ("vibrate" in navigator) navigator.vibrate(20);
+        if ("vibrate" in navigator) navigator.vibrate(25);
     }
 
     function nav(n) {
         if(n === 2) {
-            players[0].n = document.getElementById('p1_n').value || "Player 1";
-            players[1].n = document.getElementById('p2_n').value || "Player 2";
+            players[0].n = document.getElementById('p1_n').value || "Master";
+            players[1].n = document.getElementById('p2_n').value || "Subject";
             maxR = parseInt(document.getElementById('max_r').value) || 10;
         }
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + n).classList.add('active');
+        if(n === 3) updateStatus();
     }
 
-    // AudioCtx and haptic logic maintained from previous stable versions
-    // ...
+    function updateStatus() {
+        document.getElementById('disp-round').innerText = `ROUND: ${curR}`;
+        document.getElementById('disp-remain').innerText = `REMAINING: ${maxR - curR}`;
+    }
+
+    function triggerSafeWord() {
+        if ("vibrate" in navigator) navigator.vibrate([300, 100, 300]);
+        alert("SAFE WORD ACTIVATED: Protocol Paused.");
+    }
+
+    // Audio context and game logic hooks for trials would go here
 </script>
 </body>
 </html>
